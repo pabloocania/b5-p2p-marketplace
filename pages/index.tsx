@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "../styles/Home.module.css";
-import CreateOrder from "./components/CreateOrder";
-import OrdersFeed, { Filter } from "./components/OrdersFeed";
+import CreateOrder from "../src/components/ui/CreateOrder";
+import OrdersFeed, { Filter } from "../src/components/ui/OrdersFeed";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -10,8 +10,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Plus, User } from "lucide-react";
-import UserMenu from "./components/UserMenu";
-import { useUserContext } from "./components/UserContext";
+import UserMenu from "../src/components/ui/UserMenu";
+import { useUserContext } from "../src/components/ui/UserContext";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 export default function Home() {

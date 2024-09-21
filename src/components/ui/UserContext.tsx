@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react";
-import { useUser, UserProps } from "../hooks/useUser";
+import { useUser, UserProps } from "../../lib/useUser";
 
 interface UserContextProps {
   user: UserProps | undefined;

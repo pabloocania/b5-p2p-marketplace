@@ -19,8 +19,8 @@ import {
   OrderStatus,
   UpdateOrderRequest,
 } from "ba-api-client";
-import { bolsilloArgentoAPIClient as client } from "../APIClients";
-import { useUserContext } from "../components/UserContext";
+import { bolsilloArgentoAPIClient as client } from "../../lib/APIClients";
+import { useUserContext } from "./UserContext";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;

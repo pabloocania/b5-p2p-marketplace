@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Order, OrderStatus } from "ba-api-client";
 import { OrderCard } from "./OrderCard";
 import { ScrollableContainer } from "./ScrollabelContainer";
-import { bolsilloArgentoAPIClient as client } from "../APIClients";
-import { useUserContext } from "../components/UserContext";
+import { bolsilloArgentoAPIClient as client } from "../../lib/APIClients";
+import { useUserContext } from "./UserContext";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,

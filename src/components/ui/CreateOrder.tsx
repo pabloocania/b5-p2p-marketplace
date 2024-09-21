@@ -17,8 +17,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { OrderCard } from "./OrderCard";
-import { bolsilloArgentoAPIClient as client } from "../APIClients";
-import { useUserContext } from "../components/UserContext";
+import { bolsilloArgentoAPIClient as client } from "../../lib/APIClients";
+import { useUserContext } from "./UserContext";
 
 interface CreateOrderProps {
   onClose: () => void;

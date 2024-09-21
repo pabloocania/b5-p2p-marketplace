@@ -1,7 +1,7 @@
 import Head from "next/head";
 import "../styles/globals.css";
 import { AppProps } from "next/app";
-import { UserProvider } from "./components/UserContext";
+import { UserProvider } from "../src/components/ui/UserContext";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (

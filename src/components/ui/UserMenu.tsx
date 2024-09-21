@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { UserProps } from "../hooks/useUser";
+import { UserProps } from "../../lib/useUser";
 
 interface UserMenuProps {
   user: UserProps | undefined;
