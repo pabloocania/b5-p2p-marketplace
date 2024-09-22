@@ -324,7 +324,7 @@ export function OrderCard({
               </Button>
             ) : (
               <div className="bg-yellow-100 text-yellow-700 p-4 text-center">
-                Waiting for the buyer to send FIAT...
+                Waiting for the seller to release the funds to proceed.
               </div>
             )
           ) : (
