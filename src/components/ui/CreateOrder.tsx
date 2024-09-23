@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { CreateOrderRequest, OrderType, Order } from "ba-api-client";
+import { CreateOrderRequest, OrderType, Order } from "b5-api-client";
 import {
   Card,
   CardHeader,
@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { OrderCard } from "./OrderCard";
-import { bolsilloArgentoAPIClient as client } from "../../lib/APIClients";
+import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useUserContext } from "./UserContext";
 
 interface CreateOrderProps {

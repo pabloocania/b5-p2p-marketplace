@@ -18,8 +18,8 @@ import {
   TakeBuyOrderRequest,
   OrderStatus,
   UpdateOrderRequest,
-} from "ba-api-client";
-import { bolsilloArgentoAPIClient as client } from "../../lib/APIClients";
+} from "b5-api-client";
+import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useUserContext } from "./UserContext";
 
 interface OrderCardProps {

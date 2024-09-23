@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Clipboard } from "lucide-react";
-import { Order, OrderType } from "ba-api-client";
+import { Order, OrderType } from "b5-api-client";
 
 export default function OrderDetails({ order }: { order: Order | undefined }) {
   const [walletAddress, setWalletAddress] = useState("");

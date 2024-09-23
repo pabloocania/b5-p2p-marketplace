@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Order, OrderStatus } from "ba-api-client";
+import { Order, OrderStatus } from "b5-api-client";
 import { OrderCard } from "./OrderCard";
 import { ScrollableContainer } from "./ScrollabelContainer";
-import { bolsilloArgentoAPIClient as client } from "../../lib/APIClients";
+import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useUserContext } from "./UserContext";
 import { Button } from "@/components/ui/button";
 import {

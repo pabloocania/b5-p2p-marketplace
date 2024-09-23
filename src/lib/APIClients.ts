@@ -1,9 +1,9 @@
-import { BolsilloArgentoAPIClient } from "ba-api-client";
+import { P2PMarketplaceAPIClient } from "b5-api-client";
 
-const bolsilloArgentoAPIClient = new BolsilloArgentoAPIClient(
+const p2pMarketAPIClient = new P2PMarketplaceAPIClient(
     "https://bolsillo-argento-586dfd80364d.herokuapp.com"
 );
 
 export {
-    bolsilloArgentoAPIClient
+    p2pMarketAPIClient
 };
