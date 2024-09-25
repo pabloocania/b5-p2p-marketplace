@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { UserProps } from "../../lib/useUser";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 interface UserMenuProps {
   user: UserProps | undefined;
@@ -36,6 +37,10 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
 
   return (
     <div className="p-4">
+      <ConnectButton
+        showBalance={false}
+        chainStatus={{ smallScreen: "none", largeScreen: "icon" }}
+      />
       {user ? (
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
