@@ -40,6 +40,8 @@ export default function Home() {
   const renderComponent = () => {
     if (activeComponent === "OrderFeed") {
       return <OrdersFeed refreshKey={refreshKey} />;
+    } else if (activeComponent === "UserMenu") {
+      return <UserMenu user={user} onLogin={login} onLogout={logout} />;
     } else if (activeComponent === "MyOrders") {
       return (
         <>
@@ -100,10 +102,20 @@ export default function Home() {
             >
               My Orders
             </Button>
+            <Button
+              variant={activeComponent === "UserMenu" ? "default" : "secondary"}
+              onClick={() => setActiveComponent("UserMenu")}
+            >
+              Profile
+            </Button>
           </div>
           {renderComponent()}
           <div className="fixed bottom-4 left-4">
-            <Sheet open={isLoginSheetOpen} onOpenChange={setIsLoginSheetOpen}>
+            <Sheet
+              modal={false}
+              open={isLoginSheetOpen}
+              onOpenChange={setIsLoginSheetOpen}
+            >
               <SheetTrigger asChild>
                 <Button
                   size="icon"
@@ -114,7 +126,7 @@ export default function Home() {
                   <span className="sr-only">User Menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="bottom" className="h-[90vh]">
+              <SheetContent side="bottom" className="h-[90vh] overflow-auto">
                 <VisuallyHidden>
                   <SheetTitle>Login Dialog</SheetTitle>
                 </VisuallyHidden>

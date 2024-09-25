@@ -1,15 +1,15 @@
 import Head from "next/head";
 import "../styles/globals.css";
-// import "@rainbow-me/rainbowkit/styles.css";
+import "@rainbow-me/rainbowkit/styles.css";
 import { AppProps } from "next/app";
-// import { UserProvider } from "../src/components/ui/UserContext";
-// import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import { WagmiProvider } from "wagmi";
-// import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { UserProvider } from "../src/components/ui/UserContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider } from "wagmi";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
-// import { config } from "../src/wagmi";
+import { config } from "../src/wagmi";
 
-// const queryClient = new QueryClient();
+const queryClient = new QueryClient();
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -41,7 +41,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <link rel="apple-touch-icon" href="/apple-icon.png"></link>
         <meta name="theme-color" content="#317EFB" />
       </Head>
-      {/* <UserProvider>
+      <UserProvider>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
             <RainbowKitProvider>
@@ -49,10 +49,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             </RainbowKitProvider>
           </QueryClientProvider>
         </WagmiProvider>
-      </UserProvider> */}
-      {/* <UserProvider> */}
-      <Component {...pageProps} />
-      {/* </UserProvider> */}
+      </UserProvider>
     </>
   );
 }

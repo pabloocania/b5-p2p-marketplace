@@ -37,10 +37,6 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
 
   return (
     <div className="p-4">
-      <ConnectButton
-        showBalance={false}
-        chainStatus={{ smallScreen: "none", largeScreen: "icon" }}
-      />
       {user ? (
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
@@ -63,7 +59,11 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
         </div>
       ) : (
         <div className="space-y-4">
-          {mockUsers.map((mockUser) => (
+          <ConnectButton
+            showBalance={false}
+            chainStatus={{ smallScreen: "none", largeScreen: "icon" }}
+          />
+          {/* {mockUsers.map((mockUser) => (
             <Button
               key={mockUser.userId}
               onClick={() => onLogin(mockUser)}
@@ -71,7 +71,7 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
             >
               Log In as {mockUser.username}
             </Button>
-          ))}
+          ))} */}
         </div>
       )}
     </div>
