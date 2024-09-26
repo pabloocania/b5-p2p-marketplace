@@ -1,0 +1,303 @@
+import { useState } from "react";
+import { useAccount, useWalletClient } from "wagmi";
+import {
+  createPublicClient,
+  http,
+  getAddress,
+  encodeFunctionData,
+  formatUnits,
+  parseUnits,
+} from "viem";
+import { EtherspotBundler, PrimeSdk, SdkOptions } from "@etherspot/prime-sdk";
+import { rootstockTestnet } from "wagmi/chains";
+import { ERC20ContractConfig } from "../abis/ERC20ContractConfig";
+import { RSKEscrowContractConfig } from "@/abis/RSKEscrowConfig";
+import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
+import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
+import { createHash, randomBytes } from "crypto";
+
+const publicClient = createPublicClient({
+  chain: rootstockTestnet,
+  transport: http(),
+});
+
+interface Stablecoin {
+  name: string;
+  eoaBalance: string;
+  smartWalletBalance: string;
+}
+
+export const useEtherspotFlow = () => {
+  const { address, isConnected } = useAccount();
+  const [primeSdk, setPrimeSdk] = useState<PrimeSdk | null>(null);
+  const [swAddress, setSwAddress] = useState<string>("");
+  const [stablecoin, setStablecoin] = useState<Stablecoin | null>(null);
+  const { data: walletClient } = useWalletClient();
+  const account = useAccount();
+
+  const createSmartContractWallet = async () => {
+    if (walletClient && isConnected && !primeSdk) {
+      const options: SdkOptions = {
+        chainId: 31, // Rootstock Testnet chain ID
+        rpcProviderUrl: "https://public-node.testnet.rsk.co", // Rootstock Testnet RPC URL
+        bundlerProvider: new EtherspotBundler(
+          31,
+          "eyJvcmciOiI2NTIzZjY5MzUwOTBmNzAwMDFiYjJkZWIiLCJpZCI6ImE3MDA0NWM5Y2IyNTQ3ODA5ZTgwOTVjNzUwYjAyYzM1IiwiaCI6Im11cm11cjEyOCJ9",
+          "https://rootstocktestnet-bundler.etherspot.io/",
+        ),
+      };
+      const walletProvider = {
+        ...walletClient,
+        address: address ?? "0x0000000000000000000000000000000000000000",
+        signMessage: async (message: string) => {
+          console.log(account.address);
+          return walletClient.signMessage({
+            message: { raw: message },
+          });
+        },
+        signTypedData: async (params: any) => {
+          // Implement the signTypedData method as needed
+          return walletClient.signTypedData(params);
+        },
+      };
+      const primeSdkInstance = new PrimeSdk(walletProvider, options);
+      if (primeSdkInstance !== null) {
+        console.log("Prime SDK initialized:", primeSdkInstance);
+        const balance = await primeSdkInstance?.getNativeBalance();
+        console.log("Prime SDK RBTC:", balance);
+        const smartWalletAddress =
+          await primeSdkInstance?.getCounterFactualAddress();
+        console.log("Etherspot account Address:", smartWalletAddress);
+        setSwAddress(smartWalletAddress);
+        const smartWalletBalance = await getBalance(
+          ERC20ContractConfig.address,
+          smartWalletAddress,
+        );
+
+        const eoaBalance = await getBalance(
+          ERC20ContractConfig.address,
+          getAddress(address!),
+        );
+
+        const balances = {
+          eoaBalance: eoaBalance ? eoaBalance : "",
+          smartWalletBalance: smartWalletBalance ? smartWalletBalance : "",
+          name: ERC20ContractConfig.name,
+        };
+
+        setStablecoin(balances);
+        // primeSdkInstance.signMessage()
+        setPrimeSdk(primeSdkInstance);
+        return balances;
+      }
+    }
+  };
+
+  const getBalance = async (tokenAddress: string, walletAddress: string) => {
+    const balance = await publicClient.readContract({
+      address: getAddress(tokenAddress),
+      abi: ERC20ContractConfig.abi,
+      functionName: "balanceOf",
+      args: [walletAddress],
+    });
+    if (balance !== undefined && balance !== null) {
+      const formattedBalance = BigInt(balance.toString());
+      return formatUnits(formattedBalance, 18);
+    }
+  };
+
+  const transferTokensToEtherspotWallet = async (
+    tokenAddress: string,
+    amount: string,
+    walletClient: any,
+  ) => {
+    if (walletClient && address && primeSdk) {
+      const etherspotAddress = await primeSdk.getCounterFactualAddress();
+      const data = encodeFunctionData({
+        abi: ERC20ContractConfig.abi,
+        functionName: "transfer",
+        args: [etherspotAddress, parseUnits(amount, 18)],
+      });
+
+      // Send the transaction
+      const transferTx = await walletClient.sendTransaction({
+        to: getAddress(tokenAddress),
+        data: data,
+      });
+
+      console.log("Transaction hash:", transferTx);
+      return transferTx;
+    }
+  };
+
+  const transferTokensFromEtherspotToEOA = async (
+    tokenAddress: string,
+    amount: string,
+  ) => {
+    if (address && primeSdk) {
+      const data = encodeFunctionData({
+        abi: ERC20ContractConfig.abi,
+        functionName: "transfer",
+        args: [address, parseUnits(amount, 18)],
+      });
+
+      await primeSdk.clearUserOpsFromBatch();
+
+      // add transactions to the batch
+      const userOpsBatch = await primeSdk.addUserOpsToBatch({
+        to: tokenAddress,
+        data: data,
+      });
+      console.log("transactions: ", userOpsBatch);
+
+      // estimate transactions added to the batch and get the fee data for the UserOp
+      const op = await primeSdk.estimate();
+      console.log(`Estimate UserOp: ${await printOp(op)}`);
+
+      // sign the UserOp and sending to the bundler...
+      const uoHash = await primeSdk.send(op);
+      console.log(`UserOpHash: ${uoHash}`);
+
+      // get transaction hash...
+      console.log("Waiting for transaction...");
+      let userOpsReceipt = null;
+      const timeout = Date.now() + 12000; // 1 minute timeout
+      while (userOpsReceipt == null && Date.now() < timeout) {
+        await sleep(2);
+        userOpsReceipt = await primeSdk.getUserOpReceipt(uoHash);
+      }
+      console.log("\x1b[33m%s\x1b[0m", `Transaction Receipt: `, userOpsReceipt);
+    }
+  };
+
+  const lockFunds = async (amount: string) => {
+    if (primeSdk) {
+      const amountInt = parseUnits(amount, 18); // This should already return a BigInt
+      const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
+      const totalAmount = amountInt + feeInt; // Sum is also a BigInt
+      console.log("Total amount: ", totalAmount);
+      const approveHash = await approveTokenSpending(
+        "0xee5e8291b551603a19ef41eea69ae49592ed14f8",
+        swAddress,
+        totalAmount,
+      );
+      console.log("Approve hash", approveHash);
+      // Encode the escrowERC20 function call
+      const buyerSecret = randomBytes(32);
+      const sellerSecret = randomBytes(32);
+
+      // Create a SHA256 hash of the secrets and ensure it's a 32-byte Buffer
+      const buyerHashBuffer = createHash("sha256").update(buyerSecret).digest();
+      const sellerHashBuffer = createHash("sha256")
+        .update(sellerSecret)
+        .digest();
+
+      // Convert the Buffer to a '0x' prefixed hex string
+      const buyerHashBytes32 = "0x" + buyerHashBuffer.toString("hex");
+      const sellerHashBytes32 = "0x" + sellerHashBuffer.toString("hex");
+      console.log(RSKEscrowContractConfig.address);
+
+      const transactionData = encodeFunctionData({
+        abi: RSKEscrowContractConfig.abi,
+        functionName: "escrowERC20",
+        args: [
+          "939d2fb8-7dfd-47af-8803-961a01dcd477", // _orderId
+          "0xee5e8291b551603a19ef41eea69ae49592ed14f8",
+          address?.toString(), // _buyerAddress
+          buyerHashBytes32, // _buyerHash
+          sellerHashBytes32, // sellerHash
+          amountInt, // _amount
+          feeInt, // _fee
+        ],
+      });
+
+      // Clear the transaction batch
+      await primeSdk.clearUserOpsFromBatch();
+
+      // Add transactions to the batch
+      const userOpsBatch = await primeSdk.addUserOpsToBatch({
+        to: "0x47856aD652444563c69Fb2e48384fb633d51C21a".toLowerCase(),
+        data: transactionData,
+      });
+      console.log("Transactions: ", userOpsBatch);
+      // Estimate transactions added to the batch and get the fee data for the UserOp
+      const op = await primeSdk.estimate();
+      console.log("Estimate UserOp: ", await printOp(op));
+      // Sign the UserOp and send it to the bundler
+      const uoHash = await primeSdk.send(op);
+      console.log("UserOpHash: ", uoHash);
+      const receipt = await primeSdk.getUserOpReceipt(uoHash);
+      console.log("First receipt: ", receipt);
+      // Get transaction receipt
+      console.log("Waiting for transaction...");
+      let userOpsReceipt = null;
+      const timeout = Date.now() + 300000; // 1 minute timeout
+      while (userOpsReceipt == null && Date.now() < timeout) {
+        console.log(userOpsReceipt == null);
+        console.log(new Date(timeout).toLocaleString());
+        console.log(new Date().toLocaleString());
+        await sleep(5);
+        userOpsReceipt = await primeSdk.getUserOpReceipt(uoHash);
+        console.log(userOpsReceipt);
+      }
+      console.log("RECEIPT");
+      console.log(userOpsReceipt);
+      console.log("Transaction Receipt: ", userOpsReceipt);
+    }
+  };
+
+  // Function to approve ERC20 token spending using primeSdk instance
+  const approveTokenSpending = async (
+    tokenAddress: string,
+    spenderAddress: string,
+    amount: bigint,
+  ) => {
+    if (primeSdk && address) {
+      // Encode the transaction data for the approve function call
+      const data = encodeFunctionData({
+        abi: ERC20ContractConfig.abi,
+        functionName: "approve",
+        args: [
+          "0x47856aD652444563c69Fb2e48384fb633d51C21a".toLowerCase(),
+          amount,
+        ],
+      });
+
+      // Clear any existing operations
+      await primeSdk.clearUserOpsFromBatch();
+
+      // Add the approve operation to the batch
+      await primeSdk.addUserOpsToBatch({
+        to: tokenAddress,
+        data: data,
+      });
+
+      // Estimate the operation to get the fee data
+      const op = await primeSdk.estimate();
+      console.log(`Estimate UserOp: ${await printOp(op)}`);
+
+      // Send the operation to the bundler
+      const uoHash = await primeSdk.send(op);
+      console.log(`UserOpHash: ${uoHash}`);
+
+      // Wait for the transaction receipt
+      let userOpsReceipt = null;
+      while (userOpsReceipt == null) {
+        await sleep(2); // Sleep for a short while before checking again
+        userOpsReceipt = await primeSdk.getUserOpReceipt(uoHash);
+      }
+
+      console.log("Approval transaction receipt:", userOpsReceipt);
+      return userOpsReceipt;
+    } else {
+      throw new Error("PrimeSdk instance or user address is not available.");
+    }
+  };
+
+  return {
+    createSmartContractWallet,
+    transferTokensToEtherspotWallet,
+    transferTokensFromEtherspotToEOA,
+    lockFunds,
+  };
+};
