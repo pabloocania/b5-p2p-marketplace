@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { UserProps } from "../../lib/useUser";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import EtherspotInstance from "@/lib/web3/EtherspotInstance";
 
 interface UserMenuProps {
   user: UserProps | undefined;
@@ -59,11 +60,11 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
         </div>
       ) : (
         <div className="space-y-4">
-          <ConnectButton
+          {/* <ConnectButton
             showBalance={false}
             chainStatus={{ smallScreen: "none", largeScreen: "icon" }}
-          />
-          {/* {mockUsers.map((mockUser) => (
+          /> */}
+          {mockUsers.map((mockUser) => (
             <Button
               key={mockUser.userId}
               onClick={() => onLogin(mockUser)}
@@ -71,7 +72,7 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
             >
               Log In as {mockUser.username}
             </Button>
-          ))} */}
+          ))}
         </div>
       )}
     </div>

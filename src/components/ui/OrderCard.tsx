@@ -21,6 +21,9 @@ import {
 } from "b5-api-client";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useUserContext } from "./UserContext";
+import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
+import LockFundsButton from "@/lib/web3/LockFundsButton";
+import ReleaseFundsButton from "@/lib/web3/ReleaseFundsButton";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -46,14 +49,6 @@ function getStatusColor(status: string): string {
   }
 }
 
-const lockFunds = async (order: Order) => {
-  await client.testLockFunds(order);
-};
-
-const releaseFunds = async (order: Order) => {
-  await client.testReleaseFunds(order);
-};
-
 export function OrderCard({
   orderDTO,
   showSelectButton = true,
@@ -68,6 +63,20 @@ export function OrderCard({
   const [orderTaken, setOrderTaken] = useState(false);
   const [order, setOrder] = useState(orderDTO);
   const { user } = useUserContext();
+  // const { lockFunds } = useEtherspotFlow(); // Import the lockFunds function from the hook
+
+  // const handleLockFunds = async (order: Order) => {
+  //   console.log(lockFunds);
+  //   if (lockFunds) {
+  //     lockFunds(order);
+  //   }
+  //   // await client.testLockFunds(order);
+  // };
+
+  const releaseFunds = async (order: Order) => {
+    await client.testReleaseFunds(order);
+  };
+
   const shouldShowSelectButton =
     !order || order.status === ("PENDING" as OrderStatus);
 
@@ -296,37 +305,18 @@ export function OrderCard({
               </Button>
             )
           ) : order.status === ("WAITING_PAYMENT" as OrderStatus) ? (
-            canLockOrReleaseFunds ? (
-              <Button
-                className="w-full bg-blue-700 text-white"
-                onClick={() => {
-                  lockFunds(order);
-                  onRefresh?.(); // Call the refresh callback
-                }}
-              >
-                Lock funds
-              </Button>
-            ) : (
-              <div className="bg-yellow-100 text-yellow-700 p-4 text-center">
-                Waiting for the seller to lock the funds to proceed.
-              </div>
-            )
+            <LockFundsButton
+              order={order}
+              onRefresh={onRefresh}
+              canLock={canLockOrReleaseFunds}
+            />
           ) : order.status === "FIAT_SENT" ? (
-            canLockOrReleaseFunds ? (
-              <Button
-                className="w-full bg-blue-700 text-white"
-                onClick={() => {
-                  releaseFunds(order);
-                  onRefresh?.(); // Call the refresh callback
-                }}
-              >
-                Release Funds
-              </Button>
-            ) : (
-              <div className="bg-yellow-100 text-yellow-700 p-4 text-center">
-                Waiting for the seller to release the funds to proceed.
-              </div>
-            )
+            <ReleaseFundsButton
+              order={order}
+              releaseFunds={releaseFunds}
+              onRefresh={onRefresh}
+              canRelease={canLockOrReleaseFunds}
+            />
           ) : (
             <div></div>
           )}

@@ -15,83 +15,86 @@ import { RSKEscrowContractConfig } from "@/abis/RSKEscrowConfig";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
 import { createHash, randomBytes } from "crypto";
+import { Order } from "b5-api-client";
+import { useEtherspotSdk } from "@/lib/web3/EtherspotSdkProvider";
 
 const publicClient = createPublicClient({
   chain: rootstockTestnet,
   transport: http(),
 });
 
-interface Stablecoin {
-  name: string;
-  eoaBalance: string;
-  smartWalletBalance: string;
-}
+// interface Stablecoin {
+//   name: string;
+//   eoaBalance: string;
+//   smartWalletBalance: string;
+// }
 
 export const useEtherspotFlow = () => {
   const { address, isConnected } = useAccount();
-  const [primeSdk, setPrimeSdk] = useState<PrimeSdk | null>(null);
-  const [swAddress, setSwAddress] = useState<string>("");
-  const [stablecoin, setStablecoin] = useState<Stablecoin | null>(null);
+  // const [primeSdk, setPrimeSdk] = useState<PrimeSdk | null>(null);
+  // const [swAddress, setSwAddress] = useState<string>("");
+  // const [stablecoin, setStablecoin] = useState<Stablecoin | null>(null);
   const { data: walletClient } = useWalletClient();
   const account = useAccount();
+  const { primeSdk, swAddress, stablecoin } = useEtherspotSdk();
 
-  const createSmartContractWallet = async () => {
-    if (walletClient && isConnected && !primeSdk) {
-      const options: SdkOptions = {
-        chainId: 31, // Rootstock Testnet chain ID
-        rpcProviderUrl: "https://public-node.testnet.rsk.co", // Rootstock Testnet RPC URL
-        bundlerProvider: new EtherspotBundler(
-          31,
-          "eyJvcmciOiI2NTIzZjY5MzUwOTBmNzAwMDFiYjJkZWIiLCJpZCI6ImE3MDA0NWM5Y2IyNTQ3ODA5ZTgwOTVjNzUwYjAyYzM1IiwiaCI6Im11cm11cjEyOCJ9",
-          "https://rootstocktestnet-bundler.etherspot.io/",
-        ),
-      };
-      const walletProvider = {
-        ...walletClient,
-        address: address ?? "0x0000000000000000000000000000000000000000",
-        signMessage: async (message: string) => {
-          console.log(account.address);
-          return walletClient.signMessage({
-            message: { raw: message },
-          });
-        },
-        signTypedData: async (params: any) => {
-          // Implement the signTypedData method as needed
-          return walletClient.signTypedData(params);
-        },
-      };
-      const primeSdkInstance = new PrimeSdk(walletProvider, options);
-      if (primeSdkInstance !== null) {
-        console.log("Prime SDK initialized:", primeSdkInstance);
-        const balance = await primeSdkInstance?.getNativeBalance();
-        console.log("Prime SDK RBTC:", balance);
-        const smartWalletAddress =
-          await primeSdkInstance?.getCounterFactualAddress();
-        console.log("Etherspot account Address:", smartWalletAddress);
-        setSwAddress(smartWalletAddress);
-        const smartWalletBalance = await getBalance(
-          ERC20ContractConfig.address,
-          smartWalletAddress,
-        );
+  // const createSmartContractWallet = async () => {
+  //   if (walletClient && isConnected && !primeSdk) {
+  //     const options: SdkOptions = {
+  //       chainId: 31, // Rootstock Testnet chain ID
+  //       rpcProviderUrl: "https://public-node.testnet.rsk.co", // Rootstock Testnet RPC URL
+  //       bundlerProvider: new EtherspotBundler(
+  //         31,
+  //         "eyJvcmciOiI2NTIzZjY5MzUwOTBmNzAwMDFiYjJkZWIiLCJpZCI6ImE3MDA0NWM5Y2IyNTQ3ODA5ZTgwOTVjNzUwYjAyYzM1IiwiaCI6Im11cm11cjEyOCJ9",
+  //         "https://rootstocktestnet-bundler.etherspot.io/",
+  //       ),
+  //     };
+  //     const walletProvider = {
+  //       ...walletClient,
+  //       address: address ?? "0x0000000000000000000000000000000000000000",
+  //       signMessage: async (message: string) => {
+  //         console.log(account.address);
+  //         return walletClient.signMessage({
+  //           message: { raw: message },
+  //         });
+  //       },
+  //       signTypedData: async (params: any) => {
+  //         // Implement the signTypedData method as needed
+  //         return walletClient.signTypedData(params);
+  //       },
+  //     };
+  //     const primeSdkInstance = new PrimeSdk(walletProvider, options);
+  //     if (primeSdkInstance !== null) {
+  //       console.log("Prime SDK initialized:", primeSdkInstance);
+  //       const balance = await primeSdkInstance?.getNativeBalance();
+  //       console.log("Prime SDK RBTC:", balance);
+  //       const smartWalletAddress =
+  //         await primeSdkInstance?.getCounterFactualAddress();
+  //       console.log("Etherspot account Address:", smartWalletAddress);
+  //       setSwAddress(smartWalletAddress);
+  //       const smartWalletBalance = await getBalance(
+  //         ERC20ContractConfig.address,
+  //         smartWalletAddress,
+  //       );
 
-        const eoaBalance = await getBalance(
-          ERC20ContractConfig.address,
-          getAddress(address!),
-        );
+  //       const eoaBalance = await getBalance(
+  //         ERC20ContractConfig.address,
+  //         getAddress(address!),
+  //       );
 
-        const balances = {
-          eoaBalance: eoaBalance ? eoaBalance : "",
-          smartWalletBalance: smartWalletBalance ? smartWalletBalance : "",
-          name: ERC20ContractConfig.name,
-        };
+  //       const balances = {
+  //         eoaBalance: eoaBalance ? eoaBalance : "",
+  //         smartWalletBalance: smartWalletBalance ? smartWalletBalance : "",
+  //         name: ERC20ContractConfig.name,
+  //       };
 
-        setStablecoin(balances);
-        // primeSdkInstance.signMessage()
-        setPrimeSdk(primeSdkInstance);
-        return balances;
-      }
-    }
-  };
+  //       setStablecoin(balances);
+  //       // primeSdkInstance.signMessage()
+  //       setPrimeSdk(primeSdkInstance);
+  //       return balances;
+  //     }
+  //   }
+  // };
 
   const getBalance = async (tokenAddress: string, walletAddress: string) => {
     const balance = await publicClient.readContract({
@@ -170,15 +173,16 @@ export const useEtherspotFlow = () => {
     }
   };
 
-  const lockFunds = async (amount: string) => {
+  const lockFunds = async (order: Order) => {
+    console.log("Prime SDK", primeSdk)
     if (primeSdk) {
-      const amountInt = parseUnits(amount, 18); // This should already return a BigInt
+      const buyerAddress = "0x25DFBA06A227a6AAf5d29ED48437A23405F9FbFf".toLowerCase()
+      const amountInt = parseUnits(order.amount ?? "0", 18); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
       const totalAmount = amountInt + feeInt; // Sum is also a BigInt
       console.log("Total amount: ", totalAmount);
       const approveHash = await approveTokenSpending(
-        "0xee5e8291b551603a19ef41eea69ae49592ed14f8",
-        swAddress,
+        ERC20ContractConfig.address,
         totalAmount,
       );
       console.log("Approve hash", approveHash);
@@ -197,18 +201,21 @@ export const useEtherspotFlow = () => {
       const sellerHashBytes32 = "0x" + sellerHashBuffer.toString("hex");
       console.log(RSKEscrowContractConfig.address);
 
+      const params = [
+        order.id,
+        ERC20ContractConfig.address.toLocaleLowerCase(),
+        order.buyerAddress,
+        buyerHashBytes32,
+        sellerHashBytes32,
+        amountInt,
+        feeInt
+      ]
+      console.log("PARAMS", params)
+
       const transactionData = encodeFunctionData({
         abi: RSKEscrowContractConfig.abi,
         functionName: "escrowERC20",
-        args: [
-          "939d2fb8-7dfd-47af-8803-961a01dcd477", // _orderId
-          "0xee5e8291b551603a19ef41eea69ae49592ed14f8",
-          address?.toString(), // _buyerAddress
-          buyerHashBytes32, // _buyerHash
-          sellerHashBytes32, // sellerHash
-          amountInt, // _amount
-          feeInt, // _fee
-        ],
+        args: params,
       });
 
       // Clear the transaction batch
@@ -216,7 +223,7 @@ export const useEtherspotFlow = () => {
 
       // Add transactions to the batch
       const userOpsBatch = await primeSdk.addUserOpsToBatch({
-        to: "0x47856aD652444563c69Fb2e48384fb633d51C21a".toLowerCase(),
+        to: RSKEscrowContractConfig.address.toLowerCase(),
         data: transactionData,
       });
       console.log("Transactions: ", userOpsBatch);
@@ -249,7 +256,6 @@ export const useEtherspotFlow = () => {
   // Function to approve ERC20 token spending using primeSdk instance
   const approveTokenSpending = async (
     tokenAddress: string,
-    spenderAddress: string,
     amount: bigint,
   ) => {
     if (primeSdk && address) {
@@ -258,7 +264,7 @@ export const useEtherspotFlow = () => {
         abi: ERC20ContractConfig.abi,
         functionName: "approve",
         args: [
-          "0x47856aD652444563c69Fb2e48384fb633d51C21a".toLowerCase(),
+          RSKEscrowContractConfig.address.toLowerCase(),
           amount,
         ],
       });
@@ -287,7 +293,6 @@ export const useEtherspotFlow = () => {
         userOpsReceipt = await primeSdk.getUserOpReceipt(uoHash);
       }
 
-      console.log("Approval transaction receipt:", userOpsReceipt);
       return userOpsReceipt;
     } else {
       throw new Error("PrimeSdk instance or user address is not available.");
@@ -295,7 +300,7 @@ export const useEtherspotFlow = () => {
   };
 
   return {
-    createSmartContractWallet,
+    // createSmartContractWallet,
     transferTokensToEtherspotWallet,
     transferTokensFromEtherspotToEOA,
     lockFunds,

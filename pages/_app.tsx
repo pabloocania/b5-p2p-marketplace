@@ -8,6 +8,7 @@ import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
 import { config } from "../src/wagmi";
+import { EtherspotSdkProvider } from "@/lib/web3/EtherspotSdkProvider";
 
 const queryClient = new QueryClient();
 
@@ -45,7 +46,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
             <RainbowKitProvider>
-              <Component {...pageProps} />
+              <EtherspotSdkProvider>
+                <Component {...pageProps} />
+              </EtherspotSdkProvider>
             </RainbowKitProvider>
           </QueryClientProvider>
         </WagmiProvider>

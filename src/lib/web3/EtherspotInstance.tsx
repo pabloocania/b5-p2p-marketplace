@@ -38,19 +38,19 @@ const EtherspotInstance: React.FC = () => {
     transferTokensToEtherspotWallet(
       ERC20ContractConfig.address,
       amount,
-      walletClient,
+      walletClient
     );
   };
 
-  const handleLockFunds = async () => {
-    const algo = await lockFunds(amount);
-    console.log(algo);
-  };
+  // const handleLockFunds = async () => {
+  //   const algo = await lockFunds(amount);
+  //   console.log(algo);
+  // };
 
   const handleSendToEOA = async () => {
     const algo = await transferTokensFromEtherspotToEOA(
       ERC20ContractConfig.address,
-      amount,
+      amount
     );
     // const algo = await lockFunds(walletClient);
     console.log(algo);
@@ -89,7 +89,7 @@ const EtherspotInstance: React.FC = () => {
             <br></br>
             <button onClick={handleSendToEOA}>Send to eoa</button>
             <br></br>
-            <button onClick={handleLockFunds}>Lock fund</button>
+            <button>Lock fund</button>
           </div>
         ) : null /* Removed <br></br> to prevent hydration issues */
       }
