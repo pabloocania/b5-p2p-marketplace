@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { UserProps } from "../../lib/useUser";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import EtherspotInstance from "@/lib/web3/EtherspotInstance";
+import InternalTransfersComponent from "@/lib/web3/InternalTransfersComponent";
+import { useAccount } from "wagmi";
+import KioscoinConnectButton from "@/lib/web3/KioscoinConnectButton";
 
 interface UserMenuProps {
   user: UserProps | undefined;
@@ -13,6 +14,7 @@ interface UserMenuProps {
 
 const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
   const [mockUsers, setMockUsers] = useState<UserProps[]>([]);
+  const { isConnected } = useAccount();
 
   useEffect(() => {
     async function fetchUsers() {
@@ -36,6 +38,19 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
     fetchUsers();
   }, []);
 
+  function FullWidthConnectButton() {
+    return (
+      <div className="w-full">
+        <style jsx>{`
+          div :global(.iek7po2) {
+            width: 100%;
+          }
+        `}</style>
+        <KioscoinConnectButton />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4">
       {user ? (
@@ -49,21 +64,24 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
             </Avatar>
             <div>
               <p className="font-medium">{user.username}</p>
-              <p className="text-sm">User ID: {user.userId}</p>
+              <p className="text-sm">ID: {user.userId}</p>
               {/* <p className="text-sm text-gray-500">{user.email}</p> */}
             </div>
           </div>
-
+          <div className="w-full">{FullWidthConnectButton()}</div>
+          {/* <div className="w-full"> */}
+          {isConnected && (
+            <div className="w-full">
+              <InternalTransfersComponent />
+            </div>
+          )}
+          {/* </div> */}
           <Button onClick={onLogout} variant="outline" className="w-full">
             Log Out
           </Button>
         </div>
       ) : (
         <div className="space-y-4">
-          {/* <ConnectButton
-            showBalance={false}
-            chainStatus={{ smallScreen: "none", largeScreen: "icon" }}
-          /> */}
           {mockUsers.map((mockUser) => (
             <Button
               key={mockUser.userId}

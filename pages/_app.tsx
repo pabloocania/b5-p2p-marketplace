@@ -9,6 +9,7 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
 import { config } from "../src/wagmi";
 import { EtherspotSdkProvider } from "@/lib/web3/EtherspotSdkProvider";
+import { rootstockTestnet } from "wagmi/chains";
 
 const queryClient = new QueryClient();
 
@@ -45,7 +46,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       <UserProvider>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
-            <RainbowKitProvider>
+            <RainbowKitProvider
+              modalSize="compact"
+              coolMode
+              initialChain={rootstockTestnet}
+            >
               <EtherspotSdkProvider>
                 <Component {...pageProps} />
               </EtherspotSdkProvider>

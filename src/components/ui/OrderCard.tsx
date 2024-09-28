@@ -63,15 +63,6 @@ export function OrderCard({
   const [orderTaken, setOrderTaken] = useState(false);
   const [order, setOrder] = useState(orderDTO);
   const { user } = useUserContext();
-  // const { lockFunds } = useEtherspotFlow(); // Import the lockFunds function from the hook
-
-  // const handleLockFunds = async (order: Order) => {
-  //   console.log(lockFunds);
-  //   if (lockFunds) {
-  //     lockFunds(order);
-  //   }
-  //   // await client.testLockFunds(order);
-  // };
 
   const releaseFunds = async (order: Order) => {
     await client.testReleaseFunds(order);

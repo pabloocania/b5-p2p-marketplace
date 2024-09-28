@@ -1,6 +1,8 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { rootstock, rootstockTestnet } from "wagmi/chains";
-import { http, createConfig, useClient, useConnectorClient } from "wagmi";
+import {
+    metaMaskWallet
+} from '@rainbow-me/rainbowkit/wallets';
 
 
 // 2. Set up a Wagmi Config
@@ -14,6 +16,12 @@ import { http, createConfig, useClient, useConnectorClient } from "wagmi";
 //   });
 
 export const config = getDefaultConfig({
+    wallets: [
+        {
+            groupName: 'Recommended',
+            wallets: [metaMaskWallet],
+        },
+    ],
     appName: "Kioscoin",
     projectId: "95db6ef5cbe6a2117818a0df1791fd86",
     chains: [

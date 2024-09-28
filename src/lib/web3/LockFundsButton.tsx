@@ -16,13 +16,13 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
   onRefresh,
   canLock,
 }) => {
-  const { primeSdk, swAddress, stablecoin } = useEtherspotSdk();
-  const { lockFunds } = useEtherspotFlow(); // Import the lockFunds function from the hook
+  const { primeSdk, swAddress, balances: stablecoin } = useEtherspotSdk();
+  const { lockFunds, batchApproveAndEscrow } = useEtherspotFlow(); // Import the lockFunds function from the hook
   return canLock ? (
     <Button
       className="w-full bg-blue-700 text-white"
       onClick={() => {
-        lockFunds(order);
+        batchApproveAndEscrow(order);
         onRefresh?.(); // Call the refresh callback
       }}
     >

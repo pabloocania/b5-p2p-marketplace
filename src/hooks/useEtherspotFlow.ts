@@ -36,7 +36,7 @@ export const useEtherspotFlow = () => {
   // const [stablecoin, setStablecoin] = useState<Stablecoin | null>(null);
   const { data: walletClient } = useWalletClient();
   const account = useAccount();
-  const { primeSdk, swAddress, stablecoin } = useEtherspotSdk();
+  const { primeSdk, swAddress, balances: stablecoin } = useEtherspotSdk();
 
   // const createSmartContractWallet = async () => {
   //   if (walletClient && isConnected && !primeSdk) {
@@ -174,13 +174,10 @@ export const useEtherspotFlow = () => {
   };
 
   const lockFunds = async (order: Order) => {
-    console.log("Prime SDK", primeSdk)
     if (primeSdk) {
-      const buyerAddress = "0x25DFBA06A227a6AAf5d29ED48437A23405F9FbFf".toLowerCase()
       const amountInt = parseUnits(order.amount ?? "0", 18); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
       const totalAmount = amountInt + feeInt; // Sum is also a BigInt
-      console.log("Total amount: ", totalAmount);
       const approveHash = await approveTokenSpending(
         ERC20ContractConfig.address,
         totalAmount,
@@ -299,10 +296,86 @@ export const useEtherspotFlow = () => {
     }
   };
 
+  const batchApproveAndEscrow = async (order: Order) => {
+    if (primeSdk && address) {
+      const amountInt = parseUnits(order.amount ?? "0", 18); // Ensure order.amount is not undefined
+      const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
+      const totalAmount = amountInt + feeInt; // Sum is also a BigInt
+
+      // Encode the approve function call
+      const approveData = encodeFunctionData({
+        abi: ERC20ContractConfig.abi,
+        functionName: "approve",
+        args: [RSKEscrowContractConfig.address.toLowerCase(), totalAmount],
+      });
+
+      // Encode the escrowERC20 function call
+      const buyerSecret = randomBytes(32);
+      const sellerSecret = randomBytes(32);
+      const buyerHashBuffer = createHash("sha256").update(buyerSecret).digest();
+      const sellerHashBuffer = createHash("sha256").update(sellerSecret).digest();
+      const buyerHashBytes32 = "0x" + buyerHashBuffer.toString("hex");
+      const sellerHashBytes32 = "0x" + sellerHashBuffer.toString("hex");
+
+      const escrowParams = [
+        order.id,
+        ERC20ContractConfig.address.toLocaleLowerCase(),
+        order.buyerAddress,
+        buyerHashBytes32,
+        sellerHashBytes32,
+        amountInt,
+        feeInt,
+      ];
+
+      const escrowData = encodeFunctionData({
+        abi: RSKEscrowContractConfig.abi,
+        functionName: "escrowERC20",
+        args: escrowParams,
+      });
+
+      // Clear any existing operations
+      await primeSdk.clearUserOpsFromBatch();
+
+      // Add the approve operation to the batch
+      await primeSdk.addUserOpsToBatch({
+        to: ERC20ContractConfig.address,
+        data: approveData,
+      });
+
+      // Add the escrow operation to the batch
+      await primeSdk.addUserOpsToBatch({
+        to: RSKEscrowContractConfig.address.toLowerCase(),
+        data: escrowData,
+      });
+
+      // Estimate the operations added to the batch and get the fee data for the UserOp
+      const op = await primeSdk.estimate();
+      console.log(`Estimate UserOp: ${await printOp(op)}`);
+
+      // Sign the UserOp and send it to the bundler
+      const uoHash = await primeSdk.send(op);
+      console.log(`UserOpHash: ${uoHash}`);
+
+      // Wait for the transaction receipt
+      let userOpsReceipt = null;
+      const timeout = Date.now() + 300000; // 5 minutes timeout
+      while (userOpsReceipt == null && Date.now() < timeout) {
+        await sleep(5);
+        userOpsReceipt = await primeSdk.getUserOpReceipt(uoHash);
+      }
+      console.log("Transaction Receipt: ", userOpsReceipt);
+
+      return userOpsReceipt;
+    } else {
+      throw new Error("PrimeSdk instance or user address is not available.");
+    }
+  };
+
   return {
     // createSmartContractWallet,
     transferTokensToEtherspotWallet,
     transferTokensFromEtherspotToEOA,
     lockFunds,
+    batchApproveAndEscrow
   };
 };
