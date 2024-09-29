@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useAccount, useWalletClient } from "wagmi";
+import { useAccount, useBalance, useWalletClient } from "wagmi";
 import { PrimeSdk, SdkOptions, EtherspotBundler } from "@etherspot/prime-sdk";
 import { ERC20ContractConfig } from "../../abis/ERC20ContractConfig";
 import { rootstockTestnet } from "wagmi/chains";
 import { createPublicClient, http, getAddress, formatUnits } from "viem";
-import { Stablecoin } from "./types";
+import { TokenBalance } from "./types";
+import { getBalance } from "@wagmi/core";
+import { config } from "../../wagmi";
 
 const publicClient = createPublicClient({
   chain: rootstockTestnet,
@@ -14,7 +16,7 @@ const publicClient = createPublicClient({
 interface EtherspotSdkContextType {
   primeSdk: PrimeSdk | null;
   swAddress: string;
-  balances: Stablecoin[];
+  balances: TokenBalance[];
 }
 
 const EtherspotSdkContext = createContext<EtherspotSdkContextType | undefined>(
@@ -25,7 +27,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
   const { address, isConnected } = useAccount();
   const [primeSdk, setPrimeSdk] = useState<PrimeSdk | null>(null);
   const [swAddress, setSwAddress] = useState<string>("");
-  const [balances, setBalances] = useState<Stablecoin[]>([]);
+  const [balances, setBalances] = useState<TokenBalance[]>([]);
   const { data: walletClient } = useWalletClient();
   const account = useAccount();
 
@@ -73,31 +75,49 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
         );
         const primeSdkInstance = new PrimeSdk(walletProvider, options);
         if (primeSdkInstance !== null) {
+          const natBalance = await getBalance(config, {
+            address: address ?? "0x0",
+          });
           console.log("Prime SDK initialized:", primeSdkInstance);
           const balance = await primeSdkInstance?.getNativeBalance();
           console.log("Prime SDK RBTC:", balance);
           const smartWalletAddress =
             await primeSdkInstance?.getCounterFactualAddress();
           console.log("Etherspot account Address:", smartWalletAddress);
+
           setSwAddress(smartWalletAddress);
-          const smartWalletBalance = await getBalance(
+
+          const smartWalletBalance = await getTokenBalance(
             ERC20ContractConfig.address,
             smartWalletAddress
           );
 
-          const eoaBalance = await getBalance(
+          const eoaBalance = await getTokenBalance(
             ERC20ContractConfig.address,
             getAddress(address!)
           );
 
-          const stablecoin: Stablecoin = {
+          const tokenBalance: TokenBalance = {
             name: ERC20ContractConfig.name,
             smartWalletBalance: smartWalletBalance ?? "0.00",
             eoaBalance: eoaBalance ?? "0.00",
+            address: ERC20ContractConfig.address,
           };
 
-          console.log("Balances", stablecoin);
-          setBalances([stablecoin]);
+          console.log("PDOC", tokenBalance);
+
+          const formattedBalance = BigInt(natBalance?.value.toString() ?? "0");
+
+          const nativeBalance: TokenBalance = {
+            name: natBalance.symbol,
+            smartWalletBalance: balance,
+            eoaBalance: formatUnits(formattedBalance, 18),
+            address: "0x0000000000000000000000000000000000000000",
+          };
+
+          console.log("RBTC", nativeBalance);
+
+          setBalances([tokenBalance, nativeBalance]);
           setPrimeSdk(primeSdkInstance);
         }
       } else {
@@ -110,7 +130,10 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     connectToSdk();
   }, [walletClient, isConnected]);
 
-  const getBalance = async (tokenAddress: string, walletAddress: string) => {
+  const getTokenBalance = async (
+    tokenAddress: string,
+    walletAddress: string
+  ) => {
     const balance = await publicClient.readContract({
       address: getAddress(tokenAddress),
       abi: ERC20ContractConfig.abi,

@@ -24,6 +24,7 @@ import { useUserContext } from "./UserContext";
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 import LockFundsButton from "@/lib/web3/LockFundsButton";
 import ReleaseFundsButton from "@/lib/web3/ReleaseFundsButton";
+import { useAccount } from "wagmi";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -63,6 +64,7 @@ export function OrderCard({
   const [orderTaken, setOrderTaken] = useState(false);
   const [order, setOrder] = useState(orderDTO);
   const { user } = useUserContext();
+  const { isConnected } = useAccount();
 
   const releaseFunds = async (order: Order) => {
     await client.testReleaseFunds(order);
@@ -213,6 +215,8 @@ export function OrderCard({
               Creator:{" "}
               {order.creatorId === user?.userId
                 ? "You"
+                : order.sellerUsername
+                ? order.sellerUsername
                 : !order.creatorId
                 ? order.type == "BUY"
                   ? order?.buyerUsername
@@ -296,11 +300,13 @@ export function OrderCard({
               </Button>
             )
           ) : order.status === ("WAITING_PAYMENT" as OrderStatus) ? (
-            <LockFundsButton
-              order={order}
-              onRefresh={onRefresh}
-              canLock={canLockOrReleaseFunds}
-            />
+            isConnected ? (
+              <LockFundsButton order={order} canLock={canLockOrReleaseFunds} />
+            ) : (
+              <div className="bg-yellow-100 text-yellow-700 p-4 text-center">
+                Connect your wallet to proceed
+              </div>
+            )
           ) : order.status === "FIAT_SENT" ? (
             <ReleaseFundsButton
               order={order}

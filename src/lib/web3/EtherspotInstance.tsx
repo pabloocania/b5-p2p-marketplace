@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useAccount, useWalletClient } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
-import StablecoinBalance from "./StablecoinBalance";
 import { ERC20ContractConfig } from "@/abis/ERC20ContractConfig";
 
 interface Stablecoin {
@@ -19,27 +18,22 @@ const EtherspotInstance: React.FC = () => {
   const [isPrimeConnected, setIsPrimeConnected] = useState<boolean>(false);
 
   const {
-    createSmartContractWallet,
     transferTokensToEtherspotWallet,
     transferTokensFromEtherspotToEOA,
     lockFunds,
   } = useEtherspotFlow();
 
-  useEffect(() => {
-    if (walletClient && !isPrimeConnected) {
-      createSmartContractWallet().then((stablecoinBalance) => {
-        setStablecoin(stablecoinBalance);
-      });
-      setIsPrimeConnected(true);
-    }
-  }, [walletClient, isPrimeConnected, createSmartContractWallet]);
+  // useEffect(() => {
+  //   if (walletClient && !isPrimeConnected) {
+  //     createSmartContractWallet().then((stablecoinBalance) => {
+  //       setStablecoin(stablecoinBalance);
+  //     });
+  //     setIsPrimeConnected(true);
+  //   }
+  // }, [walletClient, isPrimeConnected, createSmartContractWallet]);
 
   const sendToEtherspot = () => {
-    transferTokensToEtherspotWallet(
-      ERC20ContractConfig.address,
-      amount,
-      walletClient
-    );
+    transferTokensToEtherspotWallet(ERC20ContractConfig.address, amount);
   };
 
   // const handleLockFunds = async () => {
@@ -67,7 +61,7 @@ const EtherspotInstance: React.FC = () => {
         ) : stablecoin ? (
           <div>
             <p>EOA Balance</p>
-            <StablecoinBalance
+            {/* <StablecoinBalance
               name={stablecoin.name}
               balance={stablecoin.eoaBalance}
             />
@@ -75,7 +69,7 @@ const EtherspotInstance: React.FC = () => {
             <StablecoinBalance
               name={stablecoin.name}
               balance={stablecoin.smartWalletBalance}
-            />
+            /> */}
             <label htmlFor="amount">Amount:</label>
             <input
               type="text"

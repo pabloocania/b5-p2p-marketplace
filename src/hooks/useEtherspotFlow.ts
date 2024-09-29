@@ -17,6 +17,7 @@ import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
 import { createHash, randomBytes } from "crypto";
 import { Order } from "b5-api-client";
 import { useEtherspotSdk } from "@/lib/web3/EtherspotSdkProvider";
+import { ArkaPaymaster } from "@etherspot/prime-sdk";
 
 const publicClient = createPublicClient({
   chain: rootstockTestnet,
@@ -111,8 +112,7 @@ export const useEtherspotFlow = () => {
 
   const transferTokensToEtherspotWallet = async (
     tokenAddress: string,
-    amount: string,
-    walletClient: any,
+    amount: string
   ) => {
     if (walletClient && address && primeSdk) {
       const etherspotAddress = await primeSdk.getCounterFactualAddress();
@@ -188,10 +188,8 @@ export const useEtherspotFlow = () => {
       const sellerSecret = randomBytes(32);
 
       // Create a SHA256 hash of the secrets and ensure it's a 32-byte Buffer
-      const buyerHashBuffer = createHash("sha256").update(buyerSecret).digest();
-      const sellerHashBuffer = createHash("sha256")
-        .update(sellerSecret)
-        .digest();
+      const buyerHashBuffer = createHash("sha256").update(Uint8Array.from(buyerSecret)).digest();
+      const sellerHashBuffer = createHash("sha256").update(Uint8Array.from(sellerSecret)).digest();
 
       // Convert the Buffer to a '0x' prefixed hex string
       const buyerHashBytes32 = "0x" + buyerHashBuffer.toString("hex");
@@ -312,8 +310,8 @@ export const useEtherspotFlow = () => {
       // Encode the escrowERC20 function call
       const buyerSecret = randomBytes(32);
       const sellerSecret = randomBytes(32);
-      const buyerHashBuffer = createHash("sha256").update(buyerSecret).digest();
-      const sellerHashBuffer = createHash("sha256").update(sellerSecret).digest();
+      const buyerHashBuffer = createHash("sha256").update(new Uint8Array(buyerSecret)).digest();
+      const sellerHashBuffer = createHash("sha256").update(new Uint8Array(sellerSecret)).digest();
       const buyerHashBytes32 = "0x" + buyerHashBuffer.toString("hex");
       const sellerHashBytes32 = "0x" + sellerHashBuffer.toString("hex");
 
@@ -348,8 +346,25 @@ export const useEtherspotFlow = () => {
         data: escrowData,
       });
 
+      // const arka_api_key =
+      //   "eyJvcmciOiI2NTIzZjY5MzUwOTBmNzAwMDFiYjJkZWIiLCJpZCI6ImE3MDA0NWM5Y2IyNTQ3ODA5ZTgwOTVjNzUwYjAyYzM1IiwiaCI6Im11cm11cjEyOCJ9";
+      const arka_api_key = 'arka_public_key';
+      const arka_url = "https://arka.etherspot.io";
+      const queryString = `?apiKey=${arka_api_key}&chainId=31`;
       // Estimate the operations added to the batch and get the fee data for the UserOp
-      const op = await primeSdk.estimate();
+      const op = await primeSdk.estimate()
+      //   {
+      //     paymasterDetails: {
+      //       url: arka_url + queryString,
+      //       context: {
+      //         token: "PDOC",
+      //         mode: 'erc20'
+      //       }
+      //     },
+      //     gasDetails
+      //   },
+      // );
+
       console.log(`Estimate UserOp: ${await printOp(op)}`);
 
       // Sign the UserOp and send it to the bundler
@@ -378,4 +393,35 @@ export const useEtherspotFlow = () => {
     lockFunds,
     batchApproveAndEscrow
   };
+};
+
+export const usePaymaster = async (primeSdk: PrimeSdk) => {
+  // const arka_api_key =
+  //   "eyJvcmciOiI2NTIzZjY5MzUwOTBmNzAwMDFiYjJkZWIiLCJpZCI6ImE3MDA0NWM5Y2IyNTQ3ODA5ZTgwOTVjNzUwYjAyYzM1IiwiaCI6Im11cm11cjEyOCJ9";
+  const arka_api_key = 'arka_public_key';
+  const arka_url = "https://arka.etherspot.io";
+  const queryString = `?apiKey=${arka_api_key}&chainId=31`;
+
+
+  // const arka_url = 'https://arka.etherspot.io';
+  // const queryString = `?apiKey=${arka_api_key}&chainId=1`;
+
+  // const estimateResult = await primeSdk.estimate({
+  //     paymasterDetails: {
+  //         chainId: 1,
+  //         url: arka_url
+  //     },
+  //     key: arka_api_key
+  //     context: { mode: 'sponsor' }
+  // });
+
+  const estimateResult = await primeSdk.estimate({
+    paymasterDetails: {
+      url: `${arka_url}${queryString}`,
+      context: { mode: "sponsor" },
+    },
+  });
+
+  console.log("Estimate result:", estimateResult);
+  return estimateResult;
 };

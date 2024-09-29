@@ -3,6 +3,7 @@ import styles from "../styles/Home.module.css";
 import CreateOrder from "../src/components/ui/CreateOrder";
 import OrdersFeed, { Filter } from "../src/components/ui/OrdersFeed";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
@@ -54,6 +55,14 @@ export default function Home() {
             >
               Pending
             </Button>
+            {/* {tabCounts[filter] > 0 && (
+              <Badge
+                variant="destructive"
+                className="absolute -top-2 -right-2 px-2 py-0.5 text-xs"
+              >
+                {tabCounts[filter]}
+              </Badge>
+            )} */}
             <Button
               variant={
                 activeSubFilter === Filter.WAITING_PAYMENT
@@ -111,28 +120,14 @@ export default function Home() {
           </div>
           {renderComponent()}
           <div className="fixed bottom-4 left-4">
-            <Sheet
-              modal={false}
-              open={isLoginSheetOpen}
-              onOpenChange={setIsLoginSheetOpen}
+            <Button
+              size="icon"
+              className="rounded-full w-14 h-14 shadow-lg"
+              onClick={() => setActiveComponent("UserMenu")}
             >
-              <SheetTrigger asChild>
-                <Button
-                  size="icon"
-                  className="rounded-full w-14 h-14 shadow-lg"
-                  onClick={() => setIsLoginSheetOpen(true)}
-                >
-                  <User className="h-6 w-6" />
-                  <span className="sr-only">User Menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="h-[90vh] overflow-auto">
-                <VisuallyHidden>
-                  <SheetTitle>Login Dialog</SheetTitle>
-                </VisuallyHidden>
-                <UserMenu user={user} onLogin={login} onLogout={logout} />
-              </SheetContent>
-            </Sheet>
+              <User className="h-6 w-6" />
+              <span className="sr-only">User Menu</span>
+            </Button>
           </div>
           <div className="fixed bottom-4 right-4">
             <Sheet
