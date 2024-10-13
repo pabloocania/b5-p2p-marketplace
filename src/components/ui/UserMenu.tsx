@@ -8,6 +8,7 @@ import KioscoinConnectButton from "@/lib/web3/KioscoinConnectButton";
 
 interface UserMenuProps {
   user: UserProps | undefined;
+  // openConnectModal: boolean | false;
   onLogin: (user: UserProps) => void;
   onLogout: () => void;
 }
@@ -15,6 +16,7 @@ interface UserMenuProps {
 const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
   const [mockUsers, setMockUsers] = useState<UserProps[]>([]);
   const { isConnected } = useAccount();
+  // const { callPaymaster } = useEtherspotFlow();
 
   useEffect(() => {
     async function fetchUsers() {
@@ -75,7 +77,6 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
               <InternalTransfersComponent />
             </div>
           )}
-          {/* </div> */}
           <Button onClick={onLogout} variant="outline" className="w-full">
             Log Out
           </Button>

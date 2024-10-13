@@ -14,6 +14,7 @@ import { Plus, User } from "lucide-react";
 import UserMenu from "../src/components/ui/UserMenu";
 import { useUserContext } from "../src/components/ui/UserContext";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { useDisconnect } from "wagmi";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -21,12 +22,22 @@ export default function Home() {
   const { user, login, logout } = useUserContext();
   const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { disconnect } = useDisconnect();
 
   useEffect(() => {
     if (!user) {
       setActiveComponent("OrderFeed");
     }
-  }, [user]);
+    const logout = async () => {
+      try {
+        await disconnect();
+        console.log("Wallet client disconnected");
+      } catch (error) {
+        console.error("Error disconnecting wallet client:", error);
+      }
+    };
+    logout();
+  }, [user, disconnect]);
 
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
 
@@ -36,6 +47,11 @@ export default function Home() {
     setRefreshKey((prevKey) =>
       prevKey >= Number.MAX_SAFE_INTEGER ? 0 : prevKey + 1
     );
+  };
+
+  const handleUserMenuOpen = () => {
+    setIsCreateOrderOpen(false); // Close the sheet
+    setActiveComponent("UserMenu"); // Set active component to UserMenu
   };
 
   const renderComponent = () => {
@@ -55,14 +71,6 @@ export default function Home() {
             >
               Pending
             </Button>
-            {/* {tabCounts[filter] > 0 && (
-              <Badge
-                variant="destructive"
-                className="absolute -top-2 -right-2 px-2 py-0.5 text-xs"
-              >
-                {tabCounts[filter]}
-              </Badge>
-            )} */}
             <Button
               variant={
                 activeSubFilter === Filter.WAITING_PAYMENT
@@ -113,7 +121,7 @@ export default function Home() {
             </Button>
             <Button
               variant={activeComponent === "UserMenu" ? "default" : "secondary"}
-              onClick={() => setActiveComponent("UserMenu")}
+              onClick={handleUserMenuOpen}
             >
               Profile
             </Button>
@@ -123,7 +131,7 @@ export default function Home() {
             <Button
               size="icon"
               className="rounded-full w-14 h-14 shadow-lg"
-              onClick={() => setActiveComponent("UserMenu")}
+              onClick={handleUserMenuOpen}
             >
               <User className="h-6 w-6" />
               <span className="sr-only">User Menu</span>
@@ -151,7 +159,10 @@ export default function Home() {
                 <VisuallyHidden>
                   <SheetTitle>Create Order Dialog</SheetTitle>
                 </VisuallyHidden>
-                <CreateOrder onClose={handleCreateOrderClose} />
+                <CreateOrder
+                  onClose={handleCreateOrderClose}
+                  onConnectWallet={handleUserMenuOpen} // Pass the handler
+                />
               </SheetContent>
             </Sheet>
           </div>

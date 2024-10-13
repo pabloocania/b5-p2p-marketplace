@@ -18,10 +18,10 @@ import {
   TakeBuyOrderRequest,
   OrderStatus,
   UpdateOrderRequest,
+  generateSecretAndHash,
 } from "b5-api-client";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useUserContext } from "./UserContext";
-import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 import LockFundsButton from "@/lib/web3/LockFundsButton";
 import ReleaseFundsButton from "@/lib/web3/ReleaseFundsButton";
 import { useAccount } from "wagmi";
@@ -109,7 +109,6 @@ export function OrderCard({
     try {
       if (orderTaken) return;
       let takeOrderRequest: TakeSellOrderRequest | TakeBuyOrderRequest;
-
       if (order.type === "SELL") {
         takeOrderRequest = {
           type: "SELL",
@@ -118,6 +117,7 @@ export function OrderCard({
           buyerAddress: walletAddress,
           fiatAmount: order.fiatAmount?.toString() ?? "0",
           username: user?.username,
+          hash: order.buyerHash,
         } as TakeSellOrderRequest;
       } else {
         takeOrderRequest = {
@@ -126,6 +126,7 @@ export function OrderCard({
           userId: user?.userId ?? "", // Replace with the actual user ID
           amount: order.fiatAmount?.toString() ?? "0",
           username: user?.username,
+          hash: order.sellerHash,
         } as TakeBuyOrderRequest;
       }
 

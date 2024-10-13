@@ -5,18 +5,18 @@ import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 
 interface ReleaseFundsButtonProps {
   order: Order;
-  releaseFunds: (order: Order) => void;
+  releaseFundsTest: (order: Order) => void;
   onRefresh?: () => void;
   canRelease: boolean;
 }
 
 const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   order,
-  releaseFunds,
+  releaseFundsTest,
   onRefresh,
   canRelease,
 }) => {
-  //   const { lockFunds,} = useEtherspotFlow(); // Import the lockFunds function from the hook
+  const { releaseFunds } = useEtherspotFlow(); // Import the lockFunds function from the hook
   return canRelease ? (
     <Button
       className="w-full bg-blue-700 text-white"

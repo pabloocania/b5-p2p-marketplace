@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { CreateOrderRequest, OrderType, Order } from "b5-api-client";
+import {
+  CreateOrderRequest,
+  OrderType,
+  Order,
+  generateSecretAndHash,
+} from "b5-api-client";
 import {
   Card,
   CardHeader,
@@ -17,12 +22,19 @@ import { Separator } from "@/components/ui/separator";
 import { OrderCard } from "./OrderCard";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useUserContext } from "./UserContext";
+import { useEtherspotSdk } from "../../lib/web3/EtherspotSdkProvider";
+import { useAccount } from "wagmi";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 interface CreateOrderProps {
   onClose: () => void;
+  onConnectWallet: () => void; // Add this prop
 }
 
-export default function CreateOrder({ onClose }: CreateOrderProps) {
+export default function CreateOrder({
+  onClose,
+  onConnectWallet,
+}: CreateOrderProps) {
   const [orderType, setOrderType] = useState<OrderType>("BUY");
   const [description, setDescription] = useState<string>("");
   const [tokenAmount, setTokenAmount] = useState<number>(0);
@@ -31,6 +43,9 @@ export default function CreateOrder({ onClose }: CreateOrderProps) {
   const [username, setUsername] = useState<string>("");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const { user } = useUserContext();
+  const { balances } = useEtherspotSdk();
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
 
   const calculateARSEquivalent = () => {
     return tokenAmount * 1000;
@@ -40,8 +55,32 @@ export default function CreateOrder({ onClose }: CreateOrderProps) {
     setOrderType(value as OrderType);
   };
 
+  const handleConnectButton = () => {
+    if (openConnectModal) {
+      openConnectModal();
+    }
+    onConnectWallet();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check balance for SELL order
+    if (orderType === "SELL") {
+      const tokenBalance = balances.find(
+        (balance) => balance.name === tokenCode
+      );
+
+      if (
+        !tokenBalance ||
+        parseFloat(tokenBalance.smartWalletBalance) < tokenAmount
+      ) {
+        alert("Not enough balance");
+        return;
+      }
+    }
+    const { secret: secretSeller } = generateSecretAndHash();
+    const { secret: secretBuyer } = generateSecretAndHash();
 
     const newOrder: CreateOrderRequest = {
       type: orderType,
@@ -51,10 +90,20 @@ export default function CreateOrder({ onClose }: CreateOrderProps) {
       fiatAmount: calculateARSEquivalent().toString(),
       fiatCode: "ARS",
       walletAddress: orderType === "BUY" ? walletAddress : undefined,
-      paymentMethods: [{ type: "MERCADO_PAGO", username }],
+      paymentMethods: [
+        {
+          type: "FINTECH",
+          alias: username,
+          cbu: "",
+          entity: "",
+          fullName: "",
+        },
+      ],
       creatorId: user?.userId,
       status: "PENDING",
       creatorUsername: user?.username,
+      sellerHash: secretSeller.toString("hex"),
+      buyerHash: secretBuyer.toString("hex"),
     };
 
     try {
@@ -79,7 +128,14 @@ export default function CreateOrder({ onClose }: CreateOrderProps) {
         </CardHeader>
         <CardContent>
           <Separator className="mb-5" />
-          {createdOrder ? (
+          {!isConnected ? (
+            <Button
+              className="p-4 text-center w-full"
+              onClick={handleConnectButton} // Use the handler
+            >
+              Connect your wallet to proceed
+            </Button>
+          ) : createdOrder ? (
             <OrderCard orderDTO={createdOrder} showSelectButton={false} />
           ) : (
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -187,7 +243,7 @@ export default function CreateOrder({ onClose }: CreateOrderProps) {
             </form>
           )}
         </CardContent>
-        {!createdOrder && (
+        {!createdOrder && isConnected && (
           <CardFooter>
             <Button className="w-full" onClick={handleSubmit}>
               Create Order

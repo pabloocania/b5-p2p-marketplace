@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label";
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 
 export default function InternalTransfersComponent() {
-  // balances = [],
   const { balances } = useEtherspotSdk();
   const [selectedCoin, setSelectedCoin] = useState<(typeof balances)[0] | null>(
     null
@@ -27,7 +26,7 @@ export default function InternalTransfersComponent() {
     [key: string]: number;
   }>({});
   const [transferAmount, setTransferAmount] = useState("");
-  const [activeTab, setActiveTab] = useState("myWallet");
+  const [activeTab, setActiveTab] = useState("kioscoinWallet");
   const { transferTokensFromEtherspotToEOA, transferTokensToEtherspotWallet } =
     useEtherspotFlow();
 
@@ -35,9 +34,6 @@ export default function InternalTransfersComponent() {
     if (balances.length > 0) {
       setSelectedCoin(balances[0]);
 
-      //   const initialBalances = stablecoins.reduce((acc, coin) => {
-      //     acc[coin.] = coin.balance;
-      //     return acc;
       const initialBalances = balances.reduce((acc, coin) => {
         acc[coin.name] = Number(coin.eoaBalance);
         return acc;
@@ -146,27 +142,28 @@ export default function InternalTransfersComponent() {
         </CardHeader>
         <CardContent>
           <Tabs
-            defaultValue="myWallet"
+            defaultValue="kioscoinWallet"
             className="w-full"
             onValueChange={setActiveTab}
           >
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="myWallet">My Wallet</TabsTrigger>
-              <TabsTrigger value="kioscoinWallet">
+              <TabsTrigger
+                value="kioscoinWallet"
+                className={
+                  activeTab === "kioscoinWallet" ? "bg-blue-500 text-white" : ""
+                }
+              >
                 My Kioscoin Wallet
               </TabsTrigger>
+              <TabsTrigger
+                value="myWallet"
+                className={
+                  activeTab === "myWallet" ? "bg-blue-500 text-white" : ""
+                }
+              >
+                My Wallet
+              </TabsTrigger>
             </TabsList>
-            <TabsContent value="myWallet">
-              <CoinSelector
-                balances={balances}
-                selectedCoin={selectedCoin}
-                onSelectCoin={setSelectedCoin}
-              />
-              <BalanceDisplay
-                balance={selectedCoin ? myWalletBalances[selectedCoin.name] : 0}
-                coin={selectedCoin?.name || ""}
-              />
-            </TabsContent>
             <TabsContent value="kioscoinWallet">
               <CoinSelector
                 balances={balances}
@@ -177,6 +174,17 @@ export default function InternalTransfersComponent() {
                 balance={
                   selectedCoin ? kioscoinWalletBalances[selectedCoin.name] : 0
                 }
+                coin={selectedCoin?.name || ""}
+              />
+            </TabsContent>
+            <TabsContent value="myWallet">
+              <CoinSelector
+                balances={balances}
+                selectedCoin={selectedCoin}
+                onSelectCoin={setSelectedCoin}
+              />
+              <BalanceDisplay
+                balance={selectedCoin ? myWalletBalances[selectedCoin.name] : 0}
                 coin={selectedCoin?.name || ""}
               />
             </TabsContent>
@@ -217,23 +225,6 @@ export default function InternalTransfersComponent() {
               Transfer
             </Button>
           </div>
-          {/* <div className="mt-4 flex space-x-2">
-            <Input
-              type="number"
-              placeholder={
-                activeTab === "myWallet"
-                  ? "Transfer to Kioscoin"
-                  : "Transfer to My Wallet"
-              }
-              value={transferAmount}
-              onChange={(e) => setTransferAmount(e.target.value)}
-              className="flex-grow"
-            />
-            <Button onClick={handleTransfer}>
-              <ArrowLeftRight className="mr-2 h-4 w-4" />
-              Transfer
-            </Button>
-          </div> */}
         </CardContent>
       </Card>
     </div>

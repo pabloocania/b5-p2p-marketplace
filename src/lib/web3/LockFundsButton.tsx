@@ -19,6 +19,8 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
     setIsLoading(true);
     try {
       await batchApproveAndEscrow(order);
+      // await lockFunds(order);
+      // lockFunds
     } catch (error) {
       console.error("Error locking funds:", error);
       // Handle error here (e.g., show an error message to the user)
