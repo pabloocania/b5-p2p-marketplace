@@ -19,12 +19,14 @@ import {
   OrderStatus,
   UpdateOrderRequest,
   generateSecretAndHash,
+  PaymentMethod,
 } from "b5-api-client";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useUserContext } from "./UserContext";
 import LockFundsButton from "@/lib/web3/LockFundsButton";
 import ReleaseFundsButton from "@/lib/web3/ReleaseFundsButton";
 import { useAccount } from "wagmi";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -38,15 +40,15 @@ interface OrderCardProps {
 function getStatusColor(status: string): string {
   switch (status) {
     case "ACTIVE":
-      return "text-green-700";
-    case "LOCKED":
+      return "text-purple-700";
+    case "FIAT_SENT":
       return "text-red-700";
-    case "WAITING_FOR_PAYMENT":
+    case "WAITING_PAYMENT":
       return "text-yellow-700";
     case "PENDING":
-      return "text-orange-700";
+      return "text-blue-700";
     default:
-      return "text-gray-700";
+      return "text-green-700";
   }
 }
 
@@ -65,10 +67,33 @@ export function OrderCard({
   const [order, setOrder] = useState(orderDTO);
   const { user } = useUserContext();
   const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
 
   const releaseFunds = async (order: Order) => {
     await client.testReleaseFunds(order);
   };
+
+  const handleConnectButton = () => {
+    if (openConnectModal) {
+      openConnectModal();
+    }
+  };
+
+  function mapOrderStatus(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      WAITING_PAYMENT: "Waiting for seller to lock funds",
+      ACTIVE: "Waiting for buyer to send FIAT",
+      PENDING: "Open",
+      FIAT_SENT: "Waiting for release",
+      // Add other status mappings as needed
+      COMPLETED: "Completed",
+      COMPLETED_BY_ADMIN: "Completed",
+      RELEASED: "Released",
+      CANCELLED: "Cancelled",
+      // Add more mappings here
+    };
+    return statusMap[status] ?? "Unknown";
+  }
 
   const shouldShowSelectButton =
     !order || order.status === ("PENDING" as OrderStatus);
@@ -144,6 +169,16 @@ export function OrderCard({
     }
   };
 
+  function mapPaymentMethod(methodType: PaymentMethod): string {
+    const paymentMethodMap: { [key: string]: string } = {
+      FINTECH: "Fintech",
+      BANK: "Bank transfer",
+      // Add more mappings here
+    };
+
+    return paymentMethodMap[methodType.type] ?? "Unknown Method";
+  }
+
   if (!order) {
     return (
       <Card className="w-full">
@@ -197,14 +232,16 @@ export function OrderCard({
             <span className="text-sm font-semibold block">
               Status:{" "}
               <span className={getStatusColor(order.status ?? "")}>
-                {order.status ?? "Unknown"}
+                {mapOrderStatus(order.status!!) ?? "Unknown"}
               </span>
             </span>
           </div>
           <div className="pb-2">
             <span className="text-sm font-semibold block">
               Payment Method:{" "}
-              {order.paymentMethod?.map((method) => method.type).join(", ")}
+              {order.paymentMethods
+                ?.map((method) => mapPaymentMethod(method))
+                .join(", ")}
             </span>
           </div>
           <Separator className="mb-4" />
@@ -304,14 +341,16 @@ export function OrderCard({
             isConnected ? (
               <LockFundsButton order={order} canLock={canLockOrReleaseFunds} />
             ) : (
-              <div className="bg-yellow-100 text-yellow-700 p-4 text-center">
+              <Button
+                className="p-4 text-center w-full"
+                onClick={handleConnectButton} // Use the handler
+              >
                 Connect your wallet to proceed
-              </div>
+              </Button>
             )
           ) : order.status === "FIAT_SENT" ? (
             <ReleaseFundsButton
               order={order}
-              releaseFunds={releaseFunds}
               onRefresh={onRefresh}
               canRelease={canLockOrReleaseFunds}
             />

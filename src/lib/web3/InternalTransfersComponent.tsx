@@ -27,7 +27,7 @@ export default function InternalTransfersComponent() {
   }>({});
   const [transferAmount, setTransferAmount] = useState("");
   const [activeTab, setActiveTab] = useState("kioscoinWallet");
-  const { transferTokensFromEtherspotToEOA, transferTokensToEtherspotWallet } =
+  const { transferTokensFromEtherspotToEOA, transferFromEOAToSW } =
     useEtherspotFlow();
 
   useEffect(() => {
@@ -113,10 +113,7 @@ export default function InternalTransfersComponent() {
 
       if (activeTab === "myWallet") {
         if (myWalletBalances[selectedCoin.name] >= amount) {
-          await transferTokensToEtherspotWallet(
-            selectedCoin.address,
-            transferAmount
-          );
+          await transferFromEOAToSW(selectedCoin.address, transferAmount);
         }
       } else {
         if (kioscoinWalletBalances[selectedCoin.name] >= amount) {
@@ -232,10 +229,22 @@ export default function InternalTransfersComponent() {
 }
 
 function BalanceDisplay({ balance, coin }: { balance: number; coin: string }) {
+  const formatBalance = (balance: number): string => {
+    if (balance < 1) {
+      // Show up to 10 decimal places for values less than 1
+      return balance.toFixed(10).replace(/\.?0+$/, "");
+    } else {
+      // Show at least two decimals, but no more than eight for values greater than or equal to 1
+      const formatted = balance.toFixed(8).replace(/\.?0+$/, "");
+      // Ensure at least two decimal places for integer values
+      return formatted.includes(".") ? formatted : `${formatted}.00`;
+    }
+  };
+
   return (
     <div className="mt-4 text-center">
       <p className="text-sm text-gray-500">Current Balance</p>
-      <p className="text-3xl font-bold mt-2">${balance.toFixed(2)}</p>
+      <p className="text-3xl font-bold mt-2">${formatBalance(balance)}</p>
     </div>
   );
 }

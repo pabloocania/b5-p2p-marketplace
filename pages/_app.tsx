@@ -9,6 +9,7 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
 import { config } from "../src/wagmi";
 import { EtherspotSdkProvider } from "@/lib/web3/EtherspotSdkProvider";
+import { TransactionProvider } from "@/lib/web3/TransactionContext";
 import { rootstockTestnet } from "wagmi/chains";
 
 const queryClient = new QueryClient();
@@ -52,7 +53,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
               initialChain={rootstockTestnet}
             >
               <EtherspotSdkProvider>
-                <Component {...pageProps} />
+                <TransactionProvider>
+                  <Component {...pageProps} />
+                </TransactionProvider>
               </EtherspotSdkProvider>
             </RainbowKitProvider>
           </QueryClientProvider>

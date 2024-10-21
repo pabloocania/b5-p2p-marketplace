@@ -15,6 +15,8 @@ import UserMenu from "../src/components/ui/UserMenu";
 import { useUserContext } from "../src/components/ui/UserContext";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useDisconnect } from "wagmi";
+import { useTransaction } from "@/lib/web3/TransactionContext";
+import { TransactionStatus } from "@/components/ui/TransactionStatus";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -23,6 +25,7 @@ export default function Home() {
   const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const { disconnect } = useDisconnect();
+  const { transaction, resetTransaction } = useTransaction();
 
   useEffect(() => {
     if (!user) {
@@ -104,6 +107,12 @@ export default function Home() {
     <div className="min-h-screen bg-gray-100 py-2">
       <div className="container mx-auto">
         <main className={styles.main}>
+          <TransactionStatus
+            status={transaction.status}
+            message={transaction.message}
+            progress={transaction.progress}
+            onClose={resetTransaction}
+          />
           <div className="flex space-x-2 my-4">
             <Button
               variant={

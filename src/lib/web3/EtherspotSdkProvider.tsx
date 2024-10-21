@@ -29,25 +29,17 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
   const [smartWalletAddress, setSwAddress] = useState<string>("");
   const [balances, setBalances] = useState<TokenBalance[]>([]);
   const { data: walletClient } = useWalletClient();
-  const { signTypedData } = useSignTypedData();
   const account = useAccount();
 
   const createWalletProvider = () => ({
     ...walletClient,
     address: account.address ?? "0x0",
-    // signMessage: async (message: string) => {
-    //   return walletClient!!.signMessage({
-    //     message: { raw: message },
-    //   });
-    // },
     signMessage: async (message: any) => {
-      // const messageUint8Array = new TextEncoder().encode("your_message");
       return walletClient!!.signMessage({
         message: { raw: message },
       });
     },
     signTypedData: async (params: any) => {
-      // Implement the signTypedData method as needed
       return walletClient!!.signTypedData(params);
     },
   });

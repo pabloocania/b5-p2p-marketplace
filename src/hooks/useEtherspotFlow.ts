@@ -16,6 +16,9 @@ import { createHash, randomBytes } from "crypto";
 import { Order } from "b5-api-client";
 import { useEtherspotSdk } from "@/lib/web3/EtherspotSdkProvider";
 import { ArkaPaymaster } from "@etherspot/prime-sdk";
+import { useState } from "react";
+import { OPSReceipt } from "@/lib/web3/types";
+import { useTransaction } from '@/lib/web3/TransactionContext';
 
 
 const publicClient = createPublicClient({
@@ -30,10 +33,12 @@ const queryString = `?apiKey=${arka_api_key}&chainId=31`;
 
 
 export const useEtherspotFlow = () => {
+  const [isTransacting, setIsTransacting] = useState(false);
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
   const account = useAccount();
   const { primeSdk } = useEtherspotSdk();
+  const { setTransaction, resetTransaction } = useTransaction();
   const arkaPaymaster = new ArkaPaymaster(31, arka_api_key, arka_url);
 
   const getBalance = async (tokenAddress: string, walletAddress: string) => {
@@ -49,33 +54,76 @@ export const useEtherspotFlow = () => {
     }
   };
 
-  const transferTokensToEtherspotWallet = async (
+  // Example of updating transaction status
+  const executeTransaction = async (
+    operations: { to: string; data: string }[],
+    successMessage: string
+  ): Promise<OPSReceipt> => {
+    try {
+      setIsTransacting(true);
+      setTransaction({ status: "sent", message: "Initiating transaction...", progress: 0 });
+      setTimeout(() => {
+        setTransaction({ status: "waiting", message: "Approve and lock your tokens", progress: 45 });
+      }, 1000);
+
+      const userOpReceipt = await processBatchOperations(operations);
+
+      if (userOpReceipt.success) {
+        setTransaction({ status: "success", message: successMessage, progress: 100 });
+      } else {
+        setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
+        return Promise.reject(new Error("Transaction failed"));
+      }
+
+      console.log(userOpReceipt);
+      return userOpReceipt;
+    } catch (error) {
+      setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
+      console.log(error);
+      return Promise.reject(new Error("Transaction failed"));
+    } finally {
+      setIsTransacting(false);
+    }
+  };
+
+  const transferFromEOAToSW = async (
     tokenAddress: string,
     amount: string
   ) => {
     if (walletClient && address && primeSdk) {
-      const etherspotAddress = await primeSdk.getCounterFactualAddress();
-      const data = encodeFunctionData({
-        abi: ERC20ContractConfig.abi,
-        functionName: "transfer",
-        args: [etherspotAddress, parseUnits(amount, 18)],
-      });
+      try {
+        setIsTransacting(true);
+        setTransaction({ status: "sent", message: "Initiating transaction...", progress: 10 });
+        const etherspotAddress = await primeSdk.getCounterFactualAddress();
+        const data = encodeFunctionData({
+          abi: ERC20ContractConfig.abi,
+          functionName: "transfer",
+          args: [etherspotAddress, parseUnits(amount, 18)],
+        });
+        const userOpReceipt = await walletClient.sendTransaction({
+          to: getAddress(tokenAddress),
+          data: data,
+        });
 
-      // Send the transaction
-      const transferTx = await walletClient.sendTransaction({
-        to: getAddress(tokenAddress),
-        data: data,
-      });
+        if (userOpReceipt) {
+          setTransaction({ status: "success", message: "Transaction successful", progress: 100 });
+        } else {
+          setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
+          return Promise.reject(new Error("Transaction failed"));
+        }
 
-      console.log("Transaction hash:", transferTx);
-      return transferTx;
+      } catch (error) {
+        setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
+      } finally {
+        setIsTransacting(false);
+      }
     }
   };
 
   const whitelist = async (address: string) => {
     const isWhitelisted = await arkaPaymaster.checkWhitelist(account.address!!)
     if (isWhitelisted !== "Already added") {
-      console.log("Whitelist", await arkaPaymaster.addWhitelist([account.address!!]))
+      await arkaPaymaster.addWhitelist([account.address!!])
     }
   }
 
@@ -96,65 +144,15 @@ export const useEtherspotFlow = () => {
         data: data,
       };
 
-      // Use the new helper function to process the operation
-      const userOpsReceipt = await processBatchOperations([operation]);
-
-      console.log("\x1b[33m%s\x1b[0m", `Transaction Receipt: `, userOpsReceipt);
-      if (userOpsReceipt.success == true) {
-        console.log("receipt true");
-      } else {
-        console.log("receipt false");
-      }
+      return await executeTransaction([operation], "Funds locked in the smart contract");
     }
   };
 
-  //     // console.log(await arkaPaymaster.metadata())
-  //     // console.log(await arkaPaymaster.getTokenPaymasterAddress("USDC"))
-  //     // console.log(await arkaPaymaster.addWhitelist([swAddress]))
-
-
-  // Function to approve ERC20 token spending using primeSdk instance
-  const approveTokenSpending = async (
-    tokenAddress: string,
-    amount: bigint,
-  ) => {
-    if (primeSdk && address) {
-      // Encode the transaction data for the approve function call
-      const data = encodeFunctionData({
-        abi: ERC20ContractConfig.abi,
-        functionName: "approve",
-        args: [
-          RSKEscrowContractConfig.address.toLowerCase(),
-          amount,
-        ],
-      });
-
-      // Prepare the operation data
-      const operation = {
-        to: tokenAddress,
-        data: data,
-      };
-
-      // Use the new helper function to process the operation
-      const userOpsReceipt = await processBatchOperations([operation]);
-
-      return userOpsReceipt;
-    } else {
-      throw new Error("PrimeSdk instance or user address is not available.");
-    }
-  };
-
-  const releaseFunds = async (order: Order) => {
+  const releaseFunds = async (order: Order): Promise<OPSReceipt> => {
     if (primeSdk) {
-      // const buyerHashBuffer = createHash('sha256').update(order.buyerHash).digest('hex')
-      // const testHex = "0x" + buyerHashBuffer.toString("hex");
-      // console.log(testHex)
       const releaseParams = [
         order.id,
-        // order.buyerHash!!
         "0x" + order.buyerHash
-        // "0x" + buyerHashBuffer.toString("hex").padStart(64, '0')
-        // "0x" + buyerHashBuffer
       ];
       console.log(releaseParams);
       const releaseData = encodeFunctionData({
@@ -164,15 +162,15 @@ export const useEtherspotFlow = () => {
       });
       console.log(releaseData)
 
-      // Use the new helper function to process the batch operations
-      await processBatchOperations([
+      return await executeTransaction([
         { to: RSKEscrowContractConfig.address.toLowerCase(), data: releaseData }
-      ]);
+      ], "Funds released successfully");
     }
+    return Promise.reject(new Error("Transaction conditions not met"));
   }
 
-  const batchApproveAndEscrow = async (order: Order) => {
-    if (primeSdk && address) {
+  const batchApproveAndEscrow = async (order: Order): Promise<OPSReceipt> => {
+    if (primeSdk && address && !isTransacting) {
       const amountInt = parseUnits(order.amount ?? "0", 18); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
       const totalAmount = amountInt + feeInt; // Sum is also a BigInt
@@ -205,25 +203,24 @@ export const useEtherspotFlow = () => {
         feeInt,
       ];
 
-      console.log(escrowParams)
-
       const escrowData = encodeFunctionData({
         abi: RSKEscrowContractConfig.abi,
         functionName: "escrowERC20",
         args: escrowParams,
       });
-      // Use the new helper function to process the batch operations
-      await processBatchOperations([
+
+      const operations = [
         { to: ERC20ContractConfig.address, data: approveData },
         { to: RSKEscrowContractConfig.address.toLowerCase(), data: escrowData }
-      ]);
+      ];
 
+      return await executeTransaction(operations, "Funds locked in the smart contract");
     } else {
       throw new Error("PrimeSdk instance or user address is not available.");
     }
   };
 
-  const processBatchOperations = async (operations: { to: string, data: string }[]) => {
+  const processBatchOperations = async (operations: { to: string, data: string }[]): Promise<OPSReceipt> => {
     if (!primeSdk) {
       throw new Error("PrimeSdk instance is not available.");
     }
@@ -262,24 +259,25 @@ export const useEtherspotFlow = () => {
     return userOpsReceipt;
   };
 
+  function hexStringToByteArray(hexString: string): Uint8Array {
+    if (hexString.length % 2 !== 0) {
+      throw new Error("Invalid hex string. Length must be even.");
+    }
+
+    const byteArray = new Uint8Array(hexString.length / 2);
+
+    for (let i = 0; i < hexString.length; i += 2) {
+      byteArray[i / 2] = parseInt(hexString.substr(i, 2), 16);
+    }
+
+    return byteArray;
+  }
+
   return {
-    transferTokensToEtherspotWallet,
+    transferFromEOAToSW,
     transferTokensFromEtherspotToEOA,
     batchApproveAndEscrow,
     releaseFunds
   };
 };
 
-function hexStringToByteArray(hexString: string): Uint8Array {
-  if (hexString.length % 2 !== 0) {
-    throw new Error("Invalid hex string. Length must be even.");
-  }
-
-  const byteArray = new Uint8Array(hexString.length / 2);
-
-  for (let i = 0; i < hexString.length; i += 2) {
-    byteArray[i / 2] = parseInt(hexString.substr(i, 2), 16);
-  }
-
-  return byteArray;
-}
