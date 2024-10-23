@@ -15,10 +15,11 @@ import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
 import { createHash, randomBytes } from "crypto";
 import { Order } from "b5-api-client";
 import { useEtherspotSdk } from "@/lib/web3/EtherspotSdkProvider";
-import { ArkaPaymaster } from "@etherspot/prime-sdk";
 import { useState } from "react";
 import { OPSReceipt } from "@/lib/web3/types";
 import { useTransaction } from '@/lib/web3/TransactionContext';
+import { arka_url, queryString } from '@/lib/web3/ArkaPaymaster'
+import { arkaPaymasterInstance } from "@/lib/web3/ArkaPaymaster";
 
 
 const publicClient = createPublicClient({
@@ -26,20 +27,13 @@ const publicClient = createPublicClient({
   transport: http(),
 });
 
-// const arka_api_key = 'eyJvcmciOiI2NTIzZjY5MzUwOTBmNzAwMDFiYjJkZWIiLCJpZCI6ImUzZmE2NzQ2ZDI3MTQ4ZWQ4OTYyNjg3YzQ2MzJjMDE4IiwiaCI6Im11cm11cjEyOCJ9';
-const arka_api_key = 'arka_public_key';
-const arka_url = 'https://arka.etherspot.io';
-const queryString = `?apiKey=${arka_api_key}&chainId=31`;
-
-
 export const useEtherspotFlow = () => {
   const [isTransacting, setIsTransacting] = useState(false);
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
   const account = useAccount();
-  const { primeSdk } = useEtherspotSdk();
+  const { primeSdk, swAddress } = useEtherspotSdk();
   const { setTransaction, resetTransaction } = useTransaction();
-  const arkaPaymaster = new ArkaPaymaster(31, arka_api_key, arka_url);
 
   const getBalance = async (tokenAddress: string, walletAddress: string) => {
     const balance = await publicClient.readContract({
@@ -57,13 +51,14 @@ export const useEtherspotFlow = () => {
   // Example of updating transaction status
   const executeTransaction = async (
     operations: { to: string; data: string }[],
-    successMessage: string
+    successMessage: string,
+    waitingMessage: string
   ): Promise<OPSReceipt> => {
     try {
       setIsTransacting(true);
       setTransaction({ status: "sent", message: "Initiating transaction...", progress: 0 });
       setTimeout(() => {
-        setTransaction({ status: "waiting", message: "Approve and lock your tokens", progress: 45 });
+        setTransaction({ status: "waiting", message: waitingMessage, progress: 45 });
       }, 1000);
 
       const userOpReceipt = await processBatchOperations(operations);
@@ -120,13 +115,6 @@ export const useEtherspotFlow = () => {
     }
   };
 
-  const whitelist = async (address: string) => {
-    const isWhitelisted = await arkaPaymaster.checkWhitelist(account.address!!)
-    if (isWhitelisted !== "Already added") {
-      await arkaPaymaster.addWhitelist([account.address!!])
-    }
-  }
-
   const transferTokensFromEtherspotToEOA = async (
     tokenAddress: string,
     amount: string,
@@ -144,7 +132,7 @@ export const useEtherspotFlow = () => {
         data: data,
       };
 
-      return await executeTransaction([operation], "Funds locked in the smart contract");
+      return await executeTransaction([operation], "Transfer completed", "Transfering...");
     }
   };
 
@@ -164,13 +152,33 @@ export const useEtherspotFlow = () => {
 
       return await executeTransaction([
         { to: RSKEscrowContractConfig.address.toLowerCase(), data: releaseData }
-      ], "Funds released successfully");
+      ], "Funds released successfully", "Releasing funds");
     }
     return Promise.reject(new Error("Transaction conditions not met"));
   }
 
+  const whitelistPaymaster = async (address: string): Promise<boolean> => {
+    // const algo = await arkaPaymasterInstance.deposit(1)
+    // console.log(algo)
+    const isWhitelisted = await arkaPaymasterInstance.checkWhitelist(
+      account.address!!
+    );
+    if (isWhitelisted !== "Already added") {
+      console.log("whitelisting...");
+      const response = await arkaPaymasterInstance.addWhitelist([
+        account.address!!,
+      ]);
+      console.log("Got whitelisting response", response);
+      return true;
+    }
+    return false;
+  };
+
   const batchApproveAndEscrow = async (order: Order): Promise<OPSReceipt> => {
     if (primeSdk && address && !isTransacting) {
+      // console.log(await arkaPaymasterInstance.deposit(0.001))
+      console.log(swAddress)
+      await whitelistPaymaster(swAddress);
       const amountInt = parseUnits(order.amount ?? "0", 18); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
       const totalAmount = amountInt + feeInt; // Sum is also a BigInt
@@ -214,7 +222,7 @@ export const useEtherspotFlow = () => {
         { to: RSKEscrowContractConfig.address.toLowerCase(), data: escrowData }
       ];
 
-      return await executeTransaction(operations, "Funds locked in the smart contract");
+      return await executeTransaction(operations, "Funds locked in the smart contract", "Approve and lock your tokens");
     } else {
       throw new Error("PrimeSdk instance or user address is not available.");
     }
@@ -234,12 +242,17 @@ export const useEtherspotFlow = () => {
     }
 
     // Estimate the operations added to the batch and get the fee data for the UserOp
-    const op = await primeSdk.estimate({
-      paymasterDetails: {
-        url: arka_url + queryString,
-        context: { mode: "sponsor" },
+    const op = await primeSdk.estimate(
+      // {
+      //   paymasterDetails: { url: `https://arka.etherspot.io?apiKey=arka_public_key&chainId=31`, context: { mode: 'sponsor' } }
+      // }
+      {
+        paymasterDetails: {
+          url: arka_url + queryString,
+          context: { mode: "sponsor" },
+        }
       }
-    });
+    );
 
     console.log("Estimate UserOp: ", await printOp(op));
 

@@ -135,7 +135,7 @@ export default function InternalTransfersComponent() {
     <div className="flex items-center bg-gray-100 w-full">
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-center">Account Balances</CardTitle>
+          <CardTitle className="text-center">Balances</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs

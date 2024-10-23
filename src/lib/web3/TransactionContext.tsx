@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface Transaction {
   status: "idle" | "sent" | "waiting" | "success" | "error";
@@ -28,12 +22,6 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
     message: "",
     progress: 0,
   });
-
-  useEffect(() => {
-    console.log("Progress updated:", transaction);
-    // const timer = setTimeout(() => setAnimatedProgress(progress), 100);
-    // return () => clearTimeout(timer);
-  }, [transaction]);
 
   const resetTransaction = () => {
     setTransaction({ status: "idle", message: "", progress: 0 });

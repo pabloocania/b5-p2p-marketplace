@@ -27,6 +27,7 @@ import LockFundsButton from "@/lib/web3/LockFundsButton";
 import ReleaseFundsButton from "@/lib/web3/ReleaseFundsButton";
 import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import PaymentMethodDisplay from "../PaymentMethodDisplay";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -169,14 +170,26 @@ export function OrderCard({
     }
   };
 
-  function mapPaymentMethod(methodType: PaymentMethod): string {
+  function mapPaymentMethod(methodType: PaymentMethod): JSX.Element {
     const paymentMethodMap: { [key: string]: string } = {
+      MERCADO_PAGO: "Fintech",
       FINTECH: "Fintech",
       BANK: "Bank transfer",
       // Add more mappings here
     };
 
-    return paymentMethodMap[methodType.type] ?? "Unknown Method";
+    const methodDescription =
+      paymentMethodMap[methodType.type] ?? "Unknown Method";
+    const entity = methodType.entity ? (
+      <strong>{methodType.entity}</strong>
+    ) : null;
+    const alias = methodType.alias ? <strong>{methodType.alias}</strong> : null;
+
+    return (
+      <>
+        {methodDescription} {entity} {alias}
+      </>
+    );
   }
 
   if (!order) {
@@ -199,6 +212,9 @@ export function OrderCard({
       order.status as OrderStatus
     ) &&
     (isCreator || isBuyer || isSeller);
+  const formattedFiatAmount = order.fiatAmount
+    ? parseFloat(order.fiatAmount).toFixed(2)
+    : order.fiatAmount;
 
   return (
     <Card className="w-full mb-4">
@@ -225,7 +241,7 @@ export function OrderCard({
         <div className="space-y-1">
           <div>
             <span className="text-sm font-semibold block">
-              Equivalent in ARS: ${order.fiatAmount}
+              <p>Equivalent in ARS: ${formattedFiatAmount}</p>
             </span>
           </div>
           <div>
@@ -237,11 +253,10 @@ export function OrderCard({
             </span>
           </div>
           <div className="pb-2">
-            <span className="text-sm font-semibold block">
-              Payment Method:{" "}
-              {order.paymentMethods
-                ?.map((method) => mapPaymentMethod(method))
-                .join(", ")}
+            <span className="text-sm block font-semibold">
+              {order.paymentMethods?.map((method) => (
+                <PaymentMethodDisplay method={method}></PaymentMethodDisplay>
+              ))}
             </span>
           </div>
           <Separator className="mb-4" />
