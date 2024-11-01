@@ -348,15 +348,11 @@ export function OrderCard({
         </div>
       </CardContent>
       {shouldHideButtons ? (
-        <div className="text-red-700 p-2 text-center">
-          {order.status === "ACTIVE" ? (
-            canLockOrReleaseFunds ? (
-              <div className="bg-yellow-100 text-yellow-700 p-4 text-center">
-                Waiting for the buyer to send FIAT...
-              </div>
-            ) : (
+        <>
+          {order.status === "ACTIVE" && !canLockOrReleaseFunds && (
+            <div className="text-red-700 p-2 text-center">
               <Button
-                className="w-full bg-orange-700 text-white"
+                className="w-full bg-orange-700 text-white border border-black"
                 onClick={() => {
                   if (!orderTaken) fiatSent(order);
                   onRefresh?.(); // Call the refresh callback
@@ -364,53 +360,74 @@ export function OrderCard({
               >
                 Notify FIAT sent
               </Button>
-            )
-          ) : order.status === ("WAITING_PAYMENT" as OrderStatus) ? (
-            isConnected ? (
-              <LockFundsButton order={order} canLock={canLockOrReleaseFunds} />
-            ) : (
-              <Button
-                className="p-4 text-center w-full"
-                onClick={handleConnectButton} // Use the handler
-              >
-                Connect your wallet to proceed
-              </Button>
-            )
-          ) : order.status === "FIAT_SENT" ? (
-            <ReleaseFundsButton
-              order={order}
-              onRefresh={onRefresh}
-              canRelease={canLockOrReleaseFunds}
-            />
-          ) : (
-            <div></div>
+            </div>
           )}
-        </div>
+          {order.status === "WAITING_PAYMENT" && (
+            <>
+              {!isConnected ? (
+                <div className="text-red-700 p-2 text-center">
+                  <Button
+                    className="p-4 text-center w-full border border-black"
+                    variant="outline"
+                    onClick={handleConnectButton} // Use the handler
+                  >
+                    Connect your wallet to proceed
+                  </Button>
+                </div>
+              ) : canLockOrReleaseFunds ? (
+                <div className="px-3 pb-2">
+                  <LockFundsButton
+                    order={order}
+                    canLock={canLockOrReleaseFunds}
+                  />
+                </div>
+              ) : null}
+            </>
+          )}
+          {order.status === "FIAT_SENT" && canLockOrReleaseFunds && (
+            <div className="text-red-700 p-2 text-center">
+              <ReleaseFundsButton
+                order={order}
+                onRefresh={onRefresh}
+                canRelease={canLockOrReleaseFunds}
+              />
+            </div>
+          )}
+        </>
       ) : (
-        <CardFooter className="flex flex-col">
-          {showSelectButton &&
-            !showDetails &&
-            shouldShowSelectButton &&
-            canSelectOrder && (
-              <Button
-                variant={"secondary"}
-                className="w-full border border-black bg-blue-500 text-white hover:bg-blue-700"
-                onClick={() => onSelect && onSelect(order)}
-              >
-                {order.type === "SELL" ? "Buy" : "Sell"}
-              </Button>
-            )}
-          {showDetails && (walletAddress || order.type === "BUY") && (
-            <Button
-              className="w-full bg-green-700 text-white"
-              onClick={() => !orderTaken && takeOrder(order)}
-            >
-              {orderTaken ? "✅ Order taken successfully!" : "Take"}
-            </Button>
+        <CardFooter>
+          {orderTaken ? (
+            <div className="text-green-700 block text-center font-semibold">
+              Order taken successfully!
+            </div>
+          ) : (
+            <>
+              {showSelectButton &&
+                !showDetails &&
+                shouldShowSelectButton &&
+                canSelectOrder && (
+                  <Button
+                    className="w-full bg-green-500 border border-black text-white"
+                    variant="outline"
+                    onClick={() => onSelect && onSelect(order)}
+                  >
+                    {order.type === "SELL" ? "Buy" : "Sell"}
+                  </Button>
+                )}
+              {showDetails && (walletAddress || order.type === "BUY") && (
+                <Button
+                  className="w-full bg-green-500 text-white border border-black"
+                  onClick={() => !orderTaken && takeOrder(order)}
+                >
+                  Take
+                </Button>
+              )}
+            </>
           )}
         </CardFooter>
       )}
-      <div className="block text-center pb-2">
+      <Separator className="mb-2" />
+      <div className="block text-center pb-1">
         <p className="text-xs text-gray-600 block">ID: {order.id}</p>
         {/* <span className="text-xs text-gray-600 block">ID: {order.id}</span> */}
       </div>

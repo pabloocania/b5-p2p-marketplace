@@ -50,13 +50,13 @@ export default function InfoToggle({ content = "" }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <span className="inline-flex items-center justify-center">
+      <span className="inline-flex items-center justify-center ">
         <Info className="h-3 w-3 text-gray-500" aria-hidden="true" />
       </span>
       {isHovered && (
         <div
           ref={tooltipRef}
-          className="fixed w-60 max-w-[calc(100vw-2rem)] text-xs p-3 bg-white border border-gray-300 rounded-lg shadow-lg"
+          className="fixed w-60 max-w-[calc(100vw-2rem)] text-xs p-3 bg-white border border-gray-300 rounded-lg shadow-lg z-10"
           role="tooltip"
         >
           <div className="break-words whitespace-pre-wrap">{content}</div>

@@ -142,7 +142,7 @@ export default function OrdersFeed({
             />
           ) : orders && orders.length > 0 ? (
             orders.map((order) => (
-              <div key={order.id} className="mb-5">
+              <div key={order.id} className="mb-7">
                 <OrderCard
                   orderDTO={order}
                   onSelect={handleOrderSelect}

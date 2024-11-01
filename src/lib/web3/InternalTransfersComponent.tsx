@@ -181,9 +181,9 @@ export default function InternalTransfersComponent() {
               >
                 <span className="flex items-center">
                   Smart Wallet
-                  <span className="ml-2">
+                  {/* <span className="ml-2">
                     <InfoToggle content="Your wallet that let you sell and buy gasless!" />
-                  </span>
+                  </span> */}
                 </span>
               </TabsTrigger>
               <TabsTrigger
@@ -196,9 +196,9 @@ export default function InternalTransfersComponent() {
               >
                 <span className="flex items-center">
                   EOA Wallet
-                  <span className="ml-2 relative">
+                  {/* <span className="ml-2 relative">
                     <InfoToggle content="Your wallet in your device" />
-                  </span>
+                  </span> */}
                 </span>
               </TabsTrigger>
             </TabsList>

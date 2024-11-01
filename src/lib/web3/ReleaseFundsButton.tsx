@@ -33,7 +33,7 @@ const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   return canRelease ? (
     <Button
-      className="w-full bg-blue-700 text-white"
+      className="w-full bg-blue-700 text-white border border-black"
       onClick={handleReleaseFunds}
       disabled={isLoading}
     >

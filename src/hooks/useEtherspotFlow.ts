@@ -217,11 +217,15 @@ export const useEtherspotFlow = () => {
     );
     if (isWhitelisted !== "Already added") {
       console.log("whitelisting...");
-      const response = await arkaPaymasterInstance.addWhitelist([
-        account.address!!,
-      ]);
-      console.log("Got whitelisting response", response);
-      return true;
+      try {
+        const response = await arkaPaymasterInstance.addWhitelist([
+          address,
+        ]);
+        console.log("Got whitelisting response", response);
+        return true;
+      } catch (error) {
+        console.log(error);
+      }
     }
     return false;
   };
