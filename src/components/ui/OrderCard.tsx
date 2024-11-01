@@ -16,9 +16,9 @@ import {
   OrderType,
   TakeSellOrderRequest,
   TakeBuyOrderRequest,
-  OrderStatus,
   UpdateOrderRequest,
   generateSecretAndHash,
+  OrderStatus,
   PaymentMethod,
 } from "b5-api-client";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
@@ -27,7 +27,8 @@ import LockFundsButton from "@/lib/web3/LockFundsButton";
 import ReleaseFundsButton from "@/lib/web3/ReleaseFundsButton";
 import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import PaymentMethodDisplay from "../PaymentMethodDisplay";
+import PaymentMethodDisplay from "./PaymentMethodDisplay";
+import OrderStatusBar from "./OrderStatus";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -82,14 +83,14 @@ export function OrderCard({
 
   function mapOrderStatus(status: string): string {
     const statusMap: { [key: string]: string } = {
-      WAITING_PAYMENT: "Waiting for seller to lock funds",
-      ACTIVE: "Waiting for buyer to send FIAT",
+      WAITING_PAYMENT: "Awaiting lock",
+      ACTIVE: "Awaiting buyer",
       PENDING: "Open",
-      FIAT_SENT: "Waiting for release",
+      FIAT_SENT: "Awaiting release",
       // Add other status mappings as needed
       COMPLETED: "Completed",
       COMPLETED_BY_ADMIN: "Completed",
-      RELEASED: "Released",
+      RELEASED: "Completed",
       CANCELLED: "Cancelled",
       // Add more mappings here
     };
@@ -170,6 +171,30 @@ export function OrderCard({
     }
   };
 
+  function mapOrderVariant(order: Order): string {
+    switch (order.status) {
+      case "PENDING":
+        return "bg-green-500 text-white";
+      case "WAITING_PAYMENT":
+        return "bg-red-500 text-white";
+      case "ACTIVE":
+        return "bg-purple-500 text-white";
+      case "FIAT_SENT":
+        return "bg-blue-500 text-white";
+      case "SUCCESS":
+      case "COMPLETED_BY_ADMIN":
+      case "RELEASED":
+        return "bg-green-500 text-white";
+      case "CANCELED":
+      case "CANCELED_BY_ADMIN":
+        return "bg-gray-300 text-black";
+      case "DISPUTE":
+        return "bg-red-500 text-white";
+      default:
+        return "bg-gray-300 text-black";
+    }
+  }
+
   function mapPaymentMethod(methodType: PaymentMethod): JSX.Element {
     const paymentMethodMap: { [key: string]: string } = {
       MERCADO_PAGO: "Fintech",
@@ -217,7 +242,8 @@ export function OrderCard({
     : order.fiatAmount;
 
   return (
-    <Card className="w-full mb-4">
+    <Card className="w-full mb-4 border border-black">
+      <OrderStatusBar status={order.status ?? "Unknown"} />
       <CardHeader className="flex flex-row justify-between items-center py-3">
         {showDetails && onBack && (
           <Button variant="ghost" size="icon" onClick={onBack}>
@@ -225,62 +251,51 @@ export function OrderCard({
           </Button>
         )}
         <CardTitle>
-          {order.amount} {order.tokenCode ?? ""}
+          {order.type === "SELL" ? (
+            <>
+              <span className="font-bold">{order.sellerUsername}</span>{" "}
+              <span className="font-normal">sells</span> <br />
+              <span className="font-bold">
+                {order.amount} {order.tokenCode}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="font-bold">{order.buyerUsername}</span>{" "}
+              <span className="font-normal">buys</span> <br />
+              <span className="font-bold">
+                {order.amount} {order.tokenCode}
+              </span>
+            </>
+          )}
         </CardTitle>
-        <div className="pb-2">
+        <div className="px-2">
           <Badge
-            variant={order.type === "BUY" ? "default" : "destructive"}
-            className="text-sm"
+            variant={"outline"}
+            className={`text-xs border border-black  ${mapOrderVariant(order)}`}
           >
-            {order.type}
+            {mapOrderStatus(order.status ?? "Unknown")}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent>
-        <Separator className="mb-2" />
+      <CardContent className="pb-6 pt-0 pb-3">
         <div className="space-y-1">
-          <div>
-            <span className="text-sm font-semibold block">
-              <p>Equivalent in ARS: ${formattedFiatAmount}</p>
-            </span>
-          </div>
-          <div>
-            <span className="text-sm font-semibold block">
-              Status:{" "}
-              <span className={getStatusColor(order.status ?? "")}>
-                {mapOrderStatus(order.status!!) ?? "Unknown"}
-              </span>
-            </span>
-          </div>
           <div className="pb-2">
+            <p>
+              For <span className="font-bold">${formattedFiatAmount} ARS</span>
+            </p>
+          </div>
+          <div>
             <span className="text-sm block font-semibold">
-              {order.paymentMethods?.map((method) => (
-                <PaymentMethodDisplay method={method}></PaymentMethodDisplay>
+              {order.paymentMethods?.map((method, index) => (
+                <PaymentMethodDisplay key={index} method={method} />
               ))}
             </span>
           </div>
-          <Separator className="mb-4" />
-          <div>
-            <span className="text-xs text-gray-600 block">ID: {order.id}</span>
-          </div>
-          <div>
-            <span className="text-xs text-gray-600 block">
-              Creator:{" "}
-              {order.creatorId === user?.userId
-                ? "You"
-                : order.sellerUsername
-                ? order.sellerUsername
-                : !order.creatorId
-                ? order.type == "BUY"
-                  ? order?.buyerUsername
-                  : order?.sellerUsername
-                : order.creatorId}
-            </span>
-          </div>
           {order.buyerId && order.type === "SELL" && (
-            <div>
-              <span className="text-xs text-gray-600 block">
-                Buyer:{" "}
+            <div className="text-sm text-black">
+              Buyer:{" "}
+              <span className="font-semibold">
                 {order.buyerId === user?.userId
                   ? "You"
                   : order.buyerUsername
@@ -303,9 +318,8 @@ export function OrderCard({
           )}
           {user && showDetails && order.type === ("SELL" as OrderType) && (
             <div className="pt-2">
-              <Separator className="mb-4" />
               <div className="space-y-2">
-                <span className="text-xs text-gray-900 block">
+                <span className="text-xs block font-semibold">
                   To take this order, insert the address where you want to
                   receve the funds
                 </span>
@@ -335,7 +349,7 @@ export function OrderCard({
         </div>
       </CardContent>
       {shouldHideButtons ? (
-        <div className="bg-red-100 text-red-700 p-4 text-center">
+        <div className="text-red-700 p-2 text-center">
           {order.status === "ACTIVE" ? (
             canLockOrReleaseFunds ? (
               <div className="bg-yellow-100 text-yellow-700 p-4 text-center">
@@ -374,16 +388,17 @@ export function OrderCard({
           )}
         </div>
       ) : (
-        <CardFooter>
+        <CardFooter className="flex flex-col">
           {showSelectButton &&
             !showDetails &&
             shouldShowSelectButton &&
             canSelectOrder && (
               <Button
-                className="w-full"
+                variant={"secondary"}
+                className="w-full border border-black bg-blue-500 text-white"
                 onClick={() => onSelect && onSelect(order)}
               >
-                Select
+                {order.type === "SELL" ? "Buy" : "Sell"}
               </Button>
             )}
           {showDetails && (walletAddress || order.type === "BUY") && (
@@ -396,6 +411,10 @@ export function OrderCard({
           )}
         </CardFooter>
       )}
+      <div className="block text-center pb-2">
+        <p className="text-xs text-gray-600 block">ID: {order.id}</p>
+        {/* <span className="text-xs text-gray-600 block">ID: {order.id}</span> */}
+      </div>
     </Card>
   );
 }

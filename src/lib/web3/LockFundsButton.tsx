@@ -51,31 +51,28 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
     }
   };
 
-  if (!canLock) {
-    return (
-      <div className="bg-yellow-100 text-yellow-700 p-4 text-center">
-        Waiting for the seller to lock the funds to proceed.
-      </div>
-    );
-  }
-
   return (
-    <Button
-      className="w-full bg-blue-700 text-white"
-      onClick={handleLockFunds}
-      disabled={isLoading || !hasSufficientBalance}
-    >
-      {isLoading ? (
-        <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Waiting transaction...
-        </>
-      ) : hasSufficientBalance ? (
-        "Lock funds"
+    <>
+      {hasSufficientBalance && !isLoading ? (
+        <Button
+          className="w-full bg-blue-700 text-white"
+          onClick={handleLockFunds}
+          disabled={isLoading}
+        >
+          Lock funds
+        </Button>
       ) : (
-        "Insufficient balance"
+        !hasSufficientBalance && (
+          <span className="text-sm text-red-500">Insufficient balance</span>
+        )
       )}
-    </Button>
+      {isLoading && (
+        <div className="flex items-center">
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <span>Waiting transaction...</span>
+        </div>
+      )}
+    </>
   );
 };
 

@@ -13,13 +13,14 @@ import { RSKEscrowContractConfig } from "@/abis/RSKEscrowConfig";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
 import { createHash, randomBytes } from "crypto";
-import { Order } from "b5-api-client";
+import { Order, TransactionStatusResponse } from "b5-api-client";
 import { useEtherspotSdk } from "@/lib/web3/EtherspotSdkProvider";
 import { useState } from "react";
 import { OPSReceipt } from "@/lib/web3/types";
 import { useTransaction } from '@/lib/web3/TransactionContext';
 import { arka_url, queryString } from '@/lib/web3/ArkaPaymaster'
 import { arkaPaymasterInstance } from "@/lib/web3/ArkaPaymaster";
+import { p2pMarketAPIClient } from "@/lib/APIClients";
 
 
 const publicClient = createPublicClient({
@@ -74,7 +75,7 @@ export const useEtherspotFlow = () => {
       return userOpReceipt;
     } catch (error) {
       setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
-      console.log(error);
+
       return Promise.reject(new Error("Transaction failed"));
     } finally {
       setIsTransacting(false);
@@ -84,84 +85,136 @@ export const useEtherspotFlow = () => {
   const transferFromEOAToSW = async (
     tokenAddress: string,
     amount: string
-  ) => {
+  ): Promise<TransactionStatusResponse> => {
     if (walletClient && address && primeSdk) {
       try {
         setIsTransacting(true);
         setTransaction({ status: "sent", message: "Initiating transaction...", progress: 10 });
+
         const etherspotAddress = await primeSdk.getCounterFactualAddress();
         const data = encodeFunctionData({
           abi: ERC20ContractConfig.abi,
           functionName: "transfer",
           args: [etherspotAddress, parseUnits(amount, 18)],
         });
-        const userOpReceipt = await walletClient.sendTransaction({
+
+        const transactionHash = await walletClient.sendTransaction({
           to: getAddress(tokenAddress),
           data: data,
         });
 
-        if (userOpReceipt) {
-          setTransaction({ status: "success", message: "Transaction successful", progress: 100 });
-        } else {
-          setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
-          return Promise.reject(new Error("Transaction failed"));
-        }
+        // Assuming you have a way to get the transaction receipt after success
+        const transactionReceipt = await checkTransactionStatus(transactionHash);
 
+        return transactionReceipt;
       } catch (error) {
+        console.error("Error during transaction:", error);
         setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
+        return Promise.reject(error);
       } finally {
         setIsTransacting(false);
       }
+    } else {
+      return Promise.reject(new Error("Wallet client, address, or PrimeSdk instance is not available."));
     }
+  };
+
+  const checkTransactionStatus = async (transactionHash: string): Promise<TransactionStatusResponse> => {
+    const pollInterval = 5000; // Poll every 5 seconds
+    const timeout = Date.now() + 300000; // 5 minute timeout
+
+    while (Date.now() < timeout) {
+      try {
+        const response = await p2pMarketAPIClient.getTransactionStatus(transactionHash);
+
+        if (response.status === "SUCCESSFULL") {
+          setTransaction({ status: "success", message: "Transaction successful", progress: 100 });
+          return response;
+        } else if (response.status === "FAILED") {
+          setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
+          return Promise.reject(new Error("Transaction failed"));
+        } else if (response.status === "PENDING") {
+          setTransaction({ status: "waiting", message: "Transaction is pending...", progress: 50 });
+        }
+
+        // Wait for the next poll
+        await new Promise<void>(resolve => setTimeout(resolve, pollInterval));
+      } catch (error: any) {
+        if (error.response && error.response.status === 404) {
+          console.error("Transaction not found:", error);
+          setTransaction({ status: "error", message: "Transaction not found. Please check the transaction hash.", progress: 0 });
+          return Promise.reject(new Error("Transaction not found"));
+        } else {
+          console.error("Error fetching transaction status:", error);
+          setTransaction({ status: "error", message: "Error fetching transaction status. Please try again.", progress: 0 });
+          return Promise.reject(error);
+        }
+      }
+    }
+
+    // If the loop exits due to timeout
+    setTransaction({ status: "error", message: "Transaction status check timed out.", progress: 0 });
+    return Promise.reject(new Error("Transaction status check timed out"));
   };
 
   const transferTokensFromEtherspotToEOA = async (
     tokenAddress: string,
     amount: string,
-  ) => {
-    if (address && primeSdk) {
-      const data = encodeFunctionData({
-        abi: ERC20ContractConfig.abi,
-        functionName: "transfer",
-        args: [address, parseUnits(amount, 18)],
-      });
+  ): Promise<OPSReceipt> => {
+    try {
+      if (address && primeSdk) {
+        const data = encodeFunctionData({
+          abi: ERC20ContractConfig.abi,
+          functionName: "transfer",
+          args: [address, parseUnits(amount, 18)],
+        });
 
-      // Prepare the operation data
-      const operation = {
-        to: tokenAddress,
-        data: data,
-      };
+        // Prepare the operation data
+        const operation = {
+          to: tokenAddress,
+          data: data,
+        };
 
-      return await executeTransaction([operation], "Transfer completed", "Transfering...");
+        return await executeTransaction([operation], "Transfer completed", "Transferring...");
+      }
+      throw new Error("Address or PrimeSdk instance is not available.");
+    } catch (error) {
+      console.error("Error transferring tokens:", error);
+      return Promise.reject(error);
     }
   };
 
   const releaseFunds = async (order: Order): Promise<OPSReceipt> => {
-    if (primeSdk) {
-      const releaseParams = [
-        order.id,
-        "0x" + order.buyerHash
-      ];
-      console.log(releaseParams);
-      const releaseData = encodeFunctionData({
-        abi: RSKEscrowContractConfig.abi,
-        functionName: "releaseToBuyer",
-        args: releaseParams,
-      });
-      console.log(releaseData)
+    try {
+      if (primeSdk) {
+        const releaseParams = [
+          order.id,
+          "0x" + order.buyerHash
+        ];
+        console.log(releaseParams);
+        const releaseData = encodeFunctionData({
+          abi: RSKEscrowContractConfig.abi,
+          functionName: "releaseToBuyer",
+          args: releaseParams,
+        });
+        console.log(releaseData);
 
-      return await executeTransaction([
-        { to: RSKEscrowContractConfig.address.toLowerCase(), data: releaseData }
-      ], "Funds released successfully", "Releasing funds");
+        return await executeTransaction([
+          { to: RSKEscrowContractConfig.address.toLowerCase(), data: releaseData }
+        ], "Funds released successfully", "Releasing funds");
+      } else {
+        return Promise.reject("Smart wallet not defined");
+      }
+    } catch (error) {
+      console.error("Error releasing funds:", error);
+      return Promise.reject(error);
     }
-    return Promise.reject(new Error("Transaction conditions not met"));
   }
 
   const whitelistPaymaster = async (address: string): Promise<boolean> => {
     // const algo = await arkaPaymasterInstance.deposit(1)
-    // console.log(algo)
     const isWhitelisted = await arkaPaymasterInstance.checkWhitelist(
-      account.address!!
+      address
     );
     if (isWhitelisted !== "Already added") {
       console.log("whitelisting...");
@@ -177,8 +230,6 @@ export const useEtherspotFlow = () => {
   const batchApproveAndEscrow = async (order: Order): Promise<OPSReceipt> => {
     if (primeSdk && address && !isTransacting) {
       // console.log(await arkaPaymasterInstance.deposit(0.001))
-      console.log(swAddress)
-      await whitelistPaymaster(swAddress);
       const amountInt = parseUnits(order.amount ?? "0", 18); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
       const totalAmount = amountInt + feeInt; // Sum is also a BigInt
@@ -240,7 +291,7 @@ export const useEtherspotFlow = () => {
     for (const operation of operations) {
       await primeSdk.addUserOpsToBatch(operation);
     }
-
+    await whitelistPaymaster(swAddress);
     // Estimate the operations added to the batch and get the fee data for the UserOp
     const op = await primeSdk.estimate(
       // {

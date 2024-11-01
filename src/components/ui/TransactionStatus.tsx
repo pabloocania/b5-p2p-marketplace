@@ -72,8 +72,8 @@ export function TransactionStatus({
   };
 
   return (
-    <div className="fixed inset-0 flex items-end pb-10 p-10 bg-black/50">
-      <Card className="w-full max-w-sm mb-12">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+      <Card className="w-full max-w-sm mb-12 z-60">
         <CardContent className="p-4">
           <Alert className={`mb-4 ${getStatusColor(status)}`}>
             <AlertTitle className="flex items-center gap-2">

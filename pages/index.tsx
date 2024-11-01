@@ -31,30 +31,20 @@ export default function Home() {
     if (!user) {
       setActiveComponent("OrderFeed");
     }
-    const logout = async () => {
-      try {
-        await disconnect();
-        console.log("Wallet client disconnected");
-      } catch (error) {
-        console.error("Error disconnecting wallet client:", error);
-      }
-    };
-    logout();
   }, [user, disconnect]);
 
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
 
   const handleCreateOrderClose = () => {
     setIsCreateOrderOpen(false);
-    console.log("CreateOrder component is closed");
     setRefreshKey((prevKey) =>
       prevKey >= Number.MAX_SAFE_INTEGER ? 0 : prevKey + 1
     );
   };
 
   const handleUserMenuOpen = () => {
-    setIsCreateOrderOpen(false); // Close the sheet
-    setActiveComponent("UserMenu"); // Set active component to UserMenu
+    setIsCreateOrderOpen(false);
+    setActiveComponent("UserMenu");
   };
 
   const renderComponent = () => {
@@ -65,7 +55,7 @@ export default function Home() {
     } else if (activeComponent === "MyOrders") {
       return (
         <>
-          <div className="flex space-x-2 my-4">
+          <div className="max-w-md flex justify-center space-x-2">
             <Button
               variant={
                 activeSubFilter === Filter.PENDING ? "default" : "secondary"
@@ -104,7 +94,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-2">
+    <div className="min-h-screen bg-gray-100 py-2 border rounded-t border-black">
       <div className="container mx-auto">
         <main className={styles.main}>
           <TransactionStatus
@@ -113,29 +103,39 @@ export default function Home() {
             progress={transaction.progress}
             onClose={resetTransaction}
           />
-          <div className="flex space-x-2 my-4">
-            <Button
-              variant={
-                activeComponent === "OrderFeed" ? "default" : "secondary"
-              }
-              onClick={() => setActiveComponent("OrderFeed")}
-            >
-              P2P Market
-            </Button>
-            <Button
-              variant={activeComponent === "MyOrders" ? "default" : "secondary"}
-              onClick={() => setActiveComponent("MyOrders")}
-            >
-              My Orders
-            </Button>
-            <Button
-              variant={activeComponent === "UserMenu" ? "default" : "secondary"}
-              onClick={handleUserMenuOpen}
-            >
-              Profile
-            </Button>
+          <div className="flex justify-center mb-2">
+            <div className="w-[90vw] max-w-md p-5 flex justify-center rounded-lg space-x-2">
+              <Button
+                variant={
+                  activeComponent === "OrderFeed" ? "default" : "secondary"
+                }
+                onClick={() => setActiveComponent("OrderFeed")}
+              >
+                P2P Market
+              </Button>
+              <Button
+                variant={
+                  activeComponent === "MyOrders" ? "default" : "secondary"
+                }
+                onClick={() => setActiveComponent("MyOrders")}
+              >
+                My Orders
+              </Button>
+              <Button
+                variant={
+                  activeComponent === "UserMenu" ? "default" : "secondary"
+                }
+                onClick={handleUserMenuOpen}
+              >
+                Profile
+              </Button>
+            </div>
           </div>
-          {renderComponent()}
+          <div className="flex justify-center">
+            <div className="w-[90vw] max-w-md bg-white p-4 rounded-lg shadow-md min-h-[300px]">
+              {renderComponent()}
+            </div>
+          </div>
           <div className="fixed bottom-4 left-4">
             <Button
               size="icon"
@@ -158,7 +158,7 @@ export default function Home() {
                 <Button
                   size="icon"
                   className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-lg"
-                  disabled={!user} // Disable button if user is not logged in
+                  disabled={!user}
                 >
                   <Plus className="h-6 w-6" />
                   <span className="sr-only">Create Order</span>
@@ -170,7 +170,7 @@ export default function Home() {
                 </VisuallyHidden>
                 <CreateOrder
                   onClose={handleCreateOrderClose}
-                  onConnectWallet={handleUserMenuOpen} // Pass the handler
+                  onConnectWallet={handleUserMenuOpen}
                 />
               </SheetContent>
             </Sheet>

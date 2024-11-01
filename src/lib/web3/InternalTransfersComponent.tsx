@@ -12,6 +12,8 @@ import { useEtherspotSdk } from "./EtherspotSdkProvider";
 import { useAccount } from "wagmi";
 import { Label } from "@/components/ui/label";
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
+import InfoToggle from "@/components/ui/InfoToggle";
+import TokenBalanceList from "@/components/ui/TokenBalances";
 
 export default function InternalTransfersComponent() {
   const { balances } = useEtherspotSdk();
@@ -27,6 +29,7 @@ export default function InternalTransfersComponent() {
   }>({});
   const [transferAmount, setTransferAmount] = useState("");
   const [activeTab, setActiveTab] = useState("kioscoinWallet");
+  const [selectedToken, setSelectedToken] = useState<TokenBalance | null>(null);
   const { transferTokensFromEtherspotToEOA, transferFromEOAToSW } =
     useEtherspotFlow();
 
@@ -113,17 +116,41 @@ export default function InternalTransfersComponent() {
 
       if (activeTab === "myWallet") {
         if (myWalletBalances[selectedCoin.name] >= amount) {
-          await transferFromEOAToSW(selectedCoin.address, transferAmount);
+          try {
+            await transferFromEOAToSW(selectedCoin.address, transferAmount);
+          } catch (error) {
+            console.error("Error transferring from EOA to SW:", error);
+          }
         }
       } else {
         if (kioscoinWalletBalances[selectedCoin.name] >= amount) {
-          await transferTokensFromEtherspotToEOA(
-            selectedCoin.address,
-            transferAmount
-          );
+          try {
+            await transferTokensFromEtherspotToEOA(
+              selectedCoin.address,
+              transferAmount
+            );
+          } catch (error) {
+            console.error(
+              "Error transferring tokens from Etherspot to EOA:",
+              error
+            );
+          }
         }
       }
       setTransferAmount("");
+    }
+  };
+
+  const handleTokenSelect = (token: TokenBalance | null) => {
+    setSelectedToken(token);
+    if (token) {
+      const balance =
+        activeTab === "myWallet"
+          ? myWalletBalances[token.name]
+          : kioscoinWalletBalances[token.name];
+      setTransferAmount(balance.toString());
+    } else {
+      setTransferAmount(""); // Reset if no token is selected
     }
   };
 
@@ -146,81 +173,112 @@ export default function InternalTransfersComponent() {
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger
                 value="kioscoinWallet"
-                className={
-                  activeTab === "kioscoinWallet" ? "bg-blue-500 text-white" : ""
-                }
+                className={`flex items-center justify-center w-full ${
+                  activeTab === "kioscoinWallet"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200"
+                }`}
               >
-                My Kioscoin Wallet
+                <span className="flex items-center">
+                  Smart Wallet
+                  <span className="ml-2">
+                    <InfoToggle content="Your wallet that let you sell and buy gasless!" />
+                  </span>
+                </span>
               </TabsTrigger>
               <TabsTrigger
                 value="myWallet"
-                className={
-                  activeTab === "myWallet" ? "bg-blue-500 text-white" : ""
-                }
+                className={`flex items-center justify-center w-full ${
+                  activeTab === "myWallet"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200"
+                }`}
               >
-                My Wallet
+                <span className="flex items-center">
+                  EOA Wallet
+                  <span className="ml-2 relative">
+                    <InfoToggle content="Your wallet in your device" />
+                  </span>
+                </span>
               </TabsTrigger>
             </TabsList>
             <TabsContent value="kioscoinWallet">
-              <CoinSelector
-                balances={balances}
-                selectedCoin={selectedCoin}
-                onSelectCoin={setSelectedCoin}
-              />
-              <BalanceDisplay
-                balance={
-                  selectedCoin ? kioscoinWalletBalances[selectedCoin.name] : 0
-                }
-                coin={selectedCoin?.name || ""}
+              <TokenBalanceList
+                onTokenSelect={handleTokenSelect}
+                balances={balances.map((token) => ({
+                  ...token,
+                  eoaBalance: token.smartWalletBalance, // Use smart wallet balances
+                }))}
               />
             </TabsContent>
             <TabsContent value="myWallet">
-              <CoinSelector
-                balances={balances}
-                selectedCoin={selectedCoin}
-                onSelectCoin={setSelectedCoin}
-              />
-              <BalanceDisplay
-                balance={selectedCoin ? myWalletBalances[selectedCoin.name] : 0}
-                coin={selectedCoin?.name || ""}
+              <TokenBalanceList
+                onTokenSelect={handleTokenSelect}
+                balances={balances.map((token) => ({
+                  ...token,
+                  smartWalletBalance: token.eoaBalance, // Use EOA balances
+                }))}
               />
             </TabsContent>
           </Tabs>
           <div className="mt-4 space-y-2">
-            <div className="flex items-center space-x-2">
-              <Label htmlFor="transfer-amount" className="sr-only">
-                Transfer Amount
-              </Label>
-              <Input
-                id="transfer-amount"
-                type="number"
-                placeholder="Amount to transfer"
-                value={transferAmount}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  const numValue = parseFloat(value);
-                  if (!isNaN(numValue) && selectedCoin) {
-                    const maxBalance =
-                      activeTab === "myWallet"
+            {selectedToken && (
+              <div className="flex flex-col space-y-2">
+                <p className="text-xs text-center">
+                  Enter the amount to transfer between your wallets
+                </p>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="transfer-amount" className="sr-only">
+                    Transfer Amount
+                  </Label>
+                  <Input
+                    id="transfer-amount"
+                    type="number"
+                    placeholder="Amount"
+                    value={transferAmount}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const numValue = parseFloat(value);
+                      if (!isNaN(numValue) && selectedCoin) {
+                        const maxBalance =
+                          activeTab === "myWallet"
+                            ? myWalletBalances[selectedCoin.name]
+                            : kioscoinWalletBalances[selectedCoin.name];
+                        // Remove setTransferAmount call
+                      }
+                      setTransferAmount(value);
+                    }}
+                    className="flex-grow"
+                  />
+                  <Button onClick={handleMaxAmount} variant="outline" size="sm">
+                    Max
+                  </Button>
+                </div>
+                <Button
+                  onClick={handleTransfer}
+                  className="w-full"
+                  disabled={
+                    !!selectedCoin &&
+                    parseFloat(transferAmount) >
+                      (activeTab === "myWallet"
                         ? myWalletBalances[selectedCoin.name]
-                        : kioscoinWalletBalances[selectedCoin.name];
-                    setTransferAmount(
-                      Math.min(numValue, maxBalance).toString()
-                    );
-                  } else {
-                    setTransferAmount(value);
+                        : kioscoinWalletBalances[selectedCoin.name])
                   }
-                }}
-                className="flex-grow"
-              />
-              <Button onClick={handleMaxAmount} variant="outline" size="sm">
-                Max
-              </Button>
-            </div>
-            <Button onClick={handleTransfer} className="w-full">
-              <ArrowLeftRight className="mr-2 h-4 w-4" />
-              Transfer
-            </Button>
+                >
+                  <ArrowLeftRight className="mr-2 h-4 w-4" />
+                  Transfer
+                </Button>
+              </div>
+            )}
+            {selectedCoin &&
+              parseFloat(transferAmount) >
+                (activeTab === "myWallet"
+                  ? myWalletBalances[selectedCoin.name]
+                  : kioscoinWalletBalances[selectedCoin.name]) && (
+                <div className="text-red-500 text-sm mt-1">
+                  Not enough funds
+                </div>
+              )}
           </div>
         </CardContent>
       </Card>

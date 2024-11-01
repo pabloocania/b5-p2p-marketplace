@@ -58,15 +58,15 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
       {user ? (
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
-            <Avatar>
+            {/* <Avatar>
               <AvatarImage src={user.avatarUrl} alt={user.username} />
               <AvatarFallback>
                 {user.username.charAt(0).toUpperCase()}
               </AvatarFallback>
-            </Avatar>
+            </Avatar> */}
             <div>
-              <p className="font-medium">{user.username}</p>
-              <p className="text-sm">ID: {user.userId}</p>
+              <p className="font-semibold">{user.username}</p>
+              <p className="text-xs">ID: {user.userId}</p>
               {/* <p className="text-sm text-gray-500">{user.email}</p> */}
             </div>
           </div>
@@ -89,7 +89,7 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
               onClick={() => onLogin(mockUser)}
               className="w-full"
             >
-              Log In as {mockUser.username}
+              {mockUser.username}
             </Button>
           ))}
         </div>
