@@ -254,7 +254,7 @@ export function OrderCard({
             <>
               <span className="font-bold">{order.sellerUsername}</span>{" "}
               <span className="font-normal">sells</span> <br />
-              <span className="font-bold">
+              <span className="font-bold py-3">
                 {order.amount} {order.tokenCode}
               </span>
             </>

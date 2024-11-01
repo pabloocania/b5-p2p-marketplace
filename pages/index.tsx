@@ -49,7 +49,11 @@ export default function Home() {
 
   const renderComponent = () => {
     if (activeComponent === "OrderFeed") {
-      return <OrdersFeed refreshKey={refreshKey} />;
+      return (
+        <div className="pt-5 rounded-lg max-w-md flex justify-center rounded-lg space-x-2">
+          <OrdersFeed refreshKey={refreshKey} />
+        </div>
+      );
     } else if (activeComponent === "UserMenu") {
       return <UserMenu user={user} onLogin={login} onLogout={logout} />;
     } else if (activeComponent === "MyOrders") {
@@ -142,7 +146,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="flex justify-center">
+          <div className="flex justify-center rounded-lg">
             <div className="w-[90vw] border border-black bg-gray-100 max-w-md bg-white rounded-lg shadow-md min-h-[300px]">
               {renderComponent()}
             </div>
