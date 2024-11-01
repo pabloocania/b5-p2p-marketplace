@@ -175,9 +175,9 @@ export function OrderCard({
       case "PENDING":
         return "bg-green-500 text-white";
       case "WAITING_PAYMENT":
-        return "bg-red-500 text-white";
+        return "bg-yellow-500 text-white";
       case "ACTIVE":
-        return "bg-purple-500 text-white";
+        return "bg-yellow-500 text-white";
       case "FIAT_SENT":
         return "bg-blue-500 text-white";
       case "SUCCESS":
@@ -268,7 +268,7 @@ export function OrderCard({
             </>
           )}
         </CardTitle>
-        <div className="px-2">
+        <div>
           <Badge
             variant={"outline"}
             className={`text-xs border border-black  ${mapOrderVariant(order)}`}

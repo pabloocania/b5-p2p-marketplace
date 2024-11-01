@@ -56,7 +56,7 @@ export default function Home() {
       return (
         <>
           {/* <div className="w-[90vw] border border-black max-w-md p-5 flex justify-center rounded-lg space-x-2"> */}
-          <div className="max-w-md max-w-md p-2 flex justify-center rounded-lg space-x-2">
+          <div className="max-w-md max-w-md p-2 pt-5 pb-3 flex justify-center rounded-lg space-x-2">
             <div className="flex w-full space-x-2">
               <Button
                 className="flex-1 border border-black"
@@ -100,7 +100,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-2 border rounded-t border-black">
+    <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto">
         <main className={styles.main}>
           <TransactionStatus
@@ -109,7 +109,7 @@ export default function Home() {
             progress={transaction.progress}
             onClose={resetTransaction}
           />
-          <div className="flex justify-center mb-2">
+          <div className="flex justify-center mb-6">
             <div className="w-[90vw] border border-black bg-white max-w-md p-5 flex justify-center rounded-lg space-x-2">
               <div className="flex w-full space-x-2">
                 <Button
@@ -143,7 +143,7 @@ export default function Home() {
             </div>
           </div>
           <div className="flex justify-center">
-            <div className="w-[90vw] border border-black max-w-md bg-white p-4 rounded-lg shadow-md min-h-[300px]">
+            <div className="w-[90vw] border border-black bg-gray-100 max-w-md bg-white rounded-lg shadow-md min-h-[300px]">
               {renderComponent()}
             </div>
           </div>
