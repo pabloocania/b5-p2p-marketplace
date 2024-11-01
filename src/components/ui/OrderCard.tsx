@@ -126,7 +126,6 @@ export function OrderCard({
       if (onRefresh) {
         onRefresh(); // Call the refresh callback
       }
-      console.log("FIAT sent notification successful");
     } catch (error) {
       console.error("Error notifying FIAT sent:", error);
     }
@@ -395,7 +394,7 @@ export function OrderCard({
             canSelectOrder && (
               <Button
                 variant={"secondary"}
-                className="w-full border border-black bg-blue-500 text-white"
+                className="w-full border border-black bg-blue-500 text-white hover:bg-blue-700"
                 onClick={() => onSelect && onSelect(order)}
               >
                 {order.type === "SELL" ? "Buy" : "Sell"}

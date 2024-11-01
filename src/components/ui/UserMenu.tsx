@@ -77,7 +77,7 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
               <InternalTransfersComponent />
             </div>
           )}
-          <Button onClick={onLogout} variant="outline" className="w-full">
+          <Button onClick={onLogout} variant="default" className="w-full">
             Log Out
           </Button>
         </div>

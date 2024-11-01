@@ -55,33 +55,39 @@ export default function Home() {
     } else if (activeComponent === "MyOrders") {
       return (
         <>
-          <div className="max-w-md flex justify-center space-x-2">
-            <Button
-              variant={
-                activeSubFilter === Filter.PENDING ? "default" : "secondary"
-              }
-              onClick={() => setActiveSubFilter(Filter.PENDING)}
-            >
-              Pending
-            </Button>
-            <Button
-              variant={
-                activeSubFilter === Filter.WAITING_PAYMENT
-                  ? "default"
-                  : "secondary"
-              }
-              onClick={() => setActiveSubFilter(Filter.WAITING_PAYMENT)}
-            >
-              On Going
-            </Button>
-            <Button
-              variant={
-                activeSubFilter === Filter.CLOSED ? "default" : "secondary"
-              }
-              onClick={() => setActiveSubFilter(Filter.CLOSED)}
-            >
-              Closed
-            </Button>
+          {/* <div className="w-[90vw] border border-black max-w-md p-5 flex justify-center rounded-lg space-x-2"> */}
+          <div className="max-w-md max-w-md p-2 flex justify-center rounded-lg space-x-2">
+            <div className="flex w-full space-x-2">
+              <Button
+                className="flex-1 border border-black"
+                variant={
+                  activeSubFilter === Filter.PENDING ? "default" : "outline"
+                }
+                onClick={() => setActiveSubFilter(Filter.PENDING)}
+              >
+                Pending
+              </Button>
+              <Button
+                className="flex-1 border border-black"
+                variant={
+                  activeSubFilter === Filter.WAITING_PAYMENT
+                    ? "default"
+                    : "outline"
+                }
+                onClick={() => setActiveSubFilter(Filter.WAITING_PAYMENT)}
+              >
+                On Going
+              </Button>
+              <Button
+                className="flex-1 border border-black"
+                variant={
+                  activeSubFilter === Filter.CLOSED ? "default" : "outline"
+                }
+                onClick={() => setActiveSubFilter(Filter.CLOSED)}
+              >
+                Closed
+              </Button>
+            </div>
           </div>
           <OrdersFeed
             filter={activeSubFilter}
@@ -104,35 +110,40 @@ export default function Home() {
             onClose={resetTransaction}
           />
           <div className="flex justify-center mb-2">
-            <div className="w-[90vw] max-w-md p-5 flex justify-center rounded-lg space-x-2">
-              <Button
-                variant={
-                  activeComponent === "OrderFeed" ? "default" : "secondary"
-                }
-                onClick={() => setActiveComponent("OrderFeed")}
-              >
-                P2P Market
-              </Button>
-              <Button
-                variant={
-                  activeComponent === "MyOrders" ? "default" : "secondary"
-                }
-                onClick={() => setActiveComponent("MyOrders")}
-              >
-                My Orders
-              </Button>
-              <Button
-                variant={
-                  activeComponent === "UserMenu" ? "default" : "secondary"
-                }
-                onClick={handleUserMenuOpen}
-              >
-                Profile
-              </Button>
+            <div className="w-[90vw] border border-black bg-white max-w-md p-5 flex justify-center rounded-lg space-x-2">
+              <div className="flex w-full space-x-2">
+                <Button
+                  className="flex-1 border border-black"
+                  variant={
+                    activeComponent === "OrderFeed" ? "default" : "outline"
+                  }
+                  onClick={() => setActiveComponent("OrderFeed")}
+                >
+                  P2P Market
+                </Button>
+                <Button
+                  className="flex-1 border border-black"
+                  variant={
+                    activeComponent === "MyOrders" ? "default" : "outline"
+                  }
+                  onClick={() => setActiveComponent("MyOrders")}
+                >
+                  My Orders
+                </Button>
+                <Button
+                  className="flex-1 border border-black"
+                  variant={
+                    activeComponent === "UserMenu" ? "default" : "outline"
+                  }
+                  onClick={handleUserMenuOpen}
+                >
+                  Profile
+                </Button>
+              </div>
             </div>
           </div>
           <div className="flex justify-center">
-            <div className="w-[90vw] max-w-md bg-white p-4 rounded-lg shadow-md min-h-[300px]">
+            <div className="w-[90vw] border border-black max-w-md bg-white p-4 rounded-lg shadow-md min-h-[300px]">
               {renderComponent()}
             </div>
           </div>

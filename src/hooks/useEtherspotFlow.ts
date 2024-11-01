@@ -191,7 +191,6 @@ export const useEtherspotFlow = () => {
           order.id,
           "0x" + order.buyerHash
         ];
-        console.log(releaseParams);
         const releaseData = encodeFunctionData({
           abi: RSKEscrowContractConfig.abi,
           functionName: "releaseToBuyer",

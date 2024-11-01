@@ -37,7 +37,7 @@ export default function TokenBalanceList({
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-md mx-auto border border-black">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg font-bold"></CardTitle>
       </CardHeader>

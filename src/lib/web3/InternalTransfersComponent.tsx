@@ -160,7 +160,7 @@ export default function InternalTransfersComponent() {
 
   return (
     <div className="flex items-center bg-gray-100 w-full">
-      <Card className="w-full">
+      <Card className="w-full border border-black">
         <CardHeader>
           <CardTitle className="text-center">Balances</CardTitle>
         </CardHeader>
@@ -238,14 +238,6 @@ export default function InternalTransfersComponent() {
                     value={transferAmount}
                     onChange={(e) => {
                       const value = e.target.value;
-                      const numValue = parseFloat(value);
-                      if (!isNaN(numValue) && selectedCoin) {
-                        const maxBalance =
-                          activeTab === "myWallet"
-                            ? myWalletBalances[selectedCoin.name]
-                            : kioscoinWalletBalances[selectedCoin.name];
-                        // Remove setTransferAmount call
-                      }
                       setTransferAmount(value);
                     }}
                     className="flex-grow"
@@ -282,27 +274,6 @@ export default function InternalTransfersComponent() {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
-}
-
-function BalanceDisplay({ balance, coin }: { balance: number; coin: string }) {
-  const formatBalance = (balance: number): string => {
-    if (balance < 1) {
-      // Show up to 10 decimal places for values less than 1
-      return balance.toFixed(10).replace(/\.?0+$/, "");
-    } else {
-      // Show at least two decimals, but no more than eight for values greater than or equal to 1
-      const formatted = balance.toFixed(8).replace(/\.?0+$/, "");
-      // Ensure at least two decimal places for integer values
-      return formatted.includes(".") ? formatted : `${formatted}.00`;
-    }
-  };
-
-  return (
-    <div className="mt-4 text-center">
-      <p className="text-sm text-gray-500">Current Balance</p>
-      <p className="text-3xl font-bold mt-2">${formatBalance(balance)}</p>
     </div>
   );
 }
