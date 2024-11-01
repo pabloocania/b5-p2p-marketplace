@@ -1,7 +1,18 @@
 import Head from "next/head";
 import "../styles/globals.css";
+import "@rainbow-me/rainbowkit/styles.css";
 import { AppProps } from "next/app";
 import { UserProvider } from "../src/components/ui/UserContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider } from "wagmi";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+
+import { config } from "../src/wagmi";
+import { EtherspotSdkProvider } from "@/lib/web3/EtherspotSdkProvider";
+import { TransactionProvider } from "@/lib/web3/TransactionContext";
+import { rootstockTestnet } from "wagmi/chains";
+
+const queryClient = new QueryClient();
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -34,7 +45,21 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="#317EFB" />
       </Head>
       <UserProvider>
-        <Component {...pageProps} />
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider
+              modalSize="compact"
+              coolMode
+              initialChain={rootstockTestnet}
+            >
+              <EtherspotSdkProvider>
+                <TransactionProvider>
+                  <Component {...pageProps} />
+                </TransactionProvider>
+              </EtherspotSdkProvider>
+            </RainbowKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
       </UserProvider>
     </>
   );

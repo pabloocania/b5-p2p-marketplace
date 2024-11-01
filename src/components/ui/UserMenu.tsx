@@ -2,15 +2,21 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { UserProps } from "../../lib/useUser";
+import InternalTransfersComponent from "@/lib/web3/InternalTransfersComponent";
+import { useAccount } from "wagmi";
+import KioscoinConnectButton from "@/lib/web3/KioscoinConnectButton";
 
 interface UserMenuProps {
   user: UserProps | undefined;
+  // openConnectModal: boolean | false;
   onLogin: (user: UserProps) => void;
   onLogout: () => void;
 }
 
 const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
   const [mockUsers, setMockUsers] = useState<UserProps[]>([]);
+  const { isConnected } = useAccount();
+  // const { callPaymaster } = useEtherspotFlow();
 
   useEffect(() => {
     async function fetchUsers() {
@@ -34,25 +40,44 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
     fetchUsers();
   }, []);
 
+  function FullWidthConnectButton() {
+    return (
+      <div className="w-full">
+        <style jsx>{`
+          div :global(.iek7po2) {
+            width: 100%;
+          }
+        `}</style>
+        <KioscoinConnectButton />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4">
       {user ? (
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
-            <Avatar>
+            {/* <Avatar>
               <AvatarImage src={user.avatarUrl} alt={user.username} />
               <AvatarFallback>
                 {user.username.charAt(0).toUpperCase()}
               </AvatarFallback>
-            </Avatar>
+            </Avatar> */}
             <div>
-              <p className="font-medium">{user.username}</p>
-              <p className="text-sm">User ID: {user.userId}</p>
+              <p className="font-semibold">{user.username}</p>
+              <p className="text-xs">ID: {user.userId}</p>
               {/* <p className="text-sm text-gray-500">{user.email}</p> */}
             </div>
           </div>
-
-          <Button onClick={onLogout} variant="outline" className="w-full">
+          <div className="w-full">{FullWidthConnectButton()}</div>
+          {/* <div className="w-full"> */}
+          {isConnected && (
+            <div className="w-full">
+              <InternalTransfersComponent />
+            </div>
+          )}
+          <Button onClick={onLogout} variant="default" className="w-full">
             Log Out
           </Button>
         </div>
@@ -64,7 +89,7 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
               onClick={() => onLogin(mockUser)}
               className="w-full"
             >
-              Log In as {mockUser.username}
+              {mockUser.username}
             </Button>
           ))}
         </div>

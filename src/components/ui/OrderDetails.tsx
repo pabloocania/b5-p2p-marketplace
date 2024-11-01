@@ -67,7 +67,7 @@ export default function OrderDetails({ order }: { order: Order | undefined }) {
           <div>
             <span className="text-sm font-semibold block">
               Payment Method:{" "}
-              {order.paymentMethod?.map((method) => method.type).join(", ")}
+              {order.paymentMethods?.map((method) => method.type).join(", ")}
             </span>
           </div>
           <div>

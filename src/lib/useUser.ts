@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { disconnect } from '@wagmi/core'
+import { config } from '../wagmi'
 
 export interface UserProps {
     username: string;
@@ -16,6 +18,7 @@ export function useUser() {
 
     const logout = () => {
         setUser(undefined);
+        disconnect(config)
     };
 
     return {

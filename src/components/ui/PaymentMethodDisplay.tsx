@@ -1,0 +1,44 @@
+import { PaymentMethod } from "b5-api-client/dist/types";
+
+interface PaymentMethodDisplayProps {
+  method: PaymentMethod;
+}
+
+const PaymentMethodDisplay: React.FC<PaymentMethodDisplayProps> = ({
+  method,
+}) => {
+  const paymentMethodMap: { [key: string]: string } = {
+    MERCADO_PAGO: "Fintech",
+    FINTECH: "Fintech",
+    BANK: "Bank transfer",
+  };
+
+  const mapEntity = (entity: string | null): string => {
+    const entityMap: { [key: string]: string } = {
+      MERCADO_PAGO: "Mercado Pago",
+      PAYPAL: "PayPal",
+      STRIPE: "Stripe",
+      // Add more entity mappings here
+    };
+
+    return entity ? entityMap[entity] ?? entity : ""; // Return empty string if entity is null or not found
+  };
+
+  const formatAlias = (alias: string): string => {
+    return alias.startsWith("@") ? alias : `@${alias}`;
+  };
+
+  const methodDescription = paymentMethodMap[method.type] ?? "Unknown Method";
+  const entityDescription =
+    mapEntity(method.entity ?? null) || methodDescription; // Default to methodDescription if entityDescription is empty
+  const formattedAlias = method.alias ? formatAlias(method.alias) : "";
+  return (
+    <div>
+      Transfer by: {/* {methodDescription} */}
+      <strong> {entityDescription} </strong>
+      {/* {formattedAlias && formattedAlias} */}
+    </div>
+  );
+};
+
+export default PaymentMethodDisplay;

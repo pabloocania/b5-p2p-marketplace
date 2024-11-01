@@ -40,7 +40,7 @@ export default function OrdersFeed({
   buyerId,
   filter = Filter.ALL,
   refreshKey,
-  refreshInterval = 60000,
+  refreshInterval = 15000,
   resetSelectedOrder,
   onBack,
 }: OrderFeedProps) {
@@ -65,12 +65,7 @@ export default function OrdersFeed({
         });
       } else if (filter === Filter.WAITING_PAYMENT) {
         response = await client.getOrders({
-          status: [
-            "WAITING_PAYMENT" as OrderStatus,
-            "ACTIVE",
-            "FIAT_SENT",
-            "RELEASED",
-          ],
+          status: ["WAITING_PAYMENT" as OrderStatus, "ACTIVE", "FIAT_SENT"],
           user: userId,
         });
         // const buyerOrdersList = response?.orders || [];

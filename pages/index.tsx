@@ -3,6 +3,7 @@ import styles from "../styles/Home.module.css";
 import CreateOrder from "../src/components/ui/CreateOrder";
 import OrdersFeed, { Filter } from "../src/components/ui/OrdersFeed";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
@@ -13,6 +14,9 @@ import { Plus, User } from "lucide-react";
 import UserMenu from "../src/components/ui/UserMenu";
 import { useUserContext } from "../src/components/ui/UserContext";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { useDisconnect } from "wagmi";
+import { useTransaction } from "@/lib/web3/TransactionContext";
+import { TransactionStatus } from "@/components/ui/TransactionStatus";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -20,56 +24,70 @@ export default function Home() {
   const { user, login, logout } = useUserContext();
   const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { disconnect } = useDisconnect();
+  const { transaction, resetTransaction } = useTransaction();
 
   useEffect(() => {
     if (!user) {
       setActiveComponent("OrderFeed");
     }
-  }, [user]);
+  }, [user, disconnect]);
 
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
 
   const handleCreateOrderClose = () => {
     setIsCreateOrderOpen(false);
-    console.log("CreateOrder component is closed");
     setRefreshKey((prevKey) =>
       prevKey >= Number.MAX_SAFE_INTEGER ? 0 : prevKey + 1
     );
   };
 
+  const handleUserMenuOpen = () => {
+    setIsCreateOrderOpen(false);
+    setActiveComponent("UserMenu");
+  };
+
   const renderComponent = () => {
     if (activeComponent === "OrderFeed") {
       return <OrdersFeed refreshKey={refreshKey} />;
+    } else if (activeComponent === "UserMenu") {
+      return <UserMenu user={user} onLogin={login} onLogout={logout} />;
     } else if (activeComponent === "MyOrders") {
       return (
         <>
-          <div className="flex space-x-2 my-4">
-            <Button
-              variant={
-                activeSubFilter === Filter.PENDING ? "default" : "secondary"
-              }
-              onClick={() => setActiveSubFilter(Filter.PENDING)}
-            >
-              Pending
-            </Button>
-            <Button
-              variant={
-                activeSubFilter === Filter.WAITING_PAYMENT
-                  ? "default"
-                  : "secondary"
-              }
-              onClick={() => setActiveSubFilter(Filter.WAITING_PAYMENT)}
-            >
-              On Going
-            </Button>
-            <Button
-              variant={
-                activeSubFilter === Filter.CLOSED ? "default" : "secondary"
-              }
-              onClick={() => setActiveSubFilter(Filter.CLOSED)}
-            >
-              Closed
-            </Button>
+          {/* <div className="w-[90vw] border border-black max-w-md p-5 flex justify-center rounded-lg space-x-2"> */}
+          <div className="max-w-md max-w-md p-2 flex justify-center rounded-lg space-x-2">
+            <div className="flex w-full space-x-2">
+              <Button
+                className="flex-1 border border-black"
+                variant={
+                  activeSubFilter === Filter.PENDING ? "default" : "outline"
+                }
+                onClick={() => setActiveSubFilter(Filter.PENDING)}
+              >
+                Pending
+              </Button>
+              <Button
+                className="flex-1 border border-black"
+                variant={
+                  activeSubFilter === Filter.WAITING_PAYMENT
+                    ? "default"
+                    : "outline"
+                }
+                onClick={() => setActiveSubFilter(Filter.WAITING_PAYMENT)}
+              >
+                On Going
+              </Button>
+              <Button
+                className="flex-1 border border-black"
+                variant={
+                  activeSubFilter === Filter.CLOSED ? "default" : "outline"
+                }
+                onClick={() => setActiveSubFilter(Filter.CLOSED)}
+              >
+                Closed
+              </Button>
+            </div>
           </div>
           <OrdersFeed
             filter={activeSubFilter}
@@ -82,45 +100,62 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-2">
+    <div className="min-h-screen bg-gray-100 py-2 border rounded-t border-black">
       <div className="container mx-auto">
         <main className={styles.main}>
-          <div className="flex space-x-2 my-4">
-            <Button
-              variant={
-                activeComponent === "OrderFeed" ? "default" : "secondary"
-              }
-              onClick={() => setActiveComponent("OrderFeed")}
-            >
-              P2P Market
-            </Button>
-            <Button
-              variant={activeComponent === "MyOrders" ? "default" : "secondary"}
-              onClick={() => setActiveComponent("MyOrders")}
-            >
-              My Orders
-            </Button>
-          </div>
-          {renderComponent()}
-          <div className="fixed bottom-4 left-4">
-            <Sheet open={isLoginSheetOpen} onOpenChange={setIsLoginSheetOpen}>
-              <SheetTrigger asChild>
+          <TransactionStatus
+            status={transaction.status}
+            message={transaction.message}
+            progress={transaction.progress}
+            onClose={resetTransaction}
+          />
+          <div className="flex justify-center mb-2">
+            <div className="w-[90vw] border border-black bg-white max-w-md p-5 flex justify-center rounded-lg space-x-2">
+              <div className="flex w-full space-x-2">
                 <Button
-                  size="icon"
-                  className="rounded-full w-14 h-14 shadow-lg"
-                  onClick={() => setIsLoginSheetOpen(true)}
+                  className="flex-1 border border-black"
+                  variant={
+                    activeComponent === "OrderFeed" ? "default" : "outline"
+                  }
+                  onClick={() => setActiveComponent("OrderFeed")}
                 >
-                  <User className="h-6 w-6" />
-                  <span className="sr-only">User Menu</span>
+                  P2P Market
                 </Button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="h-[90vh]">
-                <VisuallyHidden>
-                  <SheetTitle>Login Dialog</SheetTitle>
-                </VisuallyHidden>
-                <UserMenu user={user} onLogin={login} onLogout={logout} />
-              </SheetContent>
-            </Sheet>
+                <Button
+                  className="flex-1 border border-black"
+                  variant={
+                    activeComponent === "MyOrders" ? "default" : "outline"
+                  }
+                  onClick={() => setActiveComponent("MyOrders")}
+                >
+                  My Orders
+                </Button>
+                <Button
+                  className="flex-1 border border-black"
+                  variant={
+                    activeComponent === "UserMenu" ? "default" : "outline"
+                  }
+                  onClick={handleUserMenuOpen}
+                >
+                  Profile
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-center">
+            <div className="w-[90vw] border border-black max-w-md bg-white p-4 rounded-lg shadow-md min-h-[300px]">
+              {renderComponent()}
+            </div>
+          </div>
+          <div className="fixed bottom-4 left-4">
+            <Button
+              size="icon"
+              className="rounded-full w-14 h-14 shadow-lg"
+              onClick={handleUserMenuOpen}
+            >
+              <User className="h-6 w-6" />
+              <span className="sr-only">User Menu</span>
+            </Button>
           </div>
           <div className="fixed bottom-4 right-4">
             <Sheet
@@ -134,7 +169,7 @@ export default function Home() {
                 <Button
                   size="icon"
                   className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-lg"
-                  disabled={!user} // Disable button if user is not logged in
+                  disabled={!user}
                 >
                   <Plus className="h-6 w-6" />
                   <span className="sr-only">Create Order</span>
@@ -144,7 +179,10 @@ export default function Home() {
                 <VisuallyHidden>
                   <SheetTitle>Create Order Dialog</SheetTitle>
                 </VisuallyHidden>
-                <CreateOrder onClose={handleCreateOrderClose} />
+                <CreateOrder
+                  onClose={handleCreateOrderClose}
+                  onConnectWallet={handleUserMenuOpen}
+                />
               </SheetContent>
             </Sheet>
           </div>
