@@ -243,35 +243,32 @@ export function OrderCard({
   return (
     <Card className="w-full mb-4 border border-black">
       <OrderStatusBar status={order.status ?? "Unknown"} />
-      <CardHeader className="flex flex-row justify-between items-center py-3">
-        {showDetails && onBack && (
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        )}
-        <CardTitle>
-          {order.type === "SELL" ? (
-            <>
-              <span className="font-bold">{order.sellerUsername}</span>{" "}
-              <span className="font-normal">sells</span> <br />
-              <span className="font-bold py-3">
-                {order.amount} {order.tokenCode}
-              </span>
-            </>
-          ) : (
-            <>
-              <span className="font-bold">{order.buyerUsername}</span>{" "}
-              <span className="font-normal">buys</span> <br />
-              <span className="font-bold">
-                {order.amount} {order.tokenCode}
-              </span>
-            </>
-          )}
-        </CardTitle>
-        <div>
+      <CardHeader>
+        <div className="flex-1">
+          <CardTitle>
+            {order.type === "SELL" ? (
+              <>
+                <span className="font-bold">{order.sellerUsername}</span>{" "}
+                <span className="font-normal">sells</span> <br />
+                <span className="font-bold py-3">
+                  {order.amount} {order.tokenCode}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="font-bold">{order.buyerUsername}</span>{" "}
+                <span className="font-normal">buys</span> <br />
+                <span className="font-bold">
+                  {order.amount} {order.tokenCode}
+                </span>
+              </>
+            )}
+          </CardTitle>
+        </div>
+        <div className="flex-none w-2/4 flex justify-end h-7">
           <Badge
             variant={"outline"}
-            className={`text-xs border border-black  ${mapOrderVariant(order)}`}
+            className={`text-xs border border-black ${mapOrderVariant(order)}`}
           >
             {mapOrderStatus(order.status ?? "Unknown")}
           </Badge>

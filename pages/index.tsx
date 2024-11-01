@@ -114,7 +114,7 @@ export default function Home() {
             onClose={resetTransaction}
           />
           <div className="flex justify-center mb-6">
-            <div className="w-[90vw] border border-black bg-white max-w-md p-5 flex justify-center rounded-lg space-x-2">
+            <div className="w-[90vw] border border-black bg-white max-w-md py-5 px-2 flex justify-center rounded-lg space-x-2">
               <div className="flex w-full space-x-2">
                 <Button
                   className="flex-1 border border-black"
