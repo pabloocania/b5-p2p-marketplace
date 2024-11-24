@@ -58,10 +58,6 @@ export function OrderCard({
   const { isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
 
-  const releaseFunds = async (order: Order) => {
-    await client.testReleaseFunds(order);
-  };
-
   const handleConnectButton = () => {
     if (openConnectModal) {
       openConnectModal();
@@ -284,7 +280,7 @@ export function OrderCard({
               {t("buyer")}:{" "}
               <span className="font-semibold">
                 {order.buyerId === user?.userId
-                  ? "You"
+                  ? t("you")
                   : order.buyerUsername
                   ? order.buyerUsername
                   : order.buyerId}
@@ -296,7 +292,7 @@ export function OrderCard({
               <span className="text-xs text-gray-600 block">
                 {t("seller")}:{" "}
                 {order.sellerId === user?.userId
-                  ? "You"
+                  ? t("you")
                   : order.sellerUsername
                   ? order.sellerUsername
                   : order.sellerId}
@@ -352,27 +348,29 @@ export function OrderCard({
             )}
             {order.status === "WAITING_PAYMENT" && (
               <>
-                {!isConnected ? (
-                  <div className="p-2 text-center w-full ">
-                    <Button
-                      className="p-4 text-center w-full text-white"
-                      onClick={handleConnectButton} // Use the handler
-                    >
-                      {t("login_to_view")}
-                    </Button>
-                  </div>
-                ) : canLockOrReleaseFunds ? (
-                  <div className="px-3 pb-2">
-                    <LockFundsButton
-                      order={order}
-                      canLock={canLockOrReleaseFunds}
-                    />
-                  </div>
+                {canLockOrReleaseFunds ? (
+                  !isConnected ? (
+                    <div className="text-center w-full text-white">
+                      <Button
+                        className="w-full bg-primary text-white"
+                        onClick={handleConnectButton} // Use the handler
+                      >
+                        {t("connect_to_continue")}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-center w-full text-white">
+                      <LockFundsButton
+                        order={order}
+                        canLock={canLockOrReleaseFunds}
+                      />
+                    </div>
+                  )
                 ) : null}
               </>
             )}
             {order.status === "FIAT_SENT" && canLockOrReleaseFunds && (
-              <div className="p-2 text-center">
+              <div className="text-center w-full text-white">
                 <ReleaseFundsButton
                   order={order}
                   onRefresh={onRefresh}
@@ -384,7 +382,7 @@ export function OrderCard({
         ) : (
           <>
             {orderTaken ? (
-              <div className="text-green-700 block text-center font-semibold">
+              <div className="text-secondary block text-center font-semibold">
                 {t("order_taken")}
               </div>
             ) : (

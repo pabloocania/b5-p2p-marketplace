@@ -15,32 +15,32 @@ const MainMenu: React.FC<MainMenuProps> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex w-full space-x-2">
+    <div className="max-w-md pr-2 pl-2 pt-5 flex justify-center space-x-2 w-full">
       <Button
-        className={`flex-1 border ${
+        className={`w-1/3 h-10 ${
           activeComponent === "OrderFeed"
             ? "bg-secondary text-white"
-            : "border-black hover:bg-primary text-white"
+            : "hover:bg-primary text-white"
         }`}
         onClick={() => setActiveComponent("OrderFeed")}
       >
         {t("p2p_market")}
       </Button>
       <Button
-        className={`flex-1 border ${
+        className={`w-1/3 h-10 ${
           activeComponent === "MyOrders"
             ? "bg-secondary text-white"
-            : "border-black hover:bg-primary text-white"
+            : "hover:bg-primary text-white"
         }`}
         onClick={() => setActiveComponent("MyOrders")}
       >
         {t("my_orders")}
       </Button>
       <Button
-        className={`flex-1 border ${
+        className={`w-1/3 h-10 ${
           activeComponent === "UserMenu"
             ? "bg-secondary text-white"
-            : "border-black hover:bg-primary text-white"
+            : "hover:bg-primary text-white"
         }`}
         onClick={handleUserMenuOpen}
       >

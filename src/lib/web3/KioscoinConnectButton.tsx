@@ -1,6 +1,8 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useTranslation } from "react-i18next";
 
 const KioscoinConnectButton = () => {
+  const { t } = useTranslation();
   return (
     <ConnectButton.Custom>
       {({
@@ -38,7 +40,7 @@ const KioscoinConnectButton = () => {
                     type="button"
                     className="w-full bg-terciary hover:bg-terciary text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
                   >
-                    Connect Wallet
+                    {t("connect_wallet")}
                   </button>
                 );
               }
@@ -50,7 +52,7 @@ const KioscoinConnectButton = () => {
                     type="button"
                     className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
                   >
-                    Wrong network
+                    {t("wrong_network")}
                   </button>
                 );
               }

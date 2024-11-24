@@ -57,7 +57,11 @@ i18n
                     funds_released: "Funds released",
                     releasing_funds: "Releasing funds...",
                     funds_locked: "Funds are locked in the smart contract",
-                    approve_and_lock: "Approve and lock your tokens"
+                    approve_and_lock: "Approve and lock your tokens",
+                    you: "you",
+                    connect_to_continue: "Connect your wallet to continue",
+                    connect_wallet: "Connect wallet",
+                    wrong_network: "Wrong network"
                     // Add more translations here
                 }
             },
@@ -81,7 +85,7 @@ i18n
                     for: "a cambio de",
                     lock_funds: "Depositar fondos",
                     release_funds: "Liberar fondos",
-                    waiting_lock: "Esperando asegurar",
+                    waiting_lock: "Esperando depósito",
                     waiting_release: "Esperando liberar",
                     completed: "Completada",
                     canceled: "Cancelada",
@@ -113,8 +117,11 @@ i18n
                     funds_released: "Fondos liberados",
                     releasing_funds: "Liberando fondos...",
                     funds_locked: "Los fondos están asegurados en el contrato inteligente",
-                    approve_and_lock: "Aprobar y asegurar sus tokens"
-
+                    approve_and_lock: "Aprobar y asegurar sus tokens",
+                    you: "tú",
+                    connect_to_continue: "Conectar wallet para continuar",
+                    connect_wallet: "Conectar wallet",
+                    wrong_network: "Red incorrecta"
                     // Add more translations here
                 }
             }

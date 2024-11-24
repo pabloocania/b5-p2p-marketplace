@@ -55,7 +55,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
 
   return (
     <Button
-      className="w-full bg-blue-700 text-white border border-black"
+      className="w-full bg-primary text-white"
       onClick={handleLockFunds}
       disabled={isLoading || !hasSufficientBalance}
     >

@@ -22,7 +22,7 @@ const TopLevelSubMenu: React.FC<TopLevelSubMenuProps> = ({
           className={`flex-1 ${
             activeSubFilter === Filter.PENDING
               ? "bg-primary text-white"
-              : "hover:bg-primary text-white bg-terciary "
+              : "hover:bg-primary text-white bg-terciary"
           }`}
           onClick={() => setActiveSubFilter(Filter.PENDING)}
         >
