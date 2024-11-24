@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 interface MainMenuProps {
   activeComponent: string;
@@ -12,6 +13,7 @@ const MainMenu: React.FC<MainMenuProps> = ({
   setActiveComponent,
   handleUserMenuOpen,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex w-full space-x-2">
       <Button
@@ -22,7 +24,7 @@ const MainMenu: React.FC<MainMenuProps> = ({
         }`}
         onClick={() => setActiveComponent("OrderFeed")}
       >
-        P2P Market
+        {t("p2p_market")}
       </Button>
       <Button
         className={`flex-1 border ${
@@ -32,7 +34,7 @@ const MainMenu: React.FC<MainMenuProps> = ({
         }`}
         onClick={() => setActiveComponent("MyOrders")}
       >
-        My Orders
+        {t("my_orders")}
       </Button>
       <Button
         className={`flex-1 border ${
@@ -42,7 +44,7 @@ const MainMenu: React.FC<MainMenuProps> = ({
         }`}
         onClick={handleUserMenuOpen}
       >
-        Profile
+        {t("my_account")}
       </Button>
     </div>
   );

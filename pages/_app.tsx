@@ -11,10 +11,13 @@ import { config } from "../src/wagmi";
 import { EtherspotSdkProvider } from "@/lib/web3/EtherspotSdkProvider";
 import { TransactionProvider } from "@/lib/web3/TransactionContext";
 import { rootstockTestnet } from "wagmi/chains";
+import "../src/i18n"; // Adjust the path as necessary
+import { useTranslation } from "react-i18next";
 
 const queryClient = new QueryClient();
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  const { t } = useTranslation();
   return (
     <>
       <Head>
@@ -26,7 +29,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         />
         <meta name="description" content="Description" />
         <meta name="keywords" content="Keywords" />
-        <title>Beefive - P2P stablecoin market</title>
+        <title>Kioscoin</title>
 
         <link rel="manifest" href="/manifest.json" />
         <link

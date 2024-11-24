@@ -3,14 +3,13 @@ import styles from "../styles/Home.module.css";
 import CreateOrder from "../src/components/ui/CreateOrder";
 import OrdersFeed, { Filter } from "../src/components/ui/OrdersFeed";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Plus, User } from "lucide-react";
+import { Plus, User, Languages, Globe } from "lucide-react";
 import UserMenu from "../src/components/ui/UserMenu";
 import { useUserContext } from "../src/components/ui/UserContext";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
@@ -19,15 +18,20 @@ import { useTransaction } from "@/lib/web3/TransactionContext";
 import { TransactionStatus } from "@/components/ui/TransactionStatus";
 import TopLevelSubMenu from "@/components/ui/TopLevelSubMenu";
 import MainMenu from "@/components/ui/MainMenu";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
   const [activeSubFilter, setActiveSubFilter] = useState(Filter.PENDING);
   const { user, login, logout } = useUserContext();
-  const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const { disconnect } = useDisconnect();
   const { transaction, resetTransaction } = useTransaction();
+  const { i18n } = useTranslation();
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -96,7 +100,9 @@ export default function Home() {
               {renderComponent()}
             </div>
           </div>
-          <div className="fixed bottom-4 left-4">
+          <div className="fixed bottom-20 left-4">
+            {" "}
+            {/* Adjusted position */}
             <Button
               size="icon"
               className="rounded-full w-14 h-14 shadow-lg text-white"
@@ -104,6 +110,20 @@ export default function Home() {
             >
               <User className="h-6 w-6" />
               <span className="sr-only">User Menu</span>
+            </Button>
+          </div>
+          <div className="fixed bottom-4 left-4">
+            <Button
+              size="icon"
+              className="rounded-full w-14 h-14 shadow-lg text-white flex items-center justify-center"
+              onClick={() =>
+                changeLanguage(i18n.language === "en" ? "es" : "en")
+              }
+            >
+              <Languages className="h-5 w-5 pr-1" />
+              {"  "}
+              {i18n.language === "en" ? " ESP" : " ENG"}
+              <span className="sr-only">Change Language</span>
             </Button>
           </div>
           <div className="fixed bottom-4 right-4">

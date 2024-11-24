@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import OrdersFeed, { Filter } from "./OrdersFeed";
+import { useTranslation } from "react-i18next";
 
 interface TopLevelSubMenuProps {
   activeSubFilter: Filter;
@@ -13,6 +14,7 @@ const TopLevelSubMenu: React.FC<TopLevelSubMenuProps> = ({
   setActiveSubFilter,
   refreshKey,
 }) => {
+  const { t } = useTranslation();
   return (
     <>
       <div className="max-w-md pr-2 pl-2 pt-5 pb-5 flex justify-center space-x-2 flex w-full">
@@ -24,7 +26,7 @@ const TopLevelSubMenu: React.FC<TopLevelSubMenuProps> = ({
           }`}
           onClick={() => setActiveSubFilter(Filter.PENDING)}
         >
-          Pending
+          {t("pending")}
         </Button>
         <Button
           className={`flex-1 ${
@@ -34,7 +36,7 @@ const TopLevelSubMenu: React.FC<TopLevelSubMenuProps> = ({
           }`}
           onClick={() => setActiveSubFilter(Filter.WAITING_PAYMENT)}
         >
-          On Going
+          {t("ongoing")}
         </Button>
         <Button
           className={`flex-1 ${
@@ -44,7 +46,7 @@ const TopLevelSubMenu: React.FC<TopLevelSubMenuProps> = ({
           }`}
           onClick={() => setActiveSubFilter(Filter.CLOSED)}
         >
-          Closed
+          {t("closed")}
         </Button>
       </div>
       <OrdersFeed

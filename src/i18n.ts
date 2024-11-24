@@ -1,0 +1,129 @@
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+i18n
+    .use(initReactI18next)
+    .init({
+        resources: {
+            en: {
+                translation: {
+                    welcome: "Welcome",
+                    title: "Beefive - P2P stablecoin market",
+                    p2p_market: "P2P market",
+                    my_orders: "My orders",
+                    my_account: "My account",
+                    pending: "Pending",
+                    ongoing: "Ongoing",
+                    closed: "Closed",
+                    close: "Close",
+                    login_to_view: "Login to view your orders",
+                    buys: "buys",
+                    sells: "sells",
+                    buy: "Buy",
+                    sell: "Sell",
+                    transfer_by: "transfer by",
+                    for: "for",
+                    release_funds: "Release funds",
+                    waiting_lock: "Waiting lock",
+                    waiting_release: "Waiting release",
+                    completed: "Completed",
+                    canceled: "Canceled",
+                    no_orders_available: "No orders available",
+                    buyer: "Buyer",
+                    vendedor: "Seller",
+                    take_order_information: "Insert the address where you want to receive the funds",
+                    notify_fiat_sent: "Notify seller payment sent",
+                    order_taken: "Order taken",
+                    take_order: "Elegir orden",
+                    no_enough_balance: "Insufficient balance",
+                    awaiting_buyer: "Awaiting buyer",
+                    open: "Open",
+                    lock_funds: "Lock funds",
+                    no_order_details: "No order details available",
+                    in_exchange_of: "Equivalent in ARS",
+                    status: "Status",
+                    payment_method: "Payment Method",
+                    user: "User",
+                    order_id: "Order ID",
+                    insert_wallet_address: "Enter wallet address",
+                    initiating_transaction: "Initiating transaction...",
+                    transaction_failed: "Transaction failed, please try again.",
+                    transaction_success: "Transaction successful",
+                    transaction_pending: "Transaction is pending...",
+                    transaction_not_found: "Transaction not found. Please check the transaction hash.",
+                    transaction_status_error: "Error fetching transaction status, please try again.",
+                    transaction_status_timeout: "Transaction status check timed out.",
+                    transfering: "Transferring...",
+                    funds_released: "Funds released",
+                    releasing_funds: "Releasing funds...",
+                    funds_locked: "Funds are locked in the smart contract",
+                    approve_and_lock: "Approve and lock your tokens"
+                    // Add more translations here
+                }
+            },
+            es: {
+                translation: {
+                    welcome: "Bienvenido",
+                    title: "Beefive - Mercado stablecoins descentralizado",
+                    p2p_market: "Mercado P2P",
+                    my_orders: "Mis órdenes",
+                    my_account: "Mi cuenta",
+                    pending: "Pendientes",
+                    ongoing: "En proceso",
+                    closed: "Cerradas",
+                    close: "Cerrar",
+                    login_to_view: "Loguéate para continuar",
+                    buys: "compra",
+                    sells: "vende",
+                    buy: "Comprar",
+                    sell: "Vender",
+                    transfer_by: "Transferir por",
+                    for: "a cambio de",
+                    lock_funds: "Depositar fondos",
+                    release_funds: "Liberar fondos",
+                    waiting_lock: "Esperando asegurar",
+                    waiting_release: "Esperando liberar",
+                    completed: "Completada",
+                    canceled: "Cancelada",
+                    no_orders_available: "No hay órdenes disponibles",
+                    buyer: "Comprador",
+                    vendedor: "Vendedor",
+                    take_order_information: "Ingresa la dirección de tu wallet donde deseas recibir los fondos",
+                    notify_fiat_sent: "Notificar al vendedor que pagaste",
+                    order_taken: "Has elegido esta orden",
+                    take_order: "Elegir orden",
+                    no_enough_balance: "Balance insuficiente",
+                    awaiting_buyer: "Esperando al comprador",
+                    open: "Abierta",
+                    no_order_details: "Detalles de órden no disponibles",
+                    in_exchange_of: "A cambio de ARS",
+                    status: "Estado:",
+                    payment_method: "Método de Pago",
+                    user: "Usuario",
+                    order_id: "ID de órden",
+                    insert_wallet_address: "Ingresa dirección de la wallet",
+                    initiating_transaction: "Enviando transacción...",
+                    transaction_failed: "Transacción fallida, por favor intente de nuevo.",
+                    transaction_success: "Transacción exitosa",
+                    transaction_pending: "La transacción está pendiente...",
+                    transaction_not_found: "Transacción no encontrada. Por favor verifique el hash de la transacción.",
+                    transaction_status_error: "Error al obtener el estado de la transacción, por favor intente de nuevo.",
+                    transaction_status_timeout: "El chequeo del estado de la transacción ha expirado.",
+                    transfering: "Transfiriendo...",
+                    funds_released: "Fondos liberados",
+                    releasing_funds: "Liberando fondos...",
+                    funds_locked: "Los fondos están asegurados en el contrato inteligente",
+                    approve_and_lock: "Aprobar y asegurar sus tokens"
+
+                    // Add more translations here
+                }
+            }
+        },
+        lng: "es",
+        fallbackLng: "es",
+        interpolation: {
+            escapeValue: false
+        }
+    });
+
+export default i18n;

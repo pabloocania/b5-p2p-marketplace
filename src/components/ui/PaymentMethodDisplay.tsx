@@ -1,4 +1,5 @@
 import { PaymentMethod } from "b5-api-client/dist/types";
+import { useTranslation } from "react-i18next";
 
 interface PaymentMethodDisplayProps {
   method: PaymentMethod;
@@ -7,6 +8,7 @@ interface PaymentMethodDisplayProps {
 const PaymentMethodDisplay: React.FC<PaymentMethodDisplayProps> = ({
   method,
 }) => {
+  const { t } = useTranslation();
   const paymentMethodMap: { [key: string]: string } = {
     MERCADO_PAGO: "Fintech",
     FINTECH: "Fintech",
@@ -34,7 +36,7 @@ const PaymentMethodDisplay: React.FC<PaymentMethodDisplayProps> = ({
   const formattedAlias = method.alias ? formatAlias(method.alias) : "";
   return (
     <div>
-      Transfer by: {/* {methodDescription} */}
+      {t("transfer_by")}: {/* {methodDescription} */}
       <strong> {entityDescription} </strong>
       {/* {formattedAlias && formattedAlias} */}
     </div>

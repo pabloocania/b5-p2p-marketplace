@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 interface TransactionStatusProps {
   status: "idle" | "sent" | "waiting" | "success" | "error";
@@ -22,6 +23,7 @@ export function TransactionStatus({
 }: TransactionStatusProps) {
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const timer = setTimeout(() => setAnimatedProgress(progress), 100);
@@ -91,7 +93,7 @@ export function TransactionStatus({
               variant="outline"
               className="w-full mt-4"
             >
-              Close
+              {t("close")}
             </Button>
           )}
         </CardContent>
