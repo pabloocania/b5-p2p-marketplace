@@ -21,6 +21,7 @@ import { useTransaction } from '@/lib/web3/TransactionContext';
 import { arka_url, queryString } from '@/lib/web3/ArkaPaymaster'
 import { arkaPaymasterInstance } from "@/lib/web3/ArkaPaymaster";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
+import { useTranslation } from "react-i18next";
 
 
 const publicClient = createPublicClient({
@@ -35,6 +36,7 @@ export const useEtherspotFlow = () => {
   const account = useAccount();
   const { primeSdk, swAddress } = useEtherspotSdk();
   const { setTransaction, resetTransaction } = useTransaction();
+  const { t } = useTranslation();
 
   const getBalance = async (tokenAddress: string, walletAddress: string) => {
     const balance = await publicClient.readContract({
@@ -57,7 +59,7 @@ export const useEtherspotFlow = () => {
   ): Promise<OPSReceipt> => {
     try {
       setIsTransacting(true);
-      setTransaction({ status: "sent", message: "Initiating transaction...", progress: 0 });
+      setTransaction({ status: "sent", message: t("initiating_transaction"), progress: 0 });
       setTimeout(() => {
         setTransaction({ status: "waiting", message: waitingMessage, progress: 45 });
       }, 1000);
@@ -67,14 +69,14 @@ export const useEtherspotFlow = () => {
       if (userOpReceipt.success) {
         setTransaction({ status: "success", message: successMessage, progress: 100 });
       } else {
-        setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
+        setTransaction({ status: "error", message: t("transaction_failed"), progress: 0 });
         return Promise.reject(new Error("Transaction failed"));
       }
 
       console.log(userOpReceipt);
       return userOpReceipt;
     } catch (error) {
-      setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
+      setTransaction({ status: "error", message: t("transaction_failed"), progress: 0 });
 
       return Promise.reject(new Error("Transaction failed"));
     } finally {
@@ -89,7 +91,7 @@ export const useEtherspotFlow = () => {
     if (walletClient && address && primeSdk) {
       try {
         setIsTransacting(true);
-        setTransaction({ status: "sent", message: "Initiating transaction...", progress: 10 });
+        setTransaction({ status: "sent", message: t("initiating_transaction"), progress: 10 });
 
         const etherspotAddress = await primeSdk.getCounterFactualAddress();
         const data = encodeFunctionData({
@@ -109,7 +111,7 @@ export const useEtherspotFlow = () => {
         return transactionReceipt;
       } catch (error) {
         console.error("Error during transaction:", error);
-        setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
+        setTransaction({ status: "error", message: t("transaction_failed"), progress: 0 });
         return Promise.reject(error);
       } finally {
         setIsTransacting(false);
@@ -128,13 +130,13 @@ export const useEtherspotFlow = () => {
         const response = await p2pMarketAPIClient.getTransactionStatus(transactionHash);
 
         if (response.status === "SUCCESSFULL") {
-          setTransaction({ status: "success", message: "Transaction successful", progress: 100 });
+          setTransaction({ status: "success", message: t("transaction_success"), progress: 100 });
           return response;
         } else if (response.status === "FAILED") {
-          setTransaction({ status: "error", message: "Transaction failed. Please try again.", progress: 0 });
+          setTransaction({ status: "error", message: t("transaction_failed"), progress: 0 });
           return Promise.reject(new Error("Transaction failed"));
         } else if (response.status === "PENDING") {
-          setTransaction({ status: "waiting", message: "Transaction is pending...", progress: 50 });
+          setTransaction({ status: "waiting", message: t("transaction_pending"), progress: 50 });
         }
 
         // Wait for the next poll
@@ -142,18 +144,18 @@ export const useEtherspotFlow = () => {
       } catch (error: any) {
         if (error.response && error.response.status === 404) {
           console.error("Transaction not found:", error);
-          setTransaction({ status: "error", message: "Transaction not found. Please check the transaction hash.", progress: 0 });
+          setTransaction({ status: "error", message: t("transaction_not_found"), progress: 0 });
           return Promise.reject(new Error("Transaction not found"));
         } else {
           console.error("Error fetching transaction status:", error);
-          setTransaction({ status: "error", message: "Error fetching transaction status. Please try again.", progress: 0 });
+          setTransaction({ status: "error", message: t("transaction_status_error"), progress: 0 });
           return Promise.reject(error);
         }
       }
     }
 
     // If the loop exits due to timeout
-    setTransaction({ status: "error", message: "Transaction status check timed out.", progress: 0 });
+    setTransaction({ status: "error", message: t("transaction_status_timeout"), progress: 0 });
     return Promise.reject(new Error("Transaction status check timed out"));
   };
 
@@ -175,7 +177,7 @@ export const useEtherspotFlow = () => {
           data: data,
         };
 
-        return await executeTransaction([operation], "Transfer completed", "Transferring...");
+        return await executeTransaction([operation], t("transaction_success"), t("transfering"));
       }
       throw new Error("Address or PrimeSdk instance is not available.");
     } catch (error) {
@@ -200,7 +202,7 @@ export const useEtherspotFlow = () => {
 
         return await executeTransaction([
           { to: RSKEscrowContractConfig.address.toLowerCase(), data: releaseData }
-        ], "Funds released successfully", "Releasing funds");
+        ], t("funds_released"), t("releasing_funds"));
       } else {
         return Promise.reject("Smart wallet not defined");
       }
@@ -276,7 +278,7 @@ export const useEtherspotFlow = () => {
         { to: RSKEscrowContractConfig.address.toLowerCase(), data: escrowData }
       ];
 
-      return await executeTransaction(operations, "Funds locked in the smart contract", "Approve and lock your tokens");
+      return await executeTransaction(operations, t("funds_locked"), t("approve_and_lock"));
     } else {
       throw new Error("PrimeSdk instance or user address is not available.");
     }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Order } from "b5-api-client";
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
+import { useTranslation } from "react-i18next";
 
 interface ReleaseFundsButtonProps {
   order: Order;
@@ -14,6 +15,7 @@ const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   onRefresh,
   canRelease,
 }) => {
+  const { t } = useTranslation();
   const { releaseFunds } = useEtherspotFlow(); // Import the lockFunds function from the hook
 
   const handleReleaseFunds = async () => {
@@ -37,7 +39,7 @@ const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
       onClick={handleReleaseFunds}
       disabled={isLoading}
     >
-      Release Funds
+      {t("release_funds")}
     </Button>
   ) : null;
 };

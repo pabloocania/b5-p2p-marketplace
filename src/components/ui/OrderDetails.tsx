@@ -11,10 +11,12 @@ import {
 } from "@/components/ui/card";
 import { Clipboard } from "lucide-react";
 import { Order, OrderType } from "b5-api-client";
+import { useTranslation } from "react-i18next";
 
 export default function OrderDetails({ order }: { order: Order | undefined }) {
   const [walletAddress, setWalletAddress] = useState("");
   const [clipboardSupported, setClipboardSupported] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setClipboardSupported("clipboard" in navigator);
@@ -33,7 +35,7 @@ export default function OrderDetails({ order }: { order: Order | undefined }) {
     return (
       <Card className="w-full max-w-lg mx-auto">
         <CardContent>
-          <p className="text-center py-4">No order details available</p>
+          <p className="text-center py-4">{t("no_order_details")}</p>
         </CardContent>
       </Card>
     );
@@ -56,28 +58,28 @@ export default function OrderDetails({ order }: { order: Order | undefined }) {
         <div className="space-y-1">
           <div>
             <span className="text-sm font-semibold block">
-              Equivalent in ARS: ${order.fiatAmount}
+              {t("in_exchange_of")}: ${order.fiatAmount}
             </span>
           </div>
           <div>
             <span className="text-sm font-semibold block">
-              Status: {order.status}
+              {t("in_exchange_of")}: {order.status}
             </span>
           </div>
           <div>
             <span className="text-sm font-semibold block">
-              Payment Method:{" "}
+              {t("payment_method")}:{" "}
               {order.paymentMethods?.map((method) => method.type).join(", ")}
             </span>
           </div>
           <div>
             <span className="text-xs text-gray-400 block">
-              User: {order.creatorId}
+              {t("user")}: {order.creatorId}
             </span>
           </div>
           <div>
             <span className="text-xs text-gray-400 block">
-              Order ID: {order.id}
+              {t("order_id")}: {order.id}
             </span>
           </div>
           {order.type === ("SELL" as OrderType) && (
@@ -90,7 +92,7 @@ export default function OrderDetails({ order }: { order: Order | undefined }) {
                   id="walletAddress"
                   value={walletAddress}
                   onChange={(e) => setWalletAddress(e.target.value)}
-                  placeholder="Enter wallet address"
+                  placeholder={t("insert_wallet_address")}
                   className="flex-grow"
                 />
                 {clipboardSupported && (
@@ -109,13 +111,8 @@ export default function OrderDetails({ order }: { order: Order | undefined }) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">Take order</Button>
+        <Button className="w-full">{t("take_order")}</Button>
       </CardFooter>
-      {/* {isButtonVisible && (
-        <CardFooter className="pt-0">
-          <Button className="w-full">Select</Button>
-        </CardFooter>
-      )} */}
     </Card>
   );
 }

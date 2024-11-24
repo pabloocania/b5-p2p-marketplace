@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import UserMenu from "./UserMenu";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { useTranslation } from "react-i18next";
 
 export enum Filter {
   ALL = "ALL",
@@ -49,6 +50,7 @@ export default function OrdersFeed({
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
     undefined
   );
+  const { t } = useTranslation();
   const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
 
   const fetchOrders = async () => {
@@ -152,7 +154,7 @@ export default function OrdersFeed({
             ))
           ) : (
             <div className="flex flex-col items-center h-full">
-              <div className="mb-5">No orders available</div>
+              <div className="mb-5">{t("no_orders_available")}</div>
             </div>
           )
         ) : (
@@ -161,7 +163,7 @@ export default function OrdersFeed({
               onClick={() => setIsLoginSheetOpen(true)}
               className="text-white"
             >
-              Login to view your orders
+              {t("login_to_view")}
             </Button>
             <Sheet open={isLoginSheetOpen} onOpenChange={setIsLoginSheetOpen}>
               <SheetTrigger asChild>

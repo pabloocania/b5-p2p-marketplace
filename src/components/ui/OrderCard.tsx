@@ -29,6 +29,7 @@ import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import PaymentMethodDisplay from "./PaymentMethodDisplay";
 import OrderStatusBar from "./OrderStatus";
+import { useTranslation } from "react-i18next";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -47,6 +48,7 @@ export function OrderCard({
   onBack,
   onRefresh,
 }: OrderCardProps) {
+  const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(showSelectButton);
   const [walletAddress, setWalletAddress] = useState("");
   const [clipboardSupported, setClipboardSupported] = useState(false);
@@ -68,15 +70,15 @@ export function OrderCard({
 
   function mapOrderStatus(status: string): string {
     const statusMap: { [key: string]: string } = {
-      WAITING_PAYMENT: "Awaiting lock",
-      ACTIVE: "Awaiting buyer",
-      PENDING: "Open",
-      FIAT_SENT: "Awaiting release",
+      WAITING_PAYMENT: t("waiting_lock"),
+      ACTIVE: t("awaiting_buyer"),
+      PENDING: t("open"),
+      FIAT_SENT: t("waiting_release"),
       // Add other status mappings as needed
-      COMPLETED: "Completed",
-      COMPLETED_BY_ADMIN: "Completed",
-      RELEASED: "Completed",
-      CANCELLED: "Cancelled",
+      COMPLETED: t("completed"),
+      COMPLETED_BY_ADMIN: t("completed"),
+      RELEASED: t("completed"),
+      CANCELLED: t("canceled"),
       // Add more mappings here
     };
     return statusMap[status] ?? "Unknown";
@@ -205,7 +207,7 @@ export function OrderCard({
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>No Orders</CardTitle>
+          <CardTitle>{t("no_orders_available")}</CardTitle>
         </CardHeader>
       </Card>
     );
@@ -234,7 +236,7 @@ export function OrderCard({
             {order.type === "SELL" ? (
               <>
                 <span className="font-bold">{order.sellerUsername}</span>{" "}
-                <span className="font-normal">sells</span>{" "}
+                <span className="font-normal">{t("sells")}</span>{" "}
                 <span className="font-bold">
                   {order.amount} {order.tokenCode}
                 </span>
@@ -242,7 +244,7 @@ export function OrderCard({
             ) : (
               <>
                 <span className="font-bold">{order.buyerUsername}</span>{" "}
-                <span className="font-normal">buys</span>{" "}
+                <span className="font-normal">{t("buys")}</span>{" "}
                 <span className="font-bold">
                   {order.amount} {order.tokenCode}
                 </span>
@@ -266,7 +268,8 @@ export function OrderCard({
         <div className="space-y-1">
           <div className="pb-0">
             <p>
-              For <span className="font-bold">${formattedFiatAmount} ARS</span>
+              {t("for")}{" "}
+              <span className="font-bold">${formattedFiatAmount} ARS</span>
             </p>
           </div>
           <div>
@@ -278,7 +281,7 @@ export function OrderCard({
           </div>
           {order.buyerId && order.type === "SELL" && (
             <div className="text-xs text-black">
-              Buyer:{" "}
+              {t("buyer")}:{" "}
               <span className="font-semibold">
                 {order.buyerId === user?.userId
                   ? "You"
@@ -291,7 +294,7 @@ export function OrderCard({
           {order.sellerId && order.type === "BUY" && (
             <div>
               <span className="text-xs text-gray-600 block">
-                Seller:{" "}
+                {t("seller")}:{" "}
                 {order.sellerId === user?.userId
                   ? "You"
                   : order.sellerUsername
@@ -304,8 +307,7 @@ export function OrderCard({
             <div className="pt-2">
               <div className="space-y-2">
                 <span className="text-xs block font-semibold">
-                  To take this order, insert the address where you want to
-                  receve the funds
+                  {t("take_order_information")}
                 </span>
                 <div className="flex space-x-2">
                   <Input
@@ -344,7 +346,7 @@ export function OrderCard({
                     onRefresh?.(); // Call the refresh callback
                   }}
                 >
-                  Notify FIAT sent
+                  {t("notify_fiat_sent")}
                 </Button>
               </div>
             )}
@@ -356,7 +358,7 @@ export function OrderCard({
                       className="p-4 text-center w-full text-white"
                       onClick={handleConnectButton} // Use the handler
                     >
-                      Connect your wallet to proceed
+                      {t("login_to_view")}
                     </Button>
                   </div>
                 ) : canLockOrReleaseFunds ? (
@@ -383,7 +385,7 @@ export function OrderCard({
           <>
             {orderTaken ? (
               <div className="text-green-700 block text-center font-semibold">
-                Order taken successfully!
+                {t("order_taken")}
               </div>
             ) : (
               <>
@@ -395,7 +397,7 @@ export function OrderCard({
                       className="w-full bg-secondary text-white font-semibold"
                       onClick={() => onSelect && onSelect(order)}
                     >
-                      {order.type === "SELL" ? "Buy" : "Sell"}
+                      {order.type === "SELL" ? t("buy") : t("sell")}
                     </Button>
                   )}
                 {showDetails && (walletAddress || order.type === "BUY") && (
@@ -403,7 +405,7 @@ export function OrderCard({
                     className="w-full bg-secondary border border-black text-white font-semibold"
                     onClick={() => !orderTaken && takeOrder(order)}
                   >
-                    Take
+                    {t("take_order")}
                   </Button>
                 )}
               </>
