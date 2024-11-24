@@ -130,7 +130,7 @@ export default function CreateOrder({
           <Separator className="mb-5" />
           {!isConnected ? (
             <Button
-              className="p-4 text-center w-full"
+              className="p-4 text-center w-full text-white"
               onClick={handleConnectButton} // Use the handler
             >
               Connect your wallet to proceed

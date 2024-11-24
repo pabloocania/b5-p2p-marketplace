@@ -9,9 +9,9 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
     switch (stage) {
       case 1:
         return status === "PENDING"
-          ? "bg-yellow-500"
+          ? "bg-secondary"
           : status !== "PENDING"
-          ? "bg-green-500"
+          ? "bg-secondary"
           : "bg-gray-400";
       case 2:
         return status === "WAITING_PAYMENT"
@@ -21,7 +21,7 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
             status === "COMPLETED" ||
             status === "COMPLETED_BY_ADMIN" ||
             status === "RELEASED"
-          ? "bg-green-500"
+          ? "bg-secondary"
           : "bg-gray-400";
       case 3:
         return status === "ACTIVE"
@@ -30,7 +30,7 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
             status === "COMPLETED" ||
             status === "COMPLETED_BY_ADMIN" ||
             status === "RELEASED"
-          ? "bg-green-500"
+          ? "bg-secondary"
           : "bg-gray-400";
       case 4:
         return status === "FIAT_SENT"
@@ -38,7 +38,7 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
           : status === "COMPLETED" ||
             status === "COMPLETED_BY_ADMIN" ||
             status === "RELEASED"
-          ? "bg-green-500"
+          ? "bg-secondary"
           : status === "CANCELLED"
           ? "bg-red-500"
           : "bg-gray-400";
@@ -48,7 +48,7 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
   };
 
   return (
-    <div className="flex w-full border-b border-black h-4 rounded-t-lg overflow-hidden">
+    <div className="flex w-full h-4 overflow-hidden rounded-t-md">
       {[1, 2, 3, 4].map((stage) => (
         <div
           key={stage}

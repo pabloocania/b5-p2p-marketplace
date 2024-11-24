@@ -156,8 +156,11 @@ export default function OrdersFeed({
             </div>
           )
         ) : (
-          <div className="flex flex-col items-center h-full">
-            <Button onClick={() => setIsLoginSheetOpen(true)}>
+          <div className="flex flex-col items-center h-full mt-10">
+            <Button
+              onClick={() => setIsLoginSheetOpen(true)}
+              className="text-white"
+            >
               Login to view your orders
             </Button>
             <Sheet open={isLoginSheetOpen} onOpenChange={setIsLoginSheetOpen}>

@@ -65,7 +65,7 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
               </AvatarFallback>
             </Avatar> */}
             <div>
-              <p className="font-semibold">{user.username}</p>
+              <p className="font-bold text-primary">{user.username}</p>
               <p className="text-xs">ID: {user.userId}</p>
               {/* <p className="text-sm text-gray-500">{user.email}</p> */}
             </div>
@@ -77,7 +77,11 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
               <InternalTransfersComponent />
             </div>
           )}
-          <Button onClick={onLogout} variant="default" className="w-full">
+          <Button
+            onClick={onLogout}
+            variant="default"
+            className="w-full text-white"
+          >
             Log Out
           </Button>
         </div>
@@ -87,7 +91,7 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
             <Button
               key={mockUser.userId}
               onClick={() => onLogin(mockUser)}
-              className="w-full"
+              className="w-full text-white text-xs md:text-base"
             >
               {mockUser.username}
             </Button>

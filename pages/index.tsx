@@ -17,6 +17,8 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useDisconnect } from "wagmi";
 import { useTransaction } from "@/lib/web3/TransactionContext";
 import { TransactionStatus } from "@/components/ui/TransactionStatus";
+import TopLevelSubMenu from "@/components/ui/TopLevelSubMenu";
+import MainMenu from "@/components/ui/MainMenu";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -58,103 +60,46 @@ export default function Home() {
       return <UserMenu user={user} onLogin={login} onLogout={logout} />;
     } else if (activeComponent === "MyOrders") {
       return (
-        <>
-          {/* <div className="w-[90vw] border border-black max-w-md p-5 flex justify-center rounded-lg space-x-2"> */}
-          <div className="max-w-md max-w-md p-2 pt-5 pb-3 flex justify-center rounded-lg space-x-2">
-            <div className="flex w-full space-x-2">
-              <Button
-                className="flex-1 border border-black"
-                variant={
-                  activeSubFilter === Filter.PENDING ? "default" : "outline"
-                }
-                onClick={() => setActiveSubFilter(Filter.PENDING)}
-              >
-                Pending
-              </Button>
-              <Button
-                className="flex-1 border border-black"
-                variant={
-                  activeSubFilter === Filter.WAITING_PAYMENT
-                    ? "default"
-                    : "outline"
-                }
-                onClick={() => setActiveSubFilter(Filter.WAITING_PAYMENT)}
-              >
-                On Going
-              </Button>
-              <Button
-                className="flex-1 border border-black"
-                variant={
-                  activeSubFilter === Filter.CLOSED ? "default" : "outline"
-                }
-                onClick={() => setActiveSubFilter(Filter.CLOSED)}
-              >
-                Closed
-              </Button>
-            </div>
-          </div>
-          <OrdersFeed
-            filter={activeSubFilter}
-            refreshKey={refreshKey}
-            resetSelectedOrder={true}
-          />
-        </>
+        <TopLevelSubMenu
+          activeSubFilter={activeSubFilter}
+          setActiveSubFilter={setActiveSubFilter}
+          refreshKey={refreshKey}
+        />
       );
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-backgroundMain">
       <div className="container mx-auto">
-        <main className={styles.main}>
+        <main className={`${styles.main}`}>
           <TransactionStatus
             status={transaction.status}
             message={transaction.message}
             progress={transaction.progress}
             onClose={resetTransaction}
           />
-          <div className="flex justify-center mb-6">
-            <div className="w-[90vw] border border-black bg-white max-w-md py-5 px-2 flex justify-center rounded-lg space-x-2">
-              <div className="flex w-full space-x-2">
-                <Button
-                  className="flex-1 border border-black"
-                  variant={
-                    activeComponent === "OrderFeed" ? "default" : "outline"
-                  }
-                  onClick={() => setActiveComponent("OrderFeed")}
-                >
-                  P2P Market
-                </Button>
-                <Button
-                  className="flex-1 border border-black"
-                  variant={
-                    activeComponent === "MyOrders" ? "default" : "outline"
-                  }
-                  onClick={() => setActiveComponent("MyOrders")}
-                >
-                  My Orders
-                </Button>
-                <Button
-                  className="flex-1 border border-black"
-                  variant={
-                    activeComponent === "UserMenu" ? "default" : "outline"
-                  }
-                  onClick={handleUserMenuOpen}
-                >
-                  Profile
-                </Button>
-              </div>
+          <div className="flex justify-center mb-2">
+            <div
+              className="w-[90vw] max-w-md py-2 px-2 flex justify-center rounded-t-lg space-x-2"
+              // style={{ backgroundColor: "#f1ede2" }}
+            >
+              <MainMenu
+                activeComponent={activeComponent}
+                setActiveComponent={setActiveComponent}
+                handleUserMenuOpen={handleUserMenuOpen}
+              />
             </div>
           </div>
           <div className="flex justify-center rounded-lg">
-            <div className="w-[90vw] border border-black bg-gray-100 max-w-md bg-white rounded-lg shadow-md min-h-[300px]">
+            <div className="w-[90vw] max-w-md rounded-lg min-h-[300px]">
               {renderComponent()}
             </div>
           </div>
           <div className="fixed bottom-4 left-4">
             <Button
               size="icon"
-              className="rounded-full w-14 h-14 shadow-lg"
+              className="rounded-full w-14 h-14 shadow-lg text-white"
               onClick={handleUserMenuOpen}
             >
               <User className="h-6 w-6" />
@@ -172,7 +117,7 @@ export default function Home() {
               <SheetTrigger asChild>
                 <Button
                   size="icon"
-                  className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-lg"
+                  className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-lg text-white"
                   disabled={!user}
                 >
                   <Plus className="h-6 w-6" />

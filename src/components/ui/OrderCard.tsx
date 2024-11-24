@@ -39,21 +39,6 @@ interface OrderCardProps {
   onRefresh?: () => void;
 }
 
-function getStatusColor(status: string): string {
-  switch (status) {
-    case "ACTIVE":
-      return "text-purple-700";
-    case "FIAT_SENT":
-      return "text-red-700";
-    case "WAITING_PAYMENT":
-      return "text-yellow-700";
-    case "PENDING":
-      return "text-blue-700";
-    default:
-      return "text-green-700";
-  }
-}
-
 export function OrderCard({
   orderDTO,
   showSelectButton = true,
@@ -173,7 +158,7 @@ export function OrderCard({
   function mapOrderVariant(order: Order): string {
     switch (order.status) {
       case "PENDING":
-        return "bg-green-500 text-white";
+        return "bg-secondary text-white";
       case "WAITING_PAYMENT":
         return "bg-yellow-500 text-white";
       case "ACTIVE":
@@ -183,7 +168,7 @@ export function OrderCard({
       case "SUCCESS":
       case "COMPLETED_BY_ADMIN":
       case "RELEASED":
-        return "bg-green-500 text-white";
+        return "bg-secondary text-white";
       case "CANCELED":
       case "CANCELED_BY_ADMIN":
         return "bg-gray-300 text-black";
@@ -241,23 +226,23 @@ export function OrderCard({
     : order.fiatAmount;
 
   return (
-    <Card className="w-full mb-4 border border-black">
+    <Card className="w-full mb-4" variant="shadow">
       <OrderStatusBar status={order.status ?? "Unknown"} />
       <CardHeader>
-        <div className="flex-1">
+        <div className="flex-[0_0_75%]">
           <CardTitle>
             {order.type === "SELL" ? (
               <>
                 <span className="font-bold">{order.sellerUsername}</span>{" "}
-                <span className="font-normal">sells</span> <br />
-                <span className="font-bold py-3">
+                <span className="font-normal">sells</span>{" "}
+                <span className="font-bold">
                   {order.amount} {order.tokenCode}
                 </span>
               </>
             ) : (
               <>
                 <span className="font-bold">{order.buyerUsername}</span>{" "}
-                <span className="font-normal">buys</span> <br />
+                <span className="font-normal">buys</span>{" "}
                 <span className="font-bold">
                   {order.amount} {order.tokenCode}
                 </span>
@@ -265,31 +250,34 @@ export function OrderCard({
             )}
           </CardTitle>
         </div>
-        <div className="flex-none w-2/4 flex justify-end h-7">
-          <Badge
-            variant={"outline"}
-            className={`text-xs border border-black ${mapOrderVariant(order)}`}
-          >
-            {mapOrderStatus(order.status ?? "Unknown")}
-          </Badge>
+        <div className="flex-[0_0_25%] flex justify-end h-6">
+          <div className="w-full max-w-full">
+            <Badge
+              className={`text-xs ${mapOrderVariant(
+                order
+              )} text-center whitespace-normal`}
+            >
+              {mapOrderStatus(order.status ?? "Unknown")}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="pb-6 pt-0 pb-3">
         <div className="space-y-1">
-          <div className="pb-2">
+          <div className="pb-0">
             <p>
               For <span className="font-bold">${formattedFiatAmount} ARS</span>
             </p>
           </div>
           <div>
-            <span className="text-sm block font-semibold">
+            <span className="text-xs block font-semibold">
               {order.paymentMethods?.map((method, index) => (
                 <PaymentMethodDisplay key={index} method={method} />
               ))}
             </span>
           </div>
           {order.buyerId && order.type === "SELL" && (
-            <div className="text-sm text-black">
+            <div className="text-xs text-black">
               Buyer:{" "}
               <span className="font-semibold">
                 {order.buyerId === user?.userId
@@ -344,85 +332,85 @@ export function OrderCard({
           )}
         </div>
       </CardContent>
-      {shouldHideButtons ? (
-        <>
-          {order.status === "ACTIVE" && !canLockOrReleaseFunds && (
-            <div className="text-red-700 p-2 text-center">
-              <Button
-                className="w-full bg-orange-700 text-white border border-black"
-                onClick={() => {
-                  if (!orderTaken) fiatSent(order);
-                  onRefresh?.(); // Call the refresh callback
-                }}
-              >
-                Notify FIAT sent
-              </Button>
-            </div>
-          )}
-          {order.status === "WAITING_PAYMENT" && (
-            <>
-              {!isConnected ? (
-                <div className="text-red-700 p-2 text-center">
+      <CardFooter>
+        {shouldHideButtons ? (
+          <>
+            {order.status === "ACTIVE" && !canLockOrReleaseFunds && (
+              <div className="text-red-700 p-2 text-center">
+                <Button
+                  className="w-full bg-orange-700 text-white border border-black"
+                  onClick={() => {
+                    if (!orderTaken) fiatSent(order);
+                    onRefresh?.(); // Call the refresh callback
+                  }}
+                >
+                  Notify FIAT sent
+                </Button>
+              </div>
+            )}
+            {order.status === "WAITING_PAYMENT" && (
+              <>
+                {!isConnected ? (
+                  <div className="p-2 text-center w-full ">
+                    <Button
+                      className="p-4 text-center w-full text-white"
+                      onClick={handleConnectButton} // Use the handler
+                    >
+                      Connect your wallet to proceed
+                    </Button>
+                  </div>
+                ) : canLockOrReleaseFunds ? (
+                  <div className="px-3 pb-2">
+                    <LockFundsButton
+                      order={order}
+                      canLock={canLockOrReleaseFunds}
+                    />
+                  </div>
+                ) : null}
+              </>
+            )}
+            {order.status === "FIAT_SENT" && canLockOrReleaseFunds && (
+              <div className="p-2 text-center">
+                <ReleaseFundsButton
+                  order={order}
+                  onRefresh={onRefresh}
+                  canRelease={canLockOrReleaseFunds}
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {orderTaken ? (
+              <div className="text-green-700 block text-center font-semibold">
+                Order taken successfully!
+              </div>
+            ) : (
+              <>
+                {showSelectButton &&
+                  !showDetails &&
+                  shouldShowSelectButton &&
+                  canSelectOrder && (
+                    <Button
+                      className="w-full bg-secondary text-white font-semibold"
+                      onClick={() => onSelect && onSelect(order)}
+                    >
+                      {order.type === "SELL" ? "Buy" : "Sell"}
+                    </Button>
+                  )}
+                {showDetails && (walletAddress || order.type === "BUY") && (
                   <Button
-                    className="p-4 text-center w-full border border-black"
-                    variant="outline"
-                    onClick={handleConnectButton} // Use the handler
+                    className="w-full bg-secondary border border-black text-white font-semibold"
+                    onClick={() => !orderTaken && takeOrder(order)}
                   >
-                    Connect your wallet to proceed
-                  </Button>
-                </div>
-              ) : canLockOrReleaseFunds ? (
-                <div className="px-3 pb-2">
-                  <LockFundsButton
-                    order={order}
-                    canLock={canLockOrReleaseFunds}
-                  />
-                </div>
-              ) : null}
-            </>
-          )}
-          {order.status === "FIAT_SENT" && canLockOrReleaseFunds && (
-            <div className="text-red-700 p-2 text-center">
-              <ReleaseFundsButton
-                order={order}
-                onRefresh={onRefresh}
-                canRelease={canLockOrReleaseFunds}
-              />
-            </div>
-          )}
-        </>
-      ) : (
-        <CardFooter>
-          {orderTaken ? (
-            <div className="text-green-700 block text-center font-semibold">
-              Order taken successfully!
-            </div>
-          ) : (
-            <>
-              {showSelectButton &&
-                !showDetails &&
-                shouldShowSelectButton &&
-                canSelectOrder && (
-                  <Button
-                    className="w-full bg-green-500 border border-black text-white"
-                    variant="outline"
-                    onClick={() => onSelect && onSelect(order)}
-                  >
-                    {order.type === "SELL" ? "Buy" : "Sell"}
+                    Take
                   </Button>
                 )}
-              {showDetails && (walletAddress || order.type === "BUY") && (
-                <Button
-                  className="w-full bg-green-500 text-white border border-black"
-                  onClick={() => !orderTaken && takeOrder(order)}
-                >
-                  Take
-                </Button>
-              )}
-            </>
-          )}
-        </CardFooter>
-      )}
+              </>
+            )}
+          </>
+        )}
+      </CardFooter>
       <Separator className="mb-2" />
       <div className="block text-center pb-1">
         <p className="text-xs text-gray-600 block">ID: {order.id}</p>
