@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { ArrowLeftRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Clipboard } from "lucide-react"; // Import an icon for the clipboard
+import { useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +22,7 @@ export default function InternalTransfersComponent() {
   const [selectedCoin, setSelectedCoin] = useState<(typeof balances)[0] | null>(
     null
   );
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const [myWalletBalances, setMyWalletBalances] = useState<{
     [key: string]: number;
   }>({});
@@ -33,6 +34,7 @@ export default function InternalTransfersComponent() {
   const [selectedToken, setSelectedToken] = useState<TokenBalance | null>(null);
   const { transferTokensFromEtherspotToEOA, transferFromEOAToSW } =
     useEtherspotFlow();
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     if (balances.length > 0) {
@@ -113,6 +115,13 @@ export default function InternalTransfersComponent() {
     }
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(swAddress).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+    });
+  };
+
   const handleTokenSelect = (token: TokenBalance | null) => {
     setSelectedToken(token);
     if (token) {
@@ -131,11 +140,8 @@ export default function InternalTransfersComponent() {
   }
 
   return (
-    <div className="flex items-center bg-gray-100 w-full">
-      <Card className="w-full border border-black">
-        <CardHeader>
-          <CardTitle className="text-center">Balances</CardTitle>
-        </CardHeader>
+    <div className="flex items-center w-full">
+      <Card className="w-full p-2 bg-transparent border border-primary">
         <CardContent>
           <Tabs
             defaultValue="kioscoinWallet"
@@ -162,7 +168,7 @@ export default function InternalTransfersComponent() {
                 value="myWallet"
                 className={`flex items-center justify-center w-full ${
                   activeTab === "myWallet"
-                    ? "bg-blue-500 text-white"
+                    ? "bg-blue-600 text-white"
                     : "bg-gray-200"
                 }`}
               >
@@ -170,6 +176,24 @@ export default function InternalTransfersComponent() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="kioscoinWallet">
+              <p className="font-bold text-primary">{t("address")}</p>
+              <div className="flex items-center space-x-2 pb-4">
+                <p className="text-primary text-sm">
+                  {swAddress.slice(0, 10)}...{swAddress.slice(-4)}
+                </p>
+                <button
+                  onClick={handleCopy}
+                  className={`${
+                    isCopied
+                      ? "text-secondary"
+                      : "text-primary hover:text-blue-600"
+                  }`}
+                  aria-label="Copy address"
+                >
+                  <Clipboard className="h-4 w-4" />
+                </button>
+              </div>
+              <p className="font-bold text-primary">Balances</p>
               <TokenBalanceList
                 onTokenSelect={handleTokenSelect}
                 balances={balances.map((token) => ({
@@ -179,6 +203,7 @@ export default function InternalTransfersComponent() {
               />
             </TabsContent>
             <TabsContent value="myWallet">
+              <p className="font-bold text-primary">Balances</p>
               <TokenBalanceList
                 onTokenSelect={handleTokenSelect}
                 balances={balances.map((token) => ({
