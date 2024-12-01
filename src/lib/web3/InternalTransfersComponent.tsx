@@ -141,23 +141,23 @@ export default function InternalTransfersComponent() {
 
   return (
     <div className="flex items-center w-full">
-      <Card className="w-full p-2 bg-transparent border border-primary">
+      <Card className="w-full bg-transparent border border-primary">
         <CardContent>
           <Tabs
             defaultValue="kioscoinWallet"
             className="w-full"
             onValueChange={setActiveTab}
           >
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-2 bg-transparent w-full">
               <TabsTrigger
                 value="kioscoinWallet"
                 className={`flex items-center justify-center w-full ${
                   activeTab === "kioscoinWallet"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200"
+                    ? "text-white"
+                    : "text-primary bg-transparent"
                 }`}
               >
-                <span className="flex items-center">
+                <span className="flex items-center text-primary">
                   Smart Wallet
                   {/* <span className="ml-2">
                     <InfoToggle content="Your wallet that let you sell and buy gasless!" />
@@ -168,11 +168,13 @@ export default function InternalTransfersComponent() {
                 value="myWallet"
                 className={`flex items-center justify-center w-full ${
                   activeTab === "myWallet"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200"
+                    ? "text-white"
+                    : "text-primary bg-transparent"
                 }`}
               >
-                <span className="flex items-center">EOA Wallet</span>
+                <span className="flex items-center text-primary">
+                  EOA Wallet
+                </span>
               </TabsTrigger>
             </TabsList>
             <TabsContent value="kioscoinWallet">
@@ -203,7 +205,7 @@ export default function InternalTransfersComponent() {
               />
             </TabsContent>
             <TabsContent value="myWallet">
-              <p className="font-bold text-primary">Balances</p>
+              <p className="font-bold text-primary pb-2">Balances</p>
               <TokenBalanceList
                 onTokenSelect={handleTokenSelect}
                 balances={balances.map((token) => ({

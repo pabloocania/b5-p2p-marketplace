@@ -37,10 +37,8 @@ export default function TokenBalanceList({
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-lg font-bold"></CardTitle>
-      </CardHeader>
+    <Card className="w-full max-w-md mx-auto px-0">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0"></CardHeader>
       <CardContent className="pt-0">
         {balances.length > 0 ? (
           <div className="space-y-1">
