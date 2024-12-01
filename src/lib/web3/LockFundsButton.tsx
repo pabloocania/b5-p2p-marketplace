@@ -59,13 +59,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
       onClick={handleLockFunds}
       disabled={isLoading || !hasSufficientBalance}
     >
-      {isLoading ? (
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-      ) : !hasSufficientBalance ? (
-        t("no_enough_balance")
-      ) : (
-        t("lock_funds")
-      )}
+      {hasSufficientBalance ? t("lock_funds") : t("not_enough_funds")}
     </Button>
   );
 };

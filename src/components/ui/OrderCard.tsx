@@ -249,11 +249,9 @@ export function OrderCard({
           </CardTitle>
         </div>
         <div className="flex-[0_0_25%] flex justify-end h-6">
-          <div className="w-full max-w-full">
+          <div className="w-full max-w-full text-right">
             <Badge
-              className={`text-xs ${mapOrderVariant(
-                order
-              )} text-center whitespace-normal`}
+              className={`text-xs ${mapOrderVariant(order)} whitespace-normal`}
             >
               {mapOrderStatus(order.status ?? "Unknown")}
             </Badge>
@@ -334,17 +332,15 @@ export function OrderCard({
         {shouldHideButtons ? (
           <>
             {order.status === "ACTIVE" && !canLockOrReleaseFunds && (
-              <div className="text-red-700 p-2 text-center">
-                <Button
-                  className="w-full bg-orange-700 text-white border border-black"
-                  onClick={() => {
-                    if (!orderTaken) fiatSent(order);
-                    onRefresh?.(); // Call the refresh callback
-                  }}
-                >
-                  {t("notify_fiat_sent")}
-                </Button>
-              </div>
+              <Button
+                className="w-full text-white bg-yellow-500"
+                onClick={() => {
+                  if (!orderTaken) fiatSent(order);
+                  onRefresh?.(); // Call the refresh callback
+                }}
+              >
+                {t("notify_fiat_sent")}
+              </Button>
             )}
             {order.status === "WAITING_PAYMENT" && (
               <>
@@ -400,7 +396,7 @@ export function OrderCard({
                   )}
                 {showDetails && (walletAddress || order.type === "BUY") && (
                   <Button
-                    className="w-full bg-secondary border border-black text-white font-semibold"
+                    className="w-full bg-secondary text-white font-semibold"
                     onClick={() => !orderTaken && takeOrder(order)}
                   >
                     {t("take_order")}
