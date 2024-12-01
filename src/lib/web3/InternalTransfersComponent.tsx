@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { ArrowLeftRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Clipboard } from "lucide-react"; // Import an icon for the clipboard
+import { useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,15 +14,15 @@ import { useEtherspotSdk } from "./EtherspotSdkProvider";
 import { useAccount } from "wagmi";
 import { Label } from "@/components/ui/label";
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
-import InfoToggle from "@/components/ui/InfoToggle";
 import TokenBalanceList from "@/components/ui/TokenBalances";
 
 export default function InternalTransfersComponent() {
-  const { balances } = useEtherspotSdk();
+  const { t } = useTranslation();
+  const { balances, swAddress } = useEtherspotSdk();
   const [selectedCoin, setSelectedCoin] = useState<(typeof balances)[0] | null>(
     null
   );
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const [myWalletBalances, setMyWalletBalances] = useState<{
     [key: string]: number;
   }>({});
@@ -32,6 +34,7 @@ export default function InternalTransfersComponent() {
   const [selectedToken, setSelectedToken] = useState<TokenBalance | null>(null);
   const { transferTokensFromEtherspotToEOA, transferFromEOAToSW } =
     useEtherspotFlow();
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     if (balances.length > 0) {
@@ -74,35 +77,6 @@ export default function InternalTransfersComponent() {
     }
   };
 
-  function CoinSelector({
-    balances,
-    selectedCoin,
-    onSelectCoin,
-  }: {
-    balances: TokenBalance[];
-    selectedCoin: TokenBalance | null;
-    onSelectCoin: (coin: TokenBalance | null) => void;
-  }) {
-    return (
-      <div className="mb-4">
-        <select
-          className="w-full p-2 border rounded"
-          value={selectedCoin ? selectedCoin.name : ""}
-          onChange={(e) => {
-            const coin = balances.find((coin) => coin.name === e.target.value);
-            onSelectCoin(coin || null);
-          }}
-        >
-          {balances.map((coin) => (
-            <option key={coin.eoaBalance} value={coin.name}>
-              {coin.name}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  }
-
   const handleTransfer = async () => {
     if (selectedCoin && transferAmount) {
       const amount = parseFloat(transferAmount);
@@ -141,6 +115,13 @@ export default function InternalTransfersComponent() {
     }
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(swAddress).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+    });
+  };
+
   const handleTokenSelect = (token: TokenBalance | null) => {
     setSelectedToken(token);
     if (token) {
@@ -155,15 +136,12 @@ export default function InternalTransfersComponent() {
   };
 
   if (!balances) {
-    return <div>No stablecoins available</div>;
+    return <div>{t("no_stablecoins_available")}</div>;
   }
 
   return (
-    <div className="flex items-center bg-gray-100 w-full">
-      <Card className="w-full border border-black">
-        <CardHeader>
-          <CardTitle className="text-center">Balances</CardTitle>
-        </CardHeader>
+    <div className="flex items-center w-full">
+      <Card className="w-full p-2 bg-transparent border border-primary">
         <CardContent>
           <Tabs
             defaultValue="kioscoinWallet"
@@ -190,19 +168,32 @@ export default function InternalTransfersComponent() {
                 value="myWallet"
                 className={`flex items-center justify-center w-full ${
                   activeTab === "myWallet"
-                    ? "bg-blue-500 text-white"
+                    ? "bg-blue-600 text-white"
                     : "bg-gray-200"
                 }`}
               >
-                <span className="flex items-center">
-                  EOA Wallet
-                  {/* <span className="ml-2 relative">
-                    <InfoToggle content="Your wallet in your device" />
-                  </span> */}
-                </span>
+                <span className="flex items-center">EOA Wallet</span>
               </TabsTrigger>
             </TabsList>
             <TabsContent value="kioscoinWallet">
+              <p className="font-bold text-primary">{t("address")}</p>
+              <div className="flex items-center space-x-2 pb-4">
+                <p className="text-primary text-sm">
+                  {swAddress.slice(0, 10)}...{swAddress.slice(-4)}
+                </p>
+                <button
+                  onClick={handleCopy}
+                  className={`${
+                    isCopied
+                      ? "text-secondary"
+                      : "text-primary hover:text-blue-600"
+                  }`}
+                  aria-label="Copy address"
+                >
+                  <Clipboard className="h-4 w-4" />
+                </button>
+              </div>
+              <p className="font-bold text-primary">Balances</p>
               <TokenBalanceList
                 onTokenSelect={handleTokenSelect}
                 balances={balances.map((token) => ({
@@ -212,6 +203,7 @@ export default function InternalTransfersComponent() {
               />
             </TabsContent>
             <TabsContent value="myWallet">
+              <p className="font-bold text-primary">Balances</p>
               <TokenBalanceList
                 onTokenSelect={handleTokenSelect}
                 balances={balances.map((token) => ({
@@ -225,11 +217,11 @@ export default function InternalTransfersComponent() {
             {selectedToken && (
               <div className="flex flex-col space-y-2">
                 <p className="text-xs text-center">
-                  Enter the amount to transfer between your wallets
+                  {t("enter_transfer_amount")}
                 </p>
                 <div className="flex items-center space-x-2">
                   <Label htmlFor="transfer-amount" className="sr-only">
-                    Transfer Amount
+                    {t("transfer_amount")}
                   </Label>
                   <Input
                     id="transfer-amount"
@@ -248,7 +240,7 @@ export default function InternalTransfersComponent() {
                 </div>
                 <Button
                   onClick={handleTransfer}
-                  className="w-full"
+                  className="w-full bg-secondary text-white"
                   disabled={
                     !!selectedCoin &&
                     parseFloat(transferAmount) >
@@ -258,7 +250,7 @@ export default function InternalTransfersComponent() {
                   }
                 >
                   <ArrowLeftRight className="mr-2 h-4 w-4" />
-                  Transfer
+                  {t("transfer")}
                 </Button>
               </div>
             )}
@@ -267,8 +259,8 @@ export default function InternalTransfersComponent() {
                 (activeTab === "myWallet"
                   ? myWalletBalances[selectedCoin.name]
                   : kioscoinWalletBalances[selectedCoin.name]) && (
-                <div className="text-red-500 text-sm mt-1">
-                  Not enough funds
+                <div className="text-white-500 text-sm mt-1">
+                  {t("not_enough_balance")}
                 </div>
               )}
           </div>

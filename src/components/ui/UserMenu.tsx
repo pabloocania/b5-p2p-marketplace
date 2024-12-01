@@ -5,6 +5,7 @@ import { UserProps } from "../../lib/useUser";
 import InternalTransfersComponent from "@/lib/web3/InternalTransfersComponent";
 import { useAccount } from "wagmi";
 import KioscoinConnectButton from "@/lib/web3/KioscoinConnectButton";
+import { useTranslation } from "react-i18next";
 
 interface UserMenuProps {
   user: UserProps | undefined;
@@ -16,6 +17,7 @@ interface UserMenuProps {
 const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
   const [mockUsers, setMockUsers] = useState<UserProps[]>([]);
   const { isConnected } = useAccount();
+  const { t } = useTranslation();
   // const { callPaymaster } = useEtherspotFlow();
 
   useEffect(() => {
@@ -58,15 +60,13 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
       {user ? (
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
-            {/* <Avatar>
-              <AvatarImage src={user.avatarUrl} alt={user.username} />
-              <AvatarFallback>
-                {user.username.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar> */}
             <div>
-              <p className="font-bold text-primary">{user.username}</p>
-              <p className="text-xs">ID: {user.userId}</p>
+              <div className="flex items-center">
+                <p className="font-bold text-primary">
+                  {t("user")}: {user.username}
+                </p>
+              </div>
+              <p className="text-xs ">ID: {user.userId}</p>
               {/* <p className="text-sm text-gray-500">{user.email}</p> */}
             </div>
           </div>

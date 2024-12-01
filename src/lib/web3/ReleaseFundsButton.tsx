@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Order } from "b5-api-client";
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 import { useTranslation } from "react-i18next";
+import { useAccount } from "wagmi";
 
 interface ReleaseFundsButtonProps {
   order: Order;
@@ -15,6 +16,7 @@ const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   onRefresh,
   canRelease,
 }) => {
+  const { isConnected } = useAccount();
   const { t } = useTranslation();
   const { releaseFunds } = useEtherspotFlow(); // Import the lockFunds function from the hook
 
@@ -33,7 +35,7 @@ const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   };
 
   const [isLoading, setIsLoading] = useState(false);
-  return canRelease ? (
+  return canRelease && isConnected ? (
     <Button
       className="w-full bg-primary text-white"
       onClick={handleReleaseFunds}

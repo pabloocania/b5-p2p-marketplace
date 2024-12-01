@@ -66,7 +66,18 @@ export function TransactionStatus({
     }
   };
 
-  const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+  const statusMap = {
+    sent: "sent",
+    waiting: "waiting",
+    success: "success",
+    error: "error",
+    // Add more status mappings as needed
+  };
+
+  const getStatusText = (status: keyof typeof statusMap) => {
+    const key = statusMap[status];
+    return key ? t(key) : status;
+  };
 
   const handleClose = () => {
     setIsVisible(false);
@@ -74,13 +85,13 @@ export function TransactionStatus({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-1000">
-      <Card className="w-full max-w-sm mb-12 z-60">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+      <Card className="w-full max-w-sm mb-12">
         <CardContent className="p-4">
           <Alert className={`mb-4 ${getStatusColor(status)}`}>
             <AlertTitle className="flex items-center gap-2">
               {getStatusIcon(status)}
-              {statusText}
+              {getStatusText(status)}
             </AlertTitle>
             <AlertDescription>{message}</AlertDescription>
           </Alert>
