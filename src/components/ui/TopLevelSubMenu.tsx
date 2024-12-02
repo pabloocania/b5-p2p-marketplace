@@ -9,7 +9,7 @@ interface TopLevelSubMenuProps {
   refreshKey: number;
 }
 
-const TopLevelSubMenu: React.FC<TopLevelSubMenuProps> = ({
+const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
   activeSubFilter,
   setActiveSubFilter,
   refreshKey,
@@ -21,7 +21,7 @@ const TopLevelSubMenu: React.FC<TopLevelSubMenuProps> = ({
         <Button
           className={`flex-1 ${
             activeSubFilter === Filter.PENDING
-              ? "bg-primary text-white"
+              ? "bg-secondary text-white"
               : "hover:bg-primary text-white bg-terciary"
           }`}
           onClick={() => setActiveSubFilter(Filter.PENDING)}
@@ -31,7 +31,7 @@ const TopLevelSubMenu: React.FC<TopLevelSubMenuProps> = ({
         <Button
           className={`flex-1 ${
             activeSubFilter === Filter.WAITING_PAYMENT
-              ? "bg-primary text-white"
+              ? "bg-secondary text-white"
               : "hover:bg-primary text-white bg-terciary "
           }`}
           onClick={() => setActiveSubFilter(Filter.WAITING_PAYMENT)}
@@ -41,7 +41,7 @@ const TopLevelSubMenu: React.FC<TopLevelSubMenuProps> = ({
         <Button
           className={`flex-1 ${
             activeSubFilter === Filter.CLOSED
-              ? "bg-primary text-white"
+              ? "bg-secondary text-white"
               : "hover:bg-primary text-white bg-terciary "
           }`}
           onClick={() => setActiveSubFilter(Filter.CLOSED)}
@@ -58,4 +58,4 @@ const TopLevelSubMenu: React.FC<TopLevelSubMenuProps> = ({
   );
 };
 
-export default TopLevelSubMenu;
+export default UserOrdersMenu;

@@ -45,7 +45,7 @@ export default function CreateOrder({
   onClose,
   onConnectWallet,
 }: CreateOrderProps) {
-  const [orderType, setOrderType] = useState<OrderType>("BUY");
+  const [orderType, setOrderType] = useState<OrderType>("SELL");
   const [description, setDescription] = useState<string>("");
   const [tokenAmount, setTokenAmount] = useState<number>(0);
   const [tokenCode, setTokenCode] = useState<string>("PDOC");
@@ -116,13 +116,14 @@ export default function CreateOrder({
   };
 
   return (
-    <div className="flex justify-center items-center pt-2">
-      <Card className="w-full max-w-md">
+    <div className="flex justify-center items-center pt-8">
+      <Card className="w-full max-w-md border border-primary">
         <CardHeader className="flex justify-center items-center">
           <CardTitle className="text-center text-primary">
             {t("create_order")}
           </CardTitle>
         </CardHeader>
+        <Separator className="my-2"></Separator>
         <CardContent>
           {!isLoggedIn ? (
             <Button
@@ -135,7 +136,7 @@ export default function CreateOrder({
             <OrderCard orderDTO={createdOrder} showSelectButton={false} />
           ) : (
             <form onSubmit={handleSubmit}>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label className="font-bold">{t("i_want_to")}</Label>
                 <div>
                   <RadioGroup
@@ -191,7 +192,7 @@ export default function CreateOrder({
                     })}
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <Label className="font-bold">{t("payment_method")}</Label>
                   <div className="flex items-center space-x-2">
                     <RadioGroup

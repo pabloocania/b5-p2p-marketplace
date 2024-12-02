@@ -11,10 +11,7 @@ interface LockFundsButtonProps {
   canLock: boolean;
 }
 
-const LockFundsButton: React.FC<LockFundsButtonProps> = ({
-  order,
-  canLock,
-}) => {
+const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
   const { t } = useTranslation();
   const { batchApproveAndEscrow } = useEtherspotFlow();
   const [isLoading, setIsLoading] = useState(false);

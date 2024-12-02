@@ -16,10 +16,9 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useDisconnect } from "wagmi";
 import { useTransaction } from "@/lib/web3/TransactionContext";
 import { TransactionStatus } from "@/components/ui/TransactionStatus";
-import TopLevelSubMenu from "@/components/ui/TopLevelSubMenu";
+import UserOrdersMenu from "@/components/ui/TopLevelSubMenu";
 import MainMenu from "@/components/ui/MainMenu";
 import { useTranslation } from "react-i18next";
-import { Separator } from "@radix-ui/react-separator";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -28,7 +27,7 @@ export default function Home() {
   const [refreshKey, setRefreshKey] = useState(0);
   const { disconnect } = useDisconnect();
   const { transaction, resetTransaction } = useTransaction();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -65,7 +64,7 @@ export default function Home() {
       return <UserMenu user={user} onLogin={login} onLogout={logout} />;
     } else if (activeComponent === "MyOrders") {
       return (
-        <TopLevelSubMenu
+        <UserOrdersMenu
           activeSubFilter={activeSubFilter}
           setActiveSubFilter={setActiveSubFilter}
           refreshKey={refreshKey}
@@ -145,6 +144,7 @@ export default function Home() {
               <SheetContent
                 side="bottom"
                 className="h-[90vh] bg-backgroundMain"
+                closeText={t("close")}
               >
                 <VisuallyHidden>
                   <SheetTitle>Create Order Dialog</SheetTitle>
