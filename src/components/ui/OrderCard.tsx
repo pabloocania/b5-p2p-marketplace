@@ -54,7 +54,7 @@ export function OrderCard({
   const [clipboardSupported, setClipboardSupported] = useState(false);
   const [orderTaken, setOrderTaken] = useState(false);
   const [order, setOrder] = useState(orderDTO);
-  const { user } = useUserContext();
+  const { user, isLoggedIn } = useUserContext();
   const { isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
 
@@ -83,7 +83,7 @@ export function OrderCard({
   const shouldShowSelectButton =
     !order || order.status === ("PENDING" as OrderStatus);
 
-  const canSelectOrder = user?.userId !== order?.creatorId;
+  const canSelectOrder = isLoggedIn && user?.userId !== order?.creatorId;
 
   useEffect(() => {
     setClipboardSupported("clipboard" in navigator);

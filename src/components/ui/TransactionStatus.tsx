@@ -99,7 +99,10 @@ export function TransactionStatus({
             <AlertDescription>{message}</AlertDescription>
           </Alert>
           {(status === "sent" || status === "waiting") && (
-            <Progress value={animatedProgress} className="mb-4" />
+            <Progress
+              value={animatedProgress}
+              className="my-4 border border-primary"
+            />
           )}
           {(status === "success" || status === "error") && (
             <Button
