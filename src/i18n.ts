@@ -73,7 +73,15 @@ i18n
                     no_stablecoins_available: "No stablecoins available",
                     reset: "Reset",
                     address: "Address",
-                    connected_to: "Conectado a",
+                    connected_to: "Connected to",
+                    amount: "Amount",
+                    en_ars: "FIAT to pay",
+                    enter_amount: "Enter amount",
+                    bank: "Bank",
+                    create_order: "Create order",
+                    buy_or_sell: "Buy or sell",
+                    i_want_to: "I want to: ",
+                    select_token: "Select token"
                     // Add more translations here
                 }
             },
@@ -146,6 +154,14 @@ i18n
                     reset: "Reiniciar",
                     address: "Dirección",
                     connected_to: "Conectado a",
+                    amount: "Cantidad",
+                    en_ars: "En ARS",
+                    enter_amount: "Ingresar cantidad",
+                    bank: "Banco",
+                    create_order: "Crear orden",
+                    buy_or_sell: "Comprar o vender",
+                    i_want_to: "Quiero",
+                    select_token: "Seleccionar moneda"
                     // Add more translations here
                 }
             }

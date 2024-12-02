@@ -139,10 +139,13 @@ export default function Home() {
                   disabled={!user}
                 >
                   <Plus className="h-6 w-6" />
-                  <span className="sr-only">Create Order</span>
+                  <span className="sr-only">Create order</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="bottom" className="h-[90vh]">
+              <SheetContent
+                side="bottom"
+                className="h-[90vh] bg-backgroundMain"
+              >
                 <VisuallyHidden>
                   <SheetTitle>Create Order Dialog</SheetTitle>
                 </VisuallyHidden>
