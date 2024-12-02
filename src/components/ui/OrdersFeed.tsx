@@ -169,7 +169,11 @@ export default function OrdersFeed({
               <SheetTrigger asChild>
                 <div />
               </SheetTrigger>
-              <SheetContent side="bottom" className="h-[90vh]">
+              <SheetContent
+                side="bottom"
+                className="h-[90vh]"
+                closeText={t("close")}
+              >
                 <VisuallyHidden>
                   <SheetTitle>User Menu Dialog</SheetTitle>
                 </VisuallyHidden>

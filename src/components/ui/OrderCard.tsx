@@ -162,7 +162,7 @@ export function OrderCard({
       case "ACTIVE":
         return "bg-yellow-500 text-white";
       case "FIAT_SENT":
-        return "bg-blue-500 text-white";
+        return "bg-yellow-500 text-white";
       case "SUCCESS":
       case "COMPLETED_BY_ADMIN":
       case "RELEASED":
@@ -365,15 +365,26 @@ export function OrderCard({
                 ) : null}
               </>
             )}
-            {order.status === "FIAT_SENT" && canLockOrReleaseFunds && (
-              <div className="text-center w-full text-white">
-                <ReleaseFundsButton
-                  order={order}
-                  onRefresh={onRefresh}
-                  canRelease={canLockOrReleaseFunds}
-                />
-              </div>
-            )}
+            {order.status === "FIAT_SENT" && canLockOrReleaseFunds ? (
+              !isConnected ? (
+                <div className="text-center w-full text-white">
+                  <Button
+                    className="w-full bg-primary text-white"
+                    onClick={handleConnectButton} // Use the handler
+                  >
+                    {t("connect_to_continue")}
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-center w-full text-white">
+                  <ReleaseFundsButton
+                    order={order}
+                    onRefresh={onRefresh}
+                    canRelease={canLockOrReleaseFunds}
+                  />
+                </div>
+              )
+            ) : null}
           </>
         ) : (
           <>

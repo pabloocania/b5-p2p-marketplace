@@ -37,7 +37,7 @@ const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   return canRelease && isConnected ? (
     <Button
-      className="w-full bg-primary text-white"
+      className="w-full bg-yellow-500 text-white"
       onClick={handleReleaseFunds}
       disabled={isLoading}
     >

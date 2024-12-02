@@ -7,6 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { Separator } from "./separator";
 
 interface TransactionStatusProps {
   status: "idle" | "sent" | "waiting" | "success" | "error";
@@ -85,10 +86,12 @@ export function TransactionStatus({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 flex items-center justify-center p-5 bg-black/50 z-50">
+      {" "}
+      {/* Added z-index */}
       <Card className="w-full max-w-sm mb-12">
-        <CardContent className="p-4">
-          <Alert className={`mb-4 ${getStatusColor(status)}`}>
+        <CardContent className="pt-4 px-4 pb-0">
+          <Alert className={`${getStatusColor(status)}`}>
             <AlertTitle className="flex items-center gap-2">
               {getStatusIcon(status)}
               {getStatusText(status)}
@@ -102,12 +105,17 @@ export function TransactionStatus({
             <Button
               onClick={handleClose}
               variant="outline"
-              className="w-full mt-4"
+              className="w-full mt-4 mb-4"
             >
               {t("close")}
             </Button>
           )}
         </CardContent>
+        <Separator className="mb-2" />
+        <div className="block text-center pb-1">
+          <p className="text-xs text-gray-600 block">{t("not_close_app")}</p>
+          {/* <span className="text-xs text-gray-600 block">ID: {order.id}</span> */}
+        </div>
       </Card>
     </div>
   );

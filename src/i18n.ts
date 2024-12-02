@@ -73,7 +73,16 @@ i18n
                     no_stablecoins_available: "No stablecoins available",
                     reset: "Reset",
                     address: "Address",
-                    connected_to: "Conectado a",
+                    connected_to: "Connected to",
+                    amount: "Amount",
+                    en_ars: "FIAT to pay",
+                    enter_amount: "Enter amount",
+                    bank: "Bank",
+                    create_order: "Create order",
+                    buy_or_sell: "Buy or sell",
+                    i_want_to: "I want to: ",
+                    select_token: "Select token",
+                    not_close_app: "Please, don't close or refresh the app"
                     // Add more translations here
                 }
             },
@@ -81,7 +90,7 @@ i18n
                 translation: {
                     welcome: "Bienvenido",
                     title: "Beefive - Mercado stablecoins descentralizado",
-                    p2p_market: "Mercado P2P",
+                    p2p_market: "Mercado",
                     my_orders: "Mis órdenes",
                     my_account: "Mi cuenta",
                     pending: "Pendientes",
@@ -126,8 +135,8 @@ i18n
                     transaction_status_error: "Error al obtener el estado de la transacción, por favor intente de nuevo.",
                     transaction_status_timeout: "El chequeo del estado de la transacción ha expirado.",
                     transfering: "Transfiriendo...",
-                    funds_released: "Fondos liberados",
-                    releasing_funds: "Liberando fondos",
+                    funds_released: "Fondos enviados al comprador.",
+                    releasing_funds: "Liberando y enviando fondos al comprador",
                     funds_locked: "Los fondos están asegurados en el contrato inteligente",
                     approve_and_lock: "Asegurando sus tokens",
                     you: "tú",
@@ -139,13 +148,22 @@ i18n
                     transfer_amount: "Cantidad a transferir",
                     enter_transfer_amount: "Ingresa la cantidad a transferir entre tus billeteras",
                     sent: "Enviado",
-                    waiting: "Esperando",
+                    waiting: "Esperando...",
                     success: "Éxito",
                     error: "Error",
                     no_stablecoins_available: "No hay stablecoins disponibles",
                     reset: "Reiniciar",
                     address: "Dirección",
                     connected_to: "Conectado a",
+                    amount: "Cantidad",
+                    en_ars: "En ARS",
+                    enter_amount: "Ingresar cantidad",
+                    bank: "Banco",
+                    create_order: "Crear orden",
+                    buy_or_sell: "Comprar o vender",
+                    i_want_to: "Quiero",
+                    select_token: "Seleccionar moneda",
+                    not_close_app: "Por favor, no cierre ni reinicie la aplicacion."
                     // Add more translations here
                 }
             }
