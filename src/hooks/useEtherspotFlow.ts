@@ -30,7 +30,6 @@ const publicClient = createPublicClient({
 });
 
 export const useEtherspotFlow = () => {
-  const [isTransacting, setIsTransacting] = useState(false);
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
   const account = useAccount();
@@ -54,45 +53,21 @@ export const useEtherspotFlow = () => {
   // Example of updating transaction status
   const executeTransaction = async (
     operations: { to: string; data: string }[],
-    successMessage: string,
-    waitingMessage: string
   ): Promise<OPSReceipt> => {
     try {
-      setIsTransacting(true);
-      setTransaction({ status: "sent", message: t("initiating_transaction"), progress: 0 });
-      setTimeout(() => {
-        setTransaction({ status: "waiting", message: waitingMessage, progress: 45 });
-      }, 1000);
-
       const userOpReceipt = await processBatchOperations(operations);
-
-      if (userOpReceipt.success) {
-        setTransaction({ status: "success", message: successMessage, progress: 100 });
-      } else {
-        setTransaction({ status: "error", message: t("transaction_failed"), progress: 0 });
-        return Promise.reject(new Error("Transaction failed"));
-      }
-
-      console.log(userOpReceipt);
       return userOpReceipt;
     } catch (error) {
-      setTransaction({ status: "error", message: t("transaction_failed"), progress: 0 });
-
       return Promise.reject(new Error("Transaction failed"));
-    } finally {
-      setIsTransacting(false);
     }
   };
 
   const transferFromEOAToSW = async (
     tokenAddress: string,
     amount: string
-  ): Promise<TransactionStatusResponse> => {
+  ): Promise<string> => {
     if (walletClient && address && primeSdk) {
       try {
-        setIsTransacting(true);
-        setTransaction({ status: "sent", message: t("initiating_transaction"), progress: 10 });
-
         const etherspotAddress = await primeSdk.getCounterFactualAddress();
         const data = encodeFunctionData({
           abi: ERC20ContractConfig.abi,
@@ -104,17 +79,12 @@ export const useEtherspotFlow = () => {
           to: getAddress(tokenAddress),
           data: data,
         });
-
+        return transactionHash
         // Assuming you have a way to get the transaction receipt after success
-        const transactionReceipt = await checkTransactionStatus(transactionHash);
-
-        return transactionReceipt;
+        // return await checkTransactionStatus(transactionHash);
       } catch (error) {
         console.error("Error during transaction:", error);
-        setTransaction({ status: "error", message: t("transaction_failed"), progress: 0 });
         return Promise.reject(error);
-      } finally {
-        setIsTransacting(false);
       }
     } else {
       return Promise.reject(new Error("Wallet client, address, or PrimeSdk instance is not available."));
@@ -177,7 +147,7 @@ export const useEtherspotFlow = () => {
           data: data,
         };
 
-        return await executeTransaction([operation], t("transaction_success"), t("transfering"));
+        return await executeTransaction([operation]);
       }
       throw new Error("Address or PrimeSdk instance is not available.");
     } catch (error) {
@@ -202,7 +172,7 @@ export const useEtherspotFlow = () => {
 
         return await executeTransaction([
           { to: RSKEscrowContractConfig.address.toLowerCase(), data: releaseData }
-        ], t("funds_released"), t("releasing_funds"));
+        ]);
       } else {
         return Promise.reject("Smart wallet not defined");
       }
@@ -232,8 +202,8 @@ export const useEtherspotFlow = () => {
     return false;
   };
 
-  const batchApproveAndEscrow = async (order: Order): Promise<OPSReceipt> => {
-    if (primeSdk && address && !isTransacting) {
+  const batchApproveAndEscrow = async (order: Order): Promise<OPSReceipt | undefined> => {
+    if (primeSdk && address) {
       // console.log(await arkaPaymasterInstance.deposit(0.001))
       const amountInt = parseUnits(order.amount ?? "0", 18); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
@@ -277,8 +247,7 @@ export const useEtherspotFlow = () => {
         { to: ERC20ContractConfig.address, data: approveData },
         { to: RSKEscrowContractConfig.address.toLowerCase(), data: escrowData }
       ];
-
-      return await executeTransaction(operations, t("funds_locked"), t("approve_and_lock"));
+      return executeTransaction(operations);
     } else {
       throw new Error("PrimeSdk instance or user address is not available.");
     }
