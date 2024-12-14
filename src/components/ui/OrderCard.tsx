@@ -301,15 +301,6 @@ export function OrderCard({
               {order.buyerHasRated && (
                 <Rating orderId={order.id!!} ratedId={order.sellerId} />
               )}
-              {/* 
-                {isRatingVisible && <Rating />}{" "}
-  
-  useEffect(() => {
-    if (order && order.status == "ACTIVE") {
-      setIsRatingVisible(true);
-    }
-  }, [status]);
-   */}
             </div>
           )}
           {user && showDetails && order.type === ("SELL" as OrderType) && (
