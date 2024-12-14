@@ -283,7 +283,7 @@ export function OrderCard({
                   ? order.buyerUsername
                   : order.buyerId}
               </span>
-              {order.sellerHasRated && (
+              {!order.sellerHasRated && (
                 <Rating orderId={order.id!!} ratedId={order.buyerId} />
               )}
             </div>
@@ -298,7 +298,7 @@ export function OrderCard({
                   ? order.sellerUsername
                   : order.sellerId}
               </span>
-              {order.buyerHasRated && (
+              {!order.buyerHasRated && (
                 <Rating orderId={order.id!!} ratedId={order.sellerId} />
               )}
             </div>
