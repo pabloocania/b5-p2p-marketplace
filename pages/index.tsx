@@ -81,6 +81,7 @@ export default function Home() {
             status={transaction.status}
             message={transaction.message}
             progress={transaction.progress}
+            order={transaction.order}
             onClose={resetTransaction}
           />
           <div className="flex justify-center rounded-lg pb-4">

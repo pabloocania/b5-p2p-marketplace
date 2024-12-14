@@ -4,6 +4,7 @@ import { ArrowLeftRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Clipboard } from "lucide-react"; // Import an icon for the clipboard
 import { useState, useEffect } from "react";
+import { checkTransactionStatus } from "./TransactionStatusService";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,9 +16,11 @@ import { useAccount } from "wagmi";
 import { Label } from "@/components/ui/label";
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 import TokenBalanceList from "@/components/ui/TokenBalances";
+import { useTransaction } from "./TransactionContext";
 
 export default function InternalTransfersComponent() {
   const { t } = useTranslation();
+  const { setTransaction } = useTransaction();
   const { balances, swAddress } = useEtherspotSdk();
   const [selectedCoin, setSelectedCoin] = useState<(typeof balances)[0] | null>(
     null
@@ -91,18 +94,50 @@ export default function InternalTransfersComponent() {
       if (activeTab === "myWallet") {
         if (myWalletBalances[selectedCoin.name] >= amount) {
           try {
-            await transferFromEOAToSW(selectedCoin.address, transferAmount);
+            setTransaction({
+              status: "sent",
+              message: t("initiating_transaction"),
+              progress: 10,
+            });
+            const transactionHash = await transferFromEOAToSW(
+              selectedCoin.address,
+              transferAmount
+            );
+            await checkTransactionStatus(transactionHash);
           } catch (error) {
+            setTransaction({
+              status: "error",
+              message: t("transaction_failed"),
+              progress: 0,
+            });
             console.error("Error transferring from EOA to SW:", error);
           }
         }
       } else {
         if (kioscoinWalletBalances[selectedCoin.name] >= amount) {
           try {
-            await transferTokensFromEtherspotToEOA(
+            setTransaction({
+              status: "waiting",
+              message: t("transfering"),
+              progress: 10,
+            });
+            const receipt = await transferTokensFromEtherspotToEOA(
               selectedCoin.address,
               transferAmount
             );
+            if (receipt.success) {
+              setTransaction({
+                status: "success",
+                message: t("transaction_success"),
+                progress: 10,
+              });
+            } else {
+              setTransaction({
+                status: "error",
+                message: t("transaction_failed"),
+                progress: 10,
+              });
+            }
           } catch (error) {
             console.error(
               "Error transferring tokens from Etherspot to EOA:",

@@ -8,11 +8,13 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { Separator } from "./separator";
+import { Order } from "b5-api-client";
 
 interface TransactionStatusProps {
   status: "idle" | "sent" | "waiting" | "success" | "error";
   message: string;
   progress: number;
+  order?: Order;
   onClose: () => void;
 }
 
@@ -20,10 +22,12 @@ export function TransactionStatus({
   status,
   message,
   progress,
+  order,
   onClose,
 }: TransactionStatusProps) {
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const [isRatingVisible, setIsRatingVisible] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -104,7 +108,18 @@ export function TransactionStatus({
               className="my-4 border border-primary"
             />
           )}
-          {(status === "success" || status === "error") && (
+          {status === "success" && order && (
+            <>
+              <Button
+                onClick={handleClose}
+                variant="outline"
+                className="w-full mt-4 mb-4"
+              >
+                {t("close")}
+              </Button>
+            </>
+          )}
+          {status === "error" && (
             <Button
               onClick={handleClose}
               variant="outline"

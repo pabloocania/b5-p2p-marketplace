@@ -17,7 +17,6 @@ import {
   TakeSellOrderRequest,
   TakeBuyOrderRequest,
   UpdateOrderRequest,
-  generateSecretAndHash,
   OrderStatus,
   PaymentMethod,
 } from "b5-api-client";
@@ -30,6 +29,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import PaymentMethodDisplay from "./PaymentMethodDisplay";
 import OrderStatusBar from "./OrderStatus";
 import { useTranslation } from "react-i18next";
+import { Rating } from "./Rating";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -283,6 +283,9 @@ export function OrderCard({
                   ? order.buyerUsername
                   : order.buyerId}
               </span>
+              {order.sellerHasRated && (
+                <Rating orderId={order.id!!} ratedId={order.buyerId} />
+              )}
             </div>
           )}
           {order.sellerId && order.type === "BUY" && (
@@ -295,6 +298,18 @@ export function OrderCard({
                   ? order.sellerUsername
                   : order.sellerId}
               </span>
+              {order.buyerHasRated && (
+                <Rating orderId={order.id!!} ratedId={order.sellerId} />
+              )}
+              {/* 
+                {isRatingVisible && <Rating />}{" "}
+  
+  useEffect(() => {
+    if (order && order.status == "ACTIVE") {
+      setIsRatingVisible(true);
+    }
+  }, [status]);
+   */}
             </div>
           )}
           {user && showDetails && order.type === ("SELL" as OrderType) && (
