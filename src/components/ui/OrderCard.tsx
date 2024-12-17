@@ -114,6 +114,16 @@ export function OrderCard({
     }
   };
 
+  const finishedStatusesList: OrderStatus[] = [
+    "RELEASED",
+    "CLOSED",
+    "CANCELED",
+    "SUCCESS",
+    "CANCELED_BY_ADMIN",
+    "EXPIRED",
+    "COMPLETED_BY_ADMIN",
+  ];
+
   const takeOrder = async (order: Order) => {
     try {
       if (orderTaken) return;
@@ -283,9 +293,11 @@ export function OrderCard({
                   ? order.buyerUsername
                   : order.buyerId}
               </span>
-              {!order.sellerHasRated && (
-                <Rating orderId={order.id!!} ratedId={order.buyerId} />
-              )}
+              {!order.sellerHasRated &&
+                order.status &&
+                finishedStatusesList.includes(order.status) && (
+                  <Rating orderId={order.id!!} ratedId={order.buyerId} />
+                )}
             </div>
           )}
           {order.sellerId && order.type === "BUY" && (
@@ -298,9 +310,11 @@ export function OrderCard({
                   ? order.sellerUsername
                   : order.sellerId}
               </span>
-              {!order.buyerHasRated && (
-                <Rating orderId={order.id!!} ratedId={order.sellerId} />
-              )}
+              {!order.buyerHasRated &&
+                order.status &&
+                finishedStatusesList.includes(order.status) && (
+                  <Rating orderId={order.id!!} ratedId={order.sellerId} />
+                )}
             </div>
           )}
           {user && showDetails && order.type === ("SELL" as OrderType) && (
