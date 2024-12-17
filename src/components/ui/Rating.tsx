@@ -36,7 +36,7 @@ export function Rating({ orderId, ratedId }: RatingProps) {
 
   return (
     <Card className="w-full max-w-[180px]">
-      <CardContent className="p-2 flex items-center justify-between">
+      <CardContent className="p-2 border border-terciary flex items-center justify-between">
         <div className="flex items-center space-x-1">
           {[1, 2, 3, 4, 5].map((star) => (
             <Star
@@ -52,7 +52,7 @@ export function Rating({ orderId, ratedId }: RatingProps) {
         </div>
         <Button
           size="icon"
-          className="h-8 w-8 ml-2"
+          className="h-8 w-8 ml-2 bg-terciary text-white"
           onClick={handleSubmit}
           disabled={rating === 0}
           aria-label="Submit rating"

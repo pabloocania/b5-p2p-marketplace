@@ -108,7 +108,7 @@ export function TransactionStatus({
               className="my-4 border border-primary"
             />
           )}
-          {status === "success" && order && (
+          {status === "success" && (
             <>
               <Button
                 onClick={handleClose}

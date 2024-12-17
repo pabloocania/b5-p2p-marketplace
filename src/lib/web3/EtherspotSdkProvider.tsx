@@ -17,6 +17,7 @@ interface EtherspotSdkContextType {
   primeSdk: PrimeSdk | null;
   swAddress: string;
   balances: TokenBalance[];
+  getTokensBalances: (sdkInstance: PrimeSdk) => {};
 }
 
 const EtherspotSdkContext = createContext<EtherspotSdkContextType | undefined>(
@@ -70,12 +71,11 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
         const primeSdkInstance = new PrimeSdk(walletProvider, options);
         if (primeSdkInstance !== null) {
           console.log("Prime SDK initialized:", primeSdkInstance);
-          const balance = await primeSdkInstance?.getNativeBalance();
           const smartWalletAddress =
             await primeSdkInstance?.getCounterFactualAddress();
           setSwAddress(smartWalletAddress);
           setPrimeSdk(primeSdkInstance);
-          getTokensBalances(smartWalletAddress, balance);
+          getTokensBalances(primeSdkInstance);
         }
       } else {
         console.log("wallet client:", walletClient);
@@ -87,36 +87,37 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     connectToSdk();
   }, [walletClient, isConnected]);
 
-  const getTokensBalances = async (
-    smartWalletAddress?: string,
-    swNativeBalance?: string
-  ) => {
-    const natBalance = await getBalance(config, {
+  const getTokensBalances = async (primeSdk?: PrimeSdk) => {
+    const swNativeBalance = await primeSdk?.getNativeBalance();
+    console.log(swNativeBalance);
+    const smartWalletAddress = await primeSdk?.getCounterFactualAddress();
+    console.log(smartWalletAddress);
+    const eoaNativeBalance = await getBalance(config, {
       address: address ?? "0x0",
     });
-    const smartWalletBalance = await getTokenBalance(
+    const swTokenBalance = await getTokenBalance(
       ERC20ContractConfig.address,
       smartWalletAddress ?? (await primeSdk?.getCounterFactualAddress()!!)
     );
 
-    const eoaBalance = await getTokenBalance(
+    const eoaTokenBalance = await getTokenBalance(
       ERC20ContractConfig.address,
       getAddress(address ?? "0x0")
     );
 
     const tokenBalance: TokenBalance = {
       name: ERC20ContractConfig.name,
-      smartWalletBalance: smartWalletBalance ?? "0.00",
-      eoaBalance: eoaBalance ?? "0.00",
+      smartWalletBalance: swTokenBalance ?? "0.00",
+      eoaBalance: eoaTokenBalance ?? "0.00",
       address: ERC20ContractConfig.address,
     };
 
     console.log("PDOC", tokenBalance);
 
-    const formattedBalance = BigInt(natBalance?.value.toString() ?? "0");
+    const formattedBalance = BigInt(eoaNativeBalance?.value.toString() ?? "0");
 
     const nativeBalance: TokenBalance = {
-      name: natBalance.symbol,
+      name: eoaNativeBalance.symbol,
       smartWalletBalance: swNativeBalance ?? "0.00",
       eoaBalance: formatUnits(formattedBalance, 18),
       address: "0x0000000000000000000000000000000000000000",
@@ -145,7 +146,12 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
 
   return (
     <EtherspotSdkContext.Provider
-      value={{ primeSdk, swAddress: smartWalletAddress, balances }}
+      value={{
+        primeSdk,
+        swAddress: smartWalletAddress,
+        balances,
+        getTokensBalances,
+      }}
     >
       {children}
     </EtherspotSdkContext.Provider>

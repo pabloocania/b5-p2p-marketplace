@@ -58,14 +58,14 @@ const KioscoinConnectButton = () => {
               }
 
               return (
-                <div className="w-full flex flex-col">
+                <div className="w-full flex items-center justify-between w-full">
                   <p className="font-bold text-primary text-left">
                     {t("connected_to")}
                   </p>
-                  <div className="w-full flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between">
                     <button
                       onClick={openChainModal}
-                      className="flex items-center bg-primary text-white hover:bg-gray-300 py-2 px-4 rounded-l transition duration-150 ease-in-out w-1/2"
+                      className="flex items-center bg-terciary text-white hover:bg-gray-300 py-2 px-4 rounded transition duration-150 ease-in-out"
                     >
                       {chain.hasIcon && (
                         <div
@@ -89,13 +89,13 @@ const KioscoinConnectButton = () => {
                       )}
                       {chain.name}
                     </button>
-                    <button
-                      onClick={openAccountModal}
-                      type="button"
-                      className="bg-secondary hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-r transition duration-150 ease-in-out w-1/2"
-                    >
-                      {account.displayName}
-                    </button>
+                    {/* <button
+      onClick={openAccountModal}
+      type="button"
+      className="bg-secondary hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-r transition duration-150 ease-in-out"
+    >
+      {account.displayName}
+    </button> */}
                   </div>
                 </div>
               );

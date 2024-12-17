@@ -64,7 +64,7 @@ export default function TokenBalanceList({
                       className="p-1 rounded-full bg-muted transition-colors"
                       aria-label={`Toggle ${token.name} details`}
                     >
-                      <MoveRightIcon
+                      <ArrowLeftRightIcon
                         className={`h-5 w-5 transition-transform ${getIconClassNames(
                           token
                         )}`}

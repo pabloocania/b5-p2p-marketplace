@@ -2,9 +2,8 @@
 
 import { ArrowLeftRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Clipboard } from "lucide-react"; // Import an icon for the clipboard
 import { useState, useEffect } from "react";
-import { checkTransactionStatus } from "./TransactionStatusService";
+import { RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,14 +13,17 @@ import { TokenBalance } from "./types";
 import { useEtherspotSdk } from "./EtherspotSdkProvider";
 import { useAccount } from "wagmi";
 import { Label } from "@/components/ui/label";
-import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 import TokenBalanceList from "@/components/ui/TokenBalances";
 import { useTransaction } from "./TransactionContext";
+import { useTransactionStatusChecker } from "../useTransactionStatusChecker";
+import { useTransactionHandler } from "./InternalTransferServices";
+import Address from "./Address";
 
 export default function InternalTransfersComponent() {
   const { t } = useTranslation();
   const { setTransaction } = useTransaction();
-  const { balances, swAddress } = useEtherspotSdk();
+  const { balances, swAddress, getTokensBalances, primeSdk } =
+    useEtherspotSdk();
   const [selectedCoin, setSelectedCoin] = useState<(typeof balances)[0] | null>(
     null
   );
@@ -35,11 +37,15 @@ export default function InternalTransfersComponent() {
   const [transferAmount, setTransferAmount] = useState("");
   const [activeTab, setActiveTab] = useState("kioscoinWallet");
   const [selectedToken, setSelectedToken] = useState<TokenBalance | null>(null);
-  const { transferTokensFromEtherspotToEOA, transferFromEOAToSW } =
-    useEtherspotFlow();
-  const [isCopied, setIsCopied] = useState(false);
+  const { checkTransactionStatus } = useTransactionStatusChecker();
+  const { handleTransaction } = useTransactionHandler(
+    setTransaction,
+    t,
+    checkTransactionStatus
+  );
 
   useEffect(() => {
+    console.log("balances update");
     if (balances.length > 0) {
       setSelectedCoin(balances[0]);
 
@@ -85,76 +91,33 @@ export default function InternalTransfersComponent() {
       const amount = parseFloat(transferAmount);
       if (isNaN(amount) || amount <= 0) return;
       const sourceBalance =
-        activeTab === "myWallet"
+        activeTab === "eoaWallet"
           ? myWalletBalances[selectedCoin.name]
           : kioscoinWalletBalances[selectedCoin.name];
 
-      if (amount > sourceBalance) return; // Prevent transfer if amount exceeds balance
+      if (amount > sourceBalance) return;
 
-      if (activeTab === "myWallet") {
-        if (myWalletBalances[selectedCoin.name] >= amount) {
-          try {
-            setTransaction({
-              status: "sent",
-              message: t("initiating_transaction"),
-              progress: 10,
-            });
-            const transactionHash = await transferFromEOAToSW(
-              selectedCoin.address,
-              transferAmount
-            );
-            await checkTransactionStatus(transactionHash);
-          } catch (error) {
-            setTransaction({
-              status: "error",
-              message: t("transaction_failed"),
-              progress: 0,
-            });
-            console.error("Error transferring from EOA to SW:", error);
-          }
-        }
-      } else {
-        if (kioscoinWalletBalances[selectedCoin.name] >= amount) {
-          try {
-            setTransaction({
-              status: "waiting",
-              message: t("transfering"),
-              progress: 10,
-            });
-            const receipt = await transferTokensFromEtherspotToEOA(
-              selectedCoin.address,
-              transferAmount
-            );
-            if (receipt.success) {
-              setTransaction({
-                status: "success",
-                message: t("transaction_success"),
-                progress: 10,
-              });
-            } else {
-              setTransaction({
-                status: "error",
-                message: t("transaction_failed"),
-                progress: 10,
-              });
-            }
-          } catch (error) {
-            console.error(
-              "Error transferring tokens from Etherspot to EOA:",
-              error
-            );
-          }
-        }
-      }
+      const transactionType =
+        activeTab === "eoaWallet" ? "EOAToSW" : "EtherspotToEOA";
+      await handleTransaction(
+        transactionType,
+        selectedCoin.address,
+        transferAmount,
+        setTransaction,
+        t,
+        checkTransactionStatus
+      );
+
       setTransferAmount("");
     }
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(swAddress).then(() => {
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
-    });
+  const handleRefresh = async () => {
+    if (primeSdk) {
+      await getTokensBalances(primeSdk);
+    } else {
+      console.error("PrimeSdk is not initialized.");
+    }
   };
 
   const handleTokenSelect = (token: TokenBalance | null) => {
@@ -213,24 +176,22 @@ export default function InternalTransfersComponent() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="kioscoinWallet">
-              <p className="font-bold text-primary">{t("address")}</p>
-              <div className="flex items-center space-x-2 pb-4">
-                <p className="text-primary text-sm">
-                  {swAddress.slice(0, 10)}...{swAddress.slice(-4)}
-                </p>
+              {swAddress && (
+                <div>
+                  <p className="font-bold text-primary">{t("address")}</p>
+                  <Address address={swAddress} />
+                </div>
+              )}
+              <div className="flex items-center pb-2">
+                <p className="font-bold text-primary mr-2">Balances</p>
                 <button
-                  onClick={handleCopy}
-                  className={`${
-                    isCopied
-                      ? "text-secondary"
-                      : "text-primary hover:text-blue-600"
-                  }`}
-                  aria-label="Copy address"
+                  onClick={handleRefresh}
+                  className="text-primary hover:text-blue-600 transition duration-150 ease-in-out"
+                  aria-label="Refresh balances"
                 >
-                  <Clipboard className="h-4 w-4" />
+                  <RefreshCw className="h-4 w-4" />
                 </button>
               </div>
-              <p className="font-bold text-primary">Balances</p>
               <TokenBalanceList
                 onTokenSelect={handleTokenSelect}
                 balances={balances.map((token) => ({
@@ -240,7 +201,22 @@ export default function InternalTransfersComponent() {
               />
             </TabsContent>
             <TabsContent value="myWallet">
-              <p className="font-bold text-primary pb-2">Balances</p>
+              {address && (
+                <div>
+                  <p className="font-bold text-primary">{t("address")}</p>
+                  <Address address={address} />
+                </div>
+              )}
+              <div className="flex items-center pb-2">
+                <p className="font-bold text-primary mr-2">Balances</p>
+                <button
+                  onClick={handleRefresh}
+                  className="text-primary hover:text-blue-600 transition duration-150 ease-in-out"
+                  aria-label="Refresh balances"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </button>
+              </div>
               <TokenBalanceList
                 onTokenSelect={handleTokenSelect}
                 balances={balances.map((token) => ({

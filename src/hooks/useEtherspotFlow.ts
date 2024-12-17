@@ -1,13 +1,9 @@
 import { useAccount, useWalletClient } from "wagmi";
 import {
-  createPublicClient,
-  http,
   getAddress,
   encodeFunctionData,
-  formatUnits,
   parseUnits,
 } from "viem";
-import { rootstockTestnet } from "wagmi/chains";
 import { ERC20ContractConfig } from "../abis/ERC20ContractConfig";
 import { RSKEscrowContractConfig } from "@/abis/RSKEscrowConfig";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
@@ -24,31 +20,12 @@ import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { useTranslation } from "react-i18next";
 
 
-const publicClient = createPublicClient({
-  chain: rootstockTestnet,
-  transport: http(),
-});
-
 export const useEtherspotFlow = () => {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
-  const account = useAccount();
   const { primeSdk, swAddress } = useEtherspotSdk();
   const { setTransaction, resetTransaction } = useTransaction();
   const { t } = useTranslation();
-
-  const getBalance = async (tokenAddress: string, walletAddress: string) => {
-    const balance = await publicClient.readContract({
-      address: getAddress(tokenAddress),
-      abi: ERC20ContractConfig.abi,
-      functionName: "balanceOf",
-      args: [walletAddress],
-    });
-    if (balance !== undefined && balance !== null) {
-      const formattedBalance = BigInt(balance.toString());
-      return formatUnits(formattedBalance, 18);
-    }
-  };
 
   // Example of updating transaction status
   const executeTransaction = async (
