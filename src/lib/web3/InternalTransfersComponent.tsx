@@ -91,14 +91,14 @@ export default function InternalTransfersComponent() {
       const amount = parseFloat(transferAmount);
       if (isNaN(amount) || amount <= 0) return;
       const sourceBalance =
-        activeTab === "eoaWallet"
+        activeTab === "myWallet"
           ? myWalletBalances[selectedCoin.name]
           : kioscoinWalletBalances[selectedCoin.name];
 
       if (amount > sourceBalance) return;
 
       const transactionType =
-        activeTab === "eoaWallet" ? "EOAToSW" : "EtherspotToEOA";
+        activeTab === "myWallet" ? "EOAToSW" : "EtherspotToEOA";
       await handleTransaction(
         transactionType,
         selectedCoin.address,
