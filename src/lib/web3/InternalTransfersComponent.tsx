@@ -102,10 +102,7 @@ export default function InternalTransfersComponent() {
       await handleTransaction(
         transactionType,
         selectedCoin.address,
-        transferAmount,
-        setTransaction,
-        t,
-        checkTransactionStatus
+        transferAmount
       );
 
       setTransferAmount("");
