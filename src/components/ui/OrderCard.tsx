@@ -277,7 +277,7 @@ export function OrderCard({
             </p>
           </div>
           <div>
-            <span className="text-xs block font-semibold">
+            <span className="text-xs block">
               {order.paymentMethods?.map((method, index) => (
                 <PaymentMethodDisplay key={index} method={method} />
               ))}
@@ -285,14 +285,16 @@ export function OrderCard({
           </div>
           {order.buyerId && order.type === "SELL" && (
             <div className="text-xs text-black">
-              {t("buyer")}:{" "}
-              <span className="font-semibold">
-                {order.buyerId === user?.userId
-                  ? t("you")
-                  : order.buyerUsername
-                  ? order.buyerUsername
-                  : order.buyerId}
-              </span>
+              <div>
+                {t("buyer")}:{" "}
+                <span className="font-semibold">
+                  {order.buyerId === user?.userId
+                    ? t("you")
+                    : order.buyerUsername
+                    ? order.buyerUsername
+                    : order.buyerId}
+                </span>
+              </div>
               {!order.sellerHasRated &&
                 order.status &&
                 finishedStatusesList.includes(order.status) && (

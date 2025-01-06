@@ -6,6 +6,8 @@ import InternalTransfersComponent from "@/lib/web3/InternalTransfersComponent";
 import { useAccount } from "wagmi";
 import KioscoinConnectButton from "@/lib/web3/KioscoinConnectButton";
 import { useTranslation } from "react-i18next";
+import { Loader2 } from "lucide-react";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 interface UserMenuProps {
   user: UserProps | undefined;
@@ -18,7 +20,8 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
   const [mockUsers, setMockUsers] = useState<UserProps[]>([]);
   const { isConnected } = useAccount();
   const { t } = useTranslation();
-  // const { callPaymaster } = useEtherspotFlow();
+  const [isConnecting, setIsConnecting] = useState(false);
+  const { connectModalOpen } = useConnectModal();
 
   useEffect(() => {
     async function fetchUsers() {
@@ -42,7 +45,16 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
     fetchUsers();
   }, []);
 
-  function FullWidthConnectButton() {
+  useEffect(() => {
+    if (isConnected) {
+      setIsConnecting(false);
+    }
+    if (!connectModalOpen) {
+      setIsConnecting(false);
+    }
+  }, [isConnected, connectModalOpen]);
+
+  function ConnectWalletButton() {
     return (
       <div className="w-full">
         <style jsx>{`
@@ -50,7 +62,10 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
             width: 100%;
           }
         `}</style>
-        <KioscoinConnectButton />
+        <KioscoinConnectButton
+          onConnectingChange={setIsConnecting}
+          isConnecting={isConnecting}
+        />
       </div>
     );
   }
@@ -70,8 +85,16 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
               {/* <p className="text-sm text-gray-500">{user.email}</p> */}
             </div>
           </div>
-          <div className="w-full">{FullWidthConnectButton()}</div>
+          <div className="w-full">{ConnectWalletButton()}</div>
           {/* <div className="w-full"> */}
+          {isConnecting && (
+            <div className="flex items-center justify-center h-full">
+              <div className="flex items-center space-x-2">
+                <Loader2 className="h-4 w-4 animate-spin text-yellow-600" />
+                <span className="text-sm block">{t("loading_wallet")}</span>
+              </div>
+            </div>
+          )}
           {isConnected && (
             <div className="w-full">
               <InternalTransfersComponent />

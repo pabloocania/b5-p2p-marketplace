@@ -82,7 +82,10 @@ i18n
                     buy_or_sell: "Buy or sell",
                     i_want_to: "I want to: ",
                     select_token: "Select token",
-                    not_close_app: "Please, don't close or refresh the app"
+                    not_close_app: "Please, don't close or refresh the app",
+                    loading_wallet: "Connecting wallet",
+                    thanks: "Thanks",
+                    rate_user: "Rate user"
                     // Add more translations here
                 }
             },
@@ -163,7 +166,10 @@ i18n
                     buy_or_sell: "Comprar o vender",
                     i_want_to: "Quiero",
                     select_token: "Seleccionar moneda",
-                    not_close_app: "Por favor, no cierre ni reinicie la aplicacion."
+                    not_close_app: "Por favor, no cierre ni reinicie la aplicacion.",
+                    loading_wallet: "Conectando wallet",
+                    thanks: "Gracias",
+                    rate_user: "Calificar usuario"
                     // Add more translations here
                 }
             }

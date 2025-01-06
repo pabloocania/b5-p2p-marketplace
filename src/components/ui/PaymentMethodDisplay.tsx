@@ -36,8 +36,7 @@ const PaymentMethodDisplay: React.FC<PaymentMethodDisplayProps> = ({
   const formattedAlias = method.alias ? formatAlias(method.alias) : "";
   return (
     <div>
-      {t("transfer_by")}: {/* {methodDescription} */}
-      <strong> {entityDescription} </strong>
+      {t("transfer_by")}: <strong> {entityDescription} </strong>
       {/* {formattedAlias && formattedAlias} */}
     </div>
   );

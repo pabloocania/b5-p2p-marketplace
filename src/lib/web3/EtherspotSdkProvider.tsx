@@ -78,7 +78,6 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
           getTokensBalances(primeSdkInstance);
         }
       } else {
-        console.log("wallet client:", walletClient);
         console.log("isConnected", isConnected);
         console.log("primeSdk", primeSdk);
       }

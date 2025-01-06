@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { RefreshCw } from "lucide-react";
@@ -45,7 +45,6 @@ export default function InternalTransfersComponent() {
   );
 
   useEffect(() => {
-    console.log("balances update");
     if (balances.length > 0) {
       setSelectedCoin(balances[0]);
 
