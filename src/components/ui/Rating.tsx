@@ -31,7 +31,7 @@ export function Rating({ orderId, ratedId }: RatingProps) {
         console.log(`Submitted rating: ${rating}`);
         setIsSubmitted(true);
       } catch (error) {
-        console.error("Error notifying FIAT sent:", error);
+        console.error("Error while rating:", error);
       }
     }
   };
