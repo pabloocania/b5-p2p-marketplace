@@ -30,6 +30,7 @@ import PaymentMethodDisplay from "./PaymentMethodDisplay";
 import OrderStatusBar from "./OrderStatus";
 import { useTranslation } from "react-i18next";
 import { Rating } from "./Rating";
+import OrderHistorySheet from "./OrderHistorySheet";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -268,6 +269,7 @@ export function OrderCard({
           </div>
         </div>
       </CardHeader>
+      <OrderHistorySheet /> {/* Aquí integras el componente del enlace */}
       <CardContent className="pb-6 pt-0 pb-3">
         <div className="space-y-1">
           <div className="pb-0">
