@@ -80,6 +80,7 @@ a {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    height: 100%;
+    overflow: auto;
   }
 }

@@ -30,6 +30,16 @@ import PaymentMethodDisplay from "./PaymentMethodDisplay";
 import OrderStatusBar from "./OrderStatus";
 import { useTranslation } from "react-i18next";
 import { Rating } from "./Rating";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetClose,
+  SheetFooter,
+} from "@/components/ui/sheet";
+import OrderHistory from "./OrderHistory";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -54,6 +64,7 @@ export function OrderCard({
   const [clipboardSupported, setClipboardSupported] = useState(false);
   const [orderTaken, setOrderTaken] = useState(false);
   const [order, setOrder] = useState(orderDTO);
+  const [isIdSheetOpen, setIsIdSheetOpen] = useState(false); // Estado para controlar el Sheet
   const { user, isLoggedIn } = useUserContext();
   const { isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
@@ -125,19 +136,43 @@ export function OrderCard({
           </div>
         </div>
       </CardContent>
-      <CardFooter className="border border-gray-300 rounded-md flex justify-start items-start h-8 pl-2 pr-4 pt-1">
-        <p className="text-xs text-gray-600">
-          <a
-            href="#"
-            className="text-blue-500 underline hover:text-blue-700 cursor-pointer"
-            onClick={(e) => {
-              e.preventDefault(); // Evita redirección
-              console.log("Clicked on ID: ", order.id);
-            }}
+      <CardFooter className="border border-gray-300 rounded-md flex justify-start h-8 pl-2 pr-4 mt-1">
+        <a
+          href="#"
+          className="text-blue-500 underline hover:text-blue-700 cursor-pointer"
+          onClick={(e) => {
+            e.preventDefault(); // Evita redirección
+            setIsIdSheetOpen(true); // Abre el Sheet al hacer clic en el ID
+          }}
+        >
+          ID: {order.id}
+        </a>
+
+        {/* Sheet para el ID clickeable */}
+        <Sheet open={isIdSheetOpen} onOpenChange={setIsIdSheetOpen}>
+          <SheetContent
+            side="bottom"
+            className="rounded-t-2xl h-[90vh] flex flex-col overflow-hidden"
+            closeText="Close"
           >
-            ID: {order.id}
-          </a>
-        </p>
+            {/* Header */}
+            <SheetHeader className="text-center p-4">
+              <SheetTitle>Order History 🕒</SheetTitle>
+            </SheetHeader>
+
+            {/* Main Content */}
+            <div className="flex-grow overflow-y-auto px-4 max-h-[65vh]">
+              <OrderHistory />
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-20 p-4 border-t border-gray-200 bg-white flex justify-center">
+              <SheetClose className="bg-blue-500 text-white px-6 py-2 rounded-md shadow-md">
+                Cerrar
+              </SheetClose>
+            </div>
+          </SheetContent>
+        </Sheet>
       </CardFooter>
 
       <Separator className="mb-2" />
