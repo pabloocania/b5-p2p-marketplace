@@ -30,7 +30,6 @@ import PaymentMethodDisplay from "./PaymentMethodDisplay";
 import OrderStatusBar from "./OrderStatus";
 import { useTranslation } from "react-i18next";
 import { Rating } from "./Rating";
-import OrderHistorySheet from "./OrderHistorySheet";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -59,156 +58,10 @@ export function OrderCard({
   const { isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
 
-  const handleConnectButton = () => {
-    if (openConnectModal) {
-      openConnectModal();
-    }
-  };
-
-  function mapOrderStatus(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      WAITING_PAYMENT: t("waiting_lock"),
-      ACTIVE: t("awaiting_buyer"),
-      PENDING: t("open"),
-      FIAT_SENT: t("waiting_release"),
-      // Add other status mappings as needed
-      COMPLETED: t("completed"),
-      COMPLETED_BY_ADMIN: t("completed"),
-      RELEASED: t("completed"),
-      CANCELLED: t("canceled"),
-      // Add more mappings here
-    };
-    return statusMap[status] ?? "Unknown";
-  }
-
-  const shouldShowSelectButton =
-    !order || order.status === ("PENDING" as OrderStatus);
-
-  const canSelectOrder = isLoggedIn && user?.userId !== order?.creatorId;
-
   useEffect(() => {
     setClipboardSupported("clipboard" in navigator);
     setOrder(orderDTO);
   }, [orderDTO]);
-
-  const handlePasteClipboard = async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      setWalletAddress(text);
-    } catch (err) {
-      console.error("Failed to read clipboard contents: ", err);
-    }
-  };
-
-  const fiatSent = async (order: Order) => {
-    try {
-      const updateRequest: UpdateOrderRequest = {
-        status: "FIAT_SENT",
-        orderId: order.id ?? "",
-      };
-      await client.updateOrder(updateRequest);
-      if (onRefresh) {
-        onRefresh(); // Call the refresh callback
-      }
-    } catch (error) {
-      console.error("Error notifying FIAT sent:", error);
-    }
-  };
-
-  const finishedStatusesList: OrderStatus[] = [
-    "RELEASED",
-    "CLOSED",
-    "CANCELED",
-    "SUCCESS",
-    "CANCELED_BY_ADMIN",
-    "EXPIRED",
-    "COMPLETED_BY_ADMIN",
-  ];
-
-  const takeOrder = async (order: Order) => {
-    try {
-      if (orderTaken) return;
-      let takeOrderRequest: TakeSellOrderRequest | TakeBuyOrderRequest;
-      if (order.type === "SELL") {
-        takeOrderRequest = {
-          type: "SELL",
-          orderId: order.id ?? "",
-          userId: user?.userId ?? "",
-          buyerAddress: walletAddress,
-          fiatAmount: order.fiatAmount?.toString() ?? "0",
-          username: user?.username,
-          hash: order.buyerHash,
-        } as TakeSellOrderRequest;
-      } else {
-        takeOrderRequest = {
-          type: "BUY",
-          orderId: order.id ?? "",
-          userId: user?.userId ?? "", // Replace with the actual user ID
-          amount: order.fiatAmount?.toString() ?? "0",
-          username: user?.username,
-          hash: order.sellerHash,
-        } as TakeBuyOrderRequest;
-      }
-
-      const response = await client.takeOrder(takeOrderRequest);
-      setOrderTaken(true);
-      setIsButtonVisible(false);
-      if (response.orders.length == 1) {
-        setOrder(response.orders[0]);
-      }
-      if (onRefresh) {
-        onRefresh(); // Call the refresh callback
-      }
-    } catch (error) {
-      console.error("Failed to take order:", error);
-    }
-  };
-
-  function mapOrderVariant(order: Order): string {
-    switch (order.status) {
-      case "PENDING":
-        return "bg-secondary text-white";
-      case "WAITING_PAYMENT":
-        return "bg-yellow-500 text-white";
-      case "ACTIVE":
-        return "bg-yellow-500 text-white";
-      case "FIAT_SENT":
-        return "bg-yellow-500 text-white";
-      case "SUCCESS":
-      case "COMPLETED_BY_ADMIN":
-      case "RELEASED":
-        return "bg-secondary text-white";
-      case "CANCELED":
-      case "CANCELED_BY_ADMIN":
-        return "bg-gray-300 text-black";
-      case "DISPUTE":
-        return "bg-red-500 text-white";
-      default:
-        return "bg-gray-300 text-black";
-    }
-  }
-
-  function mapPaymentMethod(methodType: PaymentMethod): JSX.Element {
-    const paymentMethodMap: { [key: string]: string } = {
-      MERCADO_PAGO: "Fintech",
-      FINTECH: "Fintech",
-      BANK: "Bank transfer",
-      // Add more mappings here
-    };
-
-    const methodDescription =
-      paymentMethodMap[methodType.type] ?? "Unknown Method";
-    const entity = methodType.entity ? (
-      <strong>{methodType.entity}</strong>
-    ) : null;
-    const alias = methodType.alias ? <strong>{methodType.alias}</strong> : null;
-
-    return (
-      <>
-        {methodDescription} {entity} {alias}
-      </>
-    );
-  }
 
   if (!order) {
     return (
@@ -219,20 +72,6 @@ export function OrderCard({
       </Card>
     );
   }
-
-  const isCreator = order.creatorId === user?.userId;
-  const isBuyer = order.buyerId === user?.userId;
-  const isSeller: boolean = order.sellerId === user?.userId;
-  const canLockOrReleaseFunds =
-    (isCreator && order.type === "SELL") || (isSeller && order.type === "BUY");
-  const shouldHideButtons =
-    ["WAITING_PAYMENT", "ACTIVE", "FIAT_SENT"].includes(
-      order.status as OrderStatus
-    ) &&
-    (isCreator || isBuyer || isSeller);
-  const formattedFiatAmount = order.fiatAmount
-    ? parseFloat(order.fiatAmount).toFixed(2)
-    : order.fiatAmount;
 
   return (
     <Card className="w-full mb-4" variant="shadow">
@@ -261,21 +100,20 @@ export function OrderCard({
         </div>
         <div className="flex-[0_0_25%] flex justify-end h-6">
           <div className="w-full max-w-full text-right">
-            <Badge
-              className={`text-xs ${mapOrderVariant(order)} whitespace-normal`}
-            >
-              {mapOrderStatus(order.status ?? "Unknown")}
-            </Badge>
+            {order.status !== "PENDING" && (
+              <Badge className="text-xs whitespace-normal">
+                {t("status")}: {t(mapOrderStatus(order.status ?? "Unknown"))}
+              </Badge>
+            )}
           </div>
         </div>
       </CardHeader>
-      <OrderHistorySheet /> {/* Aquí integras el componente del enlace */}
       <CardContent className="pb-6 pt-0 pb-3">
         <div className="space-y-1">
           <div className="pb-0">
             <p>
               {t("for")}{" "}
-              <span className="font-bold">${formattedFiatAmount} ARS</span>
+              <span className="font-bold">${order.fiatAmount} ARS</span>
             </p>
           </div>
           <div>
@@ -285,168 +123,38 @@ export function OrderCard({
               ))}
             </span>
           </div>
-          {order.buyerId && order.type === "SELL" && (
-            <div className="text-xs text-black">
-              <div>
-                {t("buyer")}:{" "}
-                <span className="font-semibold">
-                  {order.buyerId === user?.userId
-                    ? t("you")
-                    : order.buyerUsername
-                    ? order.buyerUsername
-                    : order.buyerId}
-                </span>
-              </div>
-              {!order.sellerHasRated &&
-                order.status &&
-                finishedStatusesList.includes(order.status) && (
-                  <Rating orderId={order.id!!} ratedId={order.buyerId} />
-                )}
-            </div>
-          )}
-          {order.sellerId && order.type === "BUY" && (
-            <div>
-              <span className="text-xs text-gray-600 block">
-                {t("seller")}:{" "}
-                {order.sellerId === user?.userId
-                  ? t("you")
-                  : order.sellerUsername
-                  ? order.sellerUsername
-                  : order.sellerId}
-              </span>
-              {!order.buyerHasRated &&
-                order.status &&
-                finishedStatusesList.includes(order.status) && (
-                  <Rating orderId={order.id!!} ratedId={order.sellerId} />
-                )}
-            </div>
-          )}
-          {user && showDetails && order.type === ("SELL" as OrderType) && (
-            <div className="pt-2">
-              <div className="space-y-2">
-                <span className="text-xs block font-semibold">
-                  {t("take_order_information")}
-                </span>
-                <div className="flex space-x-2">
-                  <Input
-                    id="walletAddress"
-                    value={walletAddress}
-                    onChange={(e) => setWalletAddress(e.target.value)}
-                    placeholder="Enter wallet address"
-                    className="flex-grow"
-                    disabled={order.status !== "PENDING"}
-                  />
-                  {clipboardSupported && (
-                    <Button
-                      onClick={handlePasteClipboard}
-                      variant="outline"
-                      size="icon"
-                      title="Paste from clipboard"
-                    >
-                      <Clipboard className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </CardContent>
-      <CardFooter>
-        {shouldHideButtons ? (
-          <>
-            {order.status === "ACTIVE" && !canLockOrReleaseFunds && (
-              <Button
-                className="w-full text-white bg-yellow-500"
-                onClick={() => {
-                  if (!orderTaken) fiatSent(order);
-                  onRefresh?.(); // Call the refresh callback
-                }}
-              >
-                {t("notify_fiat_sent")}
-              </Button>
-            )}
-            {order.status === "WAITING_PAYMENT" && (
-              <>
-                {canLockOrReleaseFunds ? (
-                  !isConnected ? (
-                    <div className="text-center w-full text-white">
-                      <Button
-                        className="w-full bg-primary text-white"
-                        onClick={handleConnectButton} // Use the handler
-                      >
-                        {t("connect_to_continue")}
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="text-center w-full text-white">
-                      <LockFundsButton
-                        order={order}
-                        canLock={canLockOrReleaseFunds}
-                      />
-                    </div>
-                  )
-                ) : null}
-              </>
-            )}
-            {order.status === "FIAT_SENT" && canLockOrReleaseFunds ? (
-              !isConnected ? (
-                <div className="text-center w-full text-white">
-                  <Button
-                    className="w-full bg-primary text-white"
-                    onClick={handleConnectButton} // Use the handler
-                  >
-                    {t("connect_to_continue")}
-                  </Button>
-                </div>
-              ) : (
-                <div className="text-center w-full text-white">
-                  <ReleaseFundsButton
-                    order={order}
-                    onRefresh={onRefresh}
-                    canRelease={canLockOrReleaseFunds}
-                  />
-                </div>
-              )
-            ) : null}
-          </>
-        ) : (
-          <>
-            {orderTaken ? (
-              <div className="text-secondary block text-center font-semibold">
-                {t("order_taken")}
-              </div>
-            ) : (
-              <>
-                {showSelectButton &&
-                  !showDetails &&
-                  shouldShowSelectButton &&
-                  canSelectOrder && (
-                    <Button
-                      className="w-full bg-secondary text-white font-semibold"
-                      onClick={() => onSelect && onSelect(order)}
-                    >
-                      {order.type === "SELL" ? t("buy") : t("sell")}
-                    </Button>
-                  )}
-                {showDetails && (walletAddress || order.type === "BUY") && (
-                  <Button
-                    className="w-full bg-secondary text-white font-semibold"
-                    onClick={() => !orderTaken && takeOrder(order)}
-                  >
-                    {t("take_order")}
-                  </Button>
-                )}
-              </>
-            )}
-          </>
-        )}
+      <CardFooter className="border border-gray-300 rounded-md flex justify-start items-start h-8 pl-2 pr-4 pt-1">
+        <p className="text-xs text-gray-600">
+          <a
+            href="#"
+            className="text-blue-500 underline hover:text-blue-700 cursor-pointer"
+            onClick={(e) => {
+              e.preventDefault(); // Evita redirección
+              console.log("Clicked on ID: ", order.id);
+            }}
+          >
+            ID: {order.id}
+          </a>
+        </p>
       </CardFooter>
+
       <Separator className="mb-2" />
-      <div className="block text-center pb-1">
-        <p className="text-xs text-gray-600 block">ID: {order.id}</p>
-        {/* <span className="text-xs text-gray-600 block">ID: {order.id}</span> */}
-      </div>
     </Card>
   );
+}
+
+function mapOrderStatus(status: string): string {
+  const statusMap: { [key: string]: string } = {
+    WAITING_PAYMENT: "waiting_lock",
+    ACTIVE: "awaiting_buyer",
+    PENDING: "open",
+    FIAT_SENT: "waiting_release",
+    COMPLETED: "completed",
+    COMPLETED_BY_ADMIN: "completed",
+    RELEASED: "completed",
+    CANCELLED: "canceled",
+  };
+  return statusMap[status] ?? "Unknown";
 }

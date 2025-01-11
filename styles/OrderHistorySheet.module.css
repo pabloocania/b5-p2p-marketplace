@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Ajusta la altura según necesites */
+}
+
+.historyButton {
+  background-color: #8a2be2; /* Color violeta */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px; /* Hace el botón más ovalado */
+  font-size: 16px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s ease;
+}
+
+.historyButton:hover {
+  background-color: #7a1bd1; /* Un tono más oscuro al pasar el mouse */
+}
+
+.sheetContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  height: 50%; /* Ajusta esto según tus necesidades */
+  overflow: auto;
+  transition: transform 0.3s ease-in-out;
+  transform: translateY(100%);
+}
+
+.sheetVisible {
+  transform: translateY(0);
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
