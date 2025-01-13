@@ -12,12 +12,40 @@ import { EtherspotSdkProvider } from "@/lib/web3/EtherspotSdkProvider";
 import { TransactionProvider } from "@/lib/web3/TransactionContext";
 import { rootstockTestnet } from "wagmi/chains";
 import "../src/i18n"; // Adjust the path as necessary
-import { useTranslation } from "react-i18next";
+import { Workbox } from "workbox-window";
+import { useEffect } from "react";
+import { FirebaseConfig, FirebaseService } from "@/lib/FirebaseService";
 
 const queryClient = new QueryClient();
 
 export default function MyApp({ Component, pageProps }: AppProps) {
-  const { t } = useTranslation();
+  // useEffect(() => {
+  //   if ("serviceWorker" in navigator) {
+  //     const wb = new Workbox("/worker/index.js");
+
+  //     const promptNewVersionAvailable = (event: any) => {
+  //       console.log(event);
+  //       if (
+  //         confirm(
+  //           "A newer version of this web app is available, reload to update?"
+  //         )
+  //       ) {
+  //         wb.addEventListener("controlling", (event) => {
+  //           window.location.reload();
+  //         });
+
+  //         wb.messageSW({ type: "SKIP_WAITING" });
+  //       } else {
+  //         console.log(
+  //           "User rejected to reload the web app, keep using old version. New version will be automatically loaded when user opens the app next time."
+  //         );
+  //       }
+  //     };
+
+  //     wb.addEventListener("waiting", promptNewVersionAvailable);
+  //     wb.register();
+  //   }
+  // }, []);
   return (
     <>
       <Head>

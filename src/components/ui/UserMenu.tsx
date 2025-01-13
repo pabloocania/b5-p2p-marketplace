@@ -8,6 +8,7 @@ import KioscoinConnectButton from "@/lib/web3/KioscoinConnectButton";
 import { useTranslation } from "react-i18next";
 import { Loader2 } from "lucide-react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import PushNotificationsToggle from "./PushNotificationsToggle";
 
 interface UserMenuProps {
   user: UserProps | undefined;
@@ -84,6 +85,11 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
               <p className="text-xs ">ID: {user.userId}</p>
               {/* <p className="text-sm text-gray-500">{user.email}</p> */}
             </div>
+          </div>
+          <div className="w-full">
+            <PushNotificationsToggle
+              userId={user.userId}
+            ></PushNotificationsToggle>
           </div>
           <div className="w-full">{ConnectWalletButton()}</div>
           {/* <div className="w-full"> */}
