@@ -3,6 +3,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { firebaseService } from "../../lib/FirebaseService";
+import { p2pMarketAPIClient as client } from "../../lib/APIClients";
+import { useTranslation } from "react-i18next";
 
 interface PushNotificationsToggleProps {
   userId: string;
@@ -13,67 +15,63 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
 }) => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
+    // Check current notification permission status
     if ("Notification" in window) {
-      checkSubscription();
-    } else {
-      setIsLoading(false);
+      setIsSubscribed(Notification.permission === "granted");
     }
+    setIsLoading(false);
   }, []);
 
-  const checkSubscription = async () => {
-    const permission = await Notification.permission;
-    setIsSubscribed(permission === "granted");
-    setIsLoading(false);
-  };
-
   const handleToggle = async () => {
-    if (isSubscribed) {
-      // Unsubscribe logic (if needed)
-      setIsSubscribed(false);
-      toast({
-        title: "Notifications disabled",
-        description: "You will no longer receive push notifications.",
-      });
-    } else {
-      try {
-        const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-          const token = await firebaseService.fetchToken();
-          if (token) {
-            await registerToken(userId, token);
-            setIsSubscribed(true);
-            toast({
-              title: "Notifications enabled",
-              description: "You will now receive push notifications.",
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Error subscribing to push notifications:", error);
+    try {
+      if (isSubscribed) {
+        // Unsubscribe logic (if needed)
+        setIsSubscribed(false);
         toast({
-          title: "Error",
-          description: "Failed to enable push notifications. Please try again.",
-          variant: "destructive",
+          title: "Notifications disabled",
+          description: "You will no longer receive push notifications.",
         });
+        return;
       }
+
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        toast({
+          title: "Permission Denied",
+          description: "Push notifications are disabled.",
+        });
+        return;
+      }
+
+      setIsSubscribed(true);
+
+      const token = await firebaseService.fetchToken();
+      if (!token) {
+        throw new Error("Failed to fetch token");
+      }
+
+      await registerToken(userId, token);
+      toast({
+        title: "Notifications enabled",
+        description: "You will now receive push notifications.",
+      });
+    } catch (error) {
+      console.error("Error handling push notifications:", error);
+      toast({
+        title: "Error",
+        description: "Failed to enable push notifications. Please try again.",
+        variant: "destructive",
+      });
+      setIsSubscribed(false);
     }
   };
 
   const registerToken = async (userId: string, token: string) => {
     try {
-      await fetch("http://localhost:8080/api/notifications/register-push", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Origin: "b5-p2p.vercel.app",
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          token: token,
-        }),
-      });
+      await client.registerPushToken({ token, userId });
     } catch (error) {
       console.error("Error registering token:", error);
     }
@@ -81,17 +79,22 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
 
   useEffect(() => {
     firebaseService.onMessageListener((payload: any) => {
-      console.log("Message received. ", payload);
-      // Customize notification handling here
-    });
+      const notificationTitle = payload.data?.title ?? "Default Title";
+      const notificationOptions: NotificationOptions = {
+        body: payload.data.body ?? "Default Body",
+        icon: "/icons/icon-192x192.png",
+      };
 
-    firebaseService.fetchToken().then((currentToken: any) => {
-      if (currentToken) {
-        registerToken(userId, currentToken);
+      if (Notification.permission !== "granted") {
+        console.log(Notification.permission);
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            console.log(permission);
+            new Notification(notificationTitle, notificationOptions);
+          }
+        });
       } else {
-        console.log(
-          "No registration token available. Request permission to generate one."
-        );
+        new Notification(notificationTitle, notificationOptions);
       }
     });
   }, [userId]);
@@ -101,7 +104,11 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
   }
 
   if (!("Notification" in window)) {
-    return <div>This browser does not support push notifications.</div>;
+    return (
+      <div className="text-sm font-semibold">
+        This browser does not support push notifications.
+      </div>
+    );
   }
 
   return (
@@ -111,7 +118,9 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
         checked={isSubscribed}
         onCheckedChange={handleToggle}
       />
-      <Label htmlFor="push-notifications">Enable Push Notifications</Label>
+      <Label htmlFor="push-notifications">
+        {t("enable_push_notifications")}
+      </Label>
     </div>
   );
 };

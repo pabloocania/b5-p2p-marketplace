@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { UserProps } from "../../lib/useUser";
 import InternalTransfersComponent from "@/lib/web3/InternalTransfersComponent";

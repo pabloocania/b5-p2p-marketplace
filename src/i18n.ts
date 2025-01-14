@@ -85,7 +85,8 @@ i18n
                     not_close_app: "Please, don't close or refresh the app",
                     loading_wallet: "Connecting wallet",
                     thanks: "Thanks",
-                    rate_user: "Rate user"
+                    rate_user: "Rate user",
+                    enable_push_notifications: "Enable push notifications",
                     // Add more translations here
                 }
             },
@@ -169,7 +170,8 @@ i18n
                     not_close_app: "Por favor, no cierre ni reinicie la aplicacion.",
                     loading_wallet: "Conectando wallet",
                     thanks: "Gracias",
-                    rate_user: "Calificar usuario"
+                    rate_user: "Calificar usuario",
+                    enable_push_notifications: "Permitir notificaciones",
                     // Add more translations here
                 }
             }
