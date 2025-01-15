@@ -133,7 +133,8 @@ export default function CreateOrder({
               {t("connect_to_continue")}
             </Button>
           ) : createdOrder ? (
-            <OrderCard orderDTO={createdOrder} showSelectButton={false} />
+            // <OrderCard orderDTO={createdOrder} showSelectButton={false} />
+            {}
           ) : (
             <form onSubmit={handleSubmit}>
               <div className="space-y-3">

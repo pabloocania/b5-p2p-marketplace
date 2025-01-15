@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 import { useEtherspotSdk } from "../../lib/web3/EtherspotSdkProvider";
 import { Order } from "b5-api-client";
@@ -26,10 +25,9 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
     const tokenBalance = balances.find(
       (balance) => balance.name === order.tokenCode
     );
-    if (
-      !tokenBalance ||
-      tokenBalance.smartWalletBalance < (order?.amount ?? 0)
-    ) {
+    const smartWalletBalance = parseFloat(tokenBalance!.smartWalletBalance);
+    const orderAmount = parseFloat(order?.amount ?? "0");
+    if (smartWalletBalance < orderAmount) {
       setHasSufficientBalance(false);
     } else {
       setHasSufficientBalance(true);
@@ -99,7 +97,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
       onClick={handleLockFunds}
       disabled={isLoading || !hasSufficientBalance}
     >
-      {hasSufficientBalance ? t("lock_funds") : t("not_enough_funds")}
+      {hasSufficientBalance ? t("lock_funds") : t("not_enough_balance")}
     </Button>
   );
 };
