@@ -30,6 +30,15 @@ import PaymentMethodDisplay from "./PaymentMethodDisplay";
 import OrderStatusBar from "./OrderStatus";
 import { useTranslation } from "react-i18next";
 import { Rating } from "./Rating";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import OrderHistory from "./OrderHistory";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -49,6 +58,7 @@ export function OrderCard({
   onRefresh,
 }: OrderCardProps) {
   const { t } = useTranslation();
+  const [isIdSheetOpen, setIsIdSheetOpen] = useState(false); // Estado para controlar el Sheet
   const [isButtonVisible, setIsButtonVisible] = useState(showSelectButton);
   const [walletAddress, setWalletAddress] = useState("");
   const [clipboardSupported, setClipboardSupported] = useState(false);
@@ -441,10 +451,42 @@ export function OrderCard({
         )}
       </CardFooter>
       <Separator className="mb-2" />
-      <div className="block text-center pb-1">
-        <p className="text-xs text-gray-600 block">ID: {order.id}</p>
-        {/* <span className="text-xs text-gray-600 block">ID: {order.id}</span> */}
-      </div>
+      <a
+        href="#"
+        className="text-blue-500 underline hover:text-blue-700 cursor-pointer"
+        onClick={(e) => {
+          e.preventDefault(); // Evita redirección
+          setIsIdSheetOpen(true); // Abre el Sheet al hacer clic en el ID
+        }}
+      >
+        ID: {order.id}
+      </a>
+
+      {/* Sheet para el ID clickeable */}
+      <Sheet open={isIdSheetOpen} onOpenChange={setIsIdSheetOpen}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl h-[90vh] flex flex-col overflow-hidden"
+          closeText="Close"
+        >
+          {/* Header */}
+          <SheetHeader className="text-center p-4">
+            <SheetTitle>Order History 🕒</SheetTitle>
+          </SheetHeader>
+
+          {/* Main Content */}
+          <div className="flex-grow overflow-y-auto px-4 max-h-[65vh]">
+            <OrderHistory />
+          </div>
+
+          {/* Footer */}
+          <div className="sticky bottom-20 p-4 border-t border-gray-200 bg-white flex justify-center">
+            <SheetClose className="bg-blue-500 text-white px-6 py-2 rounded-md shadow-md">
+              Cerrar
+            </SheetClose>
+          </div>
+        </SheetContent>
+      </Sheet>
     </Card>
   );
 }
