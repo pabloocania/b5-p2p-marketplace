@@ -24,7 +24,6 @@ interface OrderCardFooterProps {
   user: UserProps | undefined;
   walletAddress: string;
   onRefresh: () => void;
-  showSelectButton: boolean;
   showDetails: boolean;
   onSelect?: (order: Order) => void;
   setOrder: (order: Order) => void;
@@ -34,7 +33,6 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   order,
   walletAddress,
   onRefresh,
-  showSelectButton,
   showDetails,
   onSelect,
   setOrder,
@@ -42,12 +40,9 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   const { user, isLoggedIn } = useUserContext();
   const { isConnected } = useAccount();
   const { t } = useTranslation();
-  const [isButtonVisible, setIsButtonVisible] = useState(showSelectButton);
+  const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [orderTaken, setOrderTaken] = useState(false);
-  const isCreator = order.creatorId === user?.userId;
   const isSeller: boolean = order.sellerId === user?.userId;
-  //   const canLockOrReleaseFunds =
-  //     (isCreator && order.type === "SELL") || (isSeller && order.type === "BUY");
   const canSelectOrder = isLoggedIn && user?.userId !== order?.creatorId;
 
   const shouldShowSelectButton =
@@ -107,55 +102,57 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     }
   };
 
+  const renderActionButton = () => {
+    if (order.status === "ACTIVE" && !isSeller) {
+      return (
+        <NotifyFiatSentButton
+          order={order}
+          orderTaken={orderTaken}
+          onRefresh={onRefresh}
+          fiatSent={fiatSent}
+        />
+      );
+    }
+
+    if (order.status === "WAITING_PAYMENT" && isSeller) {
+      return isConnected ? (
+        <LockFundsButton order={order} canLock={isSeller} />
+      ) : (
+        <ConnectToContinueButton />
+      );
+    }
+
+    if (order.status === "FIAT_SENT" && isSeller) {
+      return isConnected ? (
+        <ReleaseFundsButton
+          order={order}
+          onRefresh={onRefresh}
+          canRelease={isSeller}
+        />
+      ) : (
+        <ConnectToContinueButton />
+      );
+    }
+
+    return null;
+  };
+
+  const isUserInvolved = [
+    order.creatorId,
+    order.buyerId,
+    order.sellerId,
+  ].includes(user?.userId);
   const shouldHideButtons =
     ["WAITING_PAYMENT", "ACTIVE", "FIAT_SENT"].includes(
       order.status as OrderStatus
-    ) &&
-    (order.creatorId === user?.userId ||
-      order.buyerId === user?.userId ||
-      order.sellerId === user?.userId);
+    ) && isUserInvolved;
 
   return (
     <CardFooter>
       {shouldHideButtons ? (
-        <>
-          {order.status === "ACTIVE" && !isSeller && (
-            <div className="text-center w-full text-white">
-              <NotifyFiatSentButton
-                order={order}
-                orderTaken={orderTaken}
-                onRefresh={onRefresh}
-                fiatSent={fiatSent}
-              />
-            </div>
-          )}
-          {order.status === "WAITING_PAYMENT" && isSeller ? (
-            !isConnected ? (
-              <div className="text-center w-full text-white">
-                <ConnectToContinueButton />
-              </div>
-            ) : (
-              <div className="text-center w-full text-white">
-                <LockFundsButton order={order} canLock={isSeller} />
-              </div>
-            )
-          ) : null}
-          {order.status === "FIAT_SENT" && isSeller ? (
-            !isConnected ? (
-              <div className="text-center w-full text-white">
-                <ConnectToContinueButton />
-              </div>
-            ) : (
-              <div className="text-center w-full text-white">
-                <ReleaseFundsButton
-                  order={order}
-                  onRefresh={onRefresh}
-                  canRelease={isSeller}
-                />
-              </div>
-            )
-          ) : null}
-        </>
+        <div className="text-center w-full text-white">
+          {renderActionButton()}
+        </div>
       ) : (
         <>
           {orderTaken ? (
@@ -164,17 +161,14 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
             </div>
           ) : (
             <>
-              {showSelectButton &&
-                !showDetails &&
-                shouldShowSelectButton &&
-                canSelectOrder && (
-                  <Button
-                    className="w-full bg-secondary text-white font-semibold"
-                    onClick={() => onSelect && onSelect(order)}
-                  >
-                    {order.type === "SELL" ? t("buy") : t("sell")}
-                  </Button>
-                )}
+              {shouldShowSelectButton && !showDetails && canSelectOrder && (
+                <Button
+                  className="w-full bg-secondary text-white font-semibold"
+                  onClick={() => onSelect && onSelect(order)}
+                >
+                  {order.type === "SELL" ? t("buy") : t("sell")}
+                </Button>
+              )}
               {showDetails && (walletAddress || order.type === "BUY") && (
                 <Button
                   className="w-full bg-secondary text-white font-semibold"

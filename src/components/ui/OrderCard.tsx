@@ -67,12 +67,6 @@ export function OrderCard({
   const { user, isLoggedIn } = useUserContext();
   const { openConnectModal } = useConnectModal();
 
-  const handleConnectButton = () => {
-    if (openConnectModal) {
-      openConnectModal();
-    }
-  };
-
   useEffect(() => {
     setOrder(orderDTO);
   }, [orderDTO]);
@@ -125,23 +119,23 @@ export function OrderCard({
         user={user}
         walletAddress={walletAddress}
         onRefresh={onRefresh}
-        showSelectButton={showSelectButton}
         showDetails={showDetails}
         onSelect={onSelect}
         setOrder={setOrder}
       />
-      <Separator className="mb-2" />
-      <a
-        href="#"
-        className="text-blue-500 underline hover:text-blue-700 cursor-pointer"
-        onClick={(e) => {
-          e.preventDefault(); // Evita redirección
-          setIsIdSheetOpen(true); // Abre el Sheet al hacer clic en el ID
-        }}
-      >
-        ID: {order.id}
-      </a>
-
+      <Separator />
+      <div className="block text-center pb-1">
+        <a
+          href="#"
+          className="text-blue-500 text-xs underline hover:text-blue-700 cursor-pointer"
+          onClick={(e) => {
+            e.preventDefault(); // Evita redirección
+            setIsIdSheetOpen(true); // Abre el Sheet al hacer clic en el ID
+          }}
+        >
+          ID: {order.id}
+        </a>
+      </div>
       {/* Sheet para el ID clickeable */}
       <Sheet open={isIdSheetOpen} onOpenChange={setIsIdSheetOpen}>
         <SheetContent

@@ -56,23 +56,15 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
     <CardHeader>
       <div className="flex-[0_0_75%]">
         <CardTitle>
-          {order.type === "SELL" ? (
-            <>
-              <span className="font-bold">{order.sellerUsername}</span>{" "}
-              <span className="font-normal">{t("sells")}</span>{" "}
-              <span className="font-bold">
-                {order.amount} {order.tokenCode}
-              </span>
-            </>
-          ) : (
-            <>
-              <span className="font-bold">{order.buyerUsername}</span>{" "}
-              <span className="font-normal">{t("buys")}</span>{" "}
-              <span className="font-bold">
-                {order.amount} {order.tokenCode}
-              </span>
-            </>
-          )}
+          <span className="font-bold">
+            {order.type === "SELL" ? order.sellerUsername : order.buyerUsername}
+          </span>{" "}
+          <span className="font-normal">
+            {order.type === "SELL" ? t("sells") : t("buys")}
+          </span>{" "}
+          <span className="font-bold">
+            {order.amount} {order.tokenCode}
+          </span>
         </CardTitle>
       </div>
       <div className="flex-[0_0_25%] flex justify-end h-6">
