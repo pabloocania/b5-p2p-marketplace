@@ -145,7 +145,7 @@ export default function Home() {
               <SheetContent
                 side="bottom"
                 className="h-[90vh] bg-backgroundMain"
-                // closeText={t("close")}
+                closeText={t("close")}
               >
                 <VisuallyHidden>
                   <SheetTitle>Create Order Dialog</SheetTitle>
