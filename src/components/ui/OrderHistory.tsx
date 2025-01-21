@@ -42,7 +42,7 @@ export default function OrderHistory({ orderId }: OrderHistoryProps) {
 
   if (loading) return <p>t{"loading_status"}</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
-  if (events.length === 0) return <p>No events registered for this order.</p>;
+  if (events.length === 0) return <p>{t("no_events_registered")}</p>;
 
   return (
     <div>
@@ -54,7 +54,7 @@ export default function OrderHistory({ orderId }: OrderHistoryProps) {
             {event.eventType === "FIAT_SENT" && `${t("fiat_transferred")} 💸`}
             {event.eventType === "RELEASED" && `${t("order_released")} ✅`}
           </span>
-          <span className="text-sm text-gray-600 text-right w-36">
+          <span className="text-sm text-gray-600 text-right w-36 whitespace-nowrap">
             {new Date(event.timestamp).toLocaleString()}
           </span>
         </div>

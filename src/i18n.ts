@@ -94,6 +94,7 @@ i18n.use(initReactI18next).init({
         fiat_transferred: "Money transferred",
         order_released: "Order released",
         order_history: "Order History",
+        no_events_registered: "No events registered for this order.",
 
         // Add more translations here
       },
@@ -190,6 +191,7 @@ i18n.use(initReactI18next).init({
         fiat_transferred: "Dinero transferido",
         order_released: "Orden liberada",
         order_history: "Historial de la orden",
+        no_events_registered: "No hay eventos registrados para esta orden.",
 
         // Add more translations here
       },
