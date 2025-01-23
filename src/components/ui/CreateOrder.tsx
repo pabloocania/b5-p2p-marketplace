@@ -19,7 +19,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { OrderCard } from "./OrderCard";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useUserContext } from "./UserContext";
 import { useEtherspotSdk } from "../../lib/web3/EtherspotSdkProvider";
@@ -132,9 +131,7 @@ export default function CreateOrder({
             >
               {t("connect_to_continue")}
             </Button>
-          ) : createdOrder ? (
-            <OrderCard orderDTO={createdOrder} showSelectButton={false} />
-          ) : (
+          ) : createdOrder ? null : (
             <form onSubmit={handleSubmit}>
               <div className="space-y-3">
                 <Label className="font-bold">{t("i_want_to")}</Label>

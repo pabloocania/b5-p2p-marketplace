@@ -9,6 +9,13 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetFooter,
+} from "@/components/ui/sheet";
+
 import { Separator } from "@/components/ui/separator";
 import { Clipboard, Check, ArrowLeft } from "lucide-react";
 import {
@@ -30,6 +37,7 @@ import PaymentMethodDisplay from "./PaymentMethodDisplay";
 import OrderStatusBar from "./OrderStatus";
 import { useTranslation } from "react-i18next";
 import { Rating } from "./Rating";
+import OrderHistory from "./OrderHistory"; // Asegúrate de que la ruta sea correcta
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -57,6 +65,10 @@ export function OrderCard({
   const { user, isLoggedIn } = useUserContext();
   const { isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
+  const [selectedOrderId, setSelectedOrderId] = useState<string | undefined>(
+    undefined
+  );
+  const [isIdSheetOpen, setIsIdSheetOpen] = useState(false);
 
   const handleConnectButton = () => {
     if (openConnectModal) {
@@ -232,6 +244,8 @@ export function OrderCard({
   const formattedFiatAmount = order.fiatAmount
     ? parseFloat(order.fiatAmount).toFixed(2)
     : order.fiatAmount;
+
+  // Removed duplicate function declaration
 
   return (
     <Card className="w-full mb-4" variant="shadow">
@@ -440,10 +454,48 @@ export function OrderCard({
           </>
         )}
       </CardFooter>
-      <Separator className="mb-2" />
-      <div className="block text-center pb-1">
-        <p className="text-xs text-gray-600 block">ID: {order.id}</p>
-        {/* <span className="text-xs text-gray-600 block">ID: {order.id}</span> */}
+      <Separator className="mb-0" />
+      <div>
+        <div className="block text-center pb-1">
+          <a
+            href="#"
+            className="text-blue-500 text-xs underline hover:text-blue-700 cursor-pointer"
+            onClick={(e) => {
+              e.preventDefault(); // Evita redirección
+              setSelectedOrderId && setSelectedOrderId(order.id); // Actualiza el ID seleccionado
+              setIsIdSheetOpen(true); // Abre el Sheet
+            }}
+          >
+            ID: {order.id}
+          </a>
+        </div>
+
+        <Sheet open={isIdSheetOpen} onOpenChange={setIsIdSheetOpen}>
+          <SheetContent
+            side="bottom"
+            className="flex flex-col justify-between rounded-lg" // Added 'rounded-lg' class for rounded corners
+            closeText={""}
+          >
+            {/* Especificamos que salga desde abajo */}
+            <div className="p-4 flex-1 overflow-y-auto">
+              <SheetTitle className="text-lg font-semibold mb-4">
+                ⏰ {t("order_history")}
+              </SheetTitle>
+              {/* Renderizamos el componente OrderHistory */}
+              <OrderHistory orderId={selectedOrderId} />
+            </div>
+
+            {/* Footer elevado */}
+            <SheetFooter className="p-4 border-t bg-gray-100 rounded-md">
+              <button
+                className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                onClick={() => setIsIdSheetOpen(false)}
+              >
+                {t("close")}
+              </button>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
       </div>
     </Card>
   );

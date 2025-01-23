@@ -86,10 +86,8 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
       };
 
       if (Notification.permission !== "granted") {
-        console.log(Notification.permission);
         Notification.requestPermission().then((permission) => {
           if (permission === "granted") {
-            console.log(permission);
             new Notification(notificationTitle, notificationOptions);
           }
         });
