@@ -454,7 +454,7 @@ export function OrderCard({
           </>
         )}
       </CardFooter>
-      <Separator className="mb-2" />
+      <Separator className="mb-0" />
       <div>
         <div className="block text-center pb-1">
           <a
@@ -464,14 +464,12 @@ export function OrderCard({
               e.preventDefault(); // Evita redirección
               setSelectedOrderId && setSelectedOrderId(order.id); // Actualiza el ID seleccionado
               setIsIdSheetOpen(true); // Abre el Sheet
-              console.log("Order ID selected:", order.id); // Log para depuración
             }}
           >
             ID: {order.id}
           </a>
         </div>
 
-        {/* Sheet */}
         <Sheet open={isIdSheetOpen} onOpenChange={setIsIdSheetOpen}>
           <SheetContent
             side="bottom"
