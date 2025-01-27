@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 interface NotifyFiatSentButtonProps {
   order: Order;
   orderTaken: boolean;
-  onRefresh: () => void;
+  onRefresh?: () => void;
   fiatSent: (order: Order) => Promise<void>;
 }
 
@@ -22,7 +22,7 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
     if (!orderTaken) {
       fiatSent(order);
     }
-    onRefresh(); // Call the refresh callback
+    onRefresh?.();
   };
 
   return (

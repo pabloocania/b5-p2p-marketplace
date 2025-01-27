@@ -23,7 +23,7 @@ interface OrderCardFooterProps {
   order: Order;
   user: UserProps | undefined;
   walletAddress: string;
-  onRefresh: () => void;
+  onRefresh?: () => void;
   showDetails: boolean;
   onSelect?: (order: Order) => void;
   setOrder: (order: Order) => void;

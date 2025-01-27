@@ -139,7 +139,6 @@ export default function OrdersFeed({
             <OrderCard
               orderDTO={selectedOrder}
               showDetails={true}
-              onBack={handleBack}
               onRefresh={refreshOrders}
             />
           ) : orders && orders.length > 0 ? (
