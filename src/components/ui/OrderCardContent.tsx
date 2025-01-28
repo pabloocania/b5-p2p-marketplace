@@ -9,6 +9,9 @@ import { Input } from "./input";
 import { Clipboard } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UserProps } from "@/lib/useUser";
+import { SellerText } from "./SellerText";
+import { BuyerText } from "./BuyerText";
+import AddressInput from "./AddressInput";
 
 interface OrderCardContentProps {
   order: Order;
@@ -70,70 +73,18 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
             ))}
           </span>
         </div>
-        {order.buyerId && order.type === "SELL" && (
-          <div className="text-xs text-black">
-            <div>
-              {t("buyer")}:{" "}
-              <span className="font-semibold">
-                {order.buyerId === user?.userId
-                  ? t("you")
-                  : order.buyerUsername
-                  ? order.buyerUsername
-                  : order.buyerId}
-              </span>
-            </div>
-            {!order.sellerHasRated &&
-              order.status &&
-              finishedStatusesList.includes(order.status) && (
-                <Rating orderId={order.id!!} ratedId={order.buyerId} />
-              )}
-          </div>
-        )}
         {order.sellerId && order.type === "BUY" && (
-          <div>
-            <span className="text-xs text-gray-600 block">
-              {t("seller")}:{" "}
-              {order.sellerId === user?.userId
-                ? t("you")
-                : order.sellerUsername
-                ? order.sellerUsername
-                : order.sellerId}
-            </span>
-            {!order.buyerHasRated &&
-              order.status &&
-              finishedStatusesList.includes(order.status) && (
-                <Rating orderId={order.id!!} ratedId={order.sellerId} />
-              )}
-          </div>
+          <SellerText order={order} userId={user?.userId} />
+        )}
+        {order.buyerId && order.type === "SELL" && (
+          <BuyerText order={order} userId={user?.userId} />
         )}
         {user && showDetails && order.type === ("SELL" as OrderType) && (
-          <div className="pt-2">
-            <div className="space-y-2">
-              <span className="text-xs block font-semibold">
-                {t("take_order_information")}
-              </span>
-              <div className="flex space-x-2">
-                <Input
-                  id="walletAddress"
-                  value={walletAddress}
-                  onChange={(e) => setWalletAddress(e.target.value)}
-                  placeholder="Enter wallet address"
-                  className="flex-grow"
-                  disabled={order.status !== "PENDING"}
-                />
-                {clipboardSupported && (
-                  <Button
-                    onClick={handlePasteClipboard}
-                    variant="outline"
-                    size="icon"
-                    title="Paste from clipboard"
-                  >
-                    <Clipboard className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
+          <AddressInput
+            walletAddress={walletAddress}
+            setWalletAddress={setWalletAddress}
+            orderStatus={order.status ? order.status : "CANCELED"}
+          />
         )}
       </div>
     </CardContent>

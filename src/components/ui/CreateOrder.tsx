@@ -52,8 +52,6 @@ export default function CreateOrder({
   const [username, setUsername] = useState<string>("");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const { user, isLoggedIn } = useUserContext();
-  const { balances } = useEtherspotSdk();
-  const { isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { t } = useTranslation();
 

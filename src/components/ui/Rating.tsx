@@ -39,7 +39,7 @@ export function Rating({ orderId, ratedId }: RatingProps) {
   return (
     <div>
       {isSubmitted ? (
-        <span className="text-primary py-1">{t("thanks")}</span>
+        <span className="text-xs font-bold pr-2">{t("thanks")}</span>
       ) : (
         <Card>
           <CardContent className="flex px-0 py-0 items-center rounded-md">

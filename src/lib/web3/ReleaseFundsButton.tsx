@@ -5,6 +5,13 @@ import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 import { useTranslation } from "react-i18next";
 import { useAccount } from "wagmi";
 import { useTransaction } from "./TransactionContext";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import ReleaseFundsConfirmation from "@/components/ui/ReleaseFundsConfirmation";
 
 interface ReleaseFundsButtonProps {
   order: Order;
@@ -12,7 +19,7 @@ interface ReleaseFundsButtonProps {
   canRelease: boolean;
 }
 
-const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
+export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   order,
   onRefresh,
   canRelease,
@@ -22,6 +29,7 @@ const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   const { t } = useTranslation();
   const { releaseFunds } = useEtherspotFlow(); // Import the lockFunds function from the hook
   const { setTransaction } = useTransaction();
+  const [isReleaseOpen, setIsReleaseOpen] = useState(false);
 
   const handleReleaseFunds = async () => {
     if (!isTransacting) {
@@ -78,14 +86,33 @@ const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   };
 
   const [isLoading, setIsLoading] = useState(false);
+
   return canRelease && isConnected ? (
-    <Button
-      className="w-full bg-yellow-500 text-white"
-      onClick={handleReleaseFunds}
-      disabled={isLoading}
-    >
-      {t("release_funds")}
-    </Button>
+    <div>
+      <Sheet open={isReleaseOpen} onOpenChange={setIsReleaseOpen}>
+        <SheetTrigger asChild>
+          <Button
+            className="w-full text-white bg-yellow-500"
+            onClick={() => setIsReleaseOpen(true)}
+          >
+            {t("release_funds")}
+          </Button>
+        </SheetTrigger>
+        <SheetContent
+          side="bottom"
+          className="h-[90vh] bg-backgroundMain"
+          closeText={t("close")}
+        >
+          <SheetTitle className="text-lg font-semibold mb-4"></SheetTitle>
+          <ReleaseFundsConfirmation
+            order={order}
+            onClose={() => setIsReleaseOpen(false)}
+            handleReleaseFunds={handleReleaseFunds}
+            isLoading={isLoading}
+          />
+        </SheetContent>
+      </Sheet>
+    </div>
   ) : null;
 };
 

@@ -5,9 +5,16 @@ import { useEtherspotSdk } from "../../lib/web3/EtherspotSdkProvider";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
 import { useTransaction } from "./TransactionContext";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import LockFundsConfirmation from "@/components/ui/LockFundsConfirmation";
 
 interface LockFundsButtonProps {
-  order: Order; // Replace 'any' with the actual type of your order
+  order: Order;
   canLock: boolean;
 }
 
@@ -19,18 +26,20 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
   const { balances } = useEtherspotSdk();
   const [isTransacting, setIsTransacting] = useState(false);
   const { setTransaction } = useTransaction();
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     // Check balance when component mounts
     const tokenBalance = balances.find(
       (balance) => balance.name === order.tokenCode
     );
-    const smartWalletBalance = parseFloat(tokenBalance!.smartWalletBalance);
-    const orderAmount = parseFloat(order?.amount ?? "0");
-    if (smartWalletBalance < orderAmount) {
-      setHasSufficientBalance(false);
+
+    if (tokenBalance) {
+      const smartWalletBalance = parseFloat(tokenBalance.smartWalletBalance);
+      const orderAmount = parseFloat(order?.amount ?? "0");
+      setHasSufficientBalance(smartWalletBalance >= orderAmount);
     } else {
-      setHasSufficientBalance(true);
+      setHasSufficientBalance(false);
     }
   }, [balances, order.amount]);
 
@@ -92,17 +101,32 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
   };
 
   return (
-    <Button
-      className="w-full bg-primary text-white"
-      onClick={handleLockFunds}
-      disabled={isLoading || !hasSufficientBalance}
-    >
-      {hasSufficientBalance ? t("lock_funds") : t("not_enough_balance")}
-    </Button>
+    <div>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>
+          <Button
+            className="w-full text-white bg-yellow-500"
+            onClick={() => setIsOpen(true)}
+          >
+            {hasSufficientBalance ? t("lock_funds") : t("not_enough_balance")}
+          </Button>
+        </SheetTrigger>
+        <SheetContent
+          side="bottom"
+          className="h-[90vh] bg-backgroundMain"
+          closeText={t("close")}
+        >
+          <SheetTitle className="text-lg font-semibold mb-4"></SheetTitle>
+          <LockFundsConfirmation
+            handleLockFunds={handleLockFunds}
+            canLock={isLoading || !hasSufficientBalance}
+            order={order}
+            onClose={() => setIsOpen(false)}
+          />
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 };
 
 export default LockFundsButton;
-function setIsTransacting(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}
