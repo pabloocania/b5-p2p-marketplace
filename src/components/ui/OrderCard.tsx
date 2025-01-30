@@ -83,7 +83,7 @@ export function OrderCard({
       <div className="pl-4 pr-4 flex items-center justify-between text-sm">
         <OrderIdLink orderId={order.id} />
         <div className="flex items-center gap-1 self-center relative -mt-1">
-          <OrderCreatedDate createdAt={order.createdAt ?? ""} />
+{order.createdAt && <OrderCreatedDate createdAt={order.createdAt} />}
         </div>
       </div>
     </Card>
