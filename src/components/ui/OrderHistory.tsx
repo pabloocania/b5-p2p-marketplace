@@ -16,7 +16,6 @@ export default function OrderHistory({ orderId }: OrderHistoryProps) {
   const [events, setEvents] = useState<OrderEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { t } = useTranslation();
 
   useEffect(() => {
     if (!orderId) {

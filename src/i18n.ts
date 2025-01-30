@@ -102,15 +102,16 @@ i18n.use(initReactI18next).init({
         network_gas_fee: "Network gas fee: ",
         transaction_details: "Transaction details",
         warning: "Warning!",
-        warning_release_text: "Never release funds if you haven't received the FIAT amount yet. Ensure the transaction is complete before proceeding.",
+        warning_release_text:
+          "Never release funds if you haven't received the FIAT amount yet. Ensure the transaction is complete before proceeding.",
         continue: "Continue",
         transaction_fee: "Transaction fee",
         sw_fee_details: "Gasless transactions, only pay service fee.",
         eoa_fee_details: "Pay both transaction and gas fees.",
         use_sw: "Use Smart Wallet",
         use_eoa: "Use EOA wallet",
-        total_to_lock: "Total to lock"
-        //
+        total_to_lock: "Total to lock",
+        created: "Created",
       },
     },
     es: {
@@ -213,15 +214,18 @@ i18n.use(initReactI18next).init({
         network_gas_fee: "Comisión de la red: ",
         transaction_details: "Detalles de transacción",
         warning: "Advertencia!",
-        warning_release_text: "Nunca liberes fondos si aún no has recibido el monto en FIAT. Asegúrate de que la transacción esté completa antes de proceder.",
+        warning_release_text:
+          "Nunca liberes fondos si aún no has recibido el monto en FIAT. Asegúrate de que la transacción esté completa antes de proceder.",
         continue: "Continuar",
         transaction_fee: "Comisión de servicio",
-        sw_fee_details: "Transacciones sin gas, solo paga la tarifa de servicio.",
-        eoa_fee_details: "Paga tanto las tarifas de transacción como las de gas.",
+        sw_fee_details:
+          "Transacciones sin gas, solo paga la tarifa de servicio.",
+        eoa_fee_details:
+          "Paga tanto las tarifas de transacción como las de gas.",
         use_sw: "Usar Smart Wallet",
         use_eoa: "Usar EOA wallet",
-        total_to_lock: "Total a depositar"
-        // Add more translations here
+        total_to_lock: "Total a depositar",
+        created: "Creado",
       },
     },
   },

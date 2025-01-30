@@ -25,6 +25,7 @@ import OrderCardHeader from "./OrderCardHeader";
 import OrderCardContent from "./OrderCardContent";
 import OrderCardFooter from "./OrderCardFooter";
 import OrderIdLink from "./OrderIdLink";
+import OrderCreatedDate from "../OrderCreatedDate";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -79,7 +80,12 @@ export function OrderCard({
         setOrder={setOrder}
       ></OrderCardFooter>
       <Separator className="mb-0" />
-      <OrderIdLink orderId={order.id} />
+      <div className="pl-4 pr-4 flex items-center justify-between text-sm">
+        <OrderIdLink orderId={order.id} />
+        <div className="flex items-center gap-1 self-center relative -mt-1">
+          <OrderCreatedDate createdAt={order.createdAt} />
+        </div>
+      </div>
     </Card>
   );
 }
