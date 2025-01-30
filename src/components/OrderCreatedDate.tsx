@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { Calendar } from "lucide-react";
 
 interface OrderCreatedDateProps {
-  createdAt: string | undefined;
+  createdAt: string;
 }
 
 const OrderCreatedDate: React.FC<OrderCreatedDateProps> = ({ createdAt }) => {
