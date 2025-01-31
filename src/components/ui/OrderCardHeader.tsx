@@ -4,6 +4,8 @@ import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
+import { StarRating } from "@/components/ui/RatingCounter";
+import { CryptoIcon } from "./CryptoIcon";
 
 interface OrderCardHeaderProps {
   order: Order;
@@ -55,16 +57,18 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
   return (
     <CardHeader>
       <div className="flex-[0_0_75%]">
-        <CardTitle>
-          <span className="font-bold">
+       <CardTitle className="flex flex-col gap-2 mt-2">
+          <div className="flex flex-row gap-1"><span className="font-bold">
             {order.type === "SELL" ? order.sellerUsername : order.buyerUsername}
+          </span>{" "}<span className="mt-1"> <StarRating  rating={5} transactionCount={22}/>  </span></div>
+          <div className="flex flex-row gap-5">
+          <span className="font-bold text-lg justify-center items-center">
+           <i>{order.type === "SELL" ? t("sells") : t("buys")}</i> 
           </span>{" "}
-          <span className="font-normal">
-            {order.type === "SELL" ? t("sells") : t("buys")}
-          </span>{" "}
-          <span className="font-bold">
-            {order.amount} {order.tokenCode}
+          <span className="font-semibold text-sm justify-center items-center mt-0.5">
+            <CryptoIcon  amount={3} tokenCode="eth" />
           </span>
+          </div>
         </CardTitle>
       </div>
       <div className="flex-[0_0_25%] flex justify-end h-6">
