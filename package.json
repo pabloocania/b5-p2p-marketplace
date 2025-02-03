@@ -27,6 +27,8 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "crypto-icons": "^1.0.65",
+    "cryptocurrency-icons": "^0.18.1",
     "firebase": "11.1.0",
     "i18next": "^24.0.0",
     "lucide-react": "^0.439.0",

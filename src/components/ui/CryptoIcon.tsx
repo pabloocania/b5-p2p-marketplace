@@ -7,12 +7,12 @@ interface CryptoIconProps {
 
 export const CryptoIcon: React.FC<CryptoIconProps> = ({ tokenCode, amount }) => {
   const tokenCodeLower = tokenCode.toLowerCase();
-  const iconSrc = `https://cdn.jsdelivr.net/npm/cryptocurrency-icons/svg/color/${tokenCodeLower}.svg`;
+  const iconSrc = `cryptocurrency-icons/svg/color/${tokenCodeLower}.svg`;
 
   return (
     <div className="flex items-center space-x-2 justify-center">
-      <span className="font-bold text-[12px] mt-[3px]">  <i className="font-extrabold">{amount}</i> &nbsp;&nbsp; {tokenCode.toUpperCase()} </span>
-      <img src={iconSrc} alt={tokenCode} className="w-[16px] h-[16px]" />
+      <span className="font-medium text-[20px]">  <i className="font-medium">{amount}</i> &nbsp;&nbsp; {tokenCode.toUpperCase()} </span>
+      <img src={iconSrc} alt={tokenCode} className="w-[22px] h-[22px]" />
     </div>
   );
 };
