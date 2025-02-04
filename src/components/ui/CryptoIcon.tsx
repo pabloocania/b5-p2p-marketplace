@@ -7,7 +7,12 @@ interface CryptoIconProps {
 
 export const CryptoIcon: React.FC<CryptoIconProps> = ({ tokenCode, amount }) => {
   const tokenCodeLower = tokenCode.toLowerCase();
-  const iconSrc = `cryptocurrency-icons/svg/color/${tokenCodeLower}.svg`;
+  const isGenericIcon = tokenCodeLower === "pdoc" || tokenCodeLower === "usdk";
+
+  // Si es PDOC o USDK, usa el ícono genérico de la carpeta public/criptoicon
+  const iconSrc = isGenericIcon
+    ? `/criptoicon/${tokenCodeLower}.svg`
+    : `https://cdn.jsdelivr.net/npm/cryptocurrency-icons/svg/color/${tokenCodeLower}.svg`;
 
   return (
     <div className="flex items-center space-x-2 justify-center">

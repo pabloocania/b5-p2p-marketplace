@@ -66,7 +66,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
            <i>{order.type === "SELL" ? t("sells") : t("buys")}</i> 
           </span>{" "}
           <span className="text-m justify-center items-center mt-0.5">
-            <CryptoIcon  amount={3} tokenCode="pdoc" />
+            <CryptoIcon  amount={3} tokenCode="usdk" />
           </span>
           </div>
         </CardTitle>
