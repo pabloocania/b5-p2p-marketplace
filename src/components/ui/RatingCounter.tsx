@@ -1,0 +1,22 @@
+import React from "react";
+import { Star, CircleCheckBig  } from "lucide-react";
+
+interface StarRatingProps {
+  rating: number;
+  transactionCount: number;
+}
+
+export const StarRating: React.FC<StarRatingProps> = ({ rating, transactionCount }) => {
+  return (
+    <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1 text-yellow-500 text-m bg-[#58bf4b] bg-opacity-15  rounded-full px-2 py-1">
+        <span className="text-[16px] font-semibold">{rating}</span>
+        <Star className="w-4 h-4" style={{ fill: "currentColor" }} />
+      </div>
+      <div className="flex items-center space-x-1 text-green-500 text-[16px] font-medium bg-[#58bf4b] bg-opacity-15 rounded-full px-2 py-1 font-semibold">
+        <span>{transactionCount}</span>
+        <CircleCheckBig  className="w-4 h-4" />
+      </div>
+    </div>
+  );
+};
