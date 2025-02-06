@@ -82,7 +82,7 @@ export function OrderCard({
       <Separator className="mb-0" />
       <div className="pl-4 pr-4 flex items-center justify-between text-[11px] whitespace-nowrap overflow-hidden">
         <div className="flex-1 truncate max-w-[50%]">
-          <OrderIdLink orderId={order.id} className="truncate max-w-[100px]" />
+          <OrderIdLink orderId={order.id} />
         </div>
         <div className="flex items-center gap-3 opacity-90">
           {order.createdAt && <OrderCreatedDate createdAt={order.createdAt} />}
