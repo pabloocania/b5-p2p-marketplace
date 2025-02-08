@@ -35,7 +35,7 @@ const PaymentMethodDisplay: React.FC<PaymentMethodDisplayProps> = ({
     mapEntity(method.entity ?? null) || methodDescription; // Default to methodDescription if entityDescription is empty
   const formattedAlias = method.alias ? formatAlias(method.alias) : "";
   return (
-    <div>
+    <div className="text-primary">
       {t("transfer_by")}: <strong> {entityDescription} </strong>
       {/* {formattedAlias && formattedAlias} */}
     </div>

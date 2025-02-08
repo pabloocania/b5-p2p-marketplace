@@ -3,15 +3,12 @@ import React, { useEffect, useState } from "react";
 import { CardContent } from "@/components/ui/card";
 import { Order, OrderStatus, OrderType, PaymentMethod } from "b5-api-client";
 import PaymentMethodDisplay from "./PaymentMethodDisplay";
-import { Rating } from "./Rating";
-import { Button } from "./button";
-import { Input } from "./input";
-import { Clipboard } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UserProps } from "@/lib/useUser";
 import { SellerText } from "./SellerText";
 import { BuyerText } from "./BuyerText";
 import AddressInput from "./AddressInput";
+import { CryptoAmountIcon } from "./CryptoIcon";
 
 interface OrderCardContentProps {
   order: Order;
@@ -20,16 +17,6 @@ interface OrderCardContentProps {
   walletAddress: string;
   setWalletAddress: (value: string) => void;
 }
-
-const finishedStatusesList: OrderStatus[] = [
-  "RELEASED",
-  "CLOSED",
-  "CANCELED",
-  "SUCCESS",
-  "CANCELED_BY_ADMIN",
-  "EXPIRED",
-  "COMPLETED_BY_ADMIN",
-];
 
 const OrderCardContent: React.FC<OrderCardContentProps> = ({
   order,
@@ -58,35 +45,55 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   };
 
   return (
-    <CardContent className="pb-6 pt-0 pb-3">
-      <div className="space-y-1">
-        <div className="pb-0">
-          <p>
+    <CardContent className="pb-3 pt-1">
+      {/* <div className="border border-primary border-opacity-10 rounded-lg space-y-1 px-2 py-2 bg-primary bg-opacity-5 space-y-1"> */}
+      <div className="border border-primary border-opacity-10 rounded-lg space-y-1 px-2 py-2 bg-primary bg-opacity-5 space-y-1">
+        <div className="flex space-x-1 text-right w-full">
+          <span className="text-2xl text-primary">
+            {order.type === "SELL" ? t("sells") : t("buys")}
+          </span>
+          <span className="flex text-right text-terciary">
+            <CryptoAmountIcon
+              amount={order.amount!!}
+              tokenCode={order.tokenCode?.toLowerCase()!!}
+            />
+          </span>
+        </div>
+        <div className="flex">
+          <p className="text-left w-full text-primary">
             {t("for")}{" "}
-            <span className="font-bold">${formattedFiatAmount} ARS</span>
+            <span className="font-bold text-primary">
+              ${formattedFiatAmount} ARS
+            </span>
           </p>
         </div>
-        <div>
+        <div className="text-left w-full text-primary">
           <span className="text-xs block">
             {order.paymentMethods?.map((method, index) => (
               <PaymentMethodDisplay key={index} method={method} />
             ))}
           </span>
         </div>
-        {order.sellerId && order.type === "BUY" && (
-          <SellerText order={order} userId={user?.userId} />
-        )}
-        {order.buyerId && order.type === "SELL" && (
-          <BuyerText order={order} userId={user?.userId} />
-        )}
-        {user && showDetails && order.type === ("SELL" as OrderType) && (
+        <div className="text-left w-full">
+          {order.sellerId && order.type === "BUY" && (
+            <SellerText order={order} userId={user?.userId} />
+          )}
+        </div>
+        <div>
+          {order.buyerId && order.type === "SELL" && (
+            <BuyerText order={order} userId={user?.userId} />
+          )}
+        </div>
+      </div>
+      {user && showDetails && order.type === ("SELL" as OrderType) && (
+        <div className="py-2">
           <AddressInput
             walletAddress={walletAddress}
             setWalletAddress={setWalletAddress}
             orderStatus={order.status ? order.status : "CANCELED"}
           />
-        )}
-      </div>
+        </div>
+      )}
     </CardContent>
   );
 };

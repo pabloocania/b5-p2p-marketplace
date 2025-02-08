@@ -20,8 +20,8 @@ export const SellerText: React.FC<SellerTextProps> = ({ order, userId }) => {
   ];
 
   return (
-    <div>
-      <span className="text-xs text-gray-600 block">
+    <div className="text-right w-full">
+      <span className="text-xs text-primary block">
         {t("seller")}:{" "}
         {order.sellerId === userId
           ? t("you")

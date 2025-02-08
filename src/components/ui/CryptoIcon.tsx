@@ -1,11 +1,14 @@
 import React from "react";
 
-interface CryptoIconProps {
+interface CryptoAmountIconProps {
   tokenCode: string; // Código del token (por ejemplo, "btc", "eth", "usdt")
-  amount: number;    // Monto de la criptomoneda
+  amount: string; // Monto de la criptomoneda
 }
 
-export const CryptoIcon: React.FC<CryptoIconProps> = ({ tokenCode, amount }) => {
+export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
+  tokenCode,
+  amount,
+}) => {
   const tokenCodeLower = tokenCode.toLowerCase();
   const isGenericIcon = tokenCodeLower === "pdoc" || tokenCodeLower === "usdk";
 
@@ -15,9 +18,11 @@ export const CryptoIcon: React.FC<CryptoIconProps> = ({ tokenCode, amount }) => 
     : `https://cdn.jsdelivr.net/npm/cryptocurrency-icons/svg/color/${tokenCodeLower}.svg`;
 
   return (
-    <div className="flex items-center space-x-2 justify-center">
-      <span className="font-medium text-[20px]">  <i className="font-medium">{amount}</i> &nbsp;&nbsp; {tokenCode.toUpperCase()} </span>
-      <img src={iconSrc} alt={tokenCode} className="w-[22px] h-[22px]" />
+    <div className="flex items-center w-full text-right text-primary">
+      <span className="font-medium text-2xl font-bold">
+        {amount} {tokenCode.toUpperCase()}{" "}
+      </span>
+      <img src={iconSrc} alt={tokenCode} className="pl-1 w-[25px] h-[25px]" />
     </div>
   );
 };

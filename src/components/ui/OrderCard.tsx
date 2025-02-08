@@ -1,20 +1,5 @@
 import { useState, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetFooter,
-} from "@/components/ui/sheet";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Separator } from "@/components/ui/separator";
 import { Order } from "b5-api-client";
@@ -25,7 +10,6 @@ import OrderCardHeader from "./OrderCardHeader";
 import OrderCardContent from "./OrderCardContent";
 import OrderCardFooter from "./OrderCardFooter";
 import OrderIdLink from "./OrderIdLink";
-import OrderCreatedDate from "../OrderCreatedDate";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -80,12 +64,9 @@ export function OrderCard({
         setOrder={setOrder}
       ></OrderCardFooter>
       <Separator className="mb-0" />
-      <div className="pl-4 pr-4 flex items-center justify-between text-[11px] whitespace-nowrap overflow-hidden">
-        <div className="flex-1 truncate max-w-[50%]">
+      <div className="pl-4 pr-4 flex items-center justify-between text-sm">
+        <div className="flex-1">
           <OrderIdLink orderId={order.id} />
-        </div>
-        <div className="flex items-center gap-3 opacity-90">
-          {order.createdAt && <OrderCreatedDate createdAt={order.createdAt} />}
         </div>
       </div>
     </Card>

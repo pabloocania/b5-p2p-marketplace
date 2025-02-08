@@ -32,8 +32,8 @@ const AddressInput: React.FC<AddressInputProps> = ({
   }, []);
 
   return (
-    <div className="space-y-2">
-      <span className="text-xs block font-semibold">
+    <div className="space-y-1">
+      <span className="text-xs block font-semibold text-primary text-left">
         {t("take_order_information")}
       </span>
       <div className="flex space-x-2">
@@ -41,8 +41,8 @@ const AddressInput: React.FC<AddressInputProps> = ({
           id="walletAddress"
           value={walletAddress}
           onChange={(e: any) => setWalletAddress(e.target.value)}
-          placeholder="Enter wallet address"
-          className="flex-grow"
+          placeholder={t("insert_wallet_address")}
+          className="flex-grow border border-primary border-opacity-50"
           disabled={orderStatus !== "PENDING"}
         />
         {clipboardSupported && (
@@ -51,6 +51,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
             variant="outline"
             size="icon"
             title="Paste from clipboard"
+            className="border border-primary border-opacity-50"
           >
             <Clipboard className="h-4 w-4" />
           </Button>

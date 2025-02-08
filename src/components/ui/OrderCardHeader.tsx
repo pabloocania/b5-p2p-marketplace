@@ -4,8 +4,8 @@ import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
-import { StarRating } from "@/components/ui/RatingCounter";
-import { CryptoIcon } from "./CryptoIcon";
+import { UserStats } from "@/components/ui/UserStats";
+import OrderCreatedDate from "../OrderCreatedDate";
 
 interface OrderCardHeaderProps {
   order: Order;
@@ -56,30 +56,35 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
 
   return (
     <CardHeader>
-      <div className="flex-[0_0_75%]">
-       <CardTitle className="flex flex-col gap-2 mt-2">
-          <div className="flex flex-row gap-1"><span className="font-extrabold">
-            {order.type === "SELL" ? order.sellerUsername : order.buyerUsername}
-          </span>{" "}<span className="m-1 mx-2"> <StarRating rating={5} transactionCount={22}/>  </span></div>
-          <div className="flex flex-row gap-5">
-          <span className="font-bold text-m justify-center items-center">
-           <i>{order.type === "SELL" ? t("sells") : t("buys")}</i> 
-          </span>{" "}
-          <span className="text-m justify-center items-center mt-0.5">
-            <CryptoIcon  amount={3} tokenCode="usdk" />
-          </span>
+      <CardTitle className="flex w-full">
+        {/* Left Side */}
+        <div className="flex space-x-2 w-full rounded-lg bg-primary bg-opacity-5 px-2 border border-primary border-opacity-10">
+          <div className="flex items-center space-x-2 w-full">
+            <span className="font-bold text-[clamp(1.5rem,2vw,1.5rem)] text-terciary w-full">
+              {order.type === "SELL"
+                ? "@" + order.sellerUsername
+                : "@" + order.buyerUsername}
+            </span>
+            <UserStats rating={4.2} transactionCount={3} />
           </div>
-        </CardTitle>
-      </div>
-      <div className="flex-[0_0_25%] flex justify-end h-6">
-        <div className="w-full max-w-full text-right">
-          <Badge
-            className={`text-xs ${mapOrderVariant(order)} whitespace-normal`}
-          >
-            {mapOrderStatus(order.status ?? "Unknown")}
-          </Badge>
         </div>
-      </div>
+
+        {/* Right Side */}
+        <div className="flex flex-col items-end w-full">
+          <div className="text-right">
+            <Badge
+              className={`text-sm ${mapOrderVariant(order)} whitespace-normal`}
+            >
+              {mapOrderStatus(order.status ?? "Unknown")}
+            </Badge>
+          </div>
+          {order.createdAt && (
+            <div>
+              <OrderCreatedDate createdAt={order.createdAt} />
+            </div>
+          )}
+        </div>
+      </CardTitle>
     </CardHeader>
   );
 };
