@@ -46,8 +46,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
 
   return (
     <CardContent className="pb-3 pt-1">
-      {/* <div className="border border-primary border-opacity-10 rounded-lg space-y-1 px-2 py-2 bg-primary bg-opacity-5 space-y-1"> */}
-      <div className="border border-primary border-opacity-10 rounded-lg space-y-1 px-2 py-2 bg-primary bg-opacity-5 space-y-1">
+      <div className="border border-secondary border-opacity-20 rounded-lg space-y-1 px-2 py-2 bg-primary bg-opacity-5 space-y-1">
         <div className="flex space-x-1 text-right w-full">
           <span className="text-2xl text-primary">
             {order.type === "SELL" ? t("sells") : t("buys")}

@@ -58,7 +58,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
     <CardHeader>
       <CardTitle className="flex w-full">
         {/* Left Side */}
-        <div className="flex space-x-2 w-full rounded-lg bg-primary bg-opacity-5 px-2 border border-primary border-opacity-10">
+        <div className="flex space-x-2 w-full rounded-lg bg-primary bg-opacity-5 px-2 border border-secondary border-opacity-20">
           <div className="flex items-center space-x-2 w-full">
             <span className="font-bold text-[clamp(1.5rem,2vw,1.5rem)] text-terciary w-full">
               {order.type === "SELL"
