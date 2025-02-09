@@ -72,7 +72,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("py-3 px-3 pt-0", className)} {...props} />
+  <div ref={ref} className={cn("py-1 px-3 pt-0", className)} {...props} />
 ));
 CardContent.displayName = "CardContent";
 
@@ -80,7 +80,7 @@ const CardFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("flex py-3 px-3 pt-0", className)} {...props} />
+  <div ref={ref} className={cn("flex py-1 px-3 pt-0", className)} {...props} />
 ));
 CardFooter.displayName = "CardFooter";
 

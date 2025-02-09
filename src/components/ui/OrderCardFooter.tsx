@@ -148,7 +148,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     ) && isUserInvolved;
 
   return (
-    <CardFooter>
+    <CardFooter className="pb-3">
       {shouldHideButtons ? (
         <div className="text-center w-full text-white">
           {renderActionButton()}

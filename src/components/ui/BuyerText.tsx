@@ -21,7 +21,7 @@ export const BuyerText: React.FC<BuyerTextProps> = ({ order, userId }) => {
 
   return (
     <div>
-      <span className="text-xs block">
+      <span className="text-xs block text-primary">
         {t("buyer")}:{" "}
         {order.buyerId === userId
           ? t("you")

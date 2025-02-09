@@ -14,7 +14,7 @@ const OrderCreatedDate: React.FC<OrderCreatedDateProps> = ({ createdAt }) => {
   const formattedDate = format(new Date(createdAt), "dd-MM-yy - HH:mm");
 
   return (
-    <div className="flex items-center text-purple-800 text-xs">
+    <div className="flex pr-1 justify-end items-center pt-1 text-xs w-full text-gray-500">
       <Calendar className="w-3 h-3 mr-1" />
       <span>
         {t("created")} {formattedDate}
