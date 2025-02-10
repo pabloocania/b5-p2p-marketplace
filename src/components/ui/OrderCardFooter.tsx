@@ -168,19 +168,16 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         {order.type === "SELL" ? t("buy") : t("sell")}
       </Button>
     </CardFooter>
-  ) : (
-    showDetails &&
-    (walletAddress || order.type === "BUY") && (
-      <CardFooter className="pb-3">
-        <Button
-          className="w-full bg-secondary text-white font-semibold"
-          onClick={() => !orderTaken && takeOrder(order)}
-        >
-          {t("take_order")}
-        </Button>
-      </CardFooter>
-    )
-  );
+  ) : showDetails && (walletAddress || order.type === "BUY") ? (
+    <CardFooter className="pb-3">
+      <Button
+        className="w-full bg-secondary text-white font-semibold"
+        onClick={() => !orderTaken && takeOrder(order)}
+      >
+        {t("take_order")}
+      </Button>
+    </CardFooter>
+  ) : null;
 };
 
 export default OrderCardFooter;
