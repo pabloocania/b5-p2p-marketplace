@@ -142,7 +142,7 @@ i18n.use(initReactI18next).init({
         buyer: "Comprador",
         seller: "Vendedor",
         take_order_information:
-          "Ingresa la dirección de tu wallet donde deseas recibir la cripto",
+          "Ingresa la dirección donde deseas recibir la cripto",
         notify_fiat_sent: "Notificar al vendedor que pagaste",
         order_taken: "Has elegido esta orden",
         take_order: "Elegir orden",

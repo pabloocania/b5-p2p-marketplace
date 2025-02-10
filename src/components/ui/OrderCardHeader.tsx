@@ -56,10 +56,10 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
 
   return (
     <CardHeader>
-      <CardTitle className="flex w-full">
+      <CardTitle className="flex w-full items-center">
         {/* Left Side */}
-        <div className="flex space-x-2 w-full rounded-lg bg-primary bg-opacity-5 px-2 border border-secondary border-opacity-20">
-          <div className="flex items-center space-x-2 w-full">
+        <div className="flex space-x-2 w-full">
+          <div className="flex space-x-2 w-full">
             <span className="font-bold text-[clamp(1.5rem,2vw,1.5rem)] text-terciary w-full">
               {order.type === "SELL"
                 ? "@" + order.sellerUsername
@@ -70,19 +70,12 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
         </div>
 
         {/* Right Side */}
-        <div className="flex flex-col items-end w-full">
-          <div className="text-right">
-            <Badge
-              className={`text-sm ${mapOrderVariant(order)} whitespace-normal`}
-            >
+        <div className="flex flex-col w-full">
+          <div className="text-right mb-1">
+            <Badge className={`text-xs ${mapOrderVariant(order)}`}>
               {mapOrderStatus(order.status ?? "Unknown")}
             </Badge>
           </div>
-          {order.createdAt && (
-            <div>
-              <OrderCreatedDate createdAt={order.createdAt} />
-            </div>
-          )}
         </div>
       </CardTitle>
     </CardHeader>

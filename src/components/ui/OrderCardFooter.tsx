@@ -147,41 +147,39 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       order.status as OrderStatus
     ) && isUserInvolved;
 
-  return (
+  return shouldHideButtons ? (
     <CardFooter className="pb-3">
-      {shouldHideButtons ? (
-        <div className="text-center w-full text-white">
-          {renderActionButton()}
-        </div>
-      ) : (
-        <>
-          {orderTaken ? (
-            <div className="text-secondary block text-center font-semibold">
-              {t("order_taken")}
-            </div>
-          ) : (
-            <>
-              {shouldShowSelectButton && !showDetails && canSelectOrder && (
-                <Button
-                  className="w-full bg-secondary text-white font-semibold"
-                  onClick={() => onSelect && onSelect(order)}
-                >
-                  {order.type === "SELL" ? t("buy") : t("sell")}
-                </Button>
-              )}
-              {showDetails && (walletAddress || order.type === "BUY") && (
-                <Button
-                  className="w-full bg-secondary text-white font-semibold"
-                  onClick={() => !orderTaken && takeOrder(order)}
-                >
-                  {t("take_order")}
-                </Button>
-              )}
-            </>
-          )}
-        </>
-      )}
+      <div className="text-center w-full text-white">
+        {renderActionButton()}
+      </div>
     </CardFooter>
+  ) : orderTaken ? (
+    <CardFooter className="pb-3">
+      <div className="text-secondary block text-center font-semibold">
+        {t("order_taken")}
+      </div>
+    </CardFooter>
+  ) : shouldShowSelectButton && !showDetails && canSelectOrder ? (
+    <CardFooter className="pb-3">
+      <Button
+        className="w-full bg-secondary text-white font-semibold"
+        onClick={() => onSelect && onSelect(order)}
+      >
+        {order.type === "SELL" ? t("buy") : t("sell")}
+      </Button>
+    </CardFooter>
+  ) : (
+    showDetails &&
+    (walletAddress || order.type === "BUY") && (
+      <CardFooter className="pb-3">
+        <Button
+          className="w-full bg-secondary text-white font-semibold"
+          onClick={() => !orderTaken && takeOrder(order)}
+        >
+          {t("take_order")}
+        </Button>
+      </CardFooter>
+    )
   );
 };
 

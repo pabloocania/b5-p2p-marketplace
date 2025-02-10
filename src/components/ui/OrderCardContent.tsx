@@ -9,6 +9,7 @@ import { SellerText } from "./SellerText";
 import { BuyerText } from "./BuyerText";
 import AddressInput from "./AddressInput";
 import { CryptoAmountIcon } from "./CryptoIcon";
+import OrderCreatedDate from "../OrderCreatedDate";
 
 interface OrderCardContentProps {
   order: Order;
@@ -35,23 +36,14 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
     setClipboardSupported("clipboard" in navigator);
   }, []);
 
-  const handlePasteClipboard = async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      setWalletAddress(text);
-    } catch (err) {
-      console.error("Failed to read clipboard contents: ", err);
-    }
-  };
-
   return (
-    <CardContent className="pb-3 pt-1">
-      <div className="border border-secondary border-opacity-20 rounded-lg space-y-1 px-2 py-2 bg-primary bg-opacity-5 space-y-1">
+    <CardContent className="pb-3 mt-1">
+      <div className="rounded-lg space-y-1 px-2 bg-secondary bg-opacity-10 space-y-1 pt-1">
         <div className="flex space-x-1 text-right w-full">
           <span className="text-2xl text-primary">
             {order.type === "SELL" ? t("sells") : t("buys")}
           </span>
-          <span className="flex text-right text-terciary">
+          <span className="flex text-right">
             <CryptoAmountIcon
               amount={order.amount!!}
               tokenCode={order.tokenCode?.toLowerCase()!!}
@@ -66,7 +58,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
             </span>
           </p>
         </div>
-        <div className="text-left w-full text-primary">
+        <div className="text-left w-full">
           <span className="text-xs block">
             {order.paymentMethods?.map((method, index) => (
               <PaymentMethodDisplay key={index} method={method} />
@@ -83,6 +75,11 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
             <BuyerText order={order} userId={user?.userId} />
           )}
         </div>
+        {order.createdAt && (
+          <div>
+            <OrderCreatedDate createdAt={order.createdAt} />
+          </div>
+        )}
       </div>
       {user && showDetails && order.type === ("SELL" as OrderType) && (
         <div className="py-2">

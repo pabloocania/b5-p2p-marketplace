@@ -10,6 +10,7 @@ import OrderCardHeader from "./OrderCardHeader";
 import OrderCardContent from "./OrderCardContent";
 import OrderCardFooter from "./OrderCardFooter";
 import OrderIdLink from "./OrderIdLink";
+import OrderCreatedDate from "../OrderCreatedDate";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -63,7 +64,7 @@ export function OrderCard({
         showDetails={showDetails}
         setOrder={setOrder}
       ></OrderCardFooter>
-      <Separator className="mb-0" />
+      <Separator className="mb-1" />
       <div className="pl-4 pr-4 flex items-center justify-between text-sm">
         <div className="flex-1">
           <OrderIdLink orderId={order.id} />

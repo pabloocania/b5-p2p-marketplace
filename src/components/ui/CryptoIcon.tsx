@@ -18,8 +18,8 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
     : `https://cdn.jsdelivr.net/npm/cryptocurrency-icons/svg/color/${tokenCodeLower}.svg`;
 
   return (
-    <div className="flex items-center w-full text-right text-primary">
-      <span className="font-medium text-2xl font-bold">
+    <div className="flex items-center w-full">
+      <span className="font-medium text-2xl font-bold text-terciary">
         {amount} {tokenCode.toUpperCase()}{" "}
       </span>
       <img src={iconSrc} alt={tokenCode} className="pl-1 w-[25px] h-[25px]" />
