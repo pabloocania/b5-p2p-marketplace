@@ -1,7 +1,7 @@
 // OrderCardContent.tsx
 import React, { useEffect, useState } from "react";
 import { CardContent } from "@/components/ui/card";
-import { Order, OrderStatus, OrderType, PaymentMethod } from "b5-api-client";
+import { Order, OrderType } from "b5-api-client";
 import PaymentMethodDisplay from "./PaymentMethodDisplay";
 import { useTranslation } from "react-i18next";
 import { UserProps } from "@/lib/useUser";
@@ -9,7 +9,7 @@ import { SellerText } from "./SellerText";
 import { BuyerText } from "./BuyerText";
 import AddressInput from "./AddressInput";
 import { CryptoAmountIcon } from "./CryptoIcon";
-import OrderCreatedDate from "../OrderCreatedDate";
+import OrderCreatedDate from "./OrderCreatedDate";
 
 interface OrderCardContentProps {
   order: Order;

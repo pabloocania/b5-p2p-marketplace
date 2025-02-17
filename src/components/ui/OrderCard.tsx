@@ -10,7 +10,6 @@ import OrderCardHeader from "./OrderCardHeader";
 import OrderCardContent from "./OrderCardContent";
 import OrderCardFooter from "./OrderCardFooter";
 import OrderIdLink from "./OrderIdLink";
-import OrderCreatedDate from "../OrderCreatedDate";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;

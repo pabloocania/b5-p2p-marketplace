@@ -3,7 +3,7 @@ import { LucideProps, Star } from "lucide-react";
 import UserStatBadge from "./UserStatBadge"; // Adjust the import path as necessary
 
 interface UserStatsProps {
-  rating: number;
+  rating: string;
   transactionCount: number;
 }
 

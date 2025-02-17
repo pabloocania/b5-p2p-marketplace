@@ -1,17 +1,29 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useAccount, useSignTypedData, useWalletClient } from "wagmi";
+import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { PrimeSdk, SdkOptions, EtherspotBundler } from "@etherspot/prime-sdk";
-import { ERC20ContractConfig } from "../../abis/ERC20ContractConfig";
-import { rootstockTestnet } from "wagmi/chains";
-import { createPublicClient, http, getAddress, formatUnits } from "viem";
+import {
+  getStablecoinsByBlockchain,
+  ERC20abi,
+} from "../../abis/StablecoinConfig";
+import { getAddress, formatUnits } from "viem";
 import { TokenBalance } from "./types";
 import { getBalance } from "@wagmi/core";
 import { config } from "../../wagmi";
+import { PublicClientManager } from "./PublicClientManager"; // Import the manager
+import {
+  getSdkOptionsForChainId,
+  networkNameToFormattedNameMap,
+} from "./EtherspotSdkConfigurations";
 
-const publicClient = createPublicClient({
-  chain: rootstockTestnet,
-  transport: http(),
-});
+// Function to map network name to formatted blockchain name
+function mapNetworkNameToFormattedName(
+  networkName: string | undefined
+): string | null {
+  if (!networkName) {
+    return null;
+  }
+  return networkNameToFormattedNameMap[networkName] || null;
+}
 
 interface EtherspotSdkContextType {
   primeSdk: PrimeSdk | null;
@@ -31,6 +43,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
   const [balances, setBalances] = useState<TokenBalance[]>([]);
   const { data: walletClient } = useWalletClient();
   const account = useAccount();
+  const chainId = useChainId();
 
   const createWalletProvider = () => ({
     ...walletClient,
@@ -45,15 +58,14 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     },
   });
 
-  const options: SdkOptions = {
-    chainId: 31, // Rootstock Testnet chain ID
-    bundlerProvider: new EtherspotBundler(
-      31,
-      "eyJvcmciOiI2NTIzZjY5MzUwOTBmNzAwMDFiYjJkZWIiLCJpZCI6ImUzZmE2NzQ2ZDI3MTQ4ZWQ4OTYyNjg3YzQ2MzJjMDE4IiwiaCI6Im11cm11cjEyOCJ9",
-      // "https://rpc.etherspot.io/v2/30"
-      "https://rootstocktestnet-bundler.etherspot.io/"
-    ),
-  };
+  // Bundler
+  //https://testnet-rpc.etherspot.io/v2/421614?api-key=etherspot_3ZVooGBfUwejKEQFJzmvMxKK
+
+  // Paymaster
+  //https://rpc.etherspot.io/paymaster/{endpoint-here}?api-key=etherspot_3ZVooGBfUwejKEQFJzmvMxKK
+
+  //Data Utils
+  //https://rpc.etherspot.io/data-utils/{endpoint-here}?api-key=etherspot_3ZVooGBfUwejKEQFJzmvMxKK
 
   useEffect(() => {
     const connectToSdk = async () => {
@@ -68,7 +80,10 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
         if (!walletProvider.address) {
           throw new Error("Wallet provider address is undefined");
         }
-        const primeSdkInstance = new PrimeSdk(walletProvider, options);
+        const primeSdkInstance = new PrimeSdk(
+          walletProvider,
+          getSdkOptionsForChainId(chainId)
+        );
         if (primeSdkInstance !== null) {
           console.log("Prime SDK initialized:", primeSdkInstance);
           const smartWalletAddress =
@@ -86,32 +101,68 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     connectToSdk();
   }, [walletClient, isConnected]);
 
+  // Function to fetch balances for stablecoins on a given blockchain
+  async function fetchStablecoinBalances(
+    smartWalletAddress: string,
+    eoaAddress: string,
+    currentBlockchain: string
+  ): Promise<TokenBalance[]> {
+    const tokenBalances: TokenBalance[] = [];
+
+    try {
+      const stablecoinsByBlockchain =
+        getStablecoinsByBlockchain(currentBlockchain);
+
+      // Use Promise.all to fetch balances concurrently for better performance
+      await Promise.all(
+        stablecoinsByBlockchain.map(async (stablecoin) => {
+          const relevantAddresses = stablecoin.addresses.filter(
+            (address) => address.blockchain === currentBlockchain
+          );
+
+          for (const { address } of relevantAddresses) {
+            try {
+              const [swTokenBalance, eoaTokenBalance] = await Promise.all([
+                getStablecoinBalance(address, smartWalletAddress, chainId),
+                getStablecoinBalance(address, eoaAddress, chainId),
+              ]);
+
+              // Map the balances to the TokenBalance type
+              tokenBalances.push({
+                name: stablecoin.name ?? "Unknown",
+                eoaBalance: eoaTokenBalance ?? "-0.00",
+                smartWalletBalance: swTokenBalance ?? "-0.00",
+                address:
+                  address ?? "0x0000000000000000000000000000000000000000",
+              });
+            } catch (balanceError) {
+              console.error(
+                `Error fetching balance for ${stablecoin.name} at address ${address}:`,
+                balanceError
+              );
+            }
+          }
+        })
+      );
+    } catch (error) {
+      console.error("Error fetching stablecoin balances:", error);
+    }
+
+    return tokenBalances;
+  }
+
   const getTokensBalances = async (primeSdk?: PrimeSdk) => {
-    const swNativeBalance = await primeSdk?.getNativeBalance();
-    console.log(swNativeBalance);
     const smartWalletAddress = await primeSdk?.getCounterFactualAddress();
-    console.log(smartWalletAddress);
+
     const eoaNativeBalance = await getBalance(config, {
       address: address ?? "0x0",
     });
-    const swTokenBalance = await getTokenBalance(
-      ERC20ContractConfig.address,
-      smartWalletAddress ?? (await primeSdk?.getCounterFactualAddress()!!)
-    );
 
-    const eoaTokenBalance = await getTokenBalance(
-      ERC20ContractConfig.address,
-      getAddress(address ?? "0x0")
-    );
+    const swNativeBalance = await primeSdk?.getNativeBalance();
 
-    const tokenBalance: TokenBalance = {
-      name: ERC20ContractConfig.name,
-      smartWalletBalance: swTokenBalance ?? "0.00",
-      eoaBalance: eoaTokenBalance ?? "0.00",
-      address: ERC20ContractConfig.address,
-    };
-
-    console.log("PDOC", tokenBalance);
+    const currentBlockchain = mapNetworkNameToFormattedName(
+      primeSdk?.state.network.name
+    )!!;
 
     const formattedBalance = BigInt(eoaNativeBalance?.value.toString() ?? "0");
 
@@ -122,21 +173,30 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       address: "0x0000000000000000000000000000000000000000",
     };
 
-    console.log("RBTC", nativeBalance);
+    const balances = await fetchStablecoinBalances(
+      smartWalletAddress ?? (await primeSdk?.getCounterFactualAddress()!!),
+      getAddress(address ?? "0x0"),
+      currentBlockchain
+    );
 
-    setBalances([tokenBalance, nativeBalance]);
+    balances.push(nativeBalance);
+
+    setBalances(balances);
   };
 
-  const getTokenBalance = async (
+  const getStablecoinBalance = async (
     tokenAddress: string,
-    walletAddress: string
+    walletAddress: string,
+    chainId: number
   ) => {
-    const balance = await publicClient.readContract({
+    const client = PublicClientManager.getInstance({ chainId });
+    const balance = await client.readContract({
       address: getAddress(tokenAddress),
-      abi: ERC20ContractConfig.abi,
+      abi: ERC20abi,
       functionName: "balanceOf",
       args: [walletAddress],
     });
+
     if (balance !== undefined && balance !== null) {
       const formattedBalance = BigInt(balance.toString());
       return formatUnits(formattedBalance, 18);

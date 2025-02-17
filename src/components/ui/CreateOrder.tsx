@@ -21,8 +21,6 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useUserContext } from "./UserContext";
-import { useEtherspotSdk } from "../../lib/web3/EtherspotSdkProvider";
-import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useTranslation } from "react-i18next";
 import {
