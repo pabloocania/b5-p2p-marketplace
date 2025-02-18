@@ -12,27 +12,17 @@ import { Order } from "b5-api-client";
 import { useEtherspotSdk } from "@/lib/web3/EtherspotSdkProvider";
 import { OPSReceipt } from "@/lib/web3/types";
 import { getKioscoinEscrowAddressByBlockchain, KioscoinEscrowContractConfig } from "@/abis/KioscoinEscrowConfig";
-import { ArkaPaymaster } from "@etherspot/prime-sdk";
 import { PublicClientManager } from "@/lib/web3/PublicClientManager";
 
-export const arka_api_key = 'arka_public_key';
-export const arka_url = 'https://arka.etherspot.io';
+export const arka_api_key = "etherspot_3ZVooGBfUwejKEQFJzmvMxKK";
+export const arka_url = "https://arka.etherspot.io";
 export const queryString = `?apiKey=${arka_api_key}&chainId=`;
 
 
 export const useEtherspotFlow = () => {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
-  const { primeSdk, swAddress } = useEtherspotSdk();
-
-  let arkaPaymasterInstance: ArkaPaymaster | null = null;
-
-  const getArkaPaymasterInstance = (chainId: number, arkaApiKey: string, arkaUrl: string): ArkaPaymaster => {
-    if (!arkaPaymasterInstance) {
-      arkaPaymasterInstance = new ArkaPaymaster(chainId, arkaApiKey, arkaUrl);
-    }
-    return arkaPaymasterInstance;
-  };
+  const { primeSdk, swAddress, arkaInstance } = useEtherspotSdk();
 
   // Example of updating transaction status
   const executeTransaction = async (
@@ -128,21 +118,20 @@ export const useEtherspotFlow = () => {
   }
 
   const whitelistPaymaster = async (address: string, chainId: number): Promise<boolean> => {
-    const arkaPaymaster = getArkaPaymasterInstance(chainId, arka_api_key, arka_url);
-    // const algo = await arkaPaymasterInstance.deposit(1)
-    const isWhitelisted = await arkaPaymaster.checkWhitelist(
-      address
-    );
+    console.log("arkaI", arkaInstance)
+    if (!arkaInstance) {
+      throw new Error("Arka instance is not initialized.");
+    }
+    const isWhitelisted = await arkaInstance.checkWhitelist(address);
     if (isWhitelisted !== "Already added") {
       console.log("whitelisting...");
       try {
-        const response = await arkaPaymaster.addWhitelist([
-          address,
-        ]);
+        const response = await arkaInstance.addWhitelist([address]);
         console.log("Got whitelisting response", response);
         return true;
       } catch (error) {
         console.log(error);
+        return false;
       }
     }
     return false;
@@ -189,7 +178,6 @@ export const useEtherspotFlow = () => {
         amountInt,
         feeInt,
       ];
-      console.log("escrowP", escrowParams)
       const escrowData = encodeFunctionData({
         abi: KioscoinEscrowContractConfig.abi,
         functionName: "escrowERC20",
@@ -215,6 +203,9 @@ export const useEtherspotFlow = () => {
       throw new Error("PrimeSdk instance is not available.");
     }
 
+    console.log(operations)
+    console.log(chainId)
+
     // Clear any existing operations
     await primeSdk.clearUserOpsFromBatch();
 
@@ -232,9 +223,9 @@ export const useEtherspotFlow = () => {
       // }
       {
         paymasterDetails: {
-          url: arka_url + queryString + chainId,
+          url: "https://arka.etherspot.io?apiKey=etherspot_public_key&chainId=" + chainId,
           context: { mode: "sponsor" },
-        }
+        },
       }
     );
 

@@ -7,16 +7,16 @@ const sdkOptionsMap: Record<ChainId, SdkOptions> = {
         chainId: ChainId.ARBITRUM_TESTNET,
         bundlerProvider: new EtherspotBundler(
             ChainId.ARBITRUM_TESTNET,
-            "etherspot_3ZVooGBfUwejKEQFJzmvMxKK",
-            "https://testnet-rpc.etherspot.io/v2/" + ChainId.ARBITRUM_TESTNET
+            "etherspot_public_key",
+            "https://testnet-rpc.etherspot.io/v1/" + ChainId.ARBITRUM_TESTNET
         ),
     },
     [ChainId.RSK_TESTNET]: {
         chainId: ChainId.RSK_TESTNET,
         bundlerProvider: new EtherspotBundler(
             ChainId.RSK_TESTNET,
-            "eyJvcmciOiI2NTIzZjY5MzUwOTBmNzAwMDFiYjJkZWIiLCJpZCI6ImUzZmE2NzQ2ZDI3MTQ4ZWQ4OTYyNjg3YzQ2MzJjMDE4IiwiaCI6Im11cm11cjEyOCJ9",
-            "https://rootstocktestnet-bundler.etherspot.io/"
+            "etherspot_public_key",
+            "https://testnet-rpc.etherspot.io/v1/" + ChainId.RSK_TESTNET
         ),
     },
     // Add more mappings as needed

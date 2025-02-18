@@ -43,6 +43,7 @@ export const useTransactionHandler = (
           transferAmount,
           chainId
         );
+        console.log(receipt);
         if (receipt.success) {
           setTransaction({
             status: "success",

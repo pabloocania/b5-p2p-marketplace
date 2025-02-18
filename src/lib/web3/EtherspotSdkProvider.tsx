@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAccount, useChainId, useWalletClient } from "wagmi";
-import { PrimeSdk, SdkOptions, EtherspotBundler } from "@etherspot/prime-sdk";
+import {
+  PrimeSdk,
+  SdkOptions,
+  EtherspotBundler,
+  ArkaPaymaster,
+} from "@etherspot/prime-sdk";
 import {
   getStablecoinsByBlockchain,
   ERC20abi,
@@ -25,11 +30,16 @@ function mapNetworkNameToFormattedName(
   return networkNameToFormattedNameMap[networkName] || null;
 }
 
+export const arka_api_key = "etherspot_public_key";
+export const arka_url = "https://arka.etherspot.io";
+export const queryString = `?apiKey=${arka_api_key}&chainId=`;
+
 interface EtherspotSdkContextType {
   primeSdk: PrimeSdk | null;
   swAddress: string;
   balances: TokenBalance[];
   getTokensBalances: (sdkInstance: PrimeSdk) => {};
+  arkaInstance: ArkaPaymaster | null;
 }
 
 const EtherspotSdkContext = createContext<EtherspotSdkContextType | undefined>(
@@ -39,6 +49,7 @@ const EtherspotSdkContext = createContext<EtherspotSdkContextType | undefined>(
 export const EtherspotSdkProvider: React.FC = ({ children }) => {
   const { address, isConnected } = useAccount();
   const [primeSdk, setPrimeSdk] = useState<PrimeSdk | null>(null);
+  const [arkaInstance, setArkaInstance] = useState<ArkaPaymaster | null>(null);
   const [smartWalletAddress, setSwAddress] = useState<string>("");
   const [balances, setBalances] = useState<TokenBalance[]>([]);
   const { data: walletClient } = useWalletClient();
@@ -57,6 +68,19 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       return walletClient!!.signTypedData(params);
     },
   });
+
+  let arkaPaymasterInstance: ArkaPaymaster | null = null;
+
+  const getArkaPaymasterInstance = (
+    chainId: number,
+    arkaApiKey: string,
+    arkaUrl: string
+  ): ArkaPaymaster => {
+    if (!arkaPaymasterInstance) {
+      arkaPaymasterInstance = new ArkaPaymaster(chainId, arkaApiKey, arkaUrl);
+    }
+    return arkaPaymasterInstance;
+  };
 
   // Bundler
   //https://testnet-rpc.etherspot.io/v2/421614?api-key=etherspot_3ZVooGBfUwejKEQFJzmvMxKK
@@ -88,9 +112,16 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
           console.log("Prime SDK initialized:", primeSdkInstance);
           const smartWalletAddress =
             await primeSdkInstance?.getCounterFactualAddress();
+          const arkaInstance = getArkaPaymasterInstance(
+            chainId,
+            arka_api_key,
+            arka_url
+          );
+          console.log("arI", arkaInstance);
           setSwAddress(smartWalletAddress);
           setPrimeSdk(primeSdkInstance);
           getTokensBalances(primeSdkInstance);
+          setArkaInstance(arkaInstance);
         }
       } else {
         console.log("isConnected", isConnected);
@@ -210,6 +241,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
         swAddress: smartWalletAddress,
         balances,
         getTokensBalances,
+        arkaInstance,
       }}
     >
       {children}
