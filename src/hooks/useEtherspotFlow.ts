@@ -3,11 +3,10 @@ import {
   getAddress,
   encodeFunctionData,
   parseUnits,
+  keccak256
 } from "viem";
+import { toUtf8Bytes } from "ethers/lib/utils";
 import { ERC20abi, getTokenAddressByNameAndBlockchain } from "../abis/StablecoinConfig";
-import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
-import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
-import { createHash } from "crypto";
 import { Order } from "b5-api-client";
 import { useEtherspotSdk } from "@/lib/web3/EtherspotSdkProvider";
 import { OPSReceipt } from "@/lib/web3/types";
@@ -22,20 +21,8 @@ export const queryString = `?apiKey=${arka_api_key}&chainId=`;
 export const useEtherspotFlow = () => {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
-  const { primeSdk, swAddress, arkaInstance } = useEtherspotSdk();
+  const { primeSdk, executeTransaction } = useEtherspotSdk();
 
-  // Example of updating transaction status
-  const executeTransaction = async (
-    operations: { to: string; data: string }[],
-    chainId: number
-  ): Promise<OPSReceipt> => {
-    try {
-      const userOpReceipt = await processBatchOperations(operations, chainId);
-      return userOpReceipt;
-    } catch (error) {
-      return Promise.reject(new Error("Transaction failed"));
-    }
-  };
 
   const transferFromEOAToSW = async (
     tokenAddress: string,
@@ -97,7 +84,7 @@ export const useEtherspotFlow = () => {
       if (primeSdk) {
         const releaseParams = [
           order.id,
-          "0x" + order.buyerHash
+          order.buyerHash
         ];
         const releaseData = encodeFunctionData({
           abi: KioscoinEscrowContractConfig.abi,
@@ -117,31 +104,10 @@ export const useEtherspotFlow = () => {
     }
   }
 
-  const whitelistPaymaster = async (address: string, chainId: number): Promise<boolean> => {
-    console.log("arkaI", arkaInstance)
-    if (!arkaInstance) {
-      throw new Error("Arka instance is not initialized.");
-    }
-    const isWhitelisted = await arkaInstance.checkWhitelist(address);
-    if (isWhitelisted !== "Already added") {
-      console.log("whitelisting...");
-      try {
-        const response = await arkaInstance.addWhitelist([address]);
-        console.log("Got whitelisting response", response);
-        return true;
-      } catch (error) {
-        console.log(error);
-        return false;
-      }
-    }
-    return false;
-  };
-
   const batchApproveAndEscrow = async (order: Order): Promise<OPSReceipt | undefined> => {
     if (primeSdk && address) {
       const orderBlockchain = order.blockchain!!
       const contractAddress = getKioscoinEscrowAddressByBlockchain(orderBlockchain)
-      console.log("contractAddress", contractAddress)
       // console.log(await arkaPaymasterInstance.deposit(0.001))
       const amountInt = parseUnits(order.amount ?? "0", 18); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
@@ -154,27 +120,16 @@ export const useEtherspotFlow = () => {
         args: [contractAddress, totalAmount],
       });
 
-      const ba = hexStringToByteArray(order.buyerHash!!)
-      const sa = hexStringToByteArray(order.sellerHash!!)
-
-      const buyerHashBuffer = ba
-        ? createHash("sha256").update(ba).digest('hex')
-        : undefined;
-
-      const sellerHashBuffer = sa
-        ? createHash("sha256").update(sa).digest('hex')
-        : undefined;
-
-      console.log("tokenCode", order.tokenCode?.toUpperCase()!!)
+      const buyerHashBuffer = order.buyerHash ? keccak256(toUtf8Bytes(order.buyerHash)) : undefined;
+      const sellerHashBuffer = order.sellerHash ? keccak256(toUtf8Bytes(order.sellerHash)) : undefined;
 
       const address = getTokenAddressByNameAndBlockchain(order.tokenCode?.toUpperCase()!!, orderBlockchain)
-      console.log("address", address)
       const escrowParams = [
         order.id,
         address,
         order.buyerAddress,
-        `0x${buyerHashBuffer}`,
-        `0x${sellerHashBuffer}`,
+        buyerHashBuffer,
+        sellerHashBuffer,
         amountInt,
         feeInt,
       ];
@@ -194,72 +149,6 @@ export const useEtherspotFlow = () => {
       throw new Error("PrimeSdk instance or user address is not available.");
     }
   };
-
-  const processBatchOperations = async (
-    operations: { to: string, data: string }[],
-    chainId: number
-  ): Promise<OPSReceipt> => {
-    if (!primeSdk) {
-      throw new Error("PrimeSdk instance is not available.");
-    }
-
-    console.log(operations)
-    console.log(chainId)
-
-    // Clear any existing operations
-    await primeSdk.clearUserOpsFromBatch();
-
-    // Add each operation to the batch
-    for (const operation of operations) {
-      await primeSdk.addUserOpsToBatch(operation);
-    }
-    await whitelistPaymaster(swAddress, chainId);
-    // Estimate the operations added to the batch and get the fee data for the UserOp
-
-    //
-    const op = await primeSdk.estimate(
-      // {
-      //   paymasterDetails: { url: `https://arka.etherspot.io?apiKey=arka_public_key&chainId=31`, context: { mode: 'sponsor' } }
-      // }
-      {
-        paymasterDetails: {
-          url: "https://arka.etherspot.io?apiKey=etherspot_public_key&chainId=" + chainId,
-          context: { mode: "sponsor" },
-        },
-      }
-    );
-
-    console.log("Estimate UserOp: ", await printOp(op));
-
-    // Sign the UserOp and send it to the bundler
-    const uoHash = await primeSdk.send(op);
-    console.log("UserOpHash: ", uoHash);
-
-    // Wait for the transaction receipt
-    let userOpsReceipt = null;
-    const timeout = Date.now() + 300000; // 5 minute timeout
-    while (userOpsReceipt == null && Date.now() < timeout) {
-      await sleep(5);
-      userOpsReceipt = await primeSdk.getUserOpReceipt(uoHash);
-    }
-
-    console.log("Transaction Receipt: ", userOpsReceipt);
-    return userOpsReceipt;
-  };
-
-  function hexStringToByteArray(hexString: string): Uint8Array {
-    if (hexString.length % 2 !== 0) {
-      throw new Error("Invalid hex string. Length must be even.");
-    }
-
-    const byteArray = new Uint8Array(hexString.length / 2);
-
-    for (let i = 0; i < hexString.length; i += 2) {
-      byteArray[i / 2] = parseInt(hexString.substr(i, 2), 16);
-    }
-
-    return byteArray;
-  }
 
   return {
     transferFromEOAToSW,

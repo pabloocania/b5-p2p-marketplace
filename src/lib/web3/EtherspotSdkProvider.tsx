@@ -1,17 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAccount, useChainId, useWalletClient } from "wagmi";
-import {
-  PrimeSdk,
-  SdkOptions,
-  EtherspotBundler,
-  ArkaPaymaster,
-} from "@etherspot/prime-sdk";
+import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
+import { PrimeSdk, ArkaPaymaster } from "@etherspot/prime-sdk";
 import {
   getStablecoinsByBlockchain,
   ERC20abi,
 } from "../../abis/StablecoinConfig";
 import { getAddress, formatUnits } from "viem";
-import { TokenBalance } from "./types";
+import { OPSReceipt, TokenBalance } from "./types";
 import { getBalance } from "@wagmi/core";
 import { config } from "../../wagmi";
 import { PublicClientManager } from "./PublicClientManager"; // Import the manager
@@ -19,6 +15,7 @@ import {
   getSdkOptionsForChainId,
   networkNameToFormattedNameMap,
 } from "./EtherspotSdkConfigurations";
+import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 
 // Function to map network name to formatted blockchain name
 function mapNetworkNameToFormattedName(
@@ -39,7 +36,10 @@ interface EtherspotSdkContextType {
   swAddress: string;
   balances: TokenBalance[];
   getTokensBalances: (sdkInstance: PrimeSdk) => {};
-  arkaInstance: ArkaPaymaster | null;
+  executeTransaction: (
+    operations: { to: string; data: string }[],
+    chainId: number
+  ) => Promise<OPSReceipt>;
 }
 
 const EtherspotSdkContext = createContext<EtherspotSdkContextType | undefined>(
@@ -234,6 +234,72 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     }
   };
 
+  // Example of updating transaction status
+  const executeTransaction = async (
+    operations: { to: string; data: string }[],
+    chainId: number
+  ): Promise<OPSReceipt> => {
+    try {
+      const userOpReceipt = await processBatchOperations(operations, chainId);
+      return userOpReceipt;
+    } catch (error) {
+      console.log("error while executing transaction", error);
+      return Promise.reject(new Error("Transaction failed"));
+    }
+  };
+
+  const processBatchOperations = async (
+    operations: { to: string; data: string }[],
+    chainId: number
+  ): Promise<OPSReceipt> => {
+    if (!primeSdk) {
+      throw new Error("PrimeSdk instance is not available.");
+    }
+    await primeSdk.clearUserOpsFromBatch();
+    for (const operation of operations) {
+      await primeSdk.addUserOpsToBatch(operation);
+    }
+    await whitelistPaymaster(smartWalletAddress);
+    const op = await primeSdk.estimate({
+      paymasterDetails: {
+        url:
+          "https://arka.etherspot.io?apiKey=etherspot_public_key&chainId=" +
+          chainId,
+        context: { mode: "sponsor" },
+      },
+    });
+    console.log("Estimate UserOp: ", await printOp(op));
+    // Sign the UserOp and send it to the bundler
+    const uoHash = await primeSdk.send(op);
+    // Wait for the transaction receipt
+    let userOpsReceipt = null;
+    const timeout = Date.now() + 300000; // 5 minute timeout
+    while (userOpsReceipt == null && Date.now() < timeout) {
+      await sleep(5);
+      userOpsReceipt = await primeSdk.getUserOpReceipt(uoHash);
+    }
+    return userOpsReceipt;
+  };
+
+  const whitelistPaymaster = async (address: string): Promise<boolean> => {
+    if (!arkaInstance) {
+      throw new Error("Arka instance is not initialized.");
+    }
+    const isWhitelisted = await arkaInstance.checkWhitelist(address);
+    if (isWhitelisted !== "Already added") {
+      console.log("whitelisting...");
+      try {
+        const response = await arkaInstance.addWhitelist([address]);
+        console.log("Got whitelisting response", response);
+        return true;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    }
+    return false;
+  };
+
   return (
     <EtherspotSdkContext.Provider
       value={{
@@ -241,7 +307,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
         swAddress: smartWalletAddress,
         balances,
         getTokensBalances,
-        arkaInstance,
+        executeTransaction,
       }}
     >
       {children}

@@ -36,7 +36,10 @@ interface CreateOrderProps {
   onConnectWallet: () => void; // Add this prop
 }
 
-const tokens = [{ symbol: "PDOC", name: "PDOC" }];
+const tokens = [
+  { symbol: "PDOC", name: "PDOC" },
+  { symbol: "USDK", name: "USDK" },
+];
 
 export default function CreateOrder({
   onClose,
@@ -96,10 +99,14 @@ export default function CreateOrder({
       creatorUsername: user?.username,
       sellerHash: secretSeller.toString("hex"),
       buyerHash: secretBuyer.toString("hex"),
+      blockchain: "ARBITRUM_TESTNET",
     };
 
     try {
-      const ordersResponse = await client.createOrder(newOrder);
+      const ordersResponse = await client.createOrder(newOrder, {
+        "Content-Type": "application/json",
+        "x-blockchain": "ARBITRUM_TESTNET",
+      });
       if (ordersResponse.orders.length === 1) {
         setCreatedOrder(ordersResponse.orders[0]);
         onClose();

@@ -236,8 +236,8 @@
       },
       {
         "name": "_sellerCode",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        "type": "string",
+        "internalType": "string"
       }
     ],
     "outputs": [],
@@ -254,8 +254,8 @@
       },
       {
         "name": "_buyerCode",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        "type": "string",
+        "internalType": "string"
       }
     ],
     "outputs": [],
