@@ -45,7 +45,7 @@ export const UserStats: React.FC<UserStatsProps> = ({
     <div className="flex space-x-1 w-full">
       <UserStatBadge value={rating} Icon={Star} color="text-yellow-500" />
       <UserStatBadge
-        value={transactionCount}
+        value={transactionCount.toString()}
         Icon={CustomCircleCheckIcon}
         color="text-green-500"
       />

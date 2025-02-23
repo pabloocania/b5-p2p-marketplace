@@ -95,11 +95,9 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     const connectToSdk = async () => {
       if (!walletClient && !isConnected && primeSdk) {
         primeSdk.destroy();
-        console.log("DESTROYED: ", primeSdk);
         setPrimeSdk(null);
       }
       if (walletClient && isConnected && !primeSdk) {
-        // const walletProvider = createWalletProvider();
         const walletProvider = createWalletProvider();
         if (!walletProvider.address) {
           throw new Error("Wallet provider address is undefined");
