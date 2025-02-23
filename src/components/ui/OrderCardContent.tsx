@@ -10,7 +10,8 @@ import { BuyerText } from "./BuyerText";
 import AddressInput from "./AddressInput";
 import { CryptoAmountIcon } from "./CryptoIcon";
 import OrderCreatedDate from "./OrderCreatedDate";
-
+import { getBlockchainDisplayName } from "@/lib/ConfigStore";
+import { BlockchainName } from "@/lib/web3/PublicClientManager";
 interface OrderCardContentProps {
   order: Order;
   user: UserProps | undefined;
@@ -55,6 +56,14 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
             {t("for")}{" "}
             <span className="font-bold text-primary">
               ${formattedFiatAmount} ARS
+            </span>
+          </p>
+        </div>
+        <div className="text-left w-full">
+          <p className="text-left w-full text-xs text-primary">
+            {t("on")}{" "}
+            <span className="font-bold text-primary">
+              {getBlockchainDisplayName(order.blockchain as BlockchainName)}
             </span>
           </p>
         </div>

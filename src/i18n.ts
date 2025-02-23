@@ -112,6 +112,7 @@ i18n.use(initReactI18next).init({
         use_eoa: "Use EOA wallet",
         total_to_lock: "Total to lock",
         created: "Created",
+        select_blockchain: "Select a blockchain"
       },
     },
     es: {
@@ -226,6 +227,7 @@ i18n.use(initReactI18next).init({
         use_eoa: "Usar EOA wallet",
         total_to_lock: "Total a depositar",
         created: "Creada el",
+        select_blockchain: "Selecciona la blockchain"
       },
     },
   },
