@@ -5,6 +5,25 @@ export interface TokenBalance {
     address: string;
 }
 
+export interface TokenBalanceBlockchain {
+    blockchain: string;
+    balances: TokenBalance[]
+}
+
+export interface BlockchainAddress {
+    blockchain: string;
+    address: string;
+}
+
+export interface Stablecoin {
+    addresses: BlockchainAddress[];
+    name: string;
+}
+
+export interface StablecoinConfig {
+    supportedStablecoins: Stablecoin[];
+}
+
 export interface Log {
     transactionIndex: string;
     blockNumber: string;

@@ -21,14 +21,16 @@ export const SellerText: React.FC<SellerTextProps> = ({ order, userId }) => {
 
   return (
     <div className="text-right w-full">
-      <span className="text-xs text-primary block">
+      <p className="text-left w-full text-xs text-primary">
         {t("seller")}:{" "}
-        {order.sellerId === userId
-          ? t("you")
-          : order.sellerUsername
-          ? order.sellerUsername
-          : order.sellerId}
-      </span>
+        <span className="text-xs text-primary font-bold">
+          {order.sellerId === userId
+            ? t("you")
+            : order.sellerUsername
+            ? order.sellerUsername
+            : order.sellerId}
+        </span>
+      </p>
       {!order.buyerHasRated &&
         order.status &&
         finishedStatusesList.includes(order.status) && (

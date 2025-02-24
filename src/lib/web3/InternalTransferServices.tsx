@@ -1,15 +1,19 @@
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 import { TransactionStatusResponse } from "b5-api-client";
+import { PublicClientManager } from "./PublicClientManager";
+import { useChainId } from "wagmi";
 
 export const useTransactionHandler = (
   setTransaction: (transaction: any) => void,
   t: (key: string) => string,
   checkTransactionStatus: (
-    transactionHash: string
+    transactionHash: string,
+    chainId: number
   ) => Promise<TransactionStatusResponse>
 ) => {
   const { transferTokensFromEtherspotToEOA, transferFromEOAToSW } =
     useEtherspotFlow();
+  const chainId = useChainId();
 
   const handleTransaction = async (
     transactionType: "EOAToSW" | "EtherspotToEOA",
@@ -32,12 +36,14 @@ export const useTransactionHandler = (
           selectedCoinAddress,
           transferAmount
         );
-        await checkTransactionStatus(transactionHash);
+        await checkTransactionStatus(transactionHash, chainId);
       } else {
         const receipt = await transferTokensFromEtherspotToEOA(
           selectedCoinAddress,
-          transferAmount
+          transferAmount,
+          chainId
         );
+        console.log(receipt);
         if (receipt.success) {
           setTransaction({
             status: "success",

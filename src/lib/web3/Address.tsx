@@ -15,22 +15,18 @@ const Address: React.FC<AddressProps> = ({ address }) => {
   };
 
   return (
-    <div className="flex items-center w-full pb-4">
-      <p
-        className="text-primary text-sm flex-grow"
-        style={{ flexBasis: "93%" }}
-      >
-        {address.slice(0, 25)}...{address.slice(-4)}
+    <div className="flex items-center w-full">
+      <p className="text-terciary text-xs flex-grow">
+        {address.slice(0, 30)}...{address.slice(-4)}
       </p>
       <button
         onClick={handleCopy}
         className={`${
           isCopied ? "text-secondary" : "text-primary hover:text-blue-600"
-        } ml-auto flex justify-end`}
-        style={{ flexBasis: "7%" }}
+        } ml-auto flex-none rounded-full bg-secondary`}
         aria-label="Copy address"
       >
-        <Clipboard className="h-4 w-4" />
+        <Clipboard className="h-5 w-5 p-1 text-white" />
       </button>
     </div>
   );

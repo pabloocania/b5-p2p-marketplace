@@ -1,5 +1,5 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { rootstock, rootstockTestnet } from "wagmi/chains";
+import { arbitrumSepolia, rootstock, rootstockTestnet } from "wagmi/chains";
 import {
     metaMaskWallet
 } from '@rainbow-me/rainbowkit/wallets';
@@ -16,8 +16,9 @@ export const config = getDefaultConfig({
     chains: [
         rootstock,
         rootstockTestnet,
+        arbitrumSepolia,
         ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true"
-            ? [rootstockTestnet]
+            ? [rootstockTestnet, arbitrumSepolia]
             : []),
     ],
     ssr: true,

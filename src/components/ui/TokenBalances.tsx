@@ -1,13 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TokenBalance } from "@/lib/web3/types";
 import { ArrowLeftRightIcon, MoveRightIcon } from "lucide-react";
@@ -26,22 +19,22 @@ export default function TokenBalanceList({
 
   const handleTokenClick = (token: TokenBalance) => {
     const newSelectedToken = selectedToken?.name === token.name ? null : token;
+    console.log("tokenbalances", newSelectedToken);
     setSelectedToken(newSelectedToken);
     onTokenSelect(newSelectedToken);
   };
 
   const getIconClassNames = (token: TokenBalance) => {
     return selectedToken?.name === token?.name
-      ? "text-blue-700 bg-blue-100 shadow-lg rounded-full flex items-center justify-center h-5 w-5"
+      ? "text-secondary-700 bg-secondary-100 shadow-lg rounded-full flex items-center justify-center"
       : "text-muted-foreground";
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto px-0">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0"></CardHeader>
-      <CardContent className="pt-0">
+    <Card className="w-full max-w-md mx-auto bg-transparent">
+      <CardContent className="px-0">
         {balances.length > 0 ? (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {balances.map((token, index) => {
               const balance =
                 balanceType === "eoa"
@@ -50,27 +43,28 @@ export default function TokenBalanceList({
               return (
                 <div
                   key={index}
-                  className="flex justify-between items-center py-1 border-b last:border-b-0 text-sm"
+                  className="flex justify-between items-center text-sm text-primary"
                 >
-                  <div>
-                    <span className="font-medium">{token.name}</span>
+                  <div className="flex-none w-24">
+                    <span className="text-sm font-bold text-terciary">
+                      {token.name}
+                    </span>
                   </div>
-                  <span className="font-medium">
+                  <span className="flex-grow text-sm text-right pr-2">
                     {parseFloat(balance).toFixed(6)}
                   </span>
-                  {parseFloat(balance) > 0 && (
-                    <button
-                      onClick={() => handleTokenClick(token)}
-                      className="p-1 rounded-full bg-muted transition-colors"
-                      aria-label={`Toggle ${token.name} details`}
-                    >
-                      <ArrowLeftRightIcon
-                        className={`h-5 w-5 transition-transform ${getIconClassNames(
-                          token
-                        )}`}
-                      />
-                    </button>
-                  )}
+                  <button
+                    onClick={() => handleTokenClick(token)}
+                    className="flex-none rounded-full bg-secondary"
+                    aria-label={`Toggle ${token.name} details`}
+                    disabled={parseFloat(balance) <= 0}
+                  >
+                    <ArrowLeftRightIcon
+                      className={`h-5 w-5 p-1 text-white ${getIconClassNames(
+                        token
+                      )}`}
+                    />
+                  </button>
                 </div>
               );
             })}

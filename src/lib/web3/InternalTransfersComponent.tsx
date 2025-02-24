@@ -18,15 +18,13 @@ import { useTransaction } from "./TransactionContext";
 import { useTransactionStatusChecker } from "../useTransactionStatusChecker";
 import { useTransactionHandler } from "./InternalTransferServices";
 import Address from "./Address";
+import TransferAmountInput from "./TransferComponent";
 
 export default function InternalTransfersComponent() {
   const { t } = useTranslation();
   const { setTransaction } = useTransaction();
   const { balances, swAddress, getTokensBalances, primeSdk } =
     useEtherspotSdk();
-  const [selectedCoin, setSelectedCoin] = useState<(typeof balances)[0] | null>(
-    null
-  );
   const { isConnected, address } = useAccount();
   const [myWalletBalances, setMyWalletBalances] = useState<{
     [key: string]: number;
@@ -34,7 +32,7 @@ export default function InternalTransfersComponent() {
   const [kioscoinWalletBalances, setKioscoinWalletBalances] = useState<{
     [key: string]: number;
   }>({});
-  const [transferAmount, setTransferAmount] = useState("");
+
   const [activeTab, setActiveTab] = useState("kioscoinWallet");
   const [selectedToken, setSelectedToken] = useState<TokenBalance | null>(null);
   const { checkTransactionStatus } = useTransactionStatusChecker();
@@ -46,8 +44,6 @@ export default function InternalTransfersComponent() {
 
   useEffect(() => {
     if (balances.length > 0) {
-      setSelectedCoin(balances[0]);
-
       const initialBalances = balances.reduce((acc, coin) => {
         acc[coin.name] = Number(coin.eoaBalance);
         return acc;
@@ -64,35 +60,20 @@ export default function InternalTransfersComponent() {
   }, [balances]);
 
   useEffect(() => {
-    setTransferAmount("");
-  }, [activeTab]);
-
-  useEffect(() => {
     if (!isConnected) {
       setMyWalletBalances({});
       setKioscoinWalletBalances({});
-      setSelectedCoin(null);
     }
   }, [isConnected]);
 
-  const handleMaxAmount = () => {
-    if (selectedCoin) {
-      const maxAmount =
-        activeTab === "myWallet"
-          ? myWalletBalances[selectedCoin.name]
-          : kioscoinWalletBalances[selectedCoin.name];
-      setTransferAmount(maxAmount.toString());
-    }
-  };
-
-  const handleTransfer = async () => {
-    if (selectedCoin && transferAmount) {
+  const handleTransfer = async (transferAmount: string) => {
+    if (selectedToken) {
       const amount = parseFloat(transferAmount);
       if (isNaN(amount) || amount <= 0) return;
       const sourceBalance =
         activeTab === "myWallet"
-          ? myWalletBalances[selectedCoin.name]
-          : kioscoinWalletBalances[selectedCoin.name];
+          ? parseFloat(selectedToken.eoaBalance)
+          : parseFloat(selectedToken.smartWalletBalance);
 
       if (amount > sourceBalance) return;
 
@@ -100,11 +81,9 @@ export default function InternalTransfersComponent() {
         activeTab === "myWallet" ? "EOAToSW" : "EtherspotToEOA";
       await handleTransaction(
         transactionType,
-        selectedCoin.address,
+        selectedToken.address,
         transferAmount
       );
-
-      setTransferAmount("");
     }
   };
 
@@ -118,15 +97,7 @@ export default function InternalTransfersComponent() {
 
   const handleTokenSelect = (token: TokenBalance | null) => {
     setSelectedToken(token);
-    if (token) {
-      const balance =
-        activeTab === "myWallet"
-          ? myWalletBalances[token.name]
-          : kioscoinWalletBalances[token.name];
-      setTransferAmount(balance.toString());
-    } else {
-      setTransferAmount(""); // Reset if no token is selected
-    }
+    console.log(token);
   };
 
   if (!balances) {
@@ -134,147 +105,158 @@ export default function InternalTransfersComponent() {
   }
 
   return (
-    <div className="flex items-center w-full">
-      <Card className="w-full bg-transparent border border-primary">
-        <CardContent>
-          <Tabs
-            defaultValue="kioscoinWallet"
-            className="w-full"
-            onValueChange={setActiveTab}
+    <div className="flex flex-col items-center w-full rounded-lg px-1 bg-white space-y-1 py-1">
+      <Tabs
+        defaultValue="kioscoinWallet"
+        className="w-full"
+        onValueChange={setActiveTab}
+      >
+        <TabsList className="grid w-full grid-cols-2 bg-secondary bg-opacity-10">
+          <TabsTrigger
+            value="kioscoinWallet"
+            className={`flex items-center justify-center w-full ${
+              activeTab === "kioscoinWallet"
+                ? "border border-secondary bg-primary"
+                : "text-primary bg-transparent"
+            }`}
           >
-            <TabsList className="grid w-full grid-cols-2 bg-transparent w-full">
-              <TabsTrigger
-                value="kioscoinWallet"
-                className={`flex items-center justify-center w-full ${
-                  activeTab === "kioscoinWallet"
-                    ? "text-white"
-                    : "text-primary bg-transparent"
-                }`}
-              >
-                <span className="flex items-center text-primary">
-                  Smart Wallet
-                  {/* <span className="ml-2">
-                    <InfoToggle content="Your wallet that let you sell and buy gasless!" />
-                  </span> */}
-                </span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="myWallet"
-                className={`flex items-center justify-center w-full ${
-                  activeTab === "myWallet"
-                    ? "text-white"
-                    : "text-primary bg-transparent"
-                }`}
-              >
-                <span className="flex items-center text-primary">
-                  EOA Wallet
-                </span>
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="kioscoinWallet">
-              {swAddress && (
-                <div>
-                  <p className="font-bold text-primary">{t("address")}</p>
-                  <Address address={swAddress} />
-                </div>
-              )}
-              <div className="flex items-center pb-2">
-                <p className="font-bold text-primary mr-2">Balances</p>
-                <button
-                  onClick={handleRefresh}
-                  className="text-primary hover:text-blue-600 transition duration-150 ease-in-out"
-                  aria-label="Refresh balances"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </button>
-              </div>
-              <TokenBalanceList
-                onTokenSelect={handleTokenSelect}
-                balances={balances.map((token) => ({
-                  ...token,
-                  eoaBalance: token.smartWalletBalance, // Use smart wallet balances
-                }))}
-              />
-            </TabsContent>
-            <TabsContent value="myWallet">
-              {address && (
-                <div>
-                  <p className="font-bold text-primary">{t("address")}</p>
-                  <Address address={address} />
-                </div>
-              )}
-              <div className="flex items-center pb-2">
-                <p className="font-bold text-primary mr-2">Balances</p>
-                <button
-                  onClick={handleRefresh}
-                  className="text-primary hover:text-blue-600 transition duration-150 ease-in-out"
-                  aria-label="Refresh balances"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </button>
-              </div>
-              <TokenBalanceList
-                onTokenSelect={handleTokenSelect}
-                balances={balances.map((token) => ({
-                  ...token,
-                  smartWalletBalance: token.eoaBalance, // Use EOA balances
-                }))}
-              />
-            </TabsContent>
-          </Tabs>
-          <div className="mt-4 space-y-2">
-            {selectedToken && (
-              <div className="flex flex-col space-y-2">
-                <p className="text-xs text-center">
-                  {t("enter_transfer_amount")}
-                </p>
-                <div className="flex items-center space-x-2">
-                  <Label htmlFor="transfer-amount" className="sr-only">
-                    {t("transfer_amount")}
-                  </Label>
-                  <Input
-                    id="transfer-amount"
-                    type="number"
-                    placeholder="Amount"
-                    value={transferAmount}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setTransferAmount(value);
-                    }}
-                    className="flex-grow"
-                  />
-                  <Button onClick={handleMaxAmount} variant="outline" size="sm">
-                    Max
-                  </Button>
-                </div>
-                <Button
-                  onClick={handleTransfer}
-                  className="w-full bg-secondary text-white"
-                  disabled={
-                    !!selectedCoin &&
-                    parseFloat(transferAmount) >
-                      (activeTab === "myWallet"
-                        ? myWalletBalances[selectedCoin.name]
-                        : kioscoinWalletBalances[selectedCoin.name])
-                  }
-                >
-                  <ArrowLeftRight className="mr-2 h-4 w-4" />
-                  {t("transfer")}
-                </Button>
-              </div>
-            )}
-            {selectedCoin &&
-              parseFloat(transferAmount) >
-                (activeTab === "myWallet"
-                  ? myWalletBalances[selectedCoin.name]
-                  : kioscoinWalletBalances[selectedCoin.name]) && (
-                <div className="text-white-500 text-sm mt-1">
-                  {t("not_enough_balance")}
-                </div>
-              )}
+            <span className="flex items-center text-primary font-bold">
+              Smart Wallet
+              {/* <span className="ml-2">
+                <InfoToggle content="Your wallet that let you sell and buy gasless!" />
+              </span> */}
+            </span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="myWallet"
+            className={`flex items-center justify-center w-full ${
+              activeTab === "myWallet"
+                ? "border border-secondary bg-primary"
+                : "text-primary bg-transparent"
+            }`}
+          >
+            <span className="flex items-center text-primary font-bold">
+              EOA Wallet
+            </span>
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent
+          value="kioscoinWallet"
+          className="px-2 bg-secondary bg-opacity-10 rounded-lg py-2 space-y-2"
+        >
+          {swAddress && (
+            <div className="space-y-1">
+              <p className="font-bold text-primary text-sm">{t("address")}</p>
+              <Address address={swAddress} />
+            </div>
+          )}
+          <div className="flex items-center">
+            <p className="font-bold text-primary text-sm">Balances</p>
+            <button
+              onClick={handleRefresh}
+              className="text-primary hover:text-blue-600 transition duration-150 ease-in-out"
+              aria-label="Refresh balances"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </button>
           </div>
+          <TokenBalanceList
+            onTokenSelect={handleTokenSelect}
+            balances={balances.map((token) => ({
+              ...token,
+              eoaBalance: token.smartWalletBalance, // Use smart wallet balances
+            }))}
+          />
+        </TabsContent>
+        <TabsContent
+          value="myWallet"
+          className="px-2 bg-secondary bg-opacity-10 rounded-lg py-2 space-y-2"
+        >
+          {address && (
+            <div className="space-y-1">
+              <p className="font-bold text-primary text-sm">{t("address")}</p>
+              <Address address={address} />
+            </div>
+          )}
+          <div className="flex items-center">
+            <p className="font-bold text-primary text-sm">Balances</p>
+            <button
+              onClick={handleRefresh}
+              className="text-primary hover:text-blue-600 transition duration-150 ease-in-out"
+              aria-label="Refresh balances"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </button>
+          </div>
+          <TokenBalanceList
+            onTokenSelect={handleTokenSelect}
+            balances={balances.map((token) => ({
+              ...token,
+              smartWalletBalance: token.eoaBalance, // Use EOA balances
+            }))}
+          />
+        </TabsContent>
+      </Tabs>
+      {/* <Card className="w-full bg-white border border-primary border-opacity-10">
+        <CardContent>
         </CardContent>
-      </Card>
+      </Card> */}
+      {selectedToken && (
+        <div className="bg-secondary bg-opacity-10 rounded-lg flex flex-col space-y-2 w-full p-2">
+          <TransferAmountInput
+            selectedToken={selectedToken}
+            handleTransfer={handleTransfer}
+            isEOA={activeTab === "myWallet"}
+          />
+          {/* {selectedToken && (
+          <div className="flex flex-col space-y-2">
+            <p className="text-xs text-center">{t("enter_transfer_amount")}</p>
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="transfer-amount" className="sr-only">
+                {t("transfer_amount")}
+              </Label>
+              <Input
+                id="transfer-amount"
+                type="number"
+                placeholder="Amount"
+                value={transferAmount}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setTransferAmount(value);
+                }}
+                className="flex-grow"
+              />
+              <Button onClick={handleMaxAmount} variant="outline" size="sm">
+                Max
+              </Button>
+            </div>
+            <Button
+              onClick={handleTransfer}
+              className="w-full bg-secondary text-white"
+              disabled={
+                !!selectedCoin &&
+                parseFloat(transferAmount) >
+                  (activeTab === "myWallet"
+                    ? myWalletBalances[selectedCoin.name]
+                    : kioscoinWalletBalances[selectedCoin.name])
+              }
+            >
+              <ArrowLeftRight className="mr-2 h-4 w-4" />
+              {t("transfer")}
+            </Button>
+          </div>
+        )} */}
+          {/* {selectedToken &&
+          parseFloat(transferAmount) >
+            (activeTab === "myWallet"
+              ? myWalletBalances[selectedCoin.name]
+              : kioscoinWalletBalances[selectedCoin.name]) && (
+            <div className="text-white-500 text-sm mt-1">
+              {t("not_enough_balance")}
+            </div>
+          )} */}
+        </div>
+      )}
     </div>
   );
 }

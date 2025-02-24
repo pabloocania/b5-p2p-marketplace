@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
 import { UserStats } from "@/components/ui/UserStats";
-import OrderCreatedDate from "../OrderCreatedDate";
 
 interface OrderCardHeaderProps {
   order: Order;
@@ -65,13 +64,13 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
                 ? "@" + order.sellerUsername
                 : "@" + order.buyerUsername}
             </span>
-            <UserStats rating={4.2} transactionCount={3} />
+            <UserStats rating={order.creatorRating} transactionCount={3} />
           </div>
         </div>
 
         {/* Right Side */}
         <div className="flex flex-col w-full">
-          <div className="text-right mb-1">
+          <div className="text-right mb-1 ml-2">
             <Badge className={`text-xs ${mapOrderVariant(order)}`}>
               {mapOrderStatus(order.status ?? "Unknown")}
             </Badge>

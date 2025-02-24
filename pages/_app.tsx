@@ -10,11 +10,8 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { config } from "../src/wagmi";
 import { EtherspotSdkProvider } from "@/lib/web3/EtherspotSdkProvider";
 import { TransactionProvider } from "@/lib/web3/TransactionContext";
-import { rootstockTestnet } from "wagmi/chains";
+import { arbitrumSepolia, rootstockTestnet } from "wagmi/chains";
 import "../src/i18n"; // Adjust the path as necessary
-import { Workbox } from "workbox-window";
-import { useEffect } from "react";
-import { FirebaseConfig, FirebaseService } from "@/lib/FirebaseService";
 
 const queryClient = new QueryClient();
 
@@ -61,7 +58,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             <RainbowKitProvider
               modalSize="compact"
               coolMode
-              initialChain={rootstockTestnet}
+              initialChain={arbitrumSepolia}
             >
               <EtherspotSdkProvider>
                 <TransactionProvider>

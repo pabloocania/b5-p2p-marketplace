@@ -19,6 +19,7 @@ import { TransactionStatus } from "@/components/ui/TransactionStatus";
 import UserOrdersMenu from "@/components/ui/TopLevelSubMenu";
 import MainMenu from "@/components/ui/MainMenu";
 import { useTranslation } from "react-i18next";
+import { initConfig } from "@/lib/ConfigStore";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -28,6 +29,8 @@ export default function Home() {
   const { disconnect } = useDisconnect();
   const { transaction, resetTransaction } = useTransaction();
   const { i18n, t } = useTranslation();
+
+  initConfig();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);

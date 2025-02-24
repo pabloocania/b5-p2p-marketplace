@@ -39,11 +39,13 @@ export function Rating({ orderId, ratedId }: RatingProps) {
   return (
     <div>
       {isSubmitted ? (
-        <span className="text-xs font-bold pr-2">{t("thanks")}</span>
+        <span className="text-xs font-bold pr-1 text-primary">
+          {t("thanks")}
+        </span>
       ) : (
         <Card>
-          <CardContent className="flex px-0 py-0 items-center rounded-md">
-            <span className="text-xs font-bold pr-2">
+          <CardContent className="flex px-0 py-0 items-center rounded-md bg-secondary bg-opacity-10">
+            <span className="text-xs font-bold text-primary pr-2">
               {t("rate_user") + ": "}
             </span>
             <div className="flex items-center space-x-1 rounded-md">

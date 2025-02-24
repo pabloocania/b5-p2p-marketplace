@@ -2,7 +2,7 @@ import React from "react";
 import { LucideIcon } from "lucide-react"; // Adjust the import path as necessary
 
 interface UserStatBadgeProps {
-  value: number;
+  value: string;
   Icon: LucideIcon;
   color?: string;
   bgColor?: string;

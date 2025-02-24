@@ -53,7 +53,6 @@ export default function ReleaseFundsConfirmation({
 
   const handleConfirm = async () => {
     handleReleaseFunds();
-    console.log(`Releasing funds from ${walletType} wallet`);
     onClose();
   };
 

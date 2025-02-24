@@ -21,8 +21,6 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useUserContext } from "./UserContext";
-import { useEtherspotSdk } from "../../lib/web3/EtherspotSdkProvider";
-import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useTranslation } from "react-i18next";
 import {
@@ -32,13 +30,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import BlockchainSelector from "@/lib/web3/BlockchainSelector";
+import TokenSelector from "@/lib/web3/TokenSelector";
 
 interface CreateOrderProps {
   onClose: () => void;
   onConnectWallet: () => void; // Add this prop
 }
 
-const tokens = [{ symbol: "PDOC", name: "PDOC" }];
+const tokens = [
+  { symbol: "PDOC", name: "PDOC" },
+  { symbol: "USDK", name: "USDK" },
+];
 
 export default function CreateOrder({
   onClose,
@@ -54,7 +57,7 @@ export default function CreateOrder({
   const { user, isLoggedIn } = useUserContext();
   const { openConnectModal } = useConnectModal();
   const { t } = useTranslation();
-
+  const [blockchain, setBlockchain] = useState<string>("");
   const calculateARSEquivalent = () => {
     return tokenAmount * 1000;
   };
@@ -68,6 +71,16 @@ export default function CreateOrder({
       openConnectModal();
     }
     onConnectWallet();
+  };
+
+  const handleBlockchainChange = (blockchain: string) => {
+    console.log("Selected Blockchain:", blockchain);
+    setBlockchain(blockchain);
+  };
+
+  const handleTokenChange = (tokenCode: string) => {
+    console.log("Selected Coin:", tokenCode);
+    setTokenCode(tokenCode);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,10 +111,14 @@ export default function CreateOrder({
       creatorUsername: user?.username,
       sellerHash: secretSeller.toString("hex"),
       buyerHash: secretBuyer.toString("hex"),
+      blockchain: blockchain,
     };
 
     try {
-      const ordersResponse = await client.createOrder(newOrder);
+      const ordersResponse = await client.createOrder(newOrder, {
+        "Content-Type": "application/json",
+        "x-blockchain": blockchain,
+      });
       if (ordersResponse.orders.length === 1) {
         setCreatedOrder(ordersResponse.orders[0]);
         onClose();
@@ -112,16 +129,26 @@ export default function CreateOrder({
     }
   };
 
+  const isFormComplete = () => {
+    return (
+      tokenAmount > 0 &&
+      blockchain !== "" &&
+      tokenCode !== "" &&
+      (orderType === "SELL" || walletAddress) &&
+      username
+    );
+  };
+
   return (
     <div className="flex justify-center items-center pt-8">
-      <Card className="w-full max-w-md border border-primary">
+      <Card className="w-full max-w-md border border-primary border-opacity-20">
         <CardHeader className="flex justify-center items-center">
           <CardTitle className="text-center text-primary">
             {t("create_order")}
           </CardTitle>
         </CardHeader>
         <Separator className="my-2"></Separator>
-        <CardContent>
+        <CardContent className="text-primary">
           {!isLoggedIn ? (
             <Button
               className="p-4 text-center w-full text-white"
@@ -151,31 +178,31 @@ export default function CreateOrder({
                   </RadioGroup>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Select onValueChange={setTokenCode} required>
-                    <SelectTrigger id="token">
-                      <SelectValue placeholder={t("select_token")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {tokens.map((token) => (
-                        <SelectItem key={token.symbol} value={token.symbol}>
-                          {token.name} ({token.symbol})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    id="token-amount"
-                    type="number"
-                    placeholder={t("enter_amount")}
-                    value={tokenAmount === 0 ? "" : tokenAmount}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setTokenAmount(value === "" ? 0 : parseFloat(value) || 0);
-                    }}
+                  {/* <BlockchainSelector
+                    onBlockchainChange={handleBlockchainChange}
+                    onCoinChange={handleCoinChange}
+                  /> */}
+                  <TokenSelector
+                    onBlockchainChange={handleBlockchainChange}
+                    onTokenChange={handleTokenChange}
                   />
                 </div>
+                {blockchain !== "" && tokenCode !== "" && (
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      id="token-amount"
+                      type="number"
+                      placeholder={t("enter_amount")}
+                      value={tokenAmount === 0 ? "" : tokenAmount}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setTokenAmount(
+                          value === "" ? 0 : parseFloat(value) || 0
+                        );
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="flex items-center justify-end space-x-2">
                   <Label className="text-xs font-semibold">
                     {t("en_ars")}:{" "}
@@ -234,10 +261,11 @@ export default function CreateOrder({
           )}
         </CardContent>
         {!createdOrder && (
-          <CardFooter>
+          <CardFooter className="py-2">
             <Button
               className="w-full text-white bg-secondary"
               onClick={handleSubmit}
+              disabled={!isFormComplete()} // Disable button if form is incomplete
             >
               {t("create_order")}
             </Button>
