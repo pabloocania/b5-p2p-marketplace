@@ -12,10 +12,17 @@ import { EtherspotSdkProvider } from "@/lib/web3/EtherspotSdkProvider";
 import { TransactionProvider } from "@/lib/web3/TransactionContext";
 import { arbitrumSepolia, rootstockTestnet } from "wagmi/chains";
 import "../src/i18n"; // Adjust the path as necessary
+import { useEffect } from "react";
+import { initConfig } from "@/lib/ConfigStore";
 
 const queryClient = new QueryClient();
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    // Initialize configuration
+    initConfig();
+  }, []);
+
   return (
     <>
       <Head>

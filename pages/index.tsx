@@ -30,8 +30,6 @@ export default function Home() {
   const { transaction, resetTransaction } = useTransaction();
   const { i18n, t } = useTranslation();
 
-  initConfig();
-
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
   };

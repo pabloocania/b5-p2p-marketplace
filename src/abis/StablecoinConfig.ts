@@ -1,7 +1,7 @@
-import { Stablecoin, StablecoinConfig } from "@/lib/web3/types";
+import { StablecoinConfig } from "@/lib/web3/types";
 import ERC20 from "./ERC20.json";
 
-export const systemStablecoins: StablecoinConfig = {
+export const defaultSystemStablecoins: StablecoinConfig = {
     supportedStablecoins: [
         {
             addresses: [
@@ -34,18 +34,3 @@ export const systemStablecoins: StablecoinConfig = {
 } as const;
 
 export const ERC20abi = ERC20
-
-export const getStablecoinsByBlockchain = (blockchain: string): Stablecoin[] => {
-    return systemStablecoins.supportedStablecoins.filter(stablecoin =>
-        stablecoin.addresses.some(address => address.blockchain === blockchain)
-    );
-};
-
-export const getTokenAddressByNameAndBlockchain = (tokenName: string, blockchain: string): string => {
-    const stablecoin = systemStablecoins.supportedStablecoins.find(stablecoin =>
-        stablecoin.name === tokenName &&
-        stablecoin.addresses.some(address => address.blockchain === blockchain)
-    );
-
-    return stablecoin?.addresses.find(address => address.blockchain === blockchain)?.address!!;
-};

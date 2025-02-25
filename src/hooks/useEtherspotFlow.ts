@@ -6,12 +6,13 @@ import {
   keccak256
 } from "viem";
 import { toUtf8Bytes } from "ethers/lib/utils";
-import { ERC20abi, getTokenAddressByNameAndBlockchain } from "../abis/StablecoinConfig";
+import { ERC20abi } from "../abis/StablecoinConfig";
 import { Order } from "b5-api-client";
 import { useEtherspotSdk } from "@/lib/web3/EtherspotSdkProvider";
 import { OPSReceipt } from "@/lib/web3/types";
 import { getKioscoinEscrowAddressByBlockchain, KioscoinEscrowContractConfig } from "@/abis/KioscoinEscrowConfig";
 import { PublicClientManager } from "@/lib/web3/PublicClientManager";
+import { ConfigStore } from "@/lib/ConfigStore";
 
 export const arka_api_key = "etherspot_3ZVooGBfUwejKEQFJzmvMxKK";
 export const arka_url = "https://arka.etherspot.io";
@@ -51,7 +52,7 @@ export const useEtherspotFlow = () => {
     }
   };
 
-  const transferTokensFromEtherspotToEOA = async (
+  const transferFromSmartWalletToEOA = async (
     tokenAddress: string,
     amount: string,
     chainId: number
@@ -108,7 +109,6 @@ export const useEtherspotFlow = () => {
     if (primeSdk && address) {
       const orderBlockchain = order.blockchain!!
       const contractAddress = getKioscoinEscrowAddressByBlockchain(orderBlockchain)
-      // console.log(await arkaPaymasterInstance.deposit(0.001))
       const amountInt = parseUnits(order.amount ?? "0", 18); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
       const totalAmount = amountInt + feeInt; // Sum is also a BigInt
@@ -123,7 +123,7 @@ export const useEtherspotFlow = () => {
       const buyerHashBuffer = order.buyerHash ? keccak256(toUtf8Bytes(order.buyerHash)) : undefined;
       const sellerHashBuffer = order.sellerHash ? keccak256(toUtf8Bytes(order.sellerHash)) : undefined;
 
-      const address = getTokenAddressByNameAndBlockchain(order.tokenCode?.toUpperCase()!!, orderBlockchain)
+      const address = ConfigStore.getInstance().getTokenAddressByNameAndBlockchain(order.tokenCode?.toUpperCase()!!, orderBlockchain)
       const escrowParams = [
         order.id,
         address,
@@ -152,7 +152,7 @@ export const useEtherspotFlow = () => {
 
   return {
     transferFromEOAToSW,
-    transferTokensFromEtherspotToEOA,
+    transferFromSmartWalletToEOA,
     batchApproveAndEscrow,
     releaseFunds
   };

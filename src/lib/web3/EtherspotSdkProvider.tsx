@@ -2,10 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
 import { PrimeSdk, ArkaPaymaster } from "@etherspot/prime-sdk";
-import {
-  getStablecoinsByBlockchain,
-  ERC20abi,
-} from "../../abis/StablecoinConfig";
+import { ERC20abi } from "../../abis/StablecoinConfig";
 import { getAddress, formatUnits } from "viem";
 import { OPSReceipt, TokenBalance } from "./types";
 import { getBalance } from "@wagmi/core";
@@ -16,6 +13,7 @@ import {
   networkNameToFormattedNameMap,
 } from "./EtherspotSdkConfigurations";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
+import { ConfigStore } from "../ConfigStore";
 
 // Function to map network name to formatted blockchain name
 function mapNetworkNameToFormattedName(
@@ -92,6 +90,43 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
   //https://rpc.etherspot.io/data-utils/{endpoint-here}?api-key=etherspot_3ZVooGBfUwejKEQFJzmvMxKK
 
   useEffect(() => {
+    const handleChainIdChange = async () => {
+      if (primeSdk) {
+        primeSdk.destroy();
+        setPrimeSdk(null);
+      }
+      if (arkaInstance) {
+        setArkaInstance(null);
+      }
+      if (walletClient && isConnected) {
+        const walletProvider = createWalletProvider();
+        if (!walletProvider.address) {
+          throw new Error("Wallet provider address is undefined");
+        }
+        const primeSdkInstance = new PrimeSdk(
+          walletProvider,
+          getSdkOptionsForChainId(chainId)
+        );
+        if (primeSdkInstance !== null) {
+          const smartWalletAddress =
+            await primeSdkInstance?.getCounterFactualAddress();
+          const arkaInstance = getArkaPaymasterInstance(
+            chainId,
+            arka_api_key,
+            arka_url
+          );
+          setSwAddress(smartWalletAddress);
+          setPrimeSdk(primeSdkInstance);
+          setArkaInstance(arkaInstance);
+          getTokensBalances(primeSdkInstance);
+        }
+      }
+    };
+
+    handleChainIdChange();
+  }, [chainId]);
+
+  useEffect(() => {
     const connectToSdk = async () => {
       if (!walletClient && !isConnected && primeSdk) {
         primeSdk.destroy();
@@ -107,7 +142,6 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
           getSdkOptionsForChainId(chainId)
         );
         if (primeSdkInstance !== null) {
-          console.log("Prime SDK initialized:", primeSdkInstance);
           const smartWalletAddress =
             await primeSdkInstance?.getCounterFactualAddress();
           const arkaInstance = getArkaPaymasterInstance(
@@ -115,11 +149,10 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
             arka_api_key,
             arka_url
           );
-          console.log("arI", arkaInstance);
           setSwAddress(smartWalletAddress);
           setPrimeSdk(primeSdkInstance);
-          getTokensBalances(primeSdkInstance);
           setArkaInstance(arkaInstance);
+          getTokensBalances(primeSdkInstance);
         }
       } else {
         console.log("isConnected", isConnected);
@@ -140,8 +173,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
 
     try {
       const stablecoinsByBlockchain =
-        getStablecoinsByBlockchain(currentBlockchain);
-
+        ConfigStore.getInstance().getStablecoinsByBlockchain(currentBlockchain);
       // Use Promise.all to fetch balances concurrently for better performance
       await Promise.all(
         stablecoinsByBlockchain.map(async (stablecoin) => {
@@ -184,7 +216,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     const smartWalletAddress = await primeSdk?.getCounterFactualAddress();
 
     const eoaNativeBalance = await getBalance(config, {
-      address: address ?? "0x0",
+      address: account.address ?? "0x0000000000000000000000000000000000000000",
     });
 
     const swNativeBalance = await primeSdk?.getNativeBalance();
@@ -204,7 +236,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
 
     const balances = await fetchStablecoinBalances(
       smartWalletAddress ?? (await primeSdk?.getCounterFactualAddress()!!),
-      getAddress(address ?? "0x0"),
+      account.address!!,
       currentBlockchain
     );
 
@@ -284,6 +316,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       throw new Error("Arka instance is not initialized.");
     }
     const isWhitelisted = await arkaInstance.checkWhitelist(address);
+    console.log("isWhitelisted", address);
     if (isWhitelisted !== "Already added") {
       console.log("whitelisting...");
       try {
