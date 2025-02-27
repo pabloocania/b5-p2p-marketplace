@@ -74,18 +74,15 @@ export default function CreateOrder({
   };
 
   const handleBlockchainChange = (blockchain: string) => {
-    console.log("Selected Blockchain:", blockchain);
     setBlockchain(blockchain);
   };
 
   const handleTokenChange = (tokenCode: string) => {
-    console.log("Selected Coin:", tokenCode);
     setTokenCode(tokenCode);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const { secret: secretSeller } = generateSecretAndHash();
     const { secret: secretBuyer } = generateSecretAndHash();
 

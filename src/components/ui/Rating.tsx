@@ -28,7 +28,7 @@ export function Rating({ orderId, ratedId }: RatingProps) {
           userId: ratedId,
           orderId: orderId,
         });
-        console.log(`Submitted rating: ${rating}`);
+
         setIsSubmitted(true);
       } catch (error) {
         console.error("Error while rating:", error);
@@ -44,7 +44,7 @@ export function Rating({ orderId, ratedId }: RatingProps) {
         </span>
       ) : (
         <Card>
-          <CardContent className="flex px-0 py-0 items-center rounded-md bg-secondary bg-opacity-10">
+          <CardContent className="my-2 px-2 flex px-0 py-0 items-center rounded-md bg-white border border-secondary border-opacity-50">
             <span className="text-xs font-bold text-primary pr-2">
               {t("rate_user") + ": "}
             </span>

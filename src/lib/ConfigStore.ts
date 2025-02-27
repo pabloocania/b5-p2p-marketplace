@@ -75,9 +75,7 @@ export class ConfigStore {
 
 export function initConfig() {
     if (ConfigStore.getInstance().getConfig() === undefined) {
-        console.log("try fetch config")
         p2pMarketAPIClient.getConfig().then((config: ConfigResponse<any>) => {
-            console.log("CONFIG RESPONSE", config.config.blockchains)
             ConfigStore.getInstance().setConfig(config);
             ConfigStore.getInstance().setBackendStablecoins(mapBlockchainsToStablecoinConfig(config.config))
         }).catch((error: any) => {
@@ -100,7 +98,6 @@ export const getBlockchainDisplayName = (blockchain: BlockchainName): string => 
 
 function mapBlockchainsToStablecoinConfig(config: any): StablecoinConfig {
     const blockchains = config.blockchains;
-    console.log("blockchains", blockchains)
     const supportedStablecoins = blockchains.map((blockchain: any) => {
         return blockchain.supportedCoins.map((coin: any) => (
             {
@@ -113,6 +110,5 @@ function mapBlockchainsToStablecoinConfig(config: any): StablecoinConfig {
                 name: coin.tokenCode,
             }));
     }).flat();
-    console.log("mapped", supportedStablecoins)
     return { supportedStablecoins };
 }

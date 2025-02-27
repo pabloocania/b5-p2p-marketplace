@@ -20,7 +20,7 @@ export const BuyerText: React.FC<BuyerTextProps> = ({ order, userId }) => {
   ];
 
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <p className="text-left w-full text-xs text-primary">
         {t("buyer")}:{" "}
         <span className="text-xs text-primary font-bold">
@@ -31,13 +31,15 @@ export const BuyerText: React.FC<BuyerTextProps> = ({ order, userId }) => {
             : order.buyerId}
         </span>
       </p>
-      {!order.sellerHasRated &&
+      {!order.buyerHasRated &&
         order.status &&
         finishedStatusesList.includes(order.status) && (
-          <Rating
-            orderId={order.id!!}
-            ratedId={order.buyerId ? order.buyerId : ""}
-          />
+          <div className="flex justify-center w-full">
+            <Rating
+              orderId={order.id!!}
+              ratedId={order.buyerId ? order.buyerId : ""}
+            />
+          </div>
         )}
     </div>
   );

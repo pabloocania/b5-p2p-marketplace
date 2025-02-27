@@ -180,7 +180,6 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
           const relevantAddresses = stablecoin.addresses.filter(
             (address) => address.blockchain === currentBlockchain
           );
-
           for (const { address } of relevantAddresses) {
             try {
               const [swTokenBalance, eoaTokenBalance] = await Promise.all([
@@ -316,7 +315,6 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       throw new Error("Arka instance is not initialized.");
     }
     const isWhitelisted = await arkaInstance.checkWhitelist(address);
-    console.log("isWhitelisted", address);
     if (isWhitelisted !== "Already added") {
       console.log("whitelisting...");
       try {

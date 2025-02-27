@@ -9,6 +9,7 @@ import {
 import { ConfigStore, getBlockchainDisplayName } from "@/lib/ConfigStore";
 import { useTranslation } from "react-i18next";
 import { BlockchainName } from "./PublicClientManager";
+import { Stablecoin, StablecoinConfig } from "./types";
 
 interface Blockchain {
   name: string;
@@ -20,86 +21,114 @@ interface TokenSelectorProps {
   onBlockchainChange: (blockchain: string) => void;
 }
 
-export const TokenSelector: React.FC<TokenSelectorProps> = ({
-  onTokenChange,
-  onBlockchainChange,
-}) => {
-  const [blockchains, setBlockchains] = useState<Blockchain[]>([]);
-  const [selectedToken, setSelectedToken] = useState<string>("");
-  const [selectedBlockchain, setSelectedBlockchain] = useState<string>("");
-  const { t } = useTranslation();
+export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
+  ({ onTokenChange, onBlockchainChange }) => {
+    const [blockchains, setBlockchains] = useState<Blockchain | undefined>(
+      undefined
+    );
+    const [stablecoinConfig, setStablecoinConfig] = useState<
+      StablecoinConfig | undefined
+    >(undefined);
+    const [selectedToken, setSelectedToken] = useState<string>("");
+    const [selectedBlockchain, setSelectedBlockchain] = useState<string>("");
+    const { t } = useTranslation();
 
-  useEffect(() => {
-    const config = ConfigStore.getInstance().getConfig();
-    if (config) {
-      setBlockchains(config.config.blockchains);
-    }
-  }, []);
+    useEffect(() => {
+      const backendStablecoinsConfig =
+        ConfigStore.getInstance().getBackendStablecoins();
+      if (backendStablecoinsConfig) {
+        setStablecoinConfig(backendStablecoinsConfig);
+      }
+    }, []);
 
-  // Create a unique list of tokens from all blockchains
-  const tokens = Array.from(
-    new Set(blockchains.flatMap((b) => b.supportedCoins))
-  );
+    // Helper function to get unique tokens
+    const getUniqueTokenNames = (
+      stablecoinConfig: StablecoinConfig
+    ): string[] => {
+      if (
+        !stablecoinConfig ||
+        !Array.isArray(stablecoinConfig.supportedStablecoins)
+      ) {
+        return [];
+      }
 
-  const handleTokenChange = (value: string) => {
-    setSelectedToken(value);
-    setSelectedBlockchain(""); // Reset blockchain selection on token change
-    onTokenChange(value); // Notify parent component
-  };
+      const tokenNames = stablecoinConfig.supportedStablecoins.map(
+        (stablecoin) => stablecoin.name
+      );
+      return Array.from(new Set(tokenNames));
+    };
 
-  const handleBlockchainChange = (value: string) => {
-    setSelectedBlockchain(value);
-    onBlockchainChange(value); // Notify parent component
-  };
+    // Get unique token names
+    const tokens = stablecoinConfig
+      ? getUniqueTokenNames(stablecoinConfig)
+      : [];
 
-  // Filter blockchains that support the selected token
-  const availableBlockchains = blockchains.filter((b) =>
-    b.supportedCoins.includes(selectedToken)
-  );
+    const handleTokenChange = (value: string) => {
+      setSelectedToken(value);
+      setSelectedBlockchain(""); // Reset blockchain selection on token change
+      onTokenChange(value); // Notify parent component
+    };
 
-  return (
-    <div className="flex flex-col gap-3 w-full">
-      {/* Token Selector */}
-      <div>
-        <Select onValueChange={handleTokenChange} required>
-          <SelectTrigger>
-            <SelectValue placeholder={t("select_token")} />
-          </SelectTrigger>
-          <SelectContent>
-            {tokens.map((token) => (
-              <SelectItem key={token} value={token}>
-                {token}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+    const handleBlockchainChange = (value: string) => {
+      setSelectedBlockchain(value);
+      onBlockchainChange(value); // Notify parent component
+    };
 
-      {/* Nested Blockchain Selector, styled as a nested element */}
-      {selectedToken && (
-        <div
-          style={{
-            marginLeft: "1rem",
-            borderLeft: "2px solid #ccc",
-            paddingLeft: "1rem",
-          }}
-        >
-          <Select onValueChange={handleBlockchainChange} required>
+    const availableBlockchains = stablecoinConfig
+      ? stablecoinConfig.supportedStablecoins
+          .filter((stablecoin) => stablecoin.name === selectedToken)
+          .flatMap((v) => v.addresses)
+      : [];
+
+    return (
+      <div className="flex flex-col gap-3 w-full">
+        {/* Token Selector */}
+        <div>
+          <Select onValueChange={handleTokenChange} required>
             <SelectTrigger>
-              <SelectValue placeholder={t("select_blockchain")} />
+              <SelectValue placeholder={t("select_token")} />
             </SelectTrigger>
             <SelectContent>
-              {availableBlockchains.map((blockchain) => (
-                <SelectItem key={blockchain.name} value={blockchain.name}>
-                  {getBlockchainDisplayName(blockchain.name as BlockchainName)}
+              {tokens.map((token) => (
+                <SelectItem key={token} value={token}>
+                  {token}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-      )}
-    </div>
-  );
-};
+
+        {/* Nested Blockchain Selector, styled as a nested element */}
+        {selectedToken && (
+          <div
+            style={{
+              marginLeft: "1rem",
+              borderLeft: "2px solid #ccc",
+              paddingLeft: "1rem",
+            }}
+          >
+            <Select onValueChange={handleBlockchainChange} required>
+              <SelectTrigger>
+                <SelectValue placeholder={t("select_blockchain")} />
+              </SelectTrigger>
+              <SelectContent>
+                {availableBlockchains.map((blockchain) => (
+                  <SelectItem
+                    key={blockchain.blockchain}
+                    value={blockchain.blockchain}
+                  >
+                    {getBlockchainDisplayName(
+                      blockchain.blockchain as BlockchainName
+                    )}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
 
 export default TokenSelector;
