@@ -95,7 +95,7 @@ export function TransactionStatus({
       {/* Added z-index */}
       <Card className="w-full max-w-sm mb-12">
         <CardContent className="pt-4 px-4 pb-0">
-          <Alert className={`${getStatusColor(status)}`}>
+          <Alert className={`${getStatusColor(status)} border-opacity-10`}>
             <AlertTitle className="flex items-center gap-2">
               {getStatusIcon(status)}
               {getStatusText(status)}

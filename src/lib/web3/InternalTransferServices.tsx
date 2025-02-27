@@ -11,7 +11,7 @@ export const useTransactionHandler = (
     chainId: number
   ) => Promise<TransactionStatusResponse>
 ) => {
-  const { transferTokensFromEtherspotToEOA, transferFromEOAToSW } =
+  const { transferFromSmartWalletToEOA, transferFromEOAToSW } =
     useEtherspotFlow();
   const chainId = useChainId();
 
@@ -38,7 +38,7 @@ export const useTransactionHandler = (
         );
         await checkTransactionStatus(transactionHash, chainId);
       } else {
-        const receipt = await transferTokensFromEtherspotToEOA(
+        const receipt = await transferFromSmartWalletToEOA(
           selectedCoinAddress,
           transferAmount,
           chainId

@@ -44,9 +44,9 @@ export class BlockchainMapper {
 
 export class PublicClientManager {
     private static instance: PublicClient | null = null;
-    private constructor() { }
 
     public static getInstance(config: PublicClientConfig) {
+        this.resetInstance()
         if (!PublicClientManager.instance) {
             PublicClientManager.instance = PublicClientManager.createClient(config);
         }

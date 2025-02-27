@@ -64,7 +64,10 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
                 ? "@" + order.sellerUsername
                 : "@" + order.buyerUsername}
             </span>
-            <UserStats rating={order.creatorRating} transactionCount={3} />
+            <UserStats
+              rating={order.creatorRating}
+              transactionCount={Number(order.transactionsCount)}
+            />
           </div>
         </div>
 

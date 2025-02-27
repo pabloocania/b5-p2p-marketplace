@@ -97,7 +97,6 @@ export default function InternalTransfersComponent() {
 
   const handleTokenSelect = (token: TokenBalance | null) => {
     setSelectedToken(token);
-    console.log(token);
   };
 
   if (!balances) {
@@ -162,10 +161,8 @@ export default function InternalTransfersComponent() {
           </div>
           <TokenBalanceList
             onTokenSelect={handleTokenSelect}
-            balances={balances.map((token) => ({
-              ...token,
-              eoaBalance: token.smartWalletBalance, // Use smart wallet balances
-            }))}
+            balanceType="sw"
+            balances={balances}
           />
         </TabsContent>
         <TabsContent
@@ -190,10 +187,8 @@ export default function InternalTransfersComponent() {
           </div>
           <TokenBalanceList
             onTokenSelect={handleTokenSelect}
-            balances={balances.map((token) => ({
-              ...token,
-              smartWalletBalance: token.eoaBalance, // Use EOA balances
-            }))}
+            balanceType="eoa"
+            balances={balances}
           />
         </TabsContent>
       </Tabs>

@@ -7,19 +7,19 @@ import { ArrowLeftRightIcon, MoveRightIcon } from "lucide-react";
 
 interface TokenBalanceListProps {
   balances?: TokenBalance[];
+  balanceType: "eoa" | "sw";
   onTokenSelect: (token: TokenBalance | null) => void;
 }
 
 export default function TokenBalanceList({
   balances = [],
+  balanceType,
   onTokenSelect,
 }: TokenBalanceListProps) {
-  const [balanceType, setBalanceType] = useState<"eoa" | "smartWallet">("eoa");
   const [selectedToken, setSelectedToken] = useState<TokenBalance | null>(null);
 
   const handleTokenClick = (token: TokenBalance) => {
     const newSelectedToken = selectedToken?.name === token.name ? null : token;
-    console.log("tokenbalances", newSelectedToken);
     setSelectedToken(newSelectedToken);
     onTokenSelect(newSelectedToken);
   };
