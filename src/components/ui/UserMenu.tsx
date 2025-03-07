@@ -26,9 +26,10 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const response = await fetch(
-          "https://bolsillo-argento-586dfd80364d.herokuapp.com/api/users"
-        );
+        const host =
+          process.env.NEXT_PUBLIC_KIOSCOIN_API_URL ??
+          "https://bolsillo-argento-586dfd80364d.herokuapp.com";
+        const response = await fetch(host + "/api/users");
         const data = await response.json();
         const users = data.users.map((user: any) => ({
           userId: user.id,

@@ -92,7 +92,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           >
             <p className="text-primary font-bold">
               {msg.sender === userId
-                ? t("you")
+                ? t("you") + ":"
                 : "@" + getUsername(msg.sender) + ":"}
             </p>
             <div
@@ -136,7 +136,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         <Input
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message..."
+          placeholder={t("write_message")}
           className="flex-1 border border-terciary"
         />
         <Button
