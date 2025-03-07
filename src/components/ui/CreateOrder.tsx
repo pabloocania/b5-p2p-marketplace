@@ -23,14 +23,6 @@ import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useUserContext } from "./UserContext";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useTranslation } from "react-i18next";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import BlockchainSelector from "@/lib/web3/BlockchainSelector";
 import TokenSelector from "@/lib/web3/TokenSelector";
 
 interface CreateOrderProps {
@@ -108,7 +100,6 @@ export default function CreateOrder({
       creatorUsername: user?.username,
       sellerHash: secretSeller.toString("hex"),
       buyerHash: secretBuyer.toString("hex"),
-      blockchain: blockchain,
     };
 
     try {
