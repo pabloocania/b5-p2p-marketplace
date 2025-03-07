@@ -20,8 +20,8 @@ export class ChatWebSocketClient {
     }
 
     connect() {
-        const host = process.env.NEXT_PUBLIC_KIOSCOIN_WEBSOCKET_URL ?? "ws://bolsillo-argento-586dfd80364d.herokuapp.com"
-        const url = `${host}?chatId=${this.chatId}&participantId=${this.participantId}`;
+        const host = process.env.NEXT_PUBLIC_KIOSCOIN_WEBSOCKET_URL ?? "wss://bolsillo-argento-586dfd80364d.herokuapp.com"
+        const url = `${host}/api/chat/?chatId=${this.chatId}&participantId=${this.participantId}`;
         this.socket = new WebSocket(url);
 
         this.socket.onopen = () => {
