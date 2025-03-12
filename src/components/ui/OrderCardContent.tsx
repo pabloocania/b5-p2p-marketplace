@@ -12,6 +12,16 @@ import { CryptoAmountIcon } from "./CryptoIcon";
 import OrderCreatedDate from "./OrderCreatedDate";
 import { getBlockchainDisplayName } from "@/lib/ConfigStore";
 import { BlockchainName } from "@/lib/web3/PublicClientManager";
+import { MessageCircle } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"; // Import Sheet components
+import { ChatInterface } from "@/chat/ChatInterface";
+import { Button } from "./button";
+
 interface OrderCardContentProps {
   order: Order;
   user: UserProps | undefined;
@@ -37,19 +47,58 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
     setClipboardSupported("clipboard" in navigator);
   }, []);
 
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const handleChatIconClick = () => {
+    setIsChatOpen(true);
+  };
+
+  // Cleanup function to handle WebSocket disconnection
+  const handleChatClose = () => {
+    setIsChatOpen(false);
+    // Add any additional cleanup logic here if needed
+  };
+
   return (
     <CardContent className="pb-3 mt-1">
       <div className="rounded-lg space-y-1 px-2 bg-secondary bg-opacity-10 space-y-1 pt-1">
-        <div className="flex space-x-1 text-right w-full">
-          <span className="text-2xl text-primary">
-            {order.type === "SELL" ? t("sells") : t("buys")}
-          </span>
-          <span className="flex text-right">
-            <CryptoAmountIcon
-              amount={order.amount!!}
-              tokenCode={order.tokenCode?.toLowerCase()!!}
-            />
-          </span>
+        <div className="flex justify-between items-center w-full">
+          <div className="flex space-x-1">
+            <span className="text-2xl text-primary">
+              {order.type === "SELL" ? t("sells") : t("buys")}
+            </span>
+            <span className="flex">
+              <CryptoAmountIcon
+                amount={order.amount!!}
+                tokenCode={order.tokenCode?.toLowerCase()!!}
+              />
+            </span>
+          </div>
+          {order.chatId && (
+            <div className="flex">
+              <Sheet
+                open={isChatOpen}
+                onOpenChange={(open) => {
+                  setIsChatOpen(open);
+                  if (!open) handleChatClose(); // Call cleanup when sheet is closed
+                }}
+              >
+                <SheetTrigger asChild>
+                  <Button
+                    onClick={handleChatIconClick}
+                    className="gap-1 p-2 items-center justify-center bg-white text-terciary"
+                  >
+                    <MessageCircle size={20} />
+                    <span>Chat</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="h-[90vh]" closeText="">
+                  <SheetTitle></SheetTitle>
+                  <ChatInterface order={order} userId={user?.userId} />
+                </SheetContent>
+              </Sheet>
+            </div>
+          )}
         </div>
         <div className="flex">
           <p className="text-left w-full text-primary">
