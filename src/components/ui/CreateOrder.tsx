@@ -34,11 +34,6 @@ interface CreateOrderProps {
   onConnectWallet: () => void; // Add this prop
 }
 
-const tokens = [
-  { symbol: "PDOC", name: "PDOC" },
-  { symbol: "USDK", name: "USDK" },
-];
-
 export default function CreateOrder({
   onClose,
   onConnectWallet,
@@ -55,11 +50,6 @@ export default function CreateOrder({
   const { t } = useTranslation();
   const [blockchain, setBlockchain] = useState<string>("");
   const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>([]);
-
-  const calculateARSEquivalent = () => {
-    return tokenAmount * 1000;
-  };
-
   const [suggestedRate, setSuggestedRate] = useState<number>(1000);
   const [customRate, setCustomRate] = useState<number>(1000);
   const [fiatCode, setFiatCode] = useState<"ARS" | "EUR">("ARS");
