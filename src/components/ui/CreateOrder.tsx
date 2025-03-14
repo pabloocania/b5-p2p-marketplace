@@ -1,11 +1,13 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { Rocket } from "lucide-react";
+import PaymentMethodsDemo from "./ComponentSelectorDemo";
+import { useEffect, useState } from "react";
 import {
   CreateOrderRequest,
   OrderType,
   Order,
   generateSecretAndHash,
+  PaymentMethod,
 } from "b5-api-client";
 import {
   Card,
@@ -52,6 +54,12 @@ export default function CreateOrder({
   const { openConnectModal } = useConnectModal();
   const { t } = useTranslation();
   const [blockchain, setBlockchain] = useState<string>("");
+  const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>([]);
+
+  const calculateARSEquivalent = () => {
+    return tokenAmount * 1000;
+  };
+
   const [suggestedRate, setSuggestedRate] = useState<number>(1000);
   const [customRate, setCustomRate] = useState<number>(1000);
   const [fiatCode, setFiatCode] = useState<"ARS" | "EUR">("ARS");
@@ -106,6 +114,7 @@ export default function CreateOrder({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const { secret: secretSeller } = generateSecretAndHash();
     const { secret: secretBuyer } = generateSecretAndHash();
 
@@ -117,15 +126,13 @@ export default function CreateOrder({
       fiatAmount: calculateFiatEquivalent().toString(),
       fiatCode: fiatCode,
       walletAddress: orderType === "BUY" ? walletAddress : undefined,
-      paymentMethods: [
-        {
-          type: "FINTECH",
-          alias: username,
-          cbu: "",
-          entity: "",
-          fullName: "",
-        },
-      ],
+      paymentMethods: selectedMethods.map((method) => ({
+        type: method.type,
+        alias: method.alias || username,
+        cbu: method.cbu || "",
+        entity: method.entity || "",
+        fullName: method.fullName || "",
+      })),
       creatorId: user?.userId,
       status: "PENDING",
       creatorUsername: user?.username,
@@ -138,6 +145,9 @@ export default function CreateOrder({
         "Content-Type": "application/json",
         "x-blockchain": blockchain,
       });
+
+      console.log("Respuesta de la API:", ordersResponse);
+
       if (ordersResponse.orders.length === 1) {
         setCreatedOrder(ordersResponse.orders[0]);
         onClose();

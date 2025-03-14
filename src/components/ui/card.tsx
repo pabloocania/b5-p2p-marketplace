@@ -18,7 +18,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          "rounded-lg",
+          "rounded-lg border",
           variantClasses[variant as keyof typeof variantClasses],
           className
         )}
