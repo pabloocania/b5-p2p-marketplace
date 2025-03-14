@@ -1,5 +1,6 @@
 "use client";
-
+import { Rocket } from "lucide-react"
+import  PaymentMethodsDemo  from "./ComponentSelectorDemo"
 import { useState } from "react";
 import {
   CreateOrderRequest,
@@ -50,6 +51,9 @@ export default function CreateOrder({
   const { openConnectModal } = useConnectModal();
   const { t } = useTranslation();
   const [blockchain, setBlockchain] = useState<string>("");
+  const [selectedMethods, setSelectedMethods] = useState([]);
+
+
   const calculateARSEquivalent = () => {
     return tokenAmount * 1000;
   };
@@ -64,6 +68,7 @@ export default function CreateOrder({
     }
     onConnectWallet();
   };
+  
 
   const handleBlockchainChange = (blockchain: string) => {
     setBlockchain(blockchain);
@@ -73,8 +78,12 @@ export default function CreateOrder({
     setTokenCode(tokenCode);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+
+    console.log("Métodos de pago seleccionados:", selectedMethods);
+
     const { secret: secretSeller } = generateSecretAndHash();
     const { secret: secretBuyer } = generateSecretAndHash();
 
@@ -86,15 +95,13 @@ export default function CreateOrder({
       fiatAmount: calculateARSEquivalent().toString(),
       fiatCode: "ARS",
       walletAddress: orderType === "BUY" ? walletAddress : undefined,
-      paymentMethods: [
-        {
-          type: "FINTECH",
-          alias: username,
-          cbu: "",
-          entity: "",
-          fullName: "",
-        },
-      ],
+      paymentMethods: selectedMethods.map((method) => ({
+        type: method.type,
+        alias: method.alias || username,
+        cbu: method.cbu || "",
+        entity: method.entity || "",
+        fullName: method.fullName || "",
+      })),      
       creatorId: user?.userId,
       status: "PENDING",
       creatorUsername: user?.username,
@@ -102,11 +109,17 @@ export default function CreateOrder({
       buyerHash: secretBuyer.toString("hex"),
     };
 
+    console.log("Orden a enviar:", newOrder);
+
     try {
+
       const ordersResponse = await client.createOrder(newOrder, {
         "Content-Type": "application/json",
         "x-blockchain": blockchain,
       });
+
+      console.log("Respuesta de la API:", ordersResponse);
+
       if (ordersResponse.orders.length === 1) {
         setCreatedOrder(ordersResponse.orders[0]);
         onClose();
@@ -131,30 +144,25 @@ export default function CreateOrder({
     <div className="flex justify-center items-center pt-8">
       <Card className="w-full max-w-md border border-primary border-opacity-20">
         <CardHeader className="flex justify-center items-center">
-          <CardTitle className="text-center text-primary">
+          <CardTitle className="text-center text-terciary py-3">
             {t("create_order")}
           </CardTitle>
         </CardHeader>
         <Separator className="my-2"></Separator>
         <CardContent className="text-primary">
           {!isLoggedIn ? (
-            <Button
-              className="p-4 text-center w-full text-white"
-              onClick={handleConnectButton} // Use the handler
-            >
+            <Button className="p-4 text-center w-full text-white" onClick={handleConnectButton}>
               {t("connect_to_continue")}
             </Button>
           ) : createdOrder ? null : (
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-3">
-                <Label className="font-bold">{t("i_want_to")}</Label>
-                <div>
-                  <RadioGroup
-                    id="order_type"
-                    value={orderType}
-                    onValueChange={handleOrderTypeChange}
-                    className="flex space-x-4"
-                  >
+            <form>
+              <div className="space-y-3 py-3">
+                <div className="flex flex-row items-center">
+                  <Label className="font-bold text-lg text-terciary px-3">{t("i_want_to")}</Label>
+                  <Rocket size={20} className="text-terciary text-sm" />
+                </div>
+                <div className="px-3">
+                  <RadioGroup id="order_type" value={orderType} onValueChange={handleOrderTypeChange} className="flex space-x-4">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem id="sell" value="SELL" />
                       <Label htmlFor="sell">{t("sell")}</Label>
@@ -202,46 +210,33 @@ export default function CreateOrder({
                     })}
                   </div>
                 </div>
-                <div className="space-y-3">
-                  <Label className="font-bold">{t("payment_method")}</Label>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroup
-                      defaultValue="mercado-pago"
-                      className="flex items-center space-x-2"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem
-                          id="mercado-pago"
-                          value="mercado-pago"
-                        />
-                        <Label htmlFor="mercado-pago">Mercado Pago</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem id="bank" value="bank" disabled />
-                        <Label htmlFor="bank" className="text-gray-400">
-                          {t("bank")}
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                  <Input
-                    id="mercado-pago-username"
-                    placeholder="@alias"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
+                
+               
+
+                {orderType === "SELL" && (
+                             <PaymentMethodsDemo 
+                               selectedMethods={selectedMethods} 
+                               setSelectedMethods={setSelectedMethods} 
+                              />
+                          )}
+
                 {orderType === "BUY" && (
-                  <div>
-                    <Label className="font-bold" htmlFor="wallet-address">
-                      {t("address")}
-                    </Label>
-                    <Input
-                      id="wallet-address"
-                      placeholder={t("insert_wallet_address")}
-                      value={walletAddress}
-                      onChange={(e) => setWalletAddress(e.target.value)}
-                    />
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2 p-4">
+                      <RadioGroup defaultValue="mercado-pago" className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem id="mercado-pago" value="mercado-pago" />
+                          <Label htmlFor="mercado-pago">Mercado Pago</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem id="bank" value="bank" disabled />
+                          <Label htmlFor="bank" className="text-gray-400">{t("bank")}</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                    <Input id="mercado-pago-username" placeholder="@alias" value={username} onChange={(e) => setUsername(e.target.value)} className="w-[90%] m-5" />
+                    <Label className="font-bold p-4" htmlFor="wallet-address">{t("address")}</Label>
+                    <Input id="wallet-address" placeholder={t("insert_wallet_address")} value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} className="w-[90%] m-5" />
                   </div>
                 )}
               </div>
