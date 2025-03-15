@@ -113,7 +113,8 @@ i18n.use(initReactI18next).init({
         total_to_lock: "Total to lock",
         created: "Created",
         select_blockchain: "Select a blockchain",
-        write_message: "Write message"
+        write_message: "Write message",
+        amount_to_deposit: "Amount to deposit"
       },
     },
     es: {
@@ -213,7 +214,7 @@ i18n.use(initReactI18next).init({
         confirm_release: "Confirmar liberación",
         confirm_lock: "Confirmar depósito",
         gasless: "Gratis!",
-        network_gas_fee: "Comisión de la red: ",
+        network_gas_fee: "Gas fee de la red: ",
         transaction_details: "Detalles de transacción",
         warning: "Advertencia!",
         warning_release_text:
@@ -229,7 +230,8 @@ i18n.use(initReactI18next).init({
         total_to_lock: "Total a depositar",
         created: "Creada el",
         select_blockchain: "Selecciona la blockchain",
-        write_message: "Escribe un mensaje"
+        write_message: "Escribe un mensaje",
+        amount_to_deposit: "Cantidad a depositar"
       },
     },
   },
