@@ -157,14 +157,14 @@ export default function CreateOrder({
               </Button>
             ) : createdOrder ? null : (
               <form>
-                <div className="space-y-3 py-3">
+                <div className="space-y-3 py-3 mx-4">
                   <div className="flex flex-row items-center">
-                    <Label className="font-bold text-lg text-terciary px-3">
+                    <Label className="font-bold text-lg text-terciary">
                       {t("i_want_to")}
                     </Label>
                     <Rocket size={20} className="text-terciary text-sm" />
                   </div>
-                  <div className="px-3">
+                  <div className="">
                     <RadioGroup
                       id="order_type"
                       value={orderType}
@@ -272,11 +272,11 @@ export default function CreateOrder({
             )}
           </CardContent>
           {!createdOrder && (
-            <CardFooter className="py-2">
+            <CardFooter className="py-2 mx-4">
               <Button
                 className="w-full text-white bg-secondary"
                 onClick={handleSubmit}
-                disabled={!isFormComplete()} // Disable button if form is incomplete
+                disabled={false} // Disable button if form is incomplete
               >
                 {t("create_order")}
               </Button>

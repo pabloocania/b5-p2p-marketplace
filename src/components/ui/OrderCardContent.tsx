@@ -117,7 +117,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
           </p>
         </div>
         <div className="text-left w-full">
-          <span className="text-xs block">
+          <span className="text-xs block pt-4">
             {order.paymentMethods?.map((method, index) => (
               <PaymentMethodDisplay key={index} method={method} />
             ))}
