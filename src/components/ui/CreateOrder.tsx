@@ -361,7 +361,7 @@ export default function CreateOrder({
             )}
           </CardContent>
           {!createdOrder && (
-            <CardFooter className="py-2">
+            <CardFooter className="py-2 mx-4">
               <Button
                 className="w-full text-white bg-secondary"
                 onClick={handleSubmit}

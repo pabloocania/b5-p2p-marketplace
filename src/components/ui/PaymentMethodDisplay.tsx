@@ -1,5 +1,7 @@
 import { PaymentMethod } from "b5-api-client/dist/types";
 import { useTranslation } from "react-i18next";
+import { Tally1 }  from "lucide-react";
+
 
 interface PaymentMethodDisplayProps {
   method: PaymentMethod;
@@ -35,8 +37,8 @@ const PaymentMethodDisplay: React.FC<PaymentMethodDisplayProps> = ({
     mapEntity(method.entity ?? null) || methodDescription; // Default to methodDescription if entityDescription is empty
   const formattedAlias = method.alias ? formatAlias(method.alias) : "";
   return (
-    <div className="text-primary">
-      {t("transfer_by")}: <strong> {entityDescription} </strong>
+    <div className="text-primary flex flex-row">
+      {< Tally1 className="text-secondary"/>} <strong> {entityDescription} </strong>
     </div>
   );
 };

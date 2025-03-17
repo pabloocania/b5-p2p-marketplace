@@ -33,14 +33,15 @@ const PaymentMethodsDemo: React.FC<PaymentMethodsDemoProps> = ({
 
   const handleToggle = (method: PaymentMethod) => {
     setSelectedMethods((prev) => {
-      const newSelectedMethods = prev.some((m) => m.alias === method.alias)
-        ? prev.filter((m) => m.alias !== method.alias)
+      const exists = prev.some(
+        (m) => m.type === method.type && m.entity === method.entity
+      );
+  
+      return exists
+        ? prev.filter((m) => !(m.type === method.type && m.entity === method.entity))
         : [...prev, method];
-
-      console.log("Selected methods after toggle:", newSelectedMethods);
-      return newSelectedMethods;
     });
-  };
+  };  
 
   const handleUpdateMethod = (updatedMethod: PaymentMethod) => {
     setMethods((prev) =>
@@ -51,7 +52,7 @@ const PaymentMethodsDemo: React.FC<PaymentMethodsDemoProps> = ({
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
+    <div className="max-w-md">
       <CompactPaymentMethodSelector
         methods={methods}
         selectedMethods={selectedMethods}
