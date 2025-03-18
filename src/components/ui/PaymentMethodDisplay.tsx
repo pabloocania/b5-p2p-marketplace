@@ -43,7 +43,7 @@ const PaymentMethodDisplay: React.FC<PaymentMethodDisplayProps> = ({
   : [methodDescription]; // Si no hay entidad, usa el tipo de método
   
   return (
-    <div className="gap-4 w-full min-w-[200px]">
+    <div className="grid grid-cols-2 gap-4 w-full min-w-[200px]">
       {allEntities?.map((description, index) => (
         <div key={index} className="flex items-center">
           <Tally1 className="text-secondary" />
