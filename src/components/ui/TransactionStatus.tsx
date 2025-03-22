@@ -27,7 +27,6 @@ export function TransactionStatus({
 }: TransactionStatusProps) {
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
-  const [isRatingVisible, setIsRatingVisible] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -47,13 +46,13 @@ export function TransactionStatus({
     switch (status) {
       case "sent":
       case "waiting":
-        return "bg-yellow-100 border-yellow-300";
+        return "bg-yellow-100 border-yellow-100 border-opacity-10";
       case "success":
-        return "bg-green-100 border-green-300";
+        return "bg-green-100 border-green-300 border-opacity-10";
       case "error":
-        return "bg-red-100 border-red-300";
+        return "bg-red-100 border-red-300 border-opacity-10";
       default:
-        return "bg-gray-100 border-gray-300";
+        return "bg-gray-100 border-gray-300 border-opacity-10";
     }
   };
 
@@ -76,7 +75,6 @@ export function TransactionStatus({
     waiting: "waiting",
     success: "success",
     error: "error",
-    // Add more status mappings as needed
   };
 
   const getStatusText = (status: keyof typeof statusMap) => {
@@ -96,24 +94,25 @@ export function TransactionStatus({
       <Card className="w-full max-w-sm mb-12">
         <CardContent className="pt-4 px-4 pb-0">
           <Alert className={`${getStatusColor(status)} border-opacity-10`}>
-            <AlertTitle className="flex items-center gap-2">
+            <AlertTitle className="flex items-center gap-2 text-primary font-bold">
               {getStatusIcon(status)}
               {getStatusText(status)}
             </AlertTitle>
-            <AlertDescription>{message}</AlertDescription>
+            <AlertDescription className="text-terciary pt-2">
+              {message}
+            </AlertDescription>
           </Alert>
           {(status === "sent" || status === "waiting") && (
             <Progress
               value={animatedProgress}
-              className="my-4 border border-primary"
+              className="my-4 border border-secondary"
             />
           )}
           {status === "success" && (
             <>
               <Button
                 onClick={handleClose}
-                variant="outline"
-                className="w-full mt-4 mb-4"
+                className="w-full mt-4 mb-4 bg-secondary text-white"
               >
                 {t("close")}
               </Button>
@@ -122,8 +121,7 @@ export function TransactionStatus({
           {status === "error" && (
             <Button
               onClick={handleClose}
-              variant="outline"
-              className="w-full mt-4 mb-4"
+              className="w-full mt-4 mb-4 bg-secondary text-white"
             >
               {t("close")}
             </Button>
@@ -132,7 +130,6 @@ export function TransactionStatus({
         <Separator className="mb-2" />
         <div className="block text-center pb-1">
           <p className="text-xs text-gray-600 block">{t("not_close_app")}</p>
-          {/* <span className="text-xs text-gray-600 block">ID: {order.id}</span> */}
         </div>
       </Card>
     </div>

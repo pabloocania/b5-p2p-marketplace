@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle, ArrowLeft, ArrowRight } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { Order } from "b5-api-client/dist/types";
 import { OPSReceipt } from "@/lib/web3/types";
 import { Separator } from "./separator";
@@ -86,10 +86,7 @@ export default function ReleaseFundsConfirmation({
         </CardHeader>
         <Separator className="my-2"></Separator>
         <CardContent className="py-4 px-4">
-          <Alert
-            variant="default"
-            className="mb-6 bg-yellow-100 border border-yellow-100"
-          >
+          <Alert className="mb-6 bg-yellow-100 border border-yellow-100">
             <AlertTriangle className="h-4 w-4 font-bold" />
             <AlertTitle className="text-primary font-bold">
               {t("warning")}

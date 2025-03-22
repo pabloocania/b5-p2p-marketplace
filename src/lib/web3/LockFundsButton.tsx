@@ -93,7 +93,11 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
         }
       } catch (error) {
         console.error("Error locking funds:", error);
-        // Handle error here (e.g., show an error message to the user)
+        setTransaction({
+          status: "error",
+          message: t("transaction_failed"),
+          progress: 0,
+        });
       } finally {
         setIsLoading(false);
       }

@@ -59,7 +59,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
         {/* Left Side */}
         <div className="flex space-x-2 w-full">
           <div className="flex space-x-2 w-full">
-            <span className="font-bold text-[clamp(1.5rem,2vw,1.5rem)] text-terciary w-full">
+            <span className="font-bold text-[clamp(1.3rem,2vw,1.5rem)] text-terciary w-full">
               {order.type === "SELL"
                 ? "@" + order.sellerUsername
                 : "@" + order.buyerUsername}
@@ -72,7 +72,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
         </div>
 
         {/* Right Side */}
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col items-end">
           <div className="text-right mb-1 ml-2">
             <Badge className={`text-xs ${mapOrderVariant(order)}`}>
               {mapOrderStatus(order.status ?? "Unknown")}
