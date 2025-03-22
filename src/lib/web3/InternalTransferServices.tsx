@@ -2,6 +2,7 @@ import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 import { TransactionStatusResponse } from "b5-api-client";
 import { PublicClientManager } from "./PublicClientManager";
 import { useChainId } from "wagmi";
+import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 
 export const useTransactionHandler = (
   setTransaction: (transaction: any) => void,
@@ -11,8 +12,11 @@ export const useTransactionHandler = (
     chainId: number
   ) => Promise<TransactionStatusResponse>
 ) => {
-  const { transferFromSmartWalletToEOA, transferFromEOAToSW } =
-    useEtherspotFlow();
+  const {
+    transferFromSmartWalletToEOA,
+    transferFromEOAToSW,
+    getUserOperationReceipt,
+  } = useEtherspotFlow();
   const chainId = useChainId();
 
   const handleTransaction = async (
@@ -38,13 +42,25 @@ export const useTransactionHandler = (
         );
         await checkTransactionStatus(transactionHash, chainId);
       } else {
-        const receipt = await transferFromSmartWalletToEOA(
+        const hash = await transferFromSmartWalletToEOA(
           selectedCoinAddress,
           transferAmount,
           chainId
         );
-        console.log(receipt);
-        if (receipt.success) {
+        setTransaction({
+          status: "sending",
+          message: t("sending_tx_blockchain"),
+          progress: 70,
+        });
+        let opsReceipt = null;
+        if (hash) {
+          const timeout = Date.now() + 300000; // 5 minute timeout
+          while (opsReceipt == null && Date.now() < timeout) {
+            await sleep(5);
+            opsReceipt = await getUserOperationReceipt(hash);
+          }
+        }
+        if (opsReceipt != undefined && opsReceipt.success) {
           setTransaction({
             status: "success",
             message: t("transaction_success"),

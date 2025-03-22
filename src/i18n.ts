@@ -115,7 +115,9 @@ i18n.use(initReactI18next).init({
         created: "Created",
         select_blockchain: "Select a blockchain",
         write_message: "Write message",
-        amount_to_deposit: "Amount to deposit"
+        amount_to_deposit: "Amount to deposit",
+        sending: "Sending transaction",
+        sending_tx_blockchain: "Your transaction is being sent to the blockchain. Wait for its confirmation"
       },
     },
     es: {
@@ -232,7 +234,9 @@ i18n.use(initReactI18next).init({
         created: "Creada el",
         select_blockchain: "Selecciona la blockchain",
         write_message: "Escribe un mensaje",
-        amount_to_deposit: "Cantidad a depositar"
+        amount_to_deposit: "Cantidad a depositar",
+        sending: "Enviando transacción",
+        sending_tx_blockchain: "Tu transacción está siendo enviada a la blockchain. Espera su confirmación"
       },
     },
   },

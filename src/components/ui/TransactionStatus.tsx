@@ -11,7 +11,7 @@ import { Separator } from "./separator";
 import { Order } from "b5-api-client";
 
 interface TransactionStatusProps {
-  status: "idle" | "sent" | "waiting" | "success" | "error";
+  status: "idle" | "sent" | "waiting" | "success" | "error" | "sending";
   message: string;
   progress: number;
   order?: Order;
@@ -46,6 +46,7 @@ export function TransactionStatus({
     switch (status) {
       case "sent":
       case "waiting":
+      case "sending":
         return "bg-yellow-100 border-yellow-100 border-opacity-10";
       case "success":
         return "bg-green-100 border-green-300 border-opacity-10";
@@ -61,6 +62,8 @@ export function TransactionStatus({
       case "sent":
       case "waiting":
         return <Loader2 className="h-4 w-4 animate-spin text-yellow-600" />;
+      case "sending":
+        return <Loader2 className="h-4 w-4 animate-spin text-terciary" />;
       case "success":
         return <CheckCircle2 className="h-4 w-4 text-green-600" />;
       case "error":
@@ -75,6 +78,7 @@ export function TransactionStatus({
     waiting: "waiting",
     success: "success",
     error: "error",
+    sending: "sending",
   };
 
   const getStatusText = (status: keyof typeof statusMap) => {
@@ -92,8 +96,8 @@ export function TransactionStatus({
       {" "}
       {/* Added z-index */}
       <Card className="w-full max-w-sm mb-12">
-        <CardContent className="pt-4 px-4 pb-0">
-          <Alert className={`${getStatusColor(status)} border-opacity-10`}>
+        <CardContent className="pt-4 px-4">
+          <Alert className={`${getStatusColor(status)} border-opacity-10 mb-4`}>
             <AlertTitle className="flex items-center gap-2 text-primary font-bold">
               {getStatusIcon(status)}
               {getStatusText(status)}
@@ -112,7 +116,7 @@ export function TransactionStatus({
             <>
               <Button
                 onClick={handleClose}
-                className="w-full mt-4 mb-4 bg-secondary text-white"
+                className="w-full mb-4 bg-secondary text-white"
               >
                 {t("close")}
               </Button>
@@ -121,7 +125,7 @@ export function TransactionStatus({
           {status === "error" && (
             <Button
               onClick={handleClose}
-              className="w-full mt-4 mb-4 bg-secondary text-white"
+              className="w-full mb-4 bg-secondary text-white"
             >
               {t("close")}
             </Button>

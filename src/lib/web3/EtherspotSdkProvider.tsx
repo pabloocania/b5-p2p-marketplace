@@ -12,7 +12,6 @@ import {
   getSdkOptionsForChainId,
   networkNameToFormattedNameMap,
 } from "./EtherspotSdkConfigurations";
-import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 import { ConfigStore } from "../ConfigStore";
 
 // Function to map network name to formatted blockchain name
