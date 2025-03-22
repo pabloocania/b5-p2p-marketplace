@@ -22,7 +22,7 @@ type WalletType = "eoa" | "smart";
 interface LockFundsConfirmationProps {
   order: Order;
   canLock: boolean;
-  handleLockFunds: () => Promise<OPSReceipt | undefined>;
+  handleLockFunds: () => Promise<OPSReceipt | undefined | null>;
   onClose: () => void;
 }
 

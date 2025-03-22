@@ -23,7 +23,7 @@ type WalletType = "eoa" | "smart";
 interface ReleaseFundsConfirmationProps {
   order: Order;
   isLoading: boolean;
-  handleReleaseFunds: () => Promise<OPSReceipt | undefined>;
+  handleReleaseFunds: () => Promise<OPSReceipt | undefined | null>;
   onClose: () => void;
 }
 
