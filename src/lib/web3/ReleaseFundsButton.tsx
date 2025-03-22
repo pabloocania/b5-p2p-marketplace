@@ -12,6 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import ReleaseFundsConfirmation from "@/components/ui/ReleaseFundsConfirmation";
+import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 
 interface ReleaseFundsButtonProps {
   order: Order;
@@ -27,7 +28,7 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   const [isTransacting, setIsTransacting] = useState(false);
   const { isConnected } = useAccount();
   const { t } = useTranslation();
-  const { releaseFunds } = useEtherspotFlow(); // Import the lockFunds function from the hook
+  const { releaseFunds, getUserOperationReceipt } = useEtherspotFlow(); // Import the lockFunds function from the hook
   const { setTransaction } = useTransaction();
   const [isReleaseOpen, setIsReleaseOpen] = useState(false);
 
@@ -36,7 +37,7 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
       setIsLoading(true);
       try {
         setIsTransacting(true);
-        const opsReceiptPromise = releaseFunds(order);
+        const txHashPromise = releaseFunds(order);
         setTransaction({
           status: "idle",
           message: t("initiating_transaction"),
@@ -51,7 +52,20 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
         }, 500);
 
         try {
-          const opsReceipt = await opsReceiptPromise;
+          const uoOpsHash = await txHashPromise;
+          setTransaction({
+            status: "sending",
+            message: t("sending_tx_blockchain"),
+            progress: 70,
+          });
+          let opsReceipt = null;
+          if (uoOpsHash) {
+            const timeout = Date.now() + 300000; // 5 minute timeout
+            while (opsReceipt == null && Date.now() < timeout) {
+              await sleep(5);
+              opsReceipt = await getUserOperationReceipt(uoOpsHash);
+            }
+          }
           if (opsReceipt != undefined && opsReceipt.success) {
             setTransaction({
               status: "success",

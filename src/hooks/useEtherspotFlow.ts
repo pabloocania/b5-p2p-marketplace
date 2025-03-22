@@ -56,7 +56,7 @@ export const useEtherspotFlow = () => {
     tokenAddress: string,
     amount: string,
     chainId: number
-  ): Promise<OPSReceipt> => {
+  ): Promise<string | undefined> => {
     try {
       if (address && primeSdk) {
         const data = encodeFunctionData({
@@ -79,7 +79,7 @@ export const useEtherspotFlow = () => {
     }
   };
 
-  const releaseFunds = async (order: Order): Promise<OPSReceipt> => {
+  const releaseFunds = async (order: Order): Promise<string | undefined> => {
     try {
       const contractAddress = getKioscoinEscrowAddressByBlockchain(order.blockchain!!)
       if (primeSdk) {
@@ -105,7 +105,7 @@ export const useEtherspotFlow = () => {
     }
   }
 
-  const batchApproveAndEscrow = async (order: Order): Promise<OPSReceipt | undefined> => {
+  const batchApproveAndEscrow = async (order: Order): Promise<string | undefined> => {
     if (primeSdk && address) {
       const orderBlockchain = order.blockchain!!
       const contractAddress = getKioscoinEscrowAddressByBlockchain(orderBlockchain)
@@ -150,10 +150,18 @@ export const useEtherspotFlow = () => {
     }
   };
 
+  const getUserOperationReceipt = async (userOperationHash: string): Promise<OPSReceipt | undefined> => {
+    if (primeSdk && userOperationHash !== "") {
+      return await primeSdk.getUserOpReceipt(userOperationHash);
+    }
+    return undefined;
+  }
+
   return {
     transferFromEOAToSW,
     transferFromSmartWalletToEOA,
     batchApproveAndEscrow,
-    releaseFunds
+    releaseFunds,
+    getUserOperationReceipt
   };
 };

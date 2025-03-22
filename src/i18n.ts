@@ -58,7 +58,8 @@ i18n.use(initReactI18next).init({
         funds_released: "Funds released",
         releasing_funds: "Releasing funds...",
         funds_locked: "Funds are locked in the smart contract",
-        approve_and_lock: "Approve and lock your tokens",
+        //Sign the transaction with your wallet in order to the deposit of fund
+        approve_and_lock: "You have to sign the transaction with your wallet to deposito your funds in the smart contract",
         you: "you",
         connect_to_continue: "Connect your wallet to continue",
         connect_wallet: "Connect wallet",
@@ -68,7 +69,7 @@ i18n.use(initReactI18next).init({
         enter_transfer_amount:
           "Enter the amount to transfer between your wallets",
         sent: "Sent",
-        waiting: "Waiting",
+        waiting: "Waiting signature...",
         success: "Success",
         error: "Error",
         no_stablecoins_available: "No stablecoins available",
@@ -113,7 +114,10 @@ i18n.use(initReactI18next).init({
         total_to_lock: "Total to lock",
         created: "Created",
         select_blockchain: "Select a blockchain",
-        write_message: "Write message"
+        write_message: "Write message",
+        amount_to_deposit: "Amount to deposit",
+        sending: "Sending transaction",
+        sending_tx_blockchain: "Your transaction is being sent to the blockchain. Wait for its confirmation"
       },
     },
     es: {
@@ -172,7 +176,7 @@ i18n.use(initReactI18next).init({
         funds_released: "Fondos enviados al comprador.",
         releasing_funds: "Liberando y enviando fondos al comprador",
         funds_locked: "Los fondos están asegurados en el contrato inteligente",
-        approve_and_lock: "Asegurando sus tokens",
+        approve_and_lock: "Debes firmar la transacción con tu wallet para depositar los fondos en el contrato inteligente",
         you: "tú",
         connect_to_continue: "Conectar wallet para continuar",
         connect_wallet: "Conectar wallet",
@@ -182,7 +186,7 @@ i18n.use(initReactI18next).init({
         enter_transfer_amount:
           "Ingresa la cantidad a transferir entre tus billeteras",
         sent: "Enviado",
-        waiting: "Esperando...",
+        waiting: "Esperando firma...",
         success: "Éxito",
         error: "Error",
         no_stablecoins_available: "No hay stablecoins disponibles",
@@ -213,7 +217,7 @@ i18n.use(initReactI18next).init({
         confirm_release: "Confirmar liberación",
         confirm_lock: "Confirmar depósito",
         gasless: "Gratis!",
-        network_gas_fee: "Comisión de la red: ",
+        network_gas_fee: "Gas fee de la red: ",
         transaction_details: "Detalles de transacción",
         warning: "Advertencia!",
         warning_release_text:
@@ -229,7 +233,10 @@ i18n.use(initReactI18next).init({
         total_to_lock: "Total a depositar",
         created: "Creada el",
         select_blockchain: "Selecciona la blockchain",
-        write_message: "Escribe un mensaje"
+        write_message: "Escribe un mensaje",
+        amount_to_deposit: "Cantidad a depositar",
+        sending: "Enviando transacción",
+        sending_tx_blockchain: "Tu transacción está siendo enviada a la blockchain. Espera su confirmación"
       },
     },
   },

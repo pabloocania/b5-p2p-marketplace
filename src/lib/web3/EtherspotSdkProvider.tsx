@@ -12,7 +12,6 @@ import {
   getSdkOptionsForChainId,
   networkNameToFormattedNameMap,
 } from "./EtherspotSdkConfigurations";
-import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 import { ConfigStore } from "../ConfigStore";
 
 // Function to map network name to formatted blockchain name
@@ -37,7 +36,7 @@ interface EtherspotSdkContextType {
   executeTransaction: (
     operations: { to: string; data: string }[],
     chainId: number
-  ) => Promise<OPSReceipt>;
+  ) => Promise<string | undefined>;
 }
 
 const EtherspotSdkContext = createContext<EtherspotSdkContextType | undefined>(
@@ -267,7 +266,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
   const executeTransaction = async (
     operations: { to: string; data: string }[],
     chainId: number
-  ): Promise<OPSReceipt> => {
+  ): Promise<string | undefined> => {
     try {
       const userOpReceipt = await processBatchOperations(operations, chainId);
       return userOpReceipt;
@@ -280,7 +279,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
   const processBatchOperations = async (
     operations: { to: string; data: string }[],
     chainId: number
-  ): Promise<OPSReceipt> => {
+  ): Promise<string | undefined> => {
     if (!primeSdk) {
       throw new Error("PrimeSdk instance is not available.");
     }
@@ -298,16 +297,12 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       },
     });
     console.log("Estimate UserOp: ", await printOp(op));
-    // Sign the UserOp and send it to the bundler
-    const uoHash = await primeSdk.send(op);
-    // Wait for the transaction receipt
-    let userOpsReceipt = null;
-    const timeout = Date.now() + 300000; // 5 minute timeout
-    while (userOpsReceipt == null && Date.now() < timeout) {
-      await sleep(5);
-      userOpsReceipt = await primeSdk.getUserOpReceipt(uoHash);
+    try {
+      return await primeSdk.send(op);
+    } catch (error) {
+      console.error("Error sending UserOp:", error);
+      return undefined;
     }
-    return userOpsReceipt;
   };
 
   const whitelistPaymaster = async (address: string): Promise<boolean> => {

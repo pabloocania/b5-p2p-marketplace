@@ -12,6 +12,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import LockFundsConfirmation from "@/components/ui/LockFundsConfirmation";
+import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 
 interface LockFundsButtonProps {
   order: Order;
@@ -20,7 +21,7 @@ interface LockFundsButtonProps {
 
 const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
   const { t } = useTranslation();
-  const { batchApproveAndEscrow } = useEtherspotFlow();
+  const { batchApproveAndEscrow, getUserOperationReceipt } = useEtherspotFlow();
   const [isLoading, setIsLoading] = useState(false);
   const [hasSufficientBalance, setHasSufficientBalance] = useState(true);
   const { balances } = useEtherspotSdk();
@@ -51,7 +52,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
           return;
         }
         setIsTransacting(true);
-        const opsReceiptPromise = batchApproveAndEscrow(order);
+        const txHashPromise = batchApproveAndEscrow(order);
         setTransaction({
           status: "idle",
           message: t("initiating_transaction"),
@@ -66,7 +67,20 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
         }, 500);
 
         try {
-          const opsReceipt = await opsReceiptPromise;
+          const uoOpsHash = await txHashPromise;
+          setTransaction({
+            status: "sending",
+            message: t("sending_tx_blockchain"),
+            progress: 70,
+          });
+          let opsReceipt = null;
+          if (uoOpsHash) {
+            const timeout = Date.now() + 300000; // 5 minute timeout
+            while (opsReceipt == null && Date.now() < timeout) {
+              await sleep(5);
+              opsReceipt = await getUserOperationReceipt(uoOpsHash);
+            }
+          }
           if (opsReceipt != undefined && opsReceipt.success) {
             setTransaction({
               status: "success",
@@ -93,7 +107,11 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
         }
       } catch (error) {
         console.error("Error locking funds:", error);
-        // Handle error here (e.g., show an error message to the user)
+        setTransaction({
+          status: "error",
+          message: t("transaction_failed"),
+          progress: 0,
+        });
       } finally {
         setIsLoading(false);
       }

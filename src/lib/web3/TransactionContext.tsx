@@ -2,7 +2,7 @@ import { Order } from "b5-api-client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface Transaction {
-  status: "idle" | "sent" | "waiting" | "success" | "error";
+  status: "idle" | "sent" | "waiting" | "success" | "error" | "sending";
   message: string;
   progress: number;
   order?: Order;

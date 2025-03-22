@@ -22,7 +22,7 @@ type WalletType = "eoa" | "smart";
 interface LockFundsConfirmationProps {
   order: Order;
   canLock: boolean;
-  handleLockFunds: () => Promise<OPSReceipt | undefined>;
+  handleLockFunds: () => Promise<OPSReceipt | undefined | null>;
   onClose: () => void;
 }
 
@@ -60,51 +60,59 @@ export default function LockFundsConfirmation({
     onClose();
   };
 
-  const renderGasFee = () => {
-    return (
-      <p>
-        {t("network_gas_fee") + fees[walletType].gas + " tRBTC"}
-        {walletType === "smart" && (
-          <span className="ml-2 text-green-600 font-semibold">
-            {t("gasless")}!
-          </span>
-        )}
-      </p>
-    );
-  };
-
   const renderOrderDetails = () => {
     return (
-      <div className="space-y-2 text-sm">
-        <p>
-          {t("amount")}: {orderAmount + " " + order.tokenCode}
+      <div className="space-y-3 text-sm bg-secondary bg-opacity-10 p-2 rounded-md">
+        <p className="text-primary font-semibold">
+          {t("amount_to_deposit")}:{" "}
+          <span className="font-semibold text-terciary">
+            {orderAmount + " " + order.tokenCode}
+          </span>
         </p>
-        <p>
+        <p className="text-primary font-semibold">
           {t("transaction_fee")}:{" "}
-          {fees[walletType].transaction + " " + order.tokenCode}
+          <span className="font-semibold text-terciary">
+            {fees[walletType].transaction + " " + order.tokenCode}
+          </span>
         </p>
-        {renderGasFee()}
-        <p className="font-semibold text-base mt-2">
-          Total: {totalAmount + " " + order.tokenCode}
+        <p className="text-primary font-semibold">
+          {t("network_gas_fee")}
+          <span className="font-semibold text-terciary">
+            {fees[walletType].gas + " tRBTC"}
+          </span>
+          {walletType === "smart" && (
+            <span className="ml-2 bg-secondary font-semibold text-white px-2 py-0.5 text-xs rounded-full">
+              {t("gasless")}
+            </span>
+          )}
+        </p>
+        <p className="text-base mt-2 text-primary">
+          <span className="font-semibold text-primary text-xl">Total: </span>
+          <span className="font-semibold text-terciary text-xl">
+            {totalAmount + " " + order.tokenCode}
+          </span>
         </p>
       </div>
     );
   };
 
   return (
-    <div className="flex justify-center items-center pt-8">
-      <Card className="w-full max-w-md border border-primary">
-        <CardHeader className="flex justify-center items-center">
+    <div className="flex justify-center items-center pt-6">
+      <Card className="w-full max-w-md">
+        <CardHeader className="flex justify-center items-center pt-4">
           <CardTitle className="text-center text-primary">
             {t("transaction_details")}
           </CardTitle>
         </CardHeader>
         <Separator className="my-2"></Separator>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <CardContent className="py-4 px-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="wallet-type" className="text-base font-medium">
+              <div className="flex items-center space-x-2">
+                <Label
+                  htmlFor="wallet-type"
+                  className="text-base text-primary font-bold"
+                >
                   {walletType === "smart" ? t("use_sw") : t("use_eoa")}
                 </Label>
                 <Switch
@@ -124,7 +132,7 @@ export default function LockFundsConfirmation({
             {renderOrderDetails()}
           </form>
         </CardContent>
-        <CardFooter className="flex justify-between">
+        <CardFooter className="flex justify-between pb-3">
           <Button
             className="w-full text-white bg-secondary"
             onClick={handleConfirm}
