@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   CreateOrderRequest,
   OrderType,
@@ -24,6 +24,7 @@ import { useUserContext } from "./UserContext";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useTranslation } from "react-i18next";
 import TokenSelector from "@/lib/web3/TokenSelector";
+import { ExchangeRatesService } from "@/lib/web3/ExchangeRates";
 
 interface CreateOrderProps {
   onClose: () => void;
@@ -50,8 +51,33 @@ export default function CreateOrder({
   const { openConnectModal } = useConnectModal();
   const { t } = useTranslation();
   const [blockchain, setBlockchain] = useState<string>("");
-  const calculateARSEquivalent = () => {
-    return tokenAmount * 1000;
+  const [suggestedRate, setSuggestedRate] = useState<number>(1000);
+  const [customRate, setCustomRate] = useState<number>(1000);
+  const [fiatCode, setFiatCode] = useState<"ARS" | "EUR">("ARS");
+
+  useEffect(() => {
+    const fetchSuggestedRate = async () => {
+      try {
+        const rates = await ExchangeRatesService.fetchPricesWithRetry();
+        const rate =
+          tokenCode === "USDC"
+            ? fiatCode === "ARS"
+              ? rates.ars
+              : rates.eur
+            : 1000; // fallback para otros tokens
+        setSuggestedRate(rate);
+        setCustomRate(rate);
+      } catch (error) {
+        console.error("Error fetching suggested rate:", error);
+      }
+    };
+
+    fetchSuggestedRate();
+  }, [tokenCode, fiatCode]);
+
+  const calculateFiatEquivalent = () => {
+    if (customRate === 0 || tokenAmount === 0) return 0;
+    return Math.round(tokenAmount * customRate * 100) / 100; // Redondear a 2 decimales
   };
 
   const handleOrderTypeChange = (value: string) => {
@@ -73,6 +99,10 @@ export default function CreateOrder({
     setTokenCode(tokenCode);
   };
 
+  const handleFiatCodeChange = (value: "ARS" | "EUR") => {
+    setFiatCode(value);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const { secret: secretSeller } = generateSecretAndHash();
@@ -83,8 +113,8 @@ export default function CreateOrder({
       description,
       amount: tokenAmount.toString(),
       tokenCode,
-      fiatAmount: calculateARSEquivalent().toString(),
-      fiatCode: "ARS",
+      fiatAmount: calculateFiatEquivalent().toString(),
+      fiatCode: fiatCode,
       walletAddress: orderType === "BUY" ? walletAddress : undefined,
       paymentMethods: [
         {
@@ -122,6 +152,7 @@ export default function CreateOrder({
       tokenAmount > 0 &&
       blockchain !== "" &&
       tokenCode !== "" &&
+      customRate > 0 &&
       (orderType === "SELL" || walletAddress) &&
       username
     );
@@ -176,29 +207,108 @@ export default function CreateOrder({
                   />
                 </div>
                 {blockchain !== "" && tokenCode !== "" && (
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      id="token-amount"
-                      type="number"
-                      placeholder={t("enter_amount")}
-                      value={tokenAmount === 0 ? "" : tokenAmount}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setTokenAmount(
-                          value === "" ? 0 : parseFloat(value) || 0
-                        );
-                      }}
-                    />
-                  </div>
+                  <>
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        id="token-amount"
+                        type="number"
+                        placeholder={t("enter_amount")}
+                        value={tokenAmount === 0 ? "" : tokenAmount}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setTokenAmount(
+                            value === "" ? 0 : parseFloat(value) || 0
+                          );
+                        }}
+                      />
+                    </div>
+
+                    <div className="fiat-selection space-y-2">
+                      <Label className="font-bold">Quiero recibir en:</Label>
+                      <RadioGroup
+                        value={fiatCode}
+                        onValueChange={handleFiatCodeChange}
+                        className="flex space-x-4"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem id="ars" value="ARS" />
+                          <Label htmlFor="ars">ARS</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem id="eur" value="EUR" />
+                          <Label htmlFor="eur">EUR</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+
+                    <div className="exchange-rate-container space-y-2">
+                      <div className="suggested-rate bg-muted p-2 rounded-md">
+                        <Label className="text-xs font-semibold">
+                          Tipo de cambio sugerido:
+                        </Label>
+                        <div className="text-sm font-medium">
+                          1 {tokenCode} = {fiatCode === "EUR" ? "€" : "$"}{" "}
+                          {suggestedRate.toLocaleString("es-AR", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="custom-rate">
+                        <Label
+                          htmlFor="custom-rate"
+                          className="text-xs font-semibold"
+                        >
+                          Tu tipo de cambio:
+                        </Label>
+                        <Input
+                          id="custom-rate"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={customRate || ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === "") {
+                              setCustomRate(0);
+                              return;
+                            }
+
+                            const numValue = parseFloat(value);
+                            if (!isNaN(numValue) && numValue >= 0) {
+                              const roundedValue =
+                                Math.round(numValue * 100) / 100;
+                              setCustomRate(roundedValue);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "e" || e.key === "-") {
+                              e.preventDefault();
+                            }
+                          }}
+                          className={`mt-1 ${
+                            customRate === 0 ? "border-red-500" : ""
+                          }`}
+                          placeholder="Ingresa el tipo de cambio"
+                        />
+                        {customRate === 0 && (
+                          <span className="text-xs text-red-500 mt-1">
+                            El tipo de cambio debe ser mayor a 0
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </>
                 )}
                 <div className="flex items-center justify-end space-x-2">
                   <Label className="text-xs font-semibold">
-                    {t("en_ars")}:{" "}
+                    {t("en")} {fiatCode === "EUR" ? "€" : "$"}:
                   </Label>
                   <div className="text-xs font-semibold">
-                    {calculateARSEquivalent().toLocaleString("es-AR", {
-                      style: "currency",
-                      currency: "ARS",
+                    {calculateFiatEquivalent().toLocaleString("es-AR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
                     })}
                   </div>
                 </div>
@@ -253,7 +363,7 @@ export default function CreateOrder({
             <Button
               className="w-full text-white bg-secondary"
               onClick={handleSubmit}
-              disabled={!isFormComplete()} // Disable button if form is incomplete
+              disabled={!isFormComplete()}
             >
               {t("create_order")}
             </Button>

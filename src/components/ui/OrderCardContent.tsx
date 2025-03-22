@@ -39,9 +39,6 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
 }) => {
   const { t } = useTranslation();
   const [clipboardSupported, setClipboardSupported] = useState(false);
-  const formattedFiatAmount = order.fiatAmount
-    ? parseFloat(order.fiatAmount).toFixed(2)
-    : order.fiatAmount;
 
   useEffect(() => {
     setClipboardSupported("clipboard" in navigator);
@@ -57,6 +54,32 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   const handleChatClose = () => {
     setIsChatOpen(false);
     // Add any additional cleanup logic here if needed
+  };
+
+  const formatFiatAmount = (
+    amount: string | undefined,
+    fiatCode: string | undefined
+  ) => {
+    if (!amount) return "0,00";
+
+    const numAmount = parseFloat(amount);
+    const currencySymbol = fiatCode === "EUR" ? "€" : "$";
+
+    const formattedNumber = new Intl.NumberFormat("es-AR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(numAmount);
+
+    // Agregar el símbolo de moneda al inicio
+    return `${currencySymbol} ${formattedNumber}`;
+  };
+
+  const hasValidFiatData = (
+    order: Order
+  ): order is Order & { fiatAmount: string; fiatCode: string } => {
+    return (
+      typeof order.fiatAmount === "string" && typeof order.fiatCode === "string"
+    );
   };
 
   return (
@@ -104,7 +127,9 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
           <p className="text-left w-full text-primary">
             {t("for")}{" "}
             <span className="font-bold text-primary">
-              ${formattedFiatAmount} ARS
+              {hasValidFiatData(order)
+                ? formatFiatAmount(order.fiatAmount, order.fiatCode)
+                : formatFiatAmount("0", "ARS")}
             </span>
           </p>
         </div>
