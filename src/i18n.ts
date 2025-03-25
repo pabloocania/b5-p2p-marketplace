@@ -59,7 +59,8 @@ i18n.use(initReactI18next).init({
         releasing_funds: "Releasing funds...",
         funds_locked: "Funds are locked in the smart contract",
         //Sign the transaction with your wallet in order to the deposit of fund
-        approve_and_lock: "You have to sign the transaction with your wallet to deposito your funds in the smart contract",
+        approve_and_lock:
+          "You have to sign the transaction with your wallet to deposito your funds in the smart contract",
         you: "you",
         connect_to_continue: "Connect your wallet to continue",
         connect_wallet: "Connect wallet",
@@ -117,7 +118,11 @@ i18n.use(initReactI18next).init({
         write_message: "Write message",
         amount_to_deposit: "Amount to deposit",
         sending: "Sending transaction",
-        sending_tx_blockchain: "Your transaction is being sent to the blockchain. Wait for its confirmation"
+        sending_tx_blockchain:
+          "Your transaction is being sent to the blockchain. Wait for its confirmation",
+        view_history: "View history",
+        copy_id: "Copy ID",
+        copied: "Copied!",
       },
     },
     es: {
@@ -176,7 +181,8 @@ i18n.use(initReactI18next).init({
         funds_released: "Fondos enviados al comprador.",
         releasing_funds: "Liberando y enviando fondos al comprador",
         funds_locked: "Los fondos están asegurados en el contrato inteligente",
-        approve_and_lock: "Debes firmar la transacción con tu wallet para depositar los fondos en el contrato inteligente",
+        approve_and_lock:
+          "Debes firmar la transacción con tu wallet para depositar los fondos en el contrato inteligente",
         you: "tú",
         connect_to_continue: "Conectar wallet para continuar",
         connect_wallet: "Conectar wallet",
@@ -236,7 +242,11 @@ i18n.use(initReactI18next).init({
         write_message: "Escribe un mensaje",
         amount_to_deposit: "Cantidad a depositar",
         sending: "Enviando transacción",
-        sending_tx_blockchain: "Tu transacción está siendo enviada a la blockchain. Espera su confirmación"
+        sending_tx_blockchain:
+          "Tu transacción está siendo enviada a la blockchain. Espera su confirmación",
+        view_history: "Ver historial",
+        copy_id: "Copiar ID",
+        copied: "¡Copiado!",
       },
     },
   },

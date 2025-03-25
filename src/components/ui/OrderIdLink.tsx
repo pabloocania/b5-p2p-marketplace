@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/sheet";
 import OrderHistory from "./OrderHistory";
 import { useTranslation } from "react-i18next";
+import { HistoryIcon, ClipboardIcon } from "lucide-react";
 
 interface OrderIdLinkProps {
   orderId?: string;
@@ -15,20 +16,42 @@ interface OrderIdLinkProps {
 const OrderIdLink: React.FC<OrderIdLinkProps> = ({ orderId }) => {
   const { t } = useTranslation();
   const [isIdSheetOpen, setIsIdSheetOpen] = useState(false);
+  const [showCopied, setShowCopied] = useState(false);
+
+  const handleCopyId = async () => {
+    if (orderId) {
+      await navigator.clipboard.writeText(orderId);
+      setShowCopied(true);
+      setTimeout(() => setShowCopied(false), 2000);
+    }
+  };
 
   return (
-    <div>
-      <div className="block text-center pb-1">
-        <a
-          href="#"
-          className="text-blue-500 text-xs underline hover:text-blue-700 cursor-pointer"
-          onClick={(e) => {
-            e.preventDefault();
-            setIsIdSheetOpen(true);
-          }}
+    <div className="flex items-center justify-center gap-2 text-xs pb-2">
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          setIsIdSheetOpen(true);
+        }}
+        className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:underline"
+      >
+        <HistoryIcon className="w-3 h-3" />
+        {t("view_history")}
+      </button>
+      <span className="text-gray-400">•</span>
+      <div className="relative">
+        <button
+          onClick={handleCopyId}
+          className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:underline"
         >
-          ID: {orderId}
-        </a>
+          <ClipboardIcon className="w-3 h-3" />
+          {t("copy_id")}
+        </button>
+        {showCopied && (
+          <span className="absolute top-full mt-1 left-1/2 -translate-x-1/2 text-xs text-green-600 bg-white px-2 py-1 rounded-md shadow-sm">
+            {t("copied")}
+          </span>
+        )}
       </div>
       <Sheet open={isIdSheetOpen} onOpenChange={setIsIdSheetOpen}>
         <SheetContent
