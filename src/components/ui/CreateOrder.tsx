@@ -25,6 +25,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useTranslation } from "react-i18next";
 import TokenSelector from "@/lib/web3/TokenSelector";
 import { ExchangeRatesService } from "@/lib/web3/ExchangeRates";
+import { ScrollableContainer } from "./ScrollabelContainer";
 
 interface CreateOrderProps {
   onClose: () => void;
@@ -159,217 +160,219 @@ export default function CreateOrder({
   };
 
   return (
-    <div className="flex justify-center items-center pt-8">
-      <Card className="w-full max-w-md border border-primary border-opacity-20">
-        <CardHeader className="flex justify-center items-center">
-          <CardTitle className="text-center text-primary">
-            {t("create_order")}
-          </CardTitle>
-        </CardHeader>
-        <Separator className="my-2"></Separator>
-        <CardContent className="text-primary">
-          {!isLoggedIn ? (
-            <Button
-              className="p-4 text-center w-full text-white"
-              onClick={handleConnectButton} // Use the handler
-            >
-              {t("connect_to_continue")}
-            </Button>
-          ) : createdOrder ? null : (
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-3">
-                <Label className="font-bold">{t("i_want_to")}</Label>
-                <div>
-                  <RadioGroup
-                    id="order_type"
-                    value={orderType}
-                    onValueChange={handleOrderTypeChange}
-                    className="flex space-x-4"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem id="sell" value="SELL" />
-                      <Label htmlFor="sell">{t("sell")}</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem id="buy" value="BUY" />
-                      <Label htmlFor="buy">{t("buy")}</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {/* <BlockchainSelector
-                    onBlockchainChange={handleBlockchainChange}
-                    onCoinChange={handleCoinChange}
-                  /> */}
-                  <TokenSelector
-                    onBlockchainChange={handleBlockchainChange}
-                    onTokenChange={handleTokenChange}
-                  />
-                </div>
-                {blockchain !== "" && tokenCode !== "" && (
-                  <>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        id="token-amount"
-                        type="number"
-                        placeholder={t("enter_amount")}
-                        value={tokenAmount === 0 ? "" : tokenAmount}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setTokenAmount(
-                            value === "" ? 0 : parseFloat(value) || 0
-                          );
-                        }}
-                      />
-                    </div>
-
-                    <div className="fiat-selection space-y-2">
-                      <Label className="font-bold">Quiero recibir en:</Label>
-                      <RadioGroup
-                        value={fiatCode}
-                        onValueChange={handleFiatCodeChange}
-                        className="flex space-x-4"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem id="ars" value="ARS" />
-                          <Label htmlFor="ars">ARS</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem id="eur" value="EUR" />
-                          <Label htmlFor="eur">EUR</Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    <div className="exchange-rate-container space-y-2">
-                      <div className="suggested-rate bg-muted p-2 rounded-md">
-                        <Label className="text-xs font-semibold">
-                          Tipo de cambio sugerido:
-                        </Label>
-                        <div className="text-sm font-medium">
-                          1 {tokenCode} = {fiatCode === "EUR" ? "€" : "$"}{" "}
-                          {suggestedRate.toLocaleString("es-AR", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </div>
-                      </div>
-
-                      <div className="custom-rate">
-                        <Label
-                          htmlFor="custom-rate"
-                          className="text-xs font-semibold"
-                        >
-                          Tu tipo de cambio:
-                        </Label>
-                        <Input
-                          id="custom-rate"
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={customRate || ""}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === "") {
-                              setCustomRate(0);
-                              return;
-                            }
-
-                            const numValue = parseFloat(value);
-                            if (!isNaN(numValue) && numValue >= 0) {
-                              const roundedValue =
-                                Math.round(numValue * 100) / 100;
-                              setCustomRate(roundedValue);
-                            }
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "e" || e.key === "-") {
-                              e.preventDefault();
-                            }
-                          }}
-                          className={`mt-1 ${
-                            customRate === 0 ? "border-red-500" : ""
-                          }`}
-                          placeholder="Ingresa el tipo de cambio"
-                        />
-                        {customRate === 0 && (
-                          <span className="text-xs text-red-500 mt-1">
-                            El tipo de cambio debe ser mayor a 0
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-                <div className="flex items-center justify-end space-x-2">
-                  <Label className="text-xs font-semibold">
-                    {t("en")} {fiatCode === "EUR" ? "€" : "$"}:
-                  </Label>
-                  <div className="text-xs font-semibold">
-                    {calculateFiatEquivalent().toLocaleString("es-AR", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </div>
-                </div>
+    <ScrollableContainer>
+      <div className="flex justify-center items-center pt-8">
+        <Card className="w-full max-w-md border border-primary border-opacity-20">
+          <CardHeader className="flex justify-center items-center">
+            <CardTitle className="text-center text-primary">
+              {t("create_order")}
+            </CardTitle>
+          </CardHeader>
+          <Separator className="my-2"></Separator>
+          <CardContent className="text-primary">
+            {!isLoggedIn ? (
+              <Button
+                className="p-4 text-center w-full text-white"
+                onClick={handleConnectButton} // Use the handler
+              >
+                {t("connect_to_continue")}
+              </Button>
+            ) : createdOrder ? null : (
+              <form onSubmit={handleSubmit}>
                 <div className="space-y-3">
-                  <Label className="font-bold">{t("payment_method")}</Label>
-                  <div className="flex items-center space-x-2">
+                  <Label className="font-bold">{t("i_want_to")}</Label>
+                  <div>
                     <RadioGroup
-                      defaultValue="mercado-pago"
-                      className="flex items-center space-x-2"
+                      id="order_type"
+                      value={orderType}
+                      onValueChange={handleOrderTypeChange}
+                      className="flex space-x-4"
                     >
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem
-                          id="mercado-pago"
-                          value="mercado-pago"
-                        />
-                        <Label htmlFor="mercado-pago">Mercado Pago</Label>
+                        <RadioGroupItem id="sell" value="SELL" />
+                        <Label htmlFor="sell">{t("sell")}</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem id="bank" value="bank" disabled />
-                        <Label htmlFor="bank" className="text-gray-400">
-                          {t("bank")}
-                        </Label>
+                        <RadioGroupItem id="buy" value="BUY" />
+                        <Label htmlFor="buy">{t("buy")}</Label>
                       </div>
                     </RadioGroup>
                   </div>
-                  <Input
-                    id="mercado-pago-username"
-                    placeholder="@alias"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
-                {orderType === "BUY" && (
-                  <div>
-                    <Label className="font-bold" htmlFor="wallet-address">
-                      {t("address")}
-                    </Label>
-                    <Input
-                      id="wallet-address"
-                      placeholder={t("insert_wallet_address")}
-                      value={walletAddress}
-                      onChange={(e) => setWalletAddress(e.target.value)}
+                  <div className="flex items-center space-x-2">
+                    {/* <BlockchainSelector
+                    onBlockchainChange={handleBlockchainChange}
+                    onCoinChange={handleCoinChange}
+                  /> */}
+                    <TokenSelector
+                      onBlockchainChange={handleBlockchainChange}
+                      onTokenChange={handleTokenChange}
                     />
                   </div>
-                )}
-              </div>
-            </form>
+                  {blockchain !== "" && tokenCode !== "" && (
+                    <>
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          id="token-amount"
+                          type="number"
+                          placeholder={t("enter_amount")}
+                          value={tokenAmount === 0 ? "" : tokenAmount}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setTokenAmount(
+                              value === "" ? 0 : parseFloat(value) || 0
+                            );
+                          }}
+                        />
+                      </div>
+
+                      <div className="fiat-selection space-y-2">
+                        <Label className="font-bold">Quiero recibir en:</Label>
+                        <RadioGroup
+                          value={fiatCode}
+                          onValueChange={handleFiatCodeChange}
+                          className="flex space-x-4"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem id="ars" value="ARS" />
+                            <Label htmlFor="ars">ARS</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem id="eur" value="EUR" />
+                            <Label htmlFor="eur">EUR</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+
+                      <div className="exchange-rate-container space-y-2">
+                        <div className="suggested-rate bg-muted p-2 rounded-md">
+                          <Label className="text-xs font-semibold">
+                            Tipo de cambio sugerido:
+                          </Label>
+                          <div className="text-sm font-medium">
+                            1 {tokenCode} = {fiatCode === "EUR" ? "€" : "$"}{" "}
+                            {suggestedRate.toLocaleString("es-AR", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="custom-rate">
+                          <Label
+                            htmlFor="custom-rate"
+                            className="text-xs font-semibold"
+                          >
+                            Tu tipo de cambio:
+                          </Label>
+                          <Input
+                            id="custom-rate"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={customRate || ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === "") {
+                                setCustomRate(0);
+                                return;
+                              }
+
+                              const numValue = parseFloat(value);
+                              if (!isNaN(numValue) && numValue >= 0) {
+                                const roundedValue =
+                                  Math.round(numValue * 100) / 100;
+                                setCustomRate(roundedValue);
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "e" || e.key === "-") {
+                                e.preventDefault();
+                              }
+                            }}
+                            className={`mt-1 ${
+                              customRate === 0 ? "border-red-500" : ""
+                            }`}
+                            placeholder="Ingresa el tipo de cambio"
+                          />
+                          {customRate === 0 && (
+                            <span className="text-xs text-red-500 mt-1">
+                              El tipo de cambio debe ser mayor a 0
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <div className="flex items-center justify-end space-x-2">
+                    <Label className="text-xs font-semibold">
+                      {t("en")} {fiatCode === "EUR" ? "€" : "$"}:
+                    </Label>
+                    <div className="text-xs font-semibold">
+                      {calculateFiatEquivalent().toLocaleString("es-AR", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <Label className="font-bold">{t("payment_method")}</Label>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroup
+                        defaultValue="mercado-pago"
+                        className="flex items-center space-x-2"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem
+                            id="mercado-pago"
+                            value="mercado-pago"
+                          />
+                          <Label htmlFor="mercado-pago">Mercado Pago</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem id="bank" value="bank" disabled />
+                          <Label htmlFor="bank" className="text-gray-400">
+                            {t("bank")}
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                    <Input
+                      id="mercado-pago-username"
+                      placeholder="@alias"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </div>
+                  {orderType === "BUY" && (
+                    <div>
+                      <Label className="font-bold" htmlFor="wallet-address">
+                        {t("address")}
+                      </Label>
+                      <Input
+                        id="wallet-address"
+                        placeholder={t("insert_wallet_address")}
+                        value={walletAddress}
+                        onChange={(e) => setWalletAddress(e.target.value)}
+                      />
+                    </div>
+                  )}
+                </div>
+              </form>
+            )}
+          </CardContent>
+          {!createdOrder && (
+            <CardFooter className="py-2">
+              <Button
+                className="w-full text-white bg-secondary"
+                onClick={handleSubmit}
+                disabled={!isFormComplete()}
+              >
+                {t("create_order")}
+              </Button>
+            </CardFooter>
           )}
-        </CardContent>
-        {!createdOrder && (
-          <CardFooter className="py-2">
-            <Button
-              className="w-full text-white bg-secondary"
-              onClick={handleSubmit}
-              disabled={!isFormComplete()}
-            >
-              {t("create_order")}
-            </Button>
-          </CardFooter>
-        )}
-      </Card>
-    </div>
+        </Card>
+      </div>
+    </ScrollableContainer>
   );
 }

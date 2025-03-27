@@ -1,7 +1,7 @@
 // OrderCardContent.tsx
 import React, { useEffect, useState } from "react";
 import { CardContent } from "@/components/ui/card";
-import { Order, OrderType } from "b5-api-client";
+import { Order, OrderStatus, OrderType } from "b5-api-client";
 import PaymentMethodDisplay from "./PaymentMethodDisplay";
 import { useTranslation } from "react-i18next";
 import { UserProps } from "@/lib/useUser";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/sheet"; // Import Sheet components
 import { ChatInterface } from "@/chat/ChatInterface";
 import { Button } from "./button";
+import { Rating } from "./Rating";
 
 interface OrderCardContentProps {
   order: Order;
@@ -29,6 +30,16 @@ interface OrderCardContentProps {
   walletAddress: string;
   setWalletAddress: (value: string) => void;
 }
+
+const finishedStatusesList: OrderStatus[] = [
+  "RELEASED",
+  "CLOSED",
+  "CANCELED",
+  "SUCCESS",
+  "CANCELED_BY_ADMIN",
+  "EXPIRED",
+  "COMPLETED_BY_ADMIN",
+];
 
 const OrderCardContent: React.FC<OrderCardContentProps> = ({
   order,
@@ -81,6 +92,11 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
       typeof order.fiatAmount === "string" && typeof order.fiatCode === "string"
     );
   };
+
+  const isBuyer = order.buyerId === user?.userId;
+  const isSeller = order.sellerId === user?.userId;
+  const buyerHasNotRated = isBuyer && !order.buyerHasRated;
+  const sellerHasNotRated = isSeller && !order.sellerHasRated;
 
   return (
     <CardContent className="pb-3 mt-1">
@@ -164,6 +180,17 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
           </div>
         )}
       </div>
+      {order.status &&
+        finishedStatusesList.includes(order.status) &&
+        (buyerHasNotRated || sellerHasNotRated) && (
+          <Rating
+            orderId={order.id!!}
+            ratedId={isBuyer ? order.sellerId! : order.buyerId!}
+            ratedUsername={
+              isBuyer ? "@" + order.sellerUsername! : "@" + order.buyerUsername!
+            }
+          />
+        )}
       {user && showDetails && order.type === ("SELL" as OrderType) && (
         <div className="py-2">
           <AddressInput
