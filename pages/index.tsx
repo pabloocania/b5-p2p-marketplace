@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import styles from "../styles/Home.module.css";
 import CreateOrder from "../src/components/ui/CreateOrder";
 import OrdersFeed, { Filter } from "../src/components/ui/OrdersFeed";
@@ -9,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Plus, User, Languages, Globe } from "lucide-react";
+import { Plus, User, Languages, Globe, Loader2 } from "lucide-react";
 import UserMenu from "../src/components/ui/UserMenu";
 import { useUserContext } from "../src/components/ui/UserContext";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
@@ -20,8 +21,13 @@ import UserOrdersMenu from "@/components/ui/TopLevelSubMenu";
 import MainMenu from "@/components/ui/MainMenu";
 import { useTranslation } from "react-i18next";
 import { initConfig } from "@/lib/ConfigStore";
+import { OrderCard } from "@/components/ui/OrderCard";
+import { Order } from "b5-api-client";
+import { p2pMarketAPIClient as client } from "../src/lib/APIClients";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Home() {
+  const router = useRouter();
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
   const [activeSubFilter, setActiveSubFilter] = useState(Filter.PENDING);
   const { user, login, logout } = useUserContext();
@@ -29,6 +35,12 @@ export default function Home() {
   const { disconnect } = useDisconnect();
   const { transaction, resetTransaction } = useTransaction();
   const { i18n, t } = useTranslation();
+
+  // Estados para el manejo de deeplinks
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isOrderSheetOpen, setIsOrderSheetOpen] = useState(false);
+  const [isLoadingOrder, setIsLoadingOrder] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -39,6 +51,57 @@ export default function Home() {
       setActiveComponent("OrderFeed");
     }
   }, [user, disconnect]);
+
+  useEffect(() => {
+    const fetchOrderById = async (orderId: string) => {
+      setIsLoadingOrder(true);
+      setOrderError(null);
+
+      // Si el usuario no está logueado, mostramos el Sheet con la lista de usuarios
+      if (!user) {
+        setIsOrderSheetOpen(true);
+        setIsLoadingOrder(false);
+        setActiveComponent("UserMenu");
+        return;
+      }
+
+      try {
+        // Primero intentamos buscar la orden en el feed actual
+        const feedOrder = document.querySelector(
+          `[data-order-id="${orderId}"]`
+        );
+        if (feedOrder) {
+          const order = JSON.parse(feedOrder.getAttribute("data-order") || "");
+          setSelectedOrder(order);
+          setIsOrderSheetOpen(true);
+          return;
+        }
+
+        // Si no está en el feed, la buscamos en el backend
+        const response = await client.getOrders({});
+        const foundOrder = response?.orders?.find(
+          (order) => order.id === orderId
+        );
+
+        if (foundOrder) {
+          setSelectedOrder(foundOrder);
+          setIsOrderSheetOpen(true);
+          setActiveComponent("OrderFeed");
+        } else {
+          setOrderError(t("order_not_found"));
+        }
+      } catch (error) {
+        console.error("Error fetching order:", error);
+        setOrderError(t("error_loading_order"));
+      } finally {
+        setIsLoadingOrder(false);
+      }
+    };
+
+    if (router.query.orderId && typeof router.query.orderId === "string") {
+      fetchOrderById(router.query.orderId);
+    }
+  }, [router.query.orderId, t, user]);
 
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
 
@@ -54,11 +117,23 @@ export default function Home() {
     setActiveComponent("UserMenu");
   };
 
+  // Manejar el cierre del Sheet
+  const handleOrderSheetClose = () => {
+    setIsOrderSheetOpen(false);
+    setSelectedOrder(null);
+    setOrderError(null);
+    // Limpiar orderId de la URL sin recargar la página
+    router.replace("/", undefined, { shallow: true });
+  };
+
   const renderComponent = () => {
     if (activeComponent === "OrderFeed") {
       return (
         <div className="pt-5 rounded-lg max-w-md flex justify-center rounded-lg space-x-2">
-          <OrdersFeed refreshKey={refreshKey} />
+          <OrdersFeed
+            refreshKey={refreshKey}
+            highlightedOrderId={router.query.orderId as string}
+          />
         </div>
       );
     } else if (activeComponent === "UserMenu") {
@@ -158,6 +233,49 @@ export default function Home() {
               </SheetContent>
             </Sheet>
           </div>
+          <Sheet
+            open={isOrderSheetOpen}
+            onOpenChange={(open) => {
+              if (!open) handleOrderSheetClose();
+            }}
+          >
+            <SheetContent
+              side="bottom"
+              className="h-[90vh] bg-backgroundMain"
+              closeText={t("close")}
+            >
+              <SheetTitle>
+                {!user ? t("select_user") : t("order_details")}
+              </SheetTitle>
+              {!user ? (
+                <UserMenu
+                  user={user}
+                  onLogin={(selectedUser) => {
+                    login(selectedUser);
+                    // No cerramos el Sheet aquí, ya que el efecto se encargará de cargar la orden
+                  }}
+                  onLogout={logout}
+                />
+              ) : isLoadingOrder ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : orderError ? (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>{orderError}</AlertDescription>
+                </Alert>
+              ) : selectedOrder ? (
+                <OrderCard
+                  orderDTO={selectedOrder}
+                  showDetails={true}
+                  onRefresh={() => {
+                    handleOrderSheetClose();
+                    setRefreshKey((prev) => prev + 1);
+                  }}
+                />
+              ) : null}
+            </SheetContent>
+          </Sheet>
         </main>
         <footer className={styles.footer}></footer>
       </div>

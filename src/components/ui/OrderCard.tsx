@@ -10,6 +10,9 @@ import OrderCardHeader from "./OrderCardHeader";
 import OrderCardContent from "./OrderCardContent";
 import OrderCardFooter from "./OrderCardFooter";
 import OrderIdLink from "./OrderIdLink";
+import { Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -25,6 +28,7 @@ export function OrderCard({
   onRefresh,
 }: OrderCardProps) {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [walletAddress, setWalletAddress] = useState("");
   const [order, setOrder] = useState(orderDTO);
   const { user, isLoggedIn } = useUserContext();
@@ -32,6 +36,17 @@ export function OrderCard({
   useEffect(() => {
     setOrder(orderDTO);
   }, [orderDTO]);
+
+  const handleCopyLink = async () => {
+    if (!order) return;
+    const url = `${window.location.origin}/?orderId=${order.id}`;
+    await navigator.clipboard.writeText(url);
+    toast({
+      title: t("link_copied"),
+      description: t("order_link_copied_description"),
+      duration: 2000,
+    });
+  };
 
   if (!order) {
     return (
@@ -44,7 +59,12 @@ export function OrderCard({
   }
 
   return (
-    <Card className="w-full mb-4" variant="shadow">
+    <Card
+      className="w-full mb-4"
+      variant="shadow"
+      data-order-id={order.id}
+      data-order={JSON.stringify(order)}
+    >
       <OrderStatusBar status={order.status ?? "Unknown"} />
       <OrderCardHeader order={order}></OrderCardHeader>
       <OrderCardContent
@@ -64,10 +84,19 @@ export function OrderCard({
         setOrder={setOrder}
       ></OrderCardFooter>
       <Separator className="mb-1" />
-      <div className="pl-4 pr-4 flex items-center justify-between text-sm">
+      <div className="pl-4 pr-4 flex items-center justify-between text-sm pb-2">
         <div className="flex-1">
           <OrderIdLink orderId={order.id} />
         </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="ml-2"
+          onClick={handleCopyLink}
+          title={t("copy_order_link")}
+        >
+          <Share2 className="h-4 w-4" />
+        </Button>
       </div>
     </Card>
   );
