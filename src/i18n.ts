@@ -124,9 +124,9 @@ i18n.use(initReactI18next).init({
         copy_id: "Copy ID",
         copied: "Copied!",
         copy_order_link: "Copy order link",
-        link_copied: "Link copied!",
+        link_copied: "Link Copied!",
         order_link_copied_description:
-          "The order link has been copied to your clipboard",
+          "Order link has been copied to clipboard",
         order_details: "Order Details",
         order_not_found: "Order not found",
         error_loading_order: "Error loading order. Please try again.",
@@ -259,7 +259,7 @@ i18n.use(initReactI18next).init({
         copy_id: "Copiar ID",
         copied: "¡Copiado!",
         copy_order_link: "Copiar link de la orden",
-        link_copied: "¡Link copiado!",
+        link_copied: "¡Link Copiado!",
         order_link_copied_description:
           "El link de la orden ha sido copiado al portapapeles",
         order_details: "Detalles de la Orden",

@@ -10,7 +10,7 @@ import OrderCardHeader from "./OrderCardHeader";
 import OrderCardContent from "./OrderCardContent";
 import OrderCardFooter from "./OrderCardFooter";
 import OrderIdLink from "./OrderIdLink";
-import { Share2 } from "lucide-react";
+import { Share2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -43,8 +43,14 @@ export function OrderCard({
     await navigator.clipboard.writeText(url);
     toast({
       title: t("link_copied"),
-      description: t("order_link_copied_description"),
-      duration: 2000,
+      description: (
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="h-4 w-4 text-green-800 dark:text-green-100" />
+          <span>{t("order_link_copied_description")}</span>
+        </div>
+      ),
+      duration: 3000,
+      variant: "success",
     });
   };
 
