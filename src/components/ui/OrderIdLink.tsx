@@ -33,16 +33,16 @@ const OrderIdLink: React.FC<OrderIdLinkProps> = ({ orderId }) => {
           e.preventDefault();
           setIsIdSheetOpen(true);
         }}
-        className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:underline"
+        className="flex items-center gap-1 text-terciary hover:text-primary hover:underline"
       >
         <HistoryIcon className="w-3 h-3" />
         {t("view_history")}
       </button>
-      <span className="text-gray-400">•</span>
+      <span className="text-primary">•</span>
       <div className="relative">
         <button
           onClick={handleCopyId}
-          className="flex items-center gap-1 text-blue-500 hover:text-blue-700 hover:underline"
+          className="flex items-center gap-1 text-terciary hover:text-terciary hover:underline"
         >
           <ClipboardIcon className="w-3 h-3" />
           {t("copy_id")}
