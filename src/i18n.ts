@@ -123,6 +123,8 @@ i18n.use(initReactI18next).init({
         view_history: "View history",
         copy_id: "Copy ID",
         copied: "Copied!",
+        suggested_rate: "Suggested rate",
+        your_rate: "Your rate",
       },
     },
     es: {
@@ -247,6 +249,8 @@ i18n.use(initReactI18next).init({
         view_history: "Ver historial",
         copy_id: "Copiar ID",
         copied: "¡Copiado!",
+        suggested_rate: "Tipo de cambio sugerido",
+        your_rate: "Tu tipo de cambio",
       },
     },
   },

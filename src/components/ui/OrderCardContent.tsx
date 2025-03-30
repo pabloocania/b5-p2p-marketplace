@@ -99,9 +99,11 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   const sellerHasNotRated = isSeller && !order.sellerHasRated;
 
   return (
-    <CardContent className="pb-3 mt-1">
+    <CardContent className="pb-3 mt-2">
       <div className="rounded-lg space-y-1 px-2 bg-secondary bg-opacity-10 space-y-1 pt-1">
+        {/* Order header */}
         <div className="flex justify-between items-center w-full">
+          {/* Order type and amount */}
           <div className="flex space-x-1">
             <span className="text-2xl text-primary">
               {order.type === "SELL" ? t("sells") : t("buys")}
@@ -113,6 +115,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
               />
             </span>
           </div>
+          {/* Chat icon */}
           {order.chatId && (
             <div className="flex">
               <Sheet
@@ -139,46 +142,47 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
             </div>
           )}
         </div>
-        <div className="flex">
-          <p className="text-left w-full text-primary">
-            {t("for")}{" "}
-            <span className="font-bold text-primary">
-              {hasValidFiatData(order)
-                ? formatFiatAmount(order.fiatAmount, order.fiatCode)
-                : formatFiatAmount("0", "ARS")}
-            </span>
-          </p>
-        </div>
-        <div className="text-left w-full">
-          <p className="text-left w-full text-xs text-primary">
-            {t("on")}{" "}
-            <span className="font-bold text-primary">
-              {getBlockchainDisplayName(order.blockchain as BlockchainName)}
-            </span>
-          </p>
-        </div>
-        <div className="text-left w-full">
-          <span className="text-xs block pt-4">
-            {order.paymentMethods?.map((method, index) => (
-              <PaymentMethodDisplay key={index} method={method} />
-            ))}
-          </span>
-        </div>
-        <div className="text-left w-full">
-          {order.sellerId && order.type === "BUY" && (
-            <SellerText order={order} userId={user?.userId} />
-          )}
-        </div>
-        <div>
-          {order.buyerId && order.type === "SELL" && (
-            <BuyerText order={order} userId={user?.userId} />
-          )}
-        </div>
-        {order.createdAt && (
-          <div>
-            <OrderCreatedDate createdAt={order.createdAt} />
+        {/* Order details */}
+        <div className="flex justify-between w-full pb-1 space-y-2 pt-2">
+          <div className="w-1/2 min-w-[60%] flex flex-col space-y-1">
+            <div className="flex-1">
+              <p className="text-left w-full text-primary">
+                {t("for")}{" "}
+                <span className="font-bold text-primary">
+                  {hasValidFiatData(order)
+                    ? formatFiatAmount(order.fiatAmount, order.fiatCode)
+                    : formatFiatAmount("0", "ARS")}
+                </span>
+              </p>
+            </div>
+            <div className="flex-1">
+              <p className="text-left w-full text-xs text-primary">
+                {t("on")}{" "}
+                <span className="font-bold text-primary">
+                  {getBlockchainDisplayName(order.blockchain as BlockchainName)}
+                </span>
+              </p>
+            </div>
+            <div className="flex-1">
+              {order.sellerId && order.type === "BUY" && (
+                <SellerText order={order} userId={user?.userId} />
+              )}
+              {order.buyerId && order.type === "SELL" && (
+                <BuyerText order={order} userId={user?.userId} />
+              )}
+            </div>
           </div>
-        )}
+          {/* Payment methods */}
+          <div className="text-right">
+            <span className="text-xs">
+              {order.paymentMethods?.map((method, index) => (
+                <PaymentMethodDisplay key={index} method={method} />
+              ))}
+            </span>
+          </div>
+        </div>
+        {/* Order created date */}
+        {order.createdAt && <OrderCreatedDate createdAt={order.createdAt} />}
       </div>
       {order.status &&
         finishedStatusesList.includes(order.status) &&

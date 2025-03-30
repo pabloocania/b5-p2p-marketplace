@@ -1,5 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-import { ChatMessage, ChatWebSocketClient } from "./ChatWebSocketClient"; // Import the WebSocket client
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import {
+  ChatMessage,
+  ChatWebSocketClient,
+  ChatMessageContentText,
+  ChatMessageContentAction,
+} from "./ChatWebSocketClient"; // Import the WebSocket client
 import { Order } from "b5-api-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -54,7 +59,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() && client) {
-      const message = {
+      const message: ChatMessage = {
         sender: userId!,
         timestamp: Date.now(),
         content: { type: "TEXT", text: newMessage },
@@ -78,37 +83,88 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
+
+  const formatEventType = (eventType: string) => {
+    switch (eventType) {
+      case "LOCKED":
+        return t("order_locked");
+      case "RELEASED":
+        return t("order_released");
+      case "FIAT_SENT":
+        return t("fiat_transferred");
+      default:
+        return eventType;
+    }
+  };
+
+  const hasOrderReleasedOrRefunded = useMemo(() => {
+    return messages.some(
+      (msg) =>
+        msg.sender === "ADMIN" &&
+        msg.content.type === "EVENT" &&
+        (msg.content.event.eventType === "RELEASED" ||
+          msg.content.event.eventType === "REFUNDED")
+    );
+  }, [messages]);
+
   return (
     <div className="flex flex-col h-full pt-3">
       <div className="flex-1 overflow-y-auto py-2 space-y-4 bg-secondary bg-opacity-10 rounded-lg rounded-xs p-2">
-        {messages.map((msg) => (
-          <div
-            key={msg.timestamp}
-            className={`flex flex-col max-w-[80%] ${
-              msg.sender === userId
-                ? "ml-auto items-end"
-                : "mr-auto items-start"
-            }`}
-          >
-            <p className="text-primary font-bold">
-              {msg.sender === userId
-                ? t("you") + ":"
-                : "@" + getUsername(msg.sender) + ":"}
-            </p>
+        {messages.map((msg) => {
+          // Handle admin event messages
+          if (msg.sender === "ADMIN" && msg.content.type === "EVENT") {
+            return (
+              <div
+                key={msg.timestamp}
+                className="w-full flex flex-col items-center"
+              >
+                <div className="bg-white py-2 rounded-md w-full">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-xs text-muted-foreground">
+                      {formatTimestamp(msg.timestamp)}
+                    </span>
+                    <span className="text-xs text-muted-foreground">-</span>
+                    <span className="text-xs font-semibold text-primary">
+                      {formatEventType(msg.content.event.eventType)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          // Handle regular user messages
+          return (
             <div
-              className={`px-3 py-2 rounded-md ${
+              key={msg.timestamp}
+              className={`flex flex-col max-w-[80%] ${
                 msg.sender === userId
-                  ? "bg-secondary bg-opacity-50 text-primary"
-                  : "bg-secondary bg-opacity-20 text-primary"
+                  ? "ml-auto items-end"
+                  : "mr-auto items-start"
               }`}
             >
-              {msg.content.text}
+              <p className="text-primary font-bold">
+                {msg.sender === userId
+                  ? t("you") + ":"
+                  : "@" + getUsername(msg.sender) + ":"}
+              </p>
+              <div
+                className={`px-3 py-2 rounded-md ${
+                  msg.sender === userId
+                    ? "bg-secondary bg-opacity-50 text-primary"
+                    : "bg-secondary bg-opacity-20 text-primary"
+                }`}
+              >
+                {msg.content.type === "TEXT"
+                  ? (msg.content as ChatMessageContentText).text
+                  : (msg.content as ChatMessageContentAction).content}
+              </div>
+              <span className="text-xs text-muted-foreground mt-1">
+                {formatTimestamp(msg.timestamp)}
+              </span>
             </div>
-            <span className="text-xs text-muted-foreground mt-1">
-              {formatTimestamp(msg.timestamp)}
-            </span>
-          </div>
-        ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
 
@@ -138,12 +194,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder={t("write_message")}
           className="flex-1 border border-terciary"
+          disabled={hasOrderReleasedOrRefunded}
         />
         <Button
           className="border-opacity-100 bg-white text-terciary border border-terciary"
           type="submit"
           size="icon"
-          disabled={!newMessage.trim()}
+          disabled={!newMessage.trim() || hasOrderReleasedOrRefunded}
         >
           <Send size={18} />
         </Button>

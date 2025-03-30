@@ -102,7 +102,7 @@ export function TransactionStatus({
               {getStatusIcon(status)}
               {getStatusText(status)}
             </AlertTitle>
-            <AlertDescription className="text-terciary pt-2">
+            <AlertDescription className="text-primary pt-2">
               {message}
             </AlertDescription>
           </Alert>
@@ -131,10 +131,16 @@ export function TransactionStatus({
             </Button>
           )}
         </CardContent>
-        <Separator className="mb-2" />
-        <div className="block text-center pb-1">
-          <p className="text-xs text-gray-600 block">{t("not_close_app")}</p>
-        </div>
+        {status !== "error" && status !== "success" && (
+          <>
+            <Separator className="mb-2" />
+            <div className="block text-center pb-1">
+              <p className="text-xs text-gray-600 block">
+                {t("not_close_app")}
+              </p>
+            </div>
+          </>
+        )}
       </Card>
     </div>
   );

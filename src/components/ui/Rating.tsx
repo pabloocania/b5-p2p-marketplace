@@ -43,7 +43,7 @@ export function Rating({ orderId, ratedId, ratedUsername }: RatingProps) {
   ) : (
     <div className="flex justify-center items-center space-x-0.5 w-full rounded-md mt-2">
       <div className="flex items-center">
-        <span className="text-sm font-bold text-terciary pr-2">
+        <span className="text-sm text-primary pr-2">
           {t("rate_user") + " " + ratedUsername + ": "}
         </span>
       </div>

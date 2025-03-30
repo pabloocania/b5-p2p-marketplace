@@ -1,6 +1,4 @@
 "use client";
-import { Rocket } from "lucide-react";
-import PaymentMethodsDemo from "./ComponentSelectorDemo";
 import { useEffect, useState } from "react";
 import {
   CreateOrderRequest,
@@ -28,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import TokenSelector from "@/lib/web3/TokenSelector";
 import { ExchangeRatesService } from "@/lib/web3/ExchangeRates";
 import { ScrollableContainer } from "./ScrollabelContainer";
+import CompactPaymentMethodSelector from "./CompactPaymentMethodSelector";
 
 interface CreateOrderProps {
   onClose: () => void;
@@ -102,6 +101,23 @@ export default function CreateOrder({
     setFiatCode(value);
   };
 
+  const handleToggle = (method: PaymentMethod) => {
+    setSelectedMethods((prev) =>
+      prev.some((m) => m.entity === method.entity)
+        ? prev.filter((m) => m.entity !== method.entity)
+        : [...prev, method]
+    );
+  };
+
+  const handleUpdateMethod = (updatedMethod: PaymentMethod) => {
+    // Create a new immutable array with the updated method
+    const updatedSelectedMethods = selectedMethods.map((method) =>
+      method.entity === updatedMethod.entity ? { ...updatedMethod } : method
+    );
+
+    setSelectedMethods(updatedSelectedMethods);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -116,13 +132,7 @@ export default function CreateOrder({
       fiatAmount: calculateFiatEquivalent().toString(),
       fiatCode: fiatCode,
       walletAddress: orderType === "BUY" ? walletAddress : undefined,
-      paymentMethods: selectedMethods.map((method) => ({
-        type: method.type,
-        alias: method.alias || username,
-        cbu: method.cbu || "",
-        entity: method.entity || "",
-        fullName: method.fullName || "",
-      })),
+      paymentMethods: selectedMethods,
       creatorId: user?.userId,
       status: "PENDING",
       creatorUsername: user?.username,
@@ -150,12 +160,12 @@ export default function CreateOrder({
 
   const isFormComplete = () => {
     return (
+      selectedMethods.length > 0 &&
       tokenAmount > 0 &&
       blockchain !== "" &&
       tokenCode !== "" &&
       customRate > 0 &&
-      (orderType === "SELL" || walletAddress) &&
-      username
+      (orderType === "SELL" || walletAddress)
     );
   };
 
@@ -225,28 +235,30 @@ export default function CreateOrder({
                         />
                       </div>
 
-                      <div className="fiat-selection space-y-2">
-                        <Label className="font-bold">Quiero recibir en:</Label>
-                        <RadioGroup
-                          value={fiatCode}
-                          onValueChange={handleFiatCodeChange}
-                          className="flex space-x-4"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem id="ars" value="ARS" />
-                            <Label htmlFor="ars">ARS</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem id="eur" value="EUR" />
-                            <Label htmlFor="eur">EUR</Label>
-                          </div>
-                        </RadioGroup>
-                      </div>
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="space-y-2">
+                          <Label className="font-bold">
+                            Quiero recibir en:
+                          </Label>
+                          <RadioGroup
+                            value={fiatCode}
+                            onValueChange={handleFiatCodeChange}
+                            className="flex space-x-4"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem id="ars" value="ARS" />
+                              <Label htmlFor="ars">ARS</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem id="eur" value="EUR" />
+                              <Label htmlFor="eur">EUR</Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
 
-                      <div className="exchange-rate-container space-y-2">
-                        <div className="suggested-rate bg-muted p-2 rounded-md">
+                        <div className="bg-secondary bg-opacity-10 p-2 rounded-md">
                           <Label className="text-xs font-semibold">
-                            Tipo de cambio sugerido:
+                            {t("suggested_rate")}
                           </Label>
                           <div className="text-sm font-medium">
                             1 {tokenCode} = {fiatCode === "EUR" ? "€" : "$"}{" "}
@@ -256,13 +268,15 @@ export default function CreateOrder({
                             })}
                           </div>
                         </div>
+                      </div>
 
-                        <div className="custom-rate">
+                      <div className="space-y-2">
+                        <div>
                           <Label
                             htmlFor="custom-rate"
                             className="text-xs font-semibold"
                           >
-                            Tu tipo de cambio:
+                            {t("your_rate")}
                           </Label>
                           <Input
                             id="custom-rate"
@@ -314,35 +328,11 @@ export default function CreateOrder({
                       })}
                     </div>
                   </div>
-                  <div className="space-y-3">
-                    <Label className="font-bold">{t("payment_method")}</Label>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroup
-                        defaultValue="mercado-pago"
-                        className="flex items-center space-x-2"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            id="mercado-pago"
-                            value="mercado-pago"
-                          />
-                          <Label htmlFor="mercado-pago">Mercado Pago</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem id="bank" value="bank" disabled />
-                          <Label htmlFor="bank" className="text-gray-400">
-                            {t("bank")}
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                    <Input
-                      id="mercado-pago-username"
-                      placeholder="@alias"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                    />
-                  </div>
+                  <CompactPaymentMethodSelector
+                    selectedMethods={selectedMethods}
+                    onToggle={handleToggle}
+                    onUpdateMethod={handleUpdateMethod}
+                  />
                   {orderType === "BUY" && (
                     <div>
                       <Label className="font-bold" htmlFor="wallet-address">
