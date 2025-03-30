@@ -22,6 +22,7 @@ import {
 import { ChatInterface } from "@/chat/ChatInterface";
 import { Button } from "./button";
 import { Rating } from "./Rating";
+import { formatFiatAmount } from "@/lib/utils";
 
 interface OrderCardContentProps {
   order: Order;
@@ -65,24 +66,6 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   const handleChatClose = () => {
     setIsChatOpen(false);
     // Add any additional cleanup logic here if needed
-  };
-
-  const formatFiatAmount = (
-    amount: string | undefined,
-    fiatCode: string | undefined
-  ) => {
-    if (!amount) return "0,00";
-
-    const numAmount = parseFloat(amount);
-    const currencySymbol = fiatCode === "EUR" ? "€" : "$";
-
-    const formattedNumber = new Intl.NumberFormat("es-AR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(numAmount);
-
-    // Agregar el símbolo de moneda al inicio
-    return `${currencySymbol} ${formattedNumber}`;
   };
 
   const hasValidFiatData = (
@@ -143,7 +126,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
           )}
         </div>
         {/* Order details */}
-        <div className="flex justify-between w-full pb-1 space-y-2 pt-2">
+        <div className="flex justify-between w-full pb-1 space-y-2 pt-1">
           <div className="w-1/2 min-w-[60%] flex flex-col space-y-1">
             <div className="flex-1">
               <p className="text-left w-full text-primary">

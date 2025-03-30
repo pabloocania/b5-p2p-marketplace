@@ -33,22 +33,37 @@ const paymentMethodIconMap: Readonly<Record<string, LucideIcon>> = {
   BANK: Landmark,
 } as const;
 
+// Add size configuration mapping
+const sizeMap: Readonly<Record<string, { icon: string; text: string }>> = {
+  md: { icon: "w-3 h-3", text: "text-xs" },
+  lg: { icon: "w-4 h-4", text: "text-sm" },
+} as const;
+
 interface EntityBadgeProps {
   readonly entity: string;
   readonly type: string;
+  readonly alias?: string;
+  readonly size?: keyof typeof sizeMap;
 }
 
-const EntityBadge: React.FC<EntityBadgeProps> = ({ entity, type }) => {
+export const EntityBadge: React.FC<EntityBadgeProps> = ({
+  entity,
+  type,
+  alias,
+  size = "md", // default to md size
+}) => {
   const IconComponent = paymentMethodIconMap[type] ?? Tally1;
+  const sizeClass = sizeMap[size];
 
   return (
     <div className="inline-flex items-center space-x-1 px-1 py-0.5 rounded-md bg-secondary/30 text-primary">
       <IconComponent
-        className={`w-3 h-3 ${
+        className={`${sizeClass.icon} ${
           paymentMethodColorMap[type] ?? entityColorMap.default
         }`}
       />
-      <span className="text-xs">{entity}</span>
+      <span className={sizeClass.text}>{entity}</span>
+      {alias && <span className={sizeClass.text + " font-bold"}>{alias}</span>}
     </div>
   );
 };

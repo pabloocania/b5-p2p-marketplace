@@ -47,13 +47,13 @@ export function TransactionStatus({
       case "sent":
       case "waiting":
       case "sending":
-        return "bg-yellow-100 border-yellow-100 border-opacity-10";
+        return "bg-yellow-100";
       case "success":
-        return "bg-green-100 border-green-300 border-opacity-10";
+        return "bg-secondary bg-opacity-10";
       case "error":
         return "bg-red-100 border-red-300 border-opacity-10";
       default:
-        return "bg-gray-100 border-gray-300 border-opacity-10";
+        return "bg-gray-100 border-opacity-10";
     }
   };
 
@@ -97,7 +97,7 @@ export function TransactionStatus({
       {/* Added z-index */}
       <Card className="w-full max-w-sm mb-12">
         <CardContent className="pt-4 px-4">
-          <Alert className={`${getStatusColor(status)} border-opacity-10 mb-4`}>
+          <Alert className={`${getStatusColor(status)} mb-4`}>
             <AlertTitle className="flex items-center gap-2 text-primary font-bold">
               {getStatusIcon(status)}
               {getStatusText(status)}
