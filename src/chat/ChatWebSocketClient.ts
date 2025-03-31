@@ -1,10 +1,29 @@
+import { OrderEvent } from "b5-api-client";
+
+// Base interface for all message content types
+export interface ChatMessageContent {
+    type: 'TEXT' | 'ACTION' | 'EVENT';
+}
+
+export interface ChatMessageContentText extends ChatMessageContent {
+    type: 'TEXT';
+    text: string;
+}
+
+export interface ChatMessageContentAction extends ChatMessageContent {
+    type: 'ACTION';
+    content: string;
+}
+
+export interface ChatMessageContentEvent extends ChatMessageContent {
+    type: 'EVENT';
+    event: OrderEvent; // You'll need to define this interface as well
+}
+
 export interface ChatMessage {
     sender: string;
     timestamp: number;
-    content: {
-        type: string;
-        text: string;
-    };
+    content: ChatMessageContentText | ChatMessageContentAction | ChatMessageContentEvent;
 }
 
 export class ChatWebSocketClient {

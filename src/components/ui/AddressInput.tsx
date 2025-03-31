@@ -42,7 +42,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
           value={walletAddress}
           onChange={(e: any) => setWalletAddress(e.target.value)}
           placeholder={t("insert_wallet_address")}
-          className="flex-grow border border-primary border-opacity-50"
+          className="flex-grow border border-terciary border-opacity-50 text-primary text-xs [&::placeholder]:text-primary [&::placeholder]:text-xs"
           disabled={orderStatus !== "PENDING"}
         />
         {clipboardSupported && (
@@ -51,9 +51,9 @@ const AddressInput: React.FC<AddressInputProps> = ({
             variant="outline"
             size="icon"
             title="Paste from clipboard"
-            className="border border-primary border-opacity-50"
+            className="border border-terciary border-opacity-50"
           >
-            <Clipboard className="h-4 w-4" />
+            <Clipboard className="h-4 w-4 text-terciary" />
           </Button>
         )}
       </div>
