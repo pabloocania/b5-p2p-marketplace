@@ -111,7 +111,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
                 <SheetTrigger asChild>
                   <Button
                     onClick={handleChatIconClick}
-                    className="gap-1 p-2 items-center justify-center bg-white text-terciary"
+                    className="gap-1 p-2 items-center justify-center bg-white text-terciary border border-secondary border-opacity-50"
                   >
                     <MessageCircle size={20} />
                     <span>Chat</span>

@@ -58,7 +58,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
       <CardTitle className="flex w-full items-center">
         {/* Left Side */}
         <div className="flex space-x-2 w-full">
-          <div className="flex space-x-2 w-full items-center">
+          <div className="flex space-x-2 items-center bg-terciary/10 rounded-lg p-2">
             <span className="font-bold text-[clamp(1.2rem,2vw,1.3rem)] text-terciary w-full">
               {order.type === "SELL"
                 ? "@" + order.sellerUsername
