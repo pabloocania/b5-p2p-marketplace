@@ -18,20 +18,20 @@ export interface Filters {
 }
 
 const tokenOptions = [
-  { value: "usdt", label: "USDT" },
-  { value: "usdc", label: "USDC" },
-  { value: "pdoc", label: "PDOC" },
-  { value: "usdk", label: "USDK" },
+  { value: "usdt", label: "USDT", image: "/criptoicon/usdt.svg" },
+  { value: "usdc", label: "USDC", image: "/criptoicon/usdc.svg"  },
+  { value: "pdoc", label: "PDOC", image: "/criptoicon/pdoc.svg" },
+  { value: "usdk", label: "USDK", image: "/criptoicon/usdk.svg" },
 ];
 
 const paymentMethodOptions = [
-  { value: "revoult", label: "Revoult" },
-  { value: "paypal", label: "Mercado Pago" },
+  { value: "revoult", label: "Revoult",  image: "/criptoicon/revol.svg" },
+  { value: "paypal", label: "Mercado Pago",  image: "/criptoicon/merc.png" },
 ];
 
 const blockchainOptions = [
-  { value: "ethereum", label: "Ethereum" },
-  { value: "arbitrum", label: "Arbitrum" },
+  { value: "ethereum", label: "Ethereum", image: "/criptoicon/eth.svg" },
+  { value: "arbitrum", label: "Arbitrum", image: "/criptoicon/alg.svg" },
 ];
 
 const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
@@ -50,6 +50,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
     setShowFilters((prev) => !prev);
   };
 
+
   // Estilos comunes para los Select
   const commonSelectStyles = {
     control: (base: any) => ({
@@ -58,6 +59,8 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
       borderRadius: "9999px", // Redondeo total
       border: "1px solid #d1d5db", // Borde gris
       padding: "1px",
+      width: "130px",
+      boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
       "&:hover": { borderColor: "#9ca3af" }, // Cambio de color al pasar el cursor
     }),
     menu: (base: any) => ({
@@ -80,10 +83,23 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
     }),
     singleValue: (base: any) => ({
       ...base,
-      fontSize: "12px", // Tamaño de fuente del texto seleccionado
-      color: "#1f2937", // Color del texto seleccionado
+      display: "flex",
+      alignItems: "center",
+      fontSize: "14px",
+      fontWeight: "bold", // Texto en negrita
+      color: "#00796b", // Color verde oscuro
+      backgroundColor: "#e0f7fa", // Fondo azul claro
+      borderRadius: "6px", // Bordes redondeados
+    }),
+    valueContainer: (base: any) => ({
+      ...base,
+      display: "flex",
+      flexWrap: "nowrap", // Evita que los elementos se vayan a una segunda línea
+      alignItems: "center", // Asegura que la imagen y el texto se alineen bien // Ajusta el espaciado entre la imagen y el texto
+      fontSize: "10px",
     }),
   };
+  
 
   return (
     <div className="w-full">
@@ -100,24 +116,70 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
       </div>
 
       {showFilters && (
-        <div className="flex justify-center flex-row gap-x-9 mt-4 rounded-4">
-          <Select
-            options={tokenOptions}
-            onChange={(selectedOption) => handleChange("tokenCode", selectedOption?.value)}
-            placeholder="Criptos"
-            styles={commonSelectStyles}
+        <div className="flex justify-center flex-row gap-x-1 mt-4 rounded-4">
+         <Select
+              options={tokenOptions}
+              onChange={(selectedOption) => handleChange("tokenCode", selectedOption?.value)}
+             placeholder="Criptos"
+             styles={commonSelectStyles}
+             getOptionLabel={(e) => e.label} // Aquí solo retorna el texto
+             formatOptionLabel={(e) => (
+                <div className="flex items-center gap-2">
+                 <Image src={e.image} alt={e.label} width={20} height={20} />
+                 {e.label}
+               </div>
+              )}
+            components={{
+              SingleValue: ({ data }) => (
+                <div className="flex items-center gap-2">
+                  <Image src={data.image} alt={data.label} width={20} height={20} />
+                  {data.label}
+                </div>
+              ),
+            }}
+            isSearchable={false} 
           />
           <Select
             options={paymentMethodOptions}
             onChange={(selectedOption) => handleChange("paymentMethod", selectedOption?.value)}
             placeholder="Pagos"
             styles={commonSelectStyles}
+            getOptionLabel={(e) => (
+              <div className="flex items-center gap-2">
+                <Image src={e.image} alt={e.label} width={20} height={20} />
+                {e.label}
+              </div>
+            )}
+            components={{
+              SingleValue: ({ data }) => (
+                <div className="flex items-center gap-2">
+                  <Image src={data.image} alt={data.label} width={20} height={20} />
+                  {data.label}
+                </div>
+              ),
+            }}
+            isSearchable={false} 
           />
           <Select
             options={blockchainOptions}
             onChange={(selectedOption) => handleChange("blockchain", selectedOption?.value)}
             placeholder="Blockchain"
             styles={commonSelectStyles}
+            getOptionLabel={(e) => (
+              <div className="flex items-center gap-2">
+                <Image src={e.image} alt={e.label} width={20} height={20} />
+                {e.label}
+              </div>
+            )}
+            components={{
+              SingleValue: ({ data }) => (
+                <div className="flex items-center gap-2">
+                  <Image src={data.image} alt={data.label} width={20} height={20} />
+                  {data.label}
+                </div>
+              ),
+            }}
+            isSearchable={false} 
           />
         </div>
       )}

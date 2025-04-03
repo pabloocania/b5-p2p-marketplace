@@ -20,7 +20,7 @@ import UserOrdersMenu from "@/components/ui/TopLevelSubMenu";
 import MainMenu from "@/components/ui/MainMenu";
 import { useTranslation } from "react-i18next";
 import { initConfig } from "@/lib/ConfigStore";
-import OrdersList from "@/components/ui/OrdersList";
+import OrdersFilter from "@/components/ui/OrdersFilter";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -95,7 +95,7 @@ export default function Home() {
               />
             </div>
           </div>
-          < OrdersList />
+          < OrdersFilter />
           <div className="flex justify-center rounded-lg">
             <div className="w-[90vw] max-w-md rounded-lg min-h-[300px]">
               {renderComponent()}
