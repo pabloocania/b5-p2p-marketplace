@@ -59,7 +59,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
       borderRadius: "9999px", // Redondeo total
       border: "1px solid #d1d5db", // Borde gris
       padding: "1px",
-      width: "130px",
+      width: "125px",
       boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
       "&:hover": { borderColor: "#9ca3af" }, // Cambio de color al pasar el cursor
     }),
@@ -103,7 +103,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
 
   return (
     <div className="w-full">
-      <div className="flex justify-between">
+      <div className="flex justify-center mx-4 gap-x-[165px]">
         <div>
       <BuySellToggle /> {/* Asegúrate de que el componente de BuySellToggle esté manejando correctamente el estado de 'showFilters' */}
       </div>

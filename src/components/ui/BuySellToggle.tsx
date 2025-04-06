@@ -8,7 +8,7 @@ const BuySellToggle: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center gap-2 mt-4 p-2 bg-gray-400 rounded-full shadow-lg">
+    <div className="flex justify-center gap-2 mt-4 p-2 bg-[rgba(42,56,107,0.3)] rounded-full shadow-lg">
       {/* Botón de Compra */}
       <button
         onClick={() => handleClick("buy")}
