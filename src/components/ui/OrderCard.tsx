@@ -10,6 +10,7 @@ import OrderCardHeader from "./OrderCardHeader";
 import OrderCardContent from "./OrderCardContent";
 import OrderCardFooter from "./OrderCardFooter";
 import OrderIdLink from "./OrderIdLink";
+import { OrderShareLink } from "./OrderShareLink";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -44,7 +45,7 @@ export function OrderCard({
   }
 
   return (
-    <Card className="w-full mb-4" variant="shadow">
+    <Card className="w-full mb-4 relative" variant="shadow">
       <OrderStatusBar status={order.status ?? "Unknown"} />
       <OrderCardHeader order={order}></OrderCardHeader>
       <OrderCardContent
@@ -69,6 +70,7 @@ export function OrderCard({
           <OrderIdLink orderId={order.id} />
         </div>
       </div>
+      {order.id && <OrderShareLink orderId={order.id} />}
     </Card>
   );
 }

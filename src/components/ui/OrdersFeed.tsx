@@ -28,10 +28,11 @@ interface OrderFeedProps {
   creatorId?: string | undefined;
   buyerId?: string | undefined;
   filter?: Filter;
-  refreshKey?: number; // Add refreshKey prop
-  refreshInterval?: number; // Add refreshInterval prop
-  resetSelectedOrder?: boolean; // Add resetSelectedOrder prop
-  onBack?: () => void; // Add onBack prop
+  refreshKey?: number;
+  refreshInterval?: number;
+  resetSelectedOrder?: boolean;
+  onBack?: () => void;
+  highlightedOrderId?: string;
 }
 
 export default function OrdersFeed({
@@ -44,6 +45,7 @@ export default function OrdersFeed({
   refreshInterval = 15000,
   resetSelectedOrder,
   onBack,
+  highlightedOrderId,
 }: OrderFeedProps) {
   const { user, login, logout } = useUserContext();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -120,6 +122,17 @@ export default function OrdersFeed({
     return () => clearInterval(intervalId);
   }, [filter, refreshInterval, user, creatorId, buyerId]);
 
+  useEffect(() => {
+    if (highlightedOrderId) {
+      const highlightedOrder = orders.find(
+        (order) => order.id === highlightedOrderId
+      );
+      if (highlightedOrder) {
+        setSelectedOrder(highlightedOrder);
+      }
+    }
+  }, [highlightedOrderId, orders]);
+
   const handleOrderSelect = (order: Order) => {
     setSelectedOrder(order);
   };
@@ -143,7 +156,14 @@ export default function OrdersFeed({
             />
           ) : orders && orders.length > 0 ? (
             orders.map((order) => (
-              <div key={order.id} className="mb-7">
+              <div
+                key={order.id}
+                className={`mb-7 ${
+                  order.id === highlightedOrderId
+                    ? "ring-2 ring-primary animate-pulse"
+                    : ""
+                }`}
+              >
                 <OrderCard
                   orderDTO={order}
                   onSelect={handleOrderSelect}
