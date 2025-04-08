@@ -14,6 +14,7 @@ import {
 import UserMenu from "./UserMenu";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/router";
 
 export enum Filter {
   ALL = "ALL",
@@ -28,10 +29,11 @@ interface OrderFeedProps {
   creatorId?: string | undefined;
   buyerId?: string | undefined;
   filter?: Filter;
-  refreshKey?: number; // Add refreshKey prop
-  refreshInterval?: number; // Add refreshInterval prop
-  resetSelectedOrder?: boolean; // Add resetSelectedOrder prop
-  onBack?: () => void; // Add onBack prop
+  refreshKey?: number;
+  refreshInterval?: number;
+  resetSelectedOrder?: boolean;
+  onBack?: () => void;
+  highlightedOrderId?: string;
 }
 
 export default function OrdersFeed({
@@ -44,6 +46,7 @@ export default function OrdersFeed({
   refreshInterval = 15000,
   resetSelectedOrder,
   onBack,
+  highlightedOrderId,
 }: OrderFeedProps) {
   const { user, login, logout } = useUserContext();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -52,26 +55,50 @@ export default function OrdersFeed({
   );
   const { t } = useTranslation();
   const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
+  const router = useRouter();
 
   const fetchOrders = async () => {
     try {
       let response;
       const userId = user?.userId || buyerId || creatorId;
 
-      if (filter === Filter.ALL) {
-        response = await client.getOrders({ status: [Filter.PENDING] });
-      } else if (filter === Filter.PENDING) {
+      if (orderId) {
+        // Buscar todas las órdenes y filtrar solo la que tenga ese ID
         response = await client.getOrders({
-          status: [Filter.PENDING],
+          status: [
+            "PENDING",
+            "WAITING_PAYMENT",
+            "ACTIVE",
+            "FIAT_SENT",
+            "RELEASED",
+            "COMPLETED_BY_ADMIN",
+          ],
+        });
+
+        if (response?.orders) {
+          const filtered = response.orders.filter(
+            (order) => order.id === orderId
+          );
+          setOrders(filtered);
+        }
+        return;
+      }
+
+      // Si no hay orderId, mostrar el feed completo según el filtro
+      if (filter === Filter.ALL || (!user && filter === Filter.PENDING)) {
+        // Mostrar órdenes públicas pendientes
+        response = await client.getOrders({ status: ["PENDING"] });
+      } else if (user && filter === Filter.PENDING) {
+        // Mostrar órdenes del usuario pendientes
+        response = await client.getOrders({
+          status: ["PENDING"],
           user: userId,
         });
       } else if (filter === Filter.WAITING_PAYMENT) {
         response = await client.getOrders({
-          status: ["WAITING_PAYMENT" as OrderStatus, "ACTIVE", "FIAT_SENT"],
+          status: ["WAITING_PAYMENT", "ACTIVE", "FIAT_SENT"],
           user: userId,
         });
-        // const buyerOrdersList = response?.orders || [];
-        // return buyerOrdersList;
       } else if (filter === Filter.CLOSED) {
         response = await client.getOrders({
           status: ["RELEASED", "COMPLETED_BY_ADMIN"],
@@ -80,35 +107,24 @@ export default function OrdersFeed({
       }
 
       if (response) {
-        setOrders(response.orders);
+        setOrders(response.orders || []);
       }
     } catch (error) {
       console.error("Failed to fetch orders:", error);
+      setOrders([]);
     }
   };
 
-  const refreshOrders = async () => {
-    await fetchOrders();
-  };
+  // Escuchar cambios en orderId, filter y user
+  useEffect(() => {
+    fetchOrders();
+  }, [orderId, filter, user]);
 
   useEffect(() => {
     if (resetSelectedOrder) {
       setSelectedOrder(undefined);
     }
   }, [resetSelectedOrder]);
-
-  useEffect(() => {
-    if (filter === Filter.ALL || user) {
-      fetchOrders();
-    }
-  }, [user, creatorId, buyerId, filter, refreshKey]);
-
-  // Clear orders when user logs out
-  useEffect(() => {
-    if (!user) {
-      setOrders([]);
-    }
-  }, [user]);
 
   // Set up interval for automatic refresh
   useEffect(() => {
@@ -118,7 +134,18 @@ export default function OrdersFeed({
 
     // Clear interval on component unmount
     return () => clearInterval(intervalId);
-  }, [filter, refreshInterval, user, creatorId, buyerId]);
+  }, [filter, refreshInterval, user, creatorId, buyerId, orderId]);
+
+  useEffect(() => {
+    if (highlightedOrderId) {
+      const highlightedOrder = orders.find(
+        (order) => order.id === highlightedOrderId
+      );
+      if (highlightedOrder) {
+        setSelectedOrder(highlightedOrder);
+      }
+    }
+  }, [highlightedOrderId, orders]);
 
   const handleOrderSelect = (order: Order) => {
     setSelectedOrder(order);
@@ -126,28 +153,39 @@ export default function OrdersFeed({
 
   const handleBack = () => {
     setSelectedOrder(undefined);
+    // Limpiar la URL al cerrar la orden compartida
+    if (orderId) {
+      router.replace("/", undefined, { shallow: true });
+    }
     if (onBack) {
-      onBack(); // Call the onBack function if provided
+      onBack();
     }
   };
 
   return (
     <div className="w-full h-full">
       <ScrollableContainer>
-        {filter === Filter.ALL || user ? (
+        {filter === Filter.ALL || filter === Filter.PENDING || user ? (
           selectedOrder ? (
             <OrderCard
               orderDTO={selectedOrder}
               showDetails={true}
-              onRefresh={refreshOrders}
+              onRefresh={fetchOrders}
             />
           ) : orders && orders.length > 0 ? (
             orders.map((order) => (
-              <div key={order.id} className="mb-7">
+              <div
+                key={order.id}
+                className={`mb-7 ${
+                  order.id === highlightedOrderId
+                    ? "ring-2 ring-primary animate-pulse"
+                    : ""
+                }`}
+              >
                 <OrderCard
                   orderDTO={order}
                   onSelect={handleOrderSelect}
-                  onRefresh={refreshOrders}
+                  onRefresh={fetchOrders}
                 />
               </div>
             ))

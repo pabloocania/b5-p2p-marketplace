@@ -7,14 +7,22 @@ interface TopLevelSubMenuProps {
   activeSubFilter: Filter;
   setActiveSubFilter: (filter: Filter) => void;
   refreshKey: number;
+  orderId?: string;
 }
 
 const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
   activeSubFilter,
   setActiveSubFilter,
   refreshKey,
+  orderId,
 }) => {
   const { t } = useTranslation();
+
+  // Si hay un orderId, no mostramos nada
+  if (orderId) {
+    return null;
+  }
+
   return (
     <>
       <div className="max-w-md pr-2 pl-2 pt-5 pb-5 flex justify-center space-x-2 flex w-full">

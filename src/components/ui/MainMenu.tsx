@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 interface MainMenuProps {
   activeComponent: string;
   setActiveComponent: (component: string) => void;
-  handleUserMenuOpen: () => void;
+  handleUserMenuOpen?: () => void;
 }
 
 const MainMenu: React.FC<MainMenuProps> = ({
@@ -14,37 +14,41 @@ const MainMenu: React.FC<MainMenuProps> = ({
   handleUserMenuOpen,
 }) => {
   const { t } = useTranslation();
+
   return (
-    <div className="max-w-md pr-2 pl-2 pt-5 flex justify-center space-x-2 w-full">
+    <div className="max-w-md pr-2 pl-2 pt-5 pb-5 flex justify-center space-x-2 flex w-full">
       <Button
-        className={`w-1/3 h-10 ${
+        className={`flex-1 ${
           activeComponent === "OrderFeed"
             ? "bg-secondary text-white"
-            : "hover:bg-primary text-white"
+            : "hover:bg-primary text-white bg-terciary"
         }`}
         onClick={() => setActiveComponent("OrderFeed")}
       >
-        {t("p2p_market")}
+        {t("mercado")}
       </Button>
       <Button
-        className={`w-1/3 h-10 ${
+        className={`flex-1 ${
           activeComponent === "MyOrders"
             ? "bg-secondary text-white"
-            : "hover:bg-primary text-white"
+            : "hover:bg-primary text-white bg-terciary"
         }`}
         onClick={() => setActiveComponent("MyOrders")}
       >
-        {t("my_orders")}
+        {t("mis_ordenes")}
       </Button>
       <Button
-        className={`w-1/3 h-10 ${
+        className={`flex-1 ${
           activeComponent === "UserMenu"
             ? "bg-secondary text-white"
-            : "hover:bg-primary text-white"
+            : "hover:bg-primary text-white bg-terciary"
         }`}
-        onClick={handleUserMenuOpen}
+        onClick={() => {
+          setActiveComponent("UserMenu");
+          handleUserMenuOpen?.();
+        }}
       >
-        {t("my_account")}
+        {t("mi_cuenta")}
       </Button>
     </div>
   );

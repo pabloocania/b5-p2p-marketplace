@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import styles from "../styles/Home.module.css";
 import CreateOrder from "../src/components/ui/CreateOrder";
 import OrdersFeed, { Filter } from "../src/components/ui/OrdersFeed";
@@ -9,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Plus, User, Languages, Globe } from "lucide-react";
+import { Plus, User, Languages, Globe, Loader2 } from "lucide-react";
 import UserMenu from "../src/components/ui/UserMenu";
 import { useUserContext } from "../src/components/ui/UserContext";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
@@ -20,8 +21,13 @@ import UserOrdersMenu from "@/components/ui/TopLevelSubMenu";
 import MainMenu from "@/components/ui/MainMenu";
 import { useTranslation } from "react-i18next";
 import { initConfig } from "@/lib/ConfigStore";
+import { OrderCard } from "@/components/ui/OrderCard";
+import { Order } from "b5-api-client";
+import { p2pMarketAPIClient as client } from "../src/lib/APIClients";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Home() {
+  const router = useRouter();
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
   const [activeSubFilter, setActiveSubFilter] = useState(Filter.PENDING);
   const { user, login, logout } = useUserContext();
@@ -29,6 +35,12 @@ export default function Home() {
   const { disconnect } = useDisconnect();
   const { transaction, resetTransaction } = useTransaction();
   const { i18n, t } = useTranslation();
+
+  // Estados para el manejo de deeplinks
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isOrderSheetOpen, setIsOrderSheetOpen] = useState(false);
+  const [isLoadingOrder, setIsLoadingOrder] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -39,6 +51,59 @@ export default function Home() {
       setActiveComponent("OrderFeed");
     }
   }, [user, disconnect]);
+
+  // Manejar los parámetros de la URL
+  useEffect(() => {
+    if (router.isReady) {
+      // Activar el componente especificado en la URL
+      if (router.query.component) {
+        setActiveComponent(router.query.component as string);
+      }
+    }
+  }, [router.isReady, router.query.component]);
+
+  useEffect(() => {
+    const fetchOrderById = async (orderId: string) => {
+      setIsLoadingOrder(true);
+      setOrderError(null);
+
+      try {
+        const response = await client.getOrders({
+          status: [
+            "PENDING",
+            "WAITING_PAYMENT",
+            "ACTIVE",
+            "FIAT_SENT",
+            "RELEASED",
+            "COMPLETED_BY_ADMIN",
+          ],
+        });
+
+        if (response.orders && response.orders.length > 0) {
+          const foundOrder = response.orders.find(
+            (order) => order.id === orderId
+          );
+          if (foundOrder) {
+            setSelectedOrder(foundOrder);
+            setIsOrderSheetOpen(true);
+          } else {
+            setOrderError(t("order_not_found"));
+          }
+        } else {
+          setOrderError(t("order_not_found"));
+        }
+      } catch (error) {
+        console.error("Error fetching order:", error);
+        setOrderError(t("error_loading_order"));
+      } finally {
+        setIsLoadingOrder(false);
+      }
+    };
+
+    if (router.query.orderId && typeof router.query.orderId === "string") {
+      fetchOrderById(router.query.orderId);
+    }
+  }, [router.query.orderId, t]);
 
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
 
@@ -54,14 +119,16 @@ export default function Home() {
     setActiveComponent("UserMenu");
   };
 
+  const handleComponentChange = (component: string) => {
+    // Si estamos cambiando a OrderFeed y hay un orderId, limpiamos la URL
+    if (component === "OrderFeed" && router.query.orderId) {
+      router.replace("/", undefined, { shallow: true });
+    }
+    setActiveComponent(component);
+  };
+
   const renderComponent = () => {
-    if (activeComponent === "OrderFeed") {
-      return (
-        <div className="pt-5 rounded-lg max-w-md flex justify-center rounded-lg space-x-2">
-          <OrdersFeed refreshKey={refreshKey} />
-        </div>
-      );
-    } else if (activeComponent === "UserMenu") {
+    if (activeComponent === "UserMenu") {
       return <UserMenu user={user} onLogin={login} onLogout={logout} />;
     } else if (activeComponent === "MyOrders") {
       return (
@@ -70,6 +137,30 @@ export default function Home() {
           setActiveSubFilter={setActiveSubFilter}
           refreshKey={refreshKey}
         />
+      );
+    } else if (activeComponent === "OrderFeed") {
+      // Si hay un orderId en la URL, mostrar solo esa orden
+      if (router.query.orderId) {
+        return (
+          <div className="pt-5 rounded-lg max-w-md flex justify-center rounded-lg space-x-2">
+            <OrdersFeed
+              orderId={router.query.orderId as string}
+              refreshKey={refreshKey}
+              resetSelectedOrder={true}
+            />
+          </div>
+        );
+      }
+
+      // Si no hay orderId, mostrar el feed normal con filtros
+      return (
+        <>
+          <UserOrdersMenu
+            activeSubFilter={activeSubFilter}
+            setActiveSubFilter={setActiveSubFilter}
+            refreshKey={refreshKey}
+          />
+        </>
       );
     }
   };
@@ -89,7 +180,7 @@ export default function Home() {
             <div className="w-[90vw] max-w-md rounded-lg">
               <MainMenu
                 activeComponent={activeComponent}
-                setActiveComponent={setActiveComponent}
+                setActiveComponent={handleComponentChange}
                 handleUserMenuOpen={handleUserMenuOpen}
               />
             </div>

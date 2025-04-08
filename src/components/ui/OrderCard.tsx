@@ -10,6 +10,7 @@ import OrderCardHeader from "./OrderCardHeader";
 import OrderCardContent from "./OrderCardContent";
 import OrderCardFooter from "./OrderCardFooter";
 import OrderIdLink from "./OrderIdLink";
+import { OrderShareLink } from "./OrderShareLink";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -44,31 +45,36 @@ export function OrderCard({
   }
 
   return (
-    <Card className="w-full mb-4" variant="shadow">
-      <OrderStatusBar status={order.status ?? "Unknown"} />
-      <OrderCardHeader order={order}></OrderCardHeader>
-      <OrderCardContent
-        order={order}
-        user={user}
-        walletAddress={walletAddress}
-        showDetails={showDetails}
-        setWalletAddress={setWalletAddress}
-      ></OrderCardContent>
-      <OrderCardFooter
-        order={order}
-        user={user}
-        onRefresh={onRefresh}
-        onSelect={onSelect}
-        walletAddress={walletAddress}
-        showDetails={showDetails}
-        setOrder={setOrder}
-      ></OrderCardFooter>
-      <Separator className="mb-1" />
-      <div className="pl-4 pr-4 flex items-center justify-between text-sm">
-        <div className="flex-1">
-          <OrderIdLink orderId={order.id} />
+    <Card className="w-full mb-4 relative min-h-[200px]" variant="shadow">
+      <div className="flex flex-col h-full">
+        <OrderStatusBar status={order.status ?? "Unknown"} />
+        <OrderCardHeader order={order}></OrderCardHeader>
+        <OrderCardContent
+          order={order}
+          user={user}
+          walletAddress={walletAddress}
+          showDetails={showDetails}
+          setWalletAddress={setWalletAddress}
+        ></OrderCardContent>
+        <OrderCardFooter
+          order={order}
+          user={user}
+          onRefresh={onRefresh}
+          onSelect={onSelect}
+          walletAddress={walletAddress}
+          showDetails={showDetails}
+          setOrder={setOrder}
+        ></OrderCardFooter>
+        <div className="mt-auto">
+          <Separator className="mb-1" />
+          <div className="pl-4 pr-4 flex items-center justify-between text-sm py-3">
+            <div className="flex-1">
+              <OrderIdLink orderId={order.id} />
+            </div>
+          </div>
         </div>
       </div>
+      {order.id && <OrderShareLink orderId={order.id} />}
     </Card>
   );
 }
