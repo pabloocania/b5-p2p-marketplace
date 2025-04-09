@@ -29,7 +29,7 @@ module.exports = {
 				primary: "#2a386b",
 				secondary: "#58bf4b",
 				terciary: "#4B75E7",
-				backgroundMain: "#E1EAF0",
+				backgroundMain: "#f7fff8",
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))'

@@ -81,6 +81,17 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   const buyerHasNotRated = isBuyer && !order.buyerHasRated;
   const sellerHasNotRated = isSeller && !order.sellerHasRated;
 
+  function isOrderCompleted(status: string): boolean {
+    const completedStatuses = [
+      "COMPLETED",
+      "COMPLETED_BY_ADMIN",
+      "RELEASED",
+      "CANCELLED",
+    ];
+
+    return completedStatuses.includes(status);
+  }
+
   return (
     <CardContent className="pb-3 mt-2">
       <div className="rounded-lg space-y-1 px-2 bg-secondary bg-opacity-10 space-y-1 pt-1">
@@ -99,7 +110,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
             </span>
           </div>
           {/* Chat icon */}
-          {order.chatId && (
+          {order.chatId && !isOrderCompleted(order.status!!) && (
             <div className="flex">
               <Sheet
                 open={isChatOpen}
@@ -165,7 +176,12 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
           </div>
         </div>
         {/* Order created date */}
-        {order.createdAt && <OrderCreatedDate createdAt={order.createdAt} />}
+        {order.createdAt && (
+          <OrderCreatedDate
+            createdAt={order.createdAt}
+            status={order.status!!}
+          />
+        )}
       </div>
       {order.status &&
         finishedStatusesList.includes(order.status) &&

@@ -157,10 +157,10 @@ export default function OrdersFeed({
             </div>
           )
         ) : (
-          <div className="flex flex-col items-center h-full mt-10">
+          <div className="flex flex-col items-center h-full">
             <Button
               onClick={() => setIsLoginSheetOpen(true)}
-              className="text-white"
+              className="w-full bg-primary text-white"
             >
               {t("login_to_view")}
             </Button>

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
 import { UserStats } from "@/components/ui/UserStats";
+import { UserInfoCard } from "./UserInfoCard";
 
 interface OrderCardHeaderProps {
   order: Order;
@@ -58,17 +59,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
       <CardTitle className="flex w-full items-center">
         {/* Left Side */}
         <div className="flex space-x-2 w-full">
-          <div className="flex space-x-2 items-center bg-terciary/10 rounded-lg p-2">
-            <span className="font-bold text-[clamp(1.2rem,2vw,1.3rem)] text-terciary w-full">
-              {order.type === "SELL"
-                ? "@" + order.sellerUsername
-                : "@" + order.buyerUsername}
-            </span>
-            <UserStats
-              rating={order.creatorRating}
-              transactionCount={Number(order.transactionsCount)}
-            />
-          </div>
+          <UserInfoCard order={order} />
         </div>
 
         {/* Right Side */}

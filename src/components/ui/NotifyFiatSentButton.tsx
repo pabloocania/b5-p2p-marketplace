@@ -32,9 +32,15 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
   };
 
   return (
-    <div className="space-y-1 bg-secondary/10 rounded-lg">
-      <div className="px-2 py-2 bg-yellow/10 rounded-lg">
+    <div className="space-y-1 bg-white bg-yellow-100/50 rounded-lg">
+      <div className="px-2 py-2 rounded-lg">
         <div className="text-left mb-3 space-y-2">
+          <p className="text-md font-semibold text-primary">
+            <span className="mr-1 font-bold text-terciary">
+              @{order.sellerUsername}
+            </span>
+            {t("seller_has_locked")}
+          </p>
           <p className="text-md font-semibold text-primary">
             {t("send")}
             <span className="ml-1 mr-1 text-xl font-bold text-terciary">
@@ -55,7 +61,7 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
             ))}
           </div>
         </div>
-        <div className="text-muted-foreground text-xs text-left bg-yellow-100 py-2 px-2 mb-2 rounded-md">
+        <div className="text-primary text-center text-xs text-left bg-secondary/10 py-2 px-2 mb-2 rounded-md">
           <p>{t("please_verify_payment_details")}</p>
         </div>
         <Button
