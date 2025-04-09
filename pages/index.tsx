@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import styles from "../styles/Home.module.css";
 import CreateOrder from "../src/components/ui/CreateOrder";
 import OrdersFeed, { Filter } from "../src/components/ui/OrdersFeed";
 import { Button } from "@/components/ui/button";
@@ -17,9 +16,8 @@ import { useDisconnect } from "wagmi";
 import { useTransaction } from "@/lib/web3/TransactionContext";
 import { TransactionStatus } from "@/components/ui/TransactionStatus";
 import UserOrdersMenu from "@/components/ui/TopLevelSubMenu";
-import MainMenu from "@/components/ui/MainMenu";
 import { useTranslation } from "react-i18next";
-import { initConfig } from "@/lib/ConfigStore";
+import { TopBar } from "@/components/ui/TopBar";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -56,11 +54,7 @@ export default function Home() {
 
   const renderComponent = () => {
     if (activeComponent === "OrderFeed") {
-      return (
-        <div className="pt-5 rounded-lg max-w-md flex justify-center rounded-lg space-x-2">
-          <OrdersFeed refreshKey={refreshKey} />
-        </div>
-      );
+      return <OrdersFeed refreshKey={refreshKey} />;
     } else if (activeComponent === "UserMenu") {
       return <UserMenu user={user} onLogin={login} onLogout={logout} />;
     } else if (activeComponent === "MyOrders") {
@@ -69,15 +63,22 @@ export default function Home() {
           activeSubFilter={activeSubFilter}
           setActiveSubFilter={setActiveSubFilter}
           refreshKey={refreshKey}
+          user={user}
         />
       );
     }
   };
 
   return (
-    <div className="min-h-screen bg-backgroundMain">
-      <div className="container mx-auto">
-        <main className={`${styles.main}`}>
+    <div className="min-h-screen bg-white flex justify-center">
+      <div className="w-full bg-backgroundMain flex flex-col relative h-screen">
+        <TopBar
+          activeComponent={activeComponent}
+          setActiveComponent={setActiveComponent}
+        />
+
+        {/* Main scrollable area with padding bottom for buttons */}
+        <main className="flex-1 overflow-y-auto pb-36">
           <TransactionStatus
             status={transaction.status}
             message={transaction.message}
@@ -85,81 +86,72 @@ export default function Home() {
             order={transaction.order}
             onClose={resetTransaction}
           />
-          <div className="flex justify-center rounded-lg pb-4">
-            <div className="w-[90vw] max-w-md rounded-lg">
-              <MainMenu
-                activeComponent={activeComponent}
-                setActiveComponent={setActiveComponent}
-                handleUserMenuOpen={handleUserMenuOpen}
-              />
-            </div>
-          </div>
-          <div className="flex justify-center rounded-lg">
-            <div className="w-[90vw] max-w-md rounded-lg min-h-[300px]">
-              {renderComponent()}
-            </div>
-          </div>
-          <div className="fixed bottom-20 left-4">
-            {" "}
-            {/* Adjusted position */}
-            <Button
-              size="icon"
-              className="rounded-full w-14 h-14 shadow-lg text-white"
-              onClick={handleUserMenuOpen}
-            >
-              <User className="h-6 w-6" />
-              <span className="sr-only">User Menu</span>
-            </Button>
-          </div>
-          <div className="fixed bottom-4 left-4">
-            <Button
-              size="icon"
-              className="rounded-full w-14 h-14 shadow-lg text-white flex items-center justify-center"
-              onClick={() =>
-                changeLanguage(i18n.language === "en" ? "es" : "en")
-              }
-            >
-              <Languages className="h-5 w-5 pr-1" />
-              {"  "}
-              {i18n.language === "en" ? " ESP" : " ENG"}
-              <span className="sr-only">Change Language</span>
-            </Button>
-          </div>
-          <div className="fixed bottom-4 right-4">
-            <Sheet
-              open={isCreateOrderOpen}
-              onOpenChange={(open) => {
-                setIsCreateOrderOpen(open);
-                if (!open) handleCreateOrderClose();
-              }}
-            >
-              <SheetTrigger asChild>
-                <Button
-                  size="icon"
-                  className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-lg text-white"
-                  disabled={!user}
-                >
-                  <Plus className="h-6 w-6" />
-                  <span className="sr-only">Create order</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                side="bottom"
-                className="h-[90vh] bg-backgroundMain"
-                closeText={t("close")}
-              >
-                <VisuallyHidden>
-                  <SheetTitle>Create Order Dialog</SheetTitle>
-                </VisuallyHidden>
-                <CreateOrder
-                  onClose={handleCreateOrderClose}
-                  onConnectWallet={handleUserMenuOpen}
-                />
-              </SheetContent>
-            </Sheet>
+          <div className="w-full max-w-md mx-auto py-5 px-5">
+            {renderComponent()}
           </div>
         </main>
-        <footer className={styles.footer}></footer>
+
+        {/* Fixed bottom buttons container */}
+        <div className="fixed bottom-0 w-full pb-4 pt-8">
+          <div className="relative px-4">
+            <div className="absolute bottom-20 left-4">
+              <Button
+                size="icon"
+                className="rounded-full w-14 h-14 shadow-lg text-white bg-primary hover:bg-terciary/90"
+                onClick={handleUserMenuOpen}
+              >
+                <User className="h-6 w-6" />
+                <span className="sr-only">User Menu</span>
+              </Button>
+            </div>
+            <div className="absolute bottom-4 left-4">
+              <Button
+                size="icon"
+                className="bg-primary hover:bg-terciary/90 rounded-full w-14 h-14 shadow-lg text-white flex items-center justify-center"
+                onClick={() =>
+                  changeLanguage(i18n.language === "en" ? "es" : "en")
+                }
+              >
+                <Languages className="h-5 w-5 pr-1" />
+                {i18n.language === "en" ? " ESP" : " ENG"}
+                <span className="sr-only">Change Language</span>
+              </Button>
+            </div>
+            <div className="absolute bottom-4 right-4">
+              <Sheet
+                open={isCreateOrderOpen}
+                onOpenChange={(open) => {
+                  setIsCreateOrderOpen(open);
+                  if (!open) handleCreateOrderClose();
+                }}
+              >
+                <SheetTrigger asChild>
+                  <Button
+                    size="icon"
+                    className="rounded-full w-14 h-14 shadow-lg text-white bg-primary hover:bg-terciary/90"
+                    disabled={!user}
+                  >
+                    <Plus className="h-6 w-6" />
+                    <span className="sr-only">Create order</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent
+                  side="bottom"
+                  className="h-[90vh] bg-backgroundMain"
+                  closeText={t("close")}
+                >
+                  <VisuallyHidden>
+                    <SheetTitle>Create Order Dialog</SheetTitle>
+                  </VisuallyHidden>
+                  <CreateOrder
+                    onClose={handleCreateOrderClose}
+                    onConnectWallet={handleUserMenuOpen}
+                  />
+                </SheetContent>
+              </Sheet>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

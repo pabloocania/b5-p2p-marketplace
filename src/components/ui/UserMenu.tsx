@@ -8,9 +8,19 @@ import { useTranslation } from "react-i18next";
 import { Loader2 } from "lucide-react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import PushNotificationsToggle from "./PushNotificationsToggle";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { UserInfoCard } from "./UserInfoCard";
 
 interface UserMenuProps {
   user: UserProps | undefined;
+
   // openConnectModal: boolean | false;
   onLogin: (user: UserProps) => void;
   onLogout: () => void;
@@ -71,63 +81,62 @@ const UserMenu = ({ user, onLogin, onLogout }: UserMenuProps) => {
     );
   }
 
-  return (
-    <div className="p-4">
-      {user ? (
-        <div className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <div>
-              <div className="flex items-center">
-                <p className="font-bold text-primary">
-                  {t("user")}: {user.username}
-                </p>
-              </div>
-              <p className="text-xs ">ID: {user.userId}</p>
-              {/* <p className="text-sm text-gray-500">{user.email}</p> */}
+  return user ? (
+    <Card className="w-full mb-4" variant="shadow">
+      <CardHeader>
+        <CardTitle>
+          <UserInfoCard user={user} />
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="w-full">
+          <PushNotificationsToggle
+            userId={user.userId}
+          ></PushNotificationsToggle>
+        </div>
+        <div className="w-full">{ConnectWalletButton()}</div>
+        {isConnecting && (
+          <div className="flex items-center justify-center h-full">
+            <div className="flex items-center space-x-2">
+              <Loader2 className="h-4 w-4 animate-spin text-yellow-600" />
+              <span className="text-sm block">{t("loading_wallet")}</span>
             </div>
           </div>
+        )}
+        {isConnected && (
           <div className="w-full">
-            <PushNotificationsToggle
-              userId={user.userId}
-            ></PushNotificationsToggle>
+            <InternalTransfersComponent />
           </div>
-          <div className="w-full">{ConnectWalletButton()}</div>
-          {/* <div className="w-full"> */}
-          {isConnecting && (
-            <div className="flex items-center justify-center h-full">
-              <div className="flex items-center space-x-2">
-                <Loader2 className="h-4 w-4 animate-spin text-yellow-600" />
-                <span className="text-sm block">{t("loading_wallet")}</span>
-              </div>
-            </div>
-          )}
-          {isConnected && (
-            <div className="w-full">
-              <InternalTransfersComponent />
-            </div>
-          )}
+        )}
+      </CardContent>
+      <Separator className="mb-1" />
+      <CardFooter>
+        <Button
+          onClick={onLogout}
+          variant="default"
+          className="w-full text-white"
+        >
+          Log Out
+        </Button>
+      </CardFooter>
+    </Card>
+  ) : (
+    <Card className="w-full mb-4" variant="shadow">
+      <CardHeader>
+        <CardTitle>{t("select_user")}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {mockUsers.map((mockUser) => (
           <Button
-            onClick={onLogout}
-            variant="default"
-            className="w-full text-white"
+            key={mockUser.userId}
+            onClick={() => onLogin(mockUser)}
+            className="w-full text-white text-xs md:text-base"
           >
-            Log Out
+            {mockUser.username}
           </Button>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {mockUsers.map((mockUser) => (
-            <Button
-              key={mockUser.userId}
-              onClick={() => onLogin(mockUser)}
-              className="w-full text-white text-xs md:text-base"
-            >
-              {mockUser.username}
-            </Button>
-          ))}
-        </div>
-      )}
-    </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 };
 

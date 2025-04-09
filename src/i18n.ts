@@ -56,7 +56,7 @@ i18n.use(initReactI18next).init({
         transaction_status_timeout: "Transaction status check timed out.",
         transfering: "Transferring...",
         funds_released: "Funds released",
-        releasing_funds: "Releasing funds...",
+        releasing_funds: "You have to sign the transaction with your wallet to release the funds to the buyer",
         funds_locked: "Funds are locked in the smart contract",
         //Sign the transaction with your wallet in order to the deposit of fund
         approve_and_lock:
@@ -128,6 +128,8 @@ i18n.use(initReactI18next).init({
         send: "You must send",
         please_verify_payment_details: "Please verify payment details. Once you send the funds, click on the button below to notify the seller.",
         to_receive: "to receive your purchase, through:",
+        seller_has_locked: "has locked the crypto in the smart contract",
+        ago: "ago"
       },
     },
     es: {
@@ -184,7 +186,7 @@ i18n.use(initReactI18next).init({
           "El chequeo del estado de la transacción ha expirado.",
         transfering: "Transfiriendo...",
         funds_released: "Fondos enviados al comprador.",
-        releasing_funds: "Liberando y enviando fondos al comprador",
+        releasing_funds: "Debes firmar la transacción con tu wallet para liberarle los fondos al comprador",
         funds_locked: "Los fondos están asegurados en el contrato inteligente",
         approve_and_lock:
           "Debes firmar la transacción con tu wallet para depositar los fondos en el contrato inteligente",
@@ -257,6 +259,8 @@ i18n.use(initReactI18next).init({
         send: "Debes enviar",
         to_receive: "para recibir tu compra, a traves de:",
         please_verify_payment_details: "Por favor, verifica los detalles de pago. Una vez que envíes los fondos, haz click en el botón de abajo para notificar al vendedor.",
+        seller_has_locked: "ha depositado la cripto en el contrato inteligente",
+        ago: "atras"
       },
     },
   },

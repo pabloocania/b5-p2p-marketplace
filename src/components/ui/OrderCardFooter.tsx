@@ -142,12 +142,13 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     order.buyerId,
     order.sellerId,
   ].includes(user?.userId);
-  const shouldHideButtons =
+
+  const isWaitingAction =
     ["WAITING_PAYMENT", "ACTIVE", "FIAT_SENT"].includes(
       order.status as OrderStatus
     ) && isUserInvolved;
 
-  return shouldHideButtons ? (
+  return isWaitingAction ? (
     <CardFooter className="pb-3">
       <div className="text-center w-full text-white">
         {renderActionButton()}
@@ -165,7 +166,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         className="w-full bg-secondary text-white font-semibold"
         onClick={() => onSelect && onSelect(order)}
       >
-        {order.type === "SELL" ? t("buy") : t("sell")}
+        {order.type === "SELL" ? t("buy") : t("sell")} {order.tokenCode}
       </Button>
     </CardFooter>
   ) : showDetails && (walletAddress || order.type === "BUY") ? (
