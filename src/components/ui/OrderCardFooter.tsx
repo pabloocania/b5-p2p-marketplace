@@ -7,6 +7,7 @@ import {
   TakeBuyOrderRequest,
   TakeSellOrderRequest,
   UpdateOrderRequest,
+  KioscoinUser,
 } from "b5-api-client";
 import { Button } from "@/components/ui/button";
 import LockFundsButton from "@/lib/web3/LockFundsButton";
@@ -15,13 +16,12 @@ import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useTranslation } from "react-i18next";
 import { useUserContext } from "./UserContext";
 import { useAccount } from "wagmi";
-import { UserProps } from "@/lib/useUser";
 import { ConnectToContinueButton } from "./ConnectToContinueButton";
 import NotifyFiatSentButton from "./NotifyFiatSentButton";
 
 interface OrderCardFooterProps {
   order: Order;
-  user: UserProps | undefined;
+  user: KioscoinUser | undefined;
   walletAddress: string;
   onRefresh?: () => void;
   showDetails: boolean;
@@ -42,8 +42,8 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [orderTaken, setOrderTaken] = useState(false);
-  const isSeller: boolean = order.sellerId === user?.userId;
-  const canSelectOrder = isLoggedIn && user?.userId !== order?.creatorId;
+  const isSeller: boolean = order.sellerId === user?.id;
+  const canSelectOrder = isLoggedIn && user?.id !== order?.creatorId;
 
   const shouldShowSelectButton =
     !order || order.status === ("PENDING" as OrderStatus);
@@ -71,7 +71,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         takeOrderRequest = {
           type: "SELL",
           orderId: order.id ?? "",
-          userId: user?.userId ?? "",
+          userId: user?.id ?? "",
           buyerAddress: walletAddress,
           fiatAmount: order.fiatAmount?.toString() ?? "0",
           username: user?.username,
@@ -81,7 +81,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         takeOrderRequest = {
           type: "BUY",
           orderId: order.id ?? "",
-          userId: user?.userId ?? "", // Replace with the actual user ID
+          userId: user?.id ?? "",
           amount: order.fiatAmount?.toString() ?? "0",
           username: user?.username,
           hash: order.sellerHash,
@@ -141,7 +141,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     order.creatorId,
     order.buyerId,
     order.sellerId,
-  ].includes(user?.userId);
+  ].includes(user?.id);
 
   const isWaitingAction =
     ["WAITING_PAYMENT", "ACTIVE", "FIAT_SENT"].includes(

@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { LogOut, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { UserProps } from "../../lib/useUser";
 import { UserInfoCard } from "../ui/UserInfoCard";
 import PushNotificationsToggle from "../ui/PushNotificationsToggle";
 import InternalTransfersComponent from "../../lib/web3/InternalTransfersComponent";
@@ -14,9 +13,10 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { KioscoinUser } from "b5-api-client";
 
 interface UserProfileProps {
-  readonly user: UserProps;
+  readonly user: KioscoinUser;
   readonly onLogout: () => void;
   readonly isConnected: boolean;
   readonly isConnecting: boolean;
@@ -51,16 +51,12 @@ export const UserProfile = ({
   return (
     <Card className="w-full mb-4" variant="shadow">
       <CardHeader>
-        <CardTitle>
-          <UserInfoCard user={user} />
+        <CardTitle className="flex justify-center items-center align-center mt-2">
+          <UserInfoCard user={user} order={undefined} />
         </CardTitle>
       </CardHeader>
+      <Separator className="mt-2 mb-4" />
       <CardContent className="space-y-4">
-        <div className="w-full">
-          <PushNotificationsToggle
-            userId={user.userId}
-          ></PushNotificationsToggle>
-        </div>
         <div className="w-full">{ConnectWalletButton()}</div>
         {isConnecting && (
           <div className="flex items-center justify-center h-full">
@@ -75,9 +71,11 @@ export const UserProfile = ({
             <InternalTransfersComponent />
           </div>
         )}
+        <div className="w-full">
+          <PushNotificationsToggle userId={user.id!}></PushNotificationsToggle>
+        </div>
       </CardContent>
-      <Separator className="mb-1" />
-      <CardFooter>
+      <CardFooter className="py-2">
         <Button
           onClick={onLogout}
           variant="default"

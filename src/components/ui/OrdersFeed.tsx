@@ -153,7 +153,9 @@ export default function OrdersFeed({
             ))
           ) : (
             <div className="flex flex-col items-center h-full">
-              <div className="mb-5">{t("no_orders_available")}</div>
+              <div className="mb-5 text-primary font-bold">
+                {t("no_orders_available")}
+              </div>
             </div>
           )
         ) : (

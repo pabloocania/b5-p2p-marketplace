@@ -1,18 +1,12 @@
 import { useState } from "react";
 import { disconnect } from '@wagmi/core'
 import { config } from '../wagmi'
-
-export interface UserProps {
-    username: string;
-    email?: string;
-    userId: string;
-    avatarUrl?: string;
-}
+import { KioscoinUser } from "b5-api-client";
 
 export function useUser() {
-    const [user, setUser] = useState<UserProps | undefined>(undefined);
+    const [user, setUser] = useState<KioscoinUser | undefined>(undefined);
 
-    const login = (userData: UserProps) => {
+    const login = (userData: KioscoinUser) => {
         setUser(userData);
     };
 
@@ -28,3 +22,4 @@ export function useUser() {
         logout,
     };
 }
+

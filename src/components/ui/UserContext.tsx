@@ -1,10 +1,11 @@
 import React, { createContext, useContext } from "react";
-import { useUser, UserProps } from "../../lib/useUser";
+import { useUser } from "../../lib/useUser";
+import { KioscoinUser } from "b5-api-client";
 
 interface UserContextProps {
-  user: UserProps | undefined;
+  user: KioscoinUser | undefined;
   isLoggedIn: boolean;
-  login: (userData: UserProps) => void;
+  login: (userData: KioscoinUser) => void;
   logout: () => void;
 }
 

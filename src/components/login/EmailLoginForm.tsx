@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { firebaseService } from "../../lib/FirebaseUnifiedService";
-import { UserProps } from "../../lib/useUser";
 import { FormInput } from "./FormInput";
 import { LoadingButton } from "./LoadingButton";
 import { ErrorAlert } from "./ErrorAlert";
 import { useTranslation } from "react-i18next";
-
+import { KioscoinUser } from "b5-api-client";
+import { p2pMarketAPIClient } from "@/lib/APIClients";
 interface EmailLoginFormProps {
-  readonly onLogin: (user: UserProps) => void;
+  readonly onLogin: (user: KioscoinUser) => void;
   readonly onSwitchToRegister?: () => void;
 }
 
@@ -30,15 +29,11 @@ export const EmailLoginForm = ({
     try {
       const result = await firebaseService.signInWithEmail(email, password);
 
-      if (result.success && result.user) {
-        // Convert AuthResult to UserProps
-        const userProps: UserProps = {
-          userId: result.user.id,
-          username: result.user.username,
-          email: result.user.email,
-          avatarUrl: "https://via.placeholder.com/150", // Default avatar
-        };
-        onLogin(userProps);
+      if (result.success && result.user && result.userData) {
+        const userResponse = await p2pMarketAPIClient.getUser(
+          result.userData.id
+        );
+        onLogin(userResponse.users[0]);
       } else {
         setError(result.error || t("login_failed"));
       }
