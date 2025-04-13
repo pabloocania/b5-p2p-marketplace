@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { firebaseService } from "../../lib/FirebaseService";
+import { firebaseService } from "../../lib/FirebaseUnifiedService";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useTranslation } from "react-i18next";
 

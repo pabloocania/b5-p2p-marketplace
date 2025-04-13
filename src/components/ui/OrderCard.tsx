@@ -44,7 +44,7 @@ export function OrderCard({
   }
 
   return (
-    <Card className="w-full mb-4" variant="shadow">
+    <Card className="w-full mb-4 border-none" variant="shadow">
       <OrderStatusBar status={order.status ?? "Unknown"} />
       <OrderCardHeader order={order}></OrderCardHeader>
       <OrderCardContent

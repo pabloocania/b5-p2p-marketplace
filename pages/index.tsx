@@ -18,6 +18,7 @@ import { TransactionStatus } from "@/components/ui/TransactionStatus";
 import UserOrdersMenu from "@/components/ui/TopLevelSubMenu";
 import { useTranslation } from "react-i18next";
 import { TopBar } from "@/components/ui/TopBar";
+import UserMenuNew from "@/components/ui/UserMenuNew";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -56,7 +57,7 @@ export default function Home() {
     if (activeComponent === "OrderFeed") {
       return <OrdersFeed refreshKey={refreshKey} />;
     } else if (activeComponent === "UserMenu") {
-      return <UserMenu user={user} onLogin={login} onLogout={logout} />;
+      return <UserMenuNew user={user} onLogin={login} onLogout={logout} />;
     } else if (activeComponent === "MyOrders") {
       return (
         <UserOrdersMenu
