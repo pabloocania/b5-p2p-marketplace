@@ -48,7 +48,7 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
   };
 
   return (
-    <div className="flex w-full h-4 overflow-hidden rounded-t-md">
+    <div className="flex w-full h-5 overflow-hidden rounded-t-md">
       {[1, 2, 3, 4].map((stage) => (
         <div
           key={stage}
@@ -56,7 +56,7 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
             stage
           )} border-r border-black-300 last:border-r-0`}
         >
-          <span className="absolute inset-0 flex items-center justify-center text-xs text-white font-semibold">
+          <span className="absolute inset-0 flex items-center justify-center text-xs text-white font-bold">
             {stage}
           </span>
         </div>

@@ -11,7 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import UserMenu from "./UserMenu";
+import UserMenuNew from "@/components/ui/UserMenuNew";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useTranslation } from "react-i18next";
 
@@ -176,7 +176,7 @@ export default function OrdersFeed({
                 <VisuallyHidden>
                   <SheetTitle>User Menu Dialog</SheetTitle>
                 </VisuallyHidden>
-                <UserMenu user={user} onLogin={login} onLogout={logout} />
+                <UserMenuNew user={user} onLogin={login} onLogout={logout} />
               </SheetContent>
             </Sheet>
           </div>

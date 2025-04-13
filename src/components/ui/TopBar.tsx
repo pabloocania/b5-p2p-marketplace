@@ -42,10 +42,12 @@ export function TopBar({ activeComponent, setActiveComponent }: TopBarProps) {
           className="flex items-end"
         >
           <KioscoinIcon className="h-20 w-20" />
-          <span className="text-primary md:text-xl text-md font-semibold -mb-0.5">
+          <span className="text-primary md:text-xl text-md font-semibold mr-2">
             Kioscoin
           </span>
         </button>
+
+        <div className="h-20 w-px bg-primary mx-2"></div>
 
         <nav className="pl-2 flex items-center gap-1 ml-auto">
           {navItems.map((item) => (
@@ -53,7 +55,7 @@ export function TopBar({ activeComponent, setActiveComponent }: TopBarProps) {
               key={item.id}
               onClick={() => setActiveComponent(item.id)}
               className={cn(
-                "flex flex-col items-center min-w-[60px] px-1 py-5 rounded-lg transition-colors",
+                "flex flex-col items-center min-w-[60px] px-2 py-3 rounded-lg transition-colors h-20",
                 item.active
                   ? "bg-secondary/20 text-primary"
                   : "text-primary/80 hover:bg-white/10 border border-transparent"
