@@ -1,8 +1,8 @@
-import { UserProps } from "../../lib/useUser";
+import { KioscoinUser } from "b5-api-client";
 
 export interface UserMenuProps {
-    readonly user: UserProps | undefined;
-    readonly onLogin: (user: UserProps) => void;
+    readonly user: KioscoinUser | undefined;
+    readonly onLogin: (user: KioscoinUser) => void;
     readonly onLogout: () => void;
 }
 

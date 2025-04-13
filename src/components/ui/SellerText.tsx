@@ -1,6 +1,5 @@
 import { Order, OrderStatus } from "b5-api-client/dist/types";
 import { useTranslation } from "react-i18next";
-import { Rating } from "./Rating";
 
 interface SellerTextProps {
   order: Order;

@@ -42,7 +42,6 @@ export default function CreateOrder({
   const [tokenAmount, setTokenAmount] = useState<number>(0);
   const [tokenCode, setTokenCode] = useState<string>("PDOC");
   const [walletAddress, setWalletAddress] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const { user, isLoggedIn } = useUserContext();
   const { openConnectModal } = useConnectModal();
@@ -133,7 +132,7 @@ export default function CreateOrder({
       fiatCode: fiatCode,
       walletAddress: orderType === "BUY" ? walletAddress : undefined,
       paymentMethods: selectedMethods,
-      creatorId: user?.userId,
+      creatorId: user?.id,
       status: "PENDING",
       creatorUsername: user?.username,
       sellerHash: secretSeller.toString("hex"),

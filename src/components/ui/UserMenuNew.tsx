@@ -5,7 +5,6 @@ import { Mail, User, Key, UserPlus } from "lucide-react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserProps } from "../../lib/useUser";
 import {
   UserProfile,
   EmailLoginForm,
@@ -13,15 +12,16 @@ import {
   RegisterForm,
   MockUsersList,
 } from "../login";
+import { KioscoinUser } from "b5-api-client";
 
 interface UserMenuNewProps {
-  readonly user: UserProps | undefined;
-  readonly onLogin: (user: UserProps) => void;
+  readonly user: KioscoinUser | undefined;
+  readonly onLogin: (user: KioscoinUser) => void;
   readonly onLogout: () => void;
 }
 
 const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
-  const [mockUsers, setMockUsers] = useState<UserProps[]>([]);
+  const [mockUsers, setMockUsers] = useState<KioscoinUser[]>([]);
   const { isConnected } = useAccount();
   const { t } = useTranslation();
   const [isConnecting, setIsConnecting] = useState(false);
@@ -36,12 +36,23 @@ const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
           "https://bolsillo-argento-586dfd80364d.herokuapp.com";
         const response = await fetch(host + "/api/users");
         const data = await response.json();
-        const users = data.users.map((user: any) => ({
-          userId: user.id,
-          username: user.username,
-          email: `${user.username}@example.com`, // Assuming email is not provided in the response
-          avatarUrl: "https://via.placeholder.com/150", // Assuming avatarUrl is not provided in the response
-        }));
+        const users = data.users.map(
+          (user: KioscoinUser): KioscoinUser => ({
+            id: user.id,
+            username: user.username,
+            lastRating: user.lastRating ?? "0",
+            totalRating: user.totalRating ?? "0",
+            tradesCompleted: user.tradesCompleted ?? 0,
+            totalReviews: user.totalReviews ?? 0,
+            volumeTraded: user.volumeTraded ?? 0,
+            admin: user.admin ?? false,
+            banned: user.banned ?? false,
+            showUsername: user.showUsername ?? true,
+            showVolumeTraded: user.showVolumeTraded ?? true,
+            disputes: user.disputes ?? 0,
+            reviews: user.reviews ?? [],
+          })
+        );
         setMockUsers(users);
       } catch (error) {
         console.error("Failed to fetch users:", error);

@@ -4,7 +4,6 @@ import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
-import { UserStats } from "@/components/ui/UserStats";
 import { UserInfoCard } from "./UserInfoCard";
 
 interface OrderCardHeaderProps {
@@ -59,7 +58,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
       <CardTitle className="flex w-full items-center">
         {/* Left Side */}
         <div className="flex space-x-2 w-full">
-          <UserInfoCard order={order} />
+          <UserInfoCard order={order} user={undefined} />
         </div>
 
         {/* Right Side */}

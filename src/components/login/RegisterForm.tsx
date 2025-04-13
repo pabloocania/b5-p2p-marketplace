@@ -1,16 +1,15 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { firebaseService } from "../../lib/FirebaseUnifiedService";
-import { UserProps } from "../../lib/useUser";
 import { RegisterFormState } from "./types";
 import { FormInput } from "./FormInput";
 import { EmailInputWithUsername } from "./EmailInputWithUsername";
 import { LoadingButton } from "./LoadingButton";
 import { ErrorAlert } from "./ErrorAlert";
 import { useTranslation } from "react-i18next";
+import { KioscoinUser } from "b5-api-client";
 
 interface RegisterFormProps {
-  readonly onLogin: (user: UserProps) => void;
+  readonly onLogin: (user: KioscoinUser) => void;
   readonly onSwitchToEmailLogin: () => void;
 }
 
@@ -81,13 +80,7 @@ export const RegisterForm = ({
       );
 
       if (result.success && result.user) {
-        const userProps: UserProps = {
-          userId: result.user.id,
-          username: result.user.username,
-          email: result.user.email,
-          avatarUrl: "https://via.placeholder.com/150",
-        };
-        onLogin(userProps);
+        onLogin(result.user);
       } else {
         setError(result.error || "Registration failed");
       }

@@ -1,10 +1,9 @@
 // OrderCardContent.tsx
 import React, { useEffect, useState } from "react";
 import { CardContent } from "@/components/ui/card";
-import { Order, OrderStatus, OrderType } from "b5-api-client";
+import { KioscoinUser, Order, OrderStatus, OrderType } from "b5-api-client";
 import PaymentMethodDisplay from "./PaymentMethodDisplay";
 import { useTranslation } from "react-i18next";
-import { UserProps } from "@/lib/useUser";
 import { SellerText } from "./SellerText";
 import { BuyerText } from "./BuyerText";
 import AddressInput from "./AddressInput";
@@ -26,7 +25,7 @@ import { formatFiatAmount } from "@/lib/utils";
 
 interface OrderCardContentProps {
   order: Order;
-  user: UserProps | undefined;
+  user: KioscoinUser | undefined;
   showDetails: boolean;
   walletAddress: string;
   setWalletAddress: (value: string) => void;
@@ -76,8 +75,8 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
     );
   };
 
-  const isBuyer = order.buyerId === user?.userId;
-  const isSeller = order.sellerId === user?.userId;
+  const isBuyer = order.buyerId === user?.id;
+  const isSeller = order.sellerId === user?.id;
   const buyerHasNotRated = isBuyer && !order.buyerHasRated;
   const sellerHasNotRated = isSeller && !order.sellerHasRated;
 
@@ -130,7 +129,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
                 </SheetTrigger>
                 <SheetContent side="bottom" className="h-[90vh]" closeText="">
                   <SheetTitle></SheetTitle>
-                  <ChatInterface order={order} userId={user?.userId} />
+                  <ChatInterface order={order} userId={user?.id} />
                 </SheetContent>
               </Sheet>
             </div>
@@ -159,10 +158,10 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
             </div>
             <div className="flex-1">
               {order.sellerId && order.type === "BUY" && (
-                <SellerText order={order} userId={user?.userId} />
+                <SellerText order={order} userId={user?.id} />
               )}
               {order.buyerId && order.type === "SELL" && (
-                <BuyerText order={order} userId={user?.userId} />
+                <BuyerText order={order} userId={user?.id} />
               )}
             </div>
           </div>

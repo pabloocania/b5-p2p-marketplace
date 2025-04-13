@@ -2,13 +2,13 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import OrdersFeed, { Filter } from "./OrdersFeed";
 import { useTranslation } from "react-i18next";
-import { UserProps } from "@/lib/useUser";
+import { KioscoinUser } from "b5-api-client";
 
 interface TopLevelSubMenuProps {
   activeSubFilter: Filter;
   setActiveSubFilter: (filter: Filter) => void;
   refreshKey: number;
-  user: UserProps | undefined;
+  user: KioscoinUser | undefined;
 }
 
 const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({

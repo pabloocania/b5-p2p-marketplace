@@ -83,17 +83,18 @@ export class UserData {
 export class AuthResult {
     private constructor(
         public readonly success: boolean,
-        public readonly user: UserData | null,
+        public readonly user: KioscoinUser | null,
+        public readonly userData: UserData | null,
         public readonly error: string | null,
         public readonly provider: AuthProvider | null
     ) { }
 
-    static success(user: UserData, provider: AuthProvider): AuthResult {
-        return new AuthResult(true, user, null, provider);
+    static success(user: KioscoinUser, userData: UserData, provider: AuthProvider): AuthResult {
+        return new AuthResult(true, user, userData, null, provider);
     }
 
     static failure(error: string): AuthResult {
-        return new AuthResult(false, null, error, null);
+        return new AuthResult(false, null, null, error, null);
     }
 }
 
@@ -229,11 +230,9 @@ export class FirebaseUnifiedService {
             // Send email verification
             await sendEmailVerification(user);
 
-            // Create user in your Kotlin backend
             const backendUser = await this.createUserInBackend(user.uid, username);
 
             if (backendUser) {
-                // Use the new helper method
                 return this._createSuccessAuthResult(user, backendUser, AuthProvider.EMAIL);
             } else {
                 return AuthResult.failure('Failed to create user in backend');
@@ -437,10 +436,10 @@ export class FirebaseUnifiedService {
         const userData = UserData.create(
             user.uid,
             user.email || '',
-            backendUser.username || '', // Ensure username is handled if potentially null/undefined
+            backendUser.username || '',
             user.emailVerified
         );
-        return AuthResult.success(userData, provider);
+        return AuthResult.success(backendUser, userData, provider);
     }
 
     // Backend integration methods
