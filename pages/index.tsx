@@ -9,7 +9,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Plus, User, Languages, Globe } from "lucide-react";
-import UserMenu from "../src/components/ui/UserMenu";
 import { useUserContext } from "../src/components/ui/UserContext";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useDisconnect } from "wagmi";

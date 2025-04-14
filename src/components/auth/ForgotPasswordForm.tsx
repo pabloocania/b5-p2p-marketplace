@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { firebaseAuthService } from "../../lib/FirebaseAuthService";
+import { firebaseService } from "../../lib/FirebaseUnifiedService";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -31,7 +31,7 @@ export function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
     setIsLoading(true);
 
     try {
-      const result = await firebaseAuthService.sendPasswordResetEmail(email);
+      const result = await firebaseService.sendPasswordResetEmail(email);
 
       if (result) {
         setSuccess(true);

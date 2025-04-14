@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   UserProfile,
   EmailLoginForm,
-  EmailLinkLoginForm,
   RegisterForm,
   MockUsersList,
 } from "../login";

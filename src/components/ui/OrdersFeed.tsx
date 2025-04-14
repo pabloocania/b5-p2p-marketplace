@@ -45,7 +45,7 @@ export default function OrdersFeed({
   resetSelectedOrder,
   onBack,
 }: OrderFeedProps) {
-  const { user, login, logout } = useUserContext();
+  const { user, login, logout, loginId } = useUserContext();
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
     undefined
@@ -56,27 +56,43 @@ export default function OrdersFeed({
   const fetchOrders = async () => {
     try {
       let response;
-      const userId = user?.userId || buyerId || creatorId;
-
+      const userId = user?.id || buyerId || creatorId;
+      console.log("loginId", loginId);
       if (filter === Filter.ALL) {
         response = await client.getOrders({ status: [Filter.PENDING] });
       } else if (filter === Filter.PENDING) {
-        response = await client.getOrders({
-          status: [Filter.PENDING],
-          user: userId,
-        });
+        console.log("loginId", loginId);
+        response = await client.getOrders(
+          {
+            status: [Filter.PENDING],
+            user: userId,
+          },
+          {
+            Authorization: `Bearer ${loginId}`,
+          }
+        );
       } else if (filter === Filter.WAITING_PAYMENT) {
-        response = await client.getOrders({
-          status: ["WAITING_PAYMENT" as OrderStatus, "ACTIVE", "FIAT_SENT"],
-          user: userId,
-        });
+        response = await client.getOrders(
+          {
+            status: ["WAITING_PAYMENT" as OrderStatus, "ACTIVE", "FIAT_SENT"],
+            user: userId,
+          },
+          {
+            Authorization: `Bearer ${loginId}`,
+          }
+        );
         // const buyerOrdersList = response?.orders || [];
         // return buyerOrdersList;
       } else if (filter === Filter.CLOSED) {
-        response = await client.getOrders({
-          status: ["RELEASED", "COMPLETED_BY_ADMIN"],
-          user: userId,
-        });
+        response = await client.getOrders(
+          {
+            status: ["RELEASED", "COMPLETED_BY_ADMIN"],
+            user: userId,
+          },
+          {
+            Authorization: `Bearer ${loginId}`,
+          }
+        );
       }
 
       if (response) {

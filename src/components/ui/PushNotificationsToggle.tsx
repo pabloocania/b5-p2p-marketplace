@@ -5,6 +5,7 @@ import { toast } from "@/hooks/use-toast";
 import { firebaseService } from "../../lib/FirebaseUnifiedService";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useTranslation } from "react-i18next";
+import { useUserContext } from "./UserContext";
 
 interface PushNotificationsToggleProps {
   userId: string;
@@ -16,6 +17,7 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
+  const { loginId } = useUserContext();
 
   useEffect(() => {
     // Check current notification permission status
@@ -71,7 +73,12 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
 
   const registerToken = async (userId: string, token: string) => {
     try {
-      await client.registerPushToken({ token, userId });
+      await client.registerPushToken(
+        { token, userId },
+        {
+          Authorization: `Bearer ${loginId}`,
+        }
+      );
     } catch (error) {
       console.error("Error registering token:", error);
     }

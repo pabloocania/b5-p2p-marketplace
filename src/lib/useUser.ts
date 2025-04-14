@@ -5,9 +5,10 @@ import { KioscoinUser } from "b5-api-client";
 
 export function useUser() {
     const [user, setUser] = useState<KioscoinUser | undefined>(undefined);
-
-    const login = (userData: KioscoinUser) => {
+    const [loginId, setLoginId] = useState<string | undefined>(undefined);
+    const login = (userData: KioscoinUser, loginId: string) => {
         setUser(userData);
+        setLoginId(loginId);
     };
 
     const logout = () => {
@@ -20,6 +21,7 @@ export function useUser() {
         isLoggedIn: !!user,
         login,
         logout,
+        loginId
     };
 }
 

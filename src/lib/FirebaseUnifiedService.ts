@@ -11,7 +11,6 @@ import {
     FacebookAuthProvider,
     TwitterAuthProvider,
     signInWithPopup,
-    OAuthProvider,
     isSignInWithEmailLink,
     sendSignInLinkToEmail,
     signInWithEmailLink,
@@ -53,19 +52,22 @@ export class UserData {
         public readonly email: string,
         public readonly username: string,
         public readonly isEmailVerified: boolean,
+        public readonly idToken: string | null
     ) { }
 
     static create(
         id: string,
         email: string,
         username: string,
-        isEmailVerified: boolean
+        isEmailVerified: boolean,
+        idToken: string | null
     ): UserData {
         return new UserData(
             id,
             email,
             username,
-            isEmailVerified
+            isEmailVerified,
+            idToken
         );
     }
 
@@ -198,16 +200,14 @@ export class FirebaseUnifiedService {
             if (!this.auth) {
                 return AuthResult.failure("Firebase Auth not initialized");
             }
-
             const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-            const user = userCredential.user;
-
+            const idToken = await userCredential.user.getIdToken();
             // Get user data from your Kotlin backend
-            const backendUser = await this.getUserFromBackend(user.uid);
+            const backendUser = await this.getUserFromBackend(userCredential.user.uid, idToken);
 
             if (backendUser) {
                 // Use the new helper method
-                return this._createSuccessAuthResult(user, backendUser, AuthProvider.EMAIL);
+                return this._createSuccessAuthResult(userCredential.user, backendUser, AuthProvider.EMAIL, idToken);
             } else {
                 return AuthResult.failure('User not found in backend');
             }
@@ -226,14 +226,14 @@ export class FirebaseUnifiedService {
             // First create the user in Firebase
             const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
             const user = userCredential.user;
-
+            const idToken = await user.getIdToken();
             // Send email verification
             await sendEmailVerification(user);
 
-            const backendUser = await this.createUserInBackend(user.uid, username);
+            const backendUser = await this.createUserInBackend(user.uid, username, idToken);
 
             if (backendUser) {
-                return this._createSuccessAuthResult(user, backendUser, AuthProvider.EMAIL);
+                return this._createSuccessAuthResult(user, backendUser, AuthProvider.EMAIL, idToken);
             } else {
                 return AuthResult.failure('Failed to create user in backend');
             }
@@ -243,80 +243,80 @@ export class FirebaseUnifiedService {
         }
     }
 
-    async signInWithGoogle(): Promise<AuthResult> {
-        try {
-            if (!this.auth) {
-                return AuthResult.failure("Firebase Auth not initialized");
-            }
+    // async signInWithGoogle(): Promise<AuthResult> {
+    //     try {
+    //         if (!this.auth) {
+    //             return AuthResult.failure("Firebase Auth not initialized");
+    //         }
 
-            const provider = new GoogleAuthProvider();
-            const userCredential = await signInWithPopup(this.auth, provider);
-            const user = userCredential.user;
+    //         const provider = new GoogleAuthProvider();
+    //         const userCredential = await signInWithPopup(this.auth, provider);
+    //         const user = userCredential.user;
 
-            // Get or create user in your Kotlin backend
-            const backendUser = await this.getOrCreateUserInBackend(user.uid, user.displayName || '');
+    //         // Get or create user in your Kotlin backend
+    //         const backendUser = await this.getOrCreateUserInBackend(user.uid, user.displayName || '');
 
-            if (backendUser) {
-                // Use the new helper method
-                return this._createSuccessAuthResult(user, backendUser, AuthProvider.GOOGLE);
-            } else {
-                return AuthResult.failure('Failed to get or create user in backend');
-            }
-        } catch (error: any) {
-            console.error('Error signing in with Google:', error);
-            return AuthResult.failure(error.message || 'Google authentication failed');
-        }
-    }
+    //         if (backendUser) {
+    //             // Use the new helper method
+    //             return this._createSuccessAuthResult(user, backendUser, AuthProvider.GOOGLE);
+    //         } else {
+    //             return AuthResult.failure('Failed to get or create user in backend');
+    //         }
+    //     } catch (error: any) {
+    //         console.error('Error signing in with Google:', error);
+    //         return AuthResult.failure(error.message || 'Google authentication failed');
+    //     }
+    // }
 
-    async signInWithFacebook(): Promise<AuthResult> {
-        try {
-            if (!this.auth) {
-                return AuthResult.failure("Firebase Auth not initialized");
-            }
+    // async signInWithFacebook(): Promise<AuthResult> {
+    //     try {
+    //         if (!this.auth) {
+    //             return AuthResult.failure("Firebase Auth not initialized");
+    //         }
 
-            const provider = new FacebookAuthProvider();
-            const userCredential = await signInWithPopup(this.auth, provider);
-            const user = userCredential.user;
+    //         const provider = new FacebookAuthProvider();
+    //         const userCredential = await signInWithPopup(this.auth, provider);
+    //         const user = userCredential.user;
 
-            // Get or create user in your Kotlin backend
-            const backendUser = await this.getOrCreateUserInBackend(user.uid, user.displayName || '');
+    //         // Get or create user in your Kotlin backend
+    //         const backendUser = await this.getOrCreateUserInBackend(user.uid, user.displayName || '');
 
-            if (backendUser) {
-                // Use the new helper method
-                return this._createSuccessAuthResult(user, backendUser, AuthProvider.FACEBOOK);
-            } else {
-                return AuthResult.failure('Failed to get or create user in backend');
-            }
-        } catch (error: any) {
-            console.error('Error signing in with Facebook:', error);
-            return AuthResult.failure(error.message || 'Facebook authentication failed');
-        }
-    }
+    //         if (backendUser) {
+    //             // Use the new helper method
+    //             return this._createSuccessAuthResult(user, backendUser, AuthProvider.FACEBOOK);
+    //         } else {
+    //             return AuthResult.failure('Failed to get or create user in backend');
+    //         }
+    //     } catch (error: any) {
+    //         console.error('Error signing in with Facebook:', error);
+    //         return AuthResult.failure(error.message || 'Facebook authentication failed');
+    //     }
+    // }
 
-    async signInWithTwitter(): Promise<AuthResult> {
-        try {
-            if (!this.auth) {
-                return AuthResult.failure("Firebase Auth not initialized");
-            }
+    // async signInWithTwitter(): Promise<AuthResult> {
+    //     try {
+    //         if (!this.auth) {
+    //             return AuthResult.failure("Firebase Auth not initialized");
+    //         }
 
-            const provider = new TwitterAuthProvider();
-            const userCredential = await signInWithPopup(this.auth, provider);
-            const user = userCredential.user;
+    //         const provider = new TwitterAuthProvider();
+    //         const userCredential = await signInWithPopup(this.auth, provider);
+    //         const user = userCredential.user;
 
-            // Get or create user in your Kotlin backend
-            const backendUser = await this.getOrCreateUserInBackend(user.uid, user.displayName || '');
+    //         // Get or create user in your Kotlin backend
+    //         const backendUser = await this.getOrCreateUserInBackend(user.uid, user.displayName || '');
 
-            if (backendUser) {
-                // Use the new helper method
-                return this._createSuccessAuthResult(user, backendUser, AuthProvider.TWITTER);
-            } else {
-                return AuthResult.failure('Failed to get or create user in backend');
-            }
-        } catch (error: any) {
-            console.error('Error signing in with Twitter:', error);
-            return AuthResult.failure(error.message || 'Twitter authentication failed');
-        }
-    }
+    //         if (backendUser) {
+    //             // Use the new helper method
+    //             return this._createSuccessAuthResult(user, backendUser, AuthProvider.TWITTER);
+    //         } else {
+    //             return AuthResult.failure('Failed to get or create user in backend');
+    //         }
+    //     } catch (error: any) {
+    //         console.error('Error signing in with Twitter:', error);
+    //         return AuthResult.failure(error.message || 'Twitter authentication failed');
+    //     }
+    // }
 
     async sendEmailVerification(): Promise<boolean> {
         try {
@@ -392,36 +392,36 @@ export class FirebaseUnifiedService {
         return isSignInWithEmailLink(this.auth, window.location.href);
     }
 
-    async signInWithEmailLink(email: string): Promise<AuthResult> {
-        try {
-            if (!this.auth) {
-                return AuthResult.failure("Firebase Auth not initialized");
-            }
+    // async signInWithEmailLink(email: string): Promise<AuthResult> {
+    //     try {
+    //         if (!this.auth) {
+    //             return AuthResult.failure("Firebase Auth not initialized");
+    //         }
 
-            if (!this.isSignInWithEmailLink()) {
-                return AuthResult.failure("Invalid sign-in link");
-            }
+    //         if (!this.isSignInWithEmailLink()) {
+    //             return AuthResult.failure("Invalid sign-in link");
+    //         }
 
-            const userCredential = await signInWithEmailLink(this.auth, email, window.location.href);
-            const user = userCredential.user;
+    //         const userCredential = await signInWithEmailLink(this.auth, email, window.location.href);
+    //         const user = userCredential.user;
 
-            // Clear the email from localStorage
-            window.localStorage.removeItem('emailForSignIn');
+    //         // Clear the email from localStorage
+    //         window.localStorage.removeItem('emailForSignIn');
 
-            // Get or create user in your Kotlin backend
-            const backendUser = await this.getOrCreateUserInBackend(user.uid, user.displayName || '');
+    //         // Get or create user in your Kotlin backend
+    //         const backendUser = await this.getOrCreateUserInBackend(user.uid, user.displayName || '');
 
-            if (backendUser) {
-                // Use the new helper method
-                return this._createSuccessAuthResult(user, backendUser, AuthProvider.EMAIL);
-            } else {
-                return AuthResult.failure('Failed to get or create user in backend');
-            }
-        } catch (error: any) {
-            console.error('Error signing in with email link:', error);
-            return AuthResult.failure(error.message || 'Email link authentication failed');
-        }
-    }
+    //         if (backendUser) {
+    //             // Use the new helper method
+    //             return this._createSuccessAuthResult(user, backendUser, AuthProvider.EMAIL);
+    //         } else {
+    //             return AuthResult.failure('Failed to get or create user in backend');
+    //         }
+    //     } catch (error: any) {
+    //         console.error('Error signing in with email link:', error);
+    //         return AuthResult.failure(error.message || 'Email link authentication failed');
+    //     }
+    // }
 
     getEmailForSignIn(): string | null {
         return window.localStorage.getItem('emailForSignIn');
@@ -431,21 +431,25 @@ export class FirebaseUnifiedService {
     private _createSuccessAuthResult(
         user: User,
         backendUser: KioscoinUser,
-        provider: AuthProvider
+        provider: AuthProvider,
+        idToken: string
     ): AuthResult {
         const userData = UserData.create(
             user.uid,
             user.email || '',
             backendUser.username || '',
-            user.emailVerified
+            user.emailVerified,
+            idToken
         );
         return AuthResult.success(backendUser, userData, provider);
     }
 
     // Backend integration methods
-    private async getUserFromBackend(userId: string): Promise<KioscoinUser | null> {
+    private async getUserFromBackend(userId: string, loginId: string): Promise<KioscoinUser | null> {
         try {
-            const response = await client.getUser(userId);
+            const response = await client.getUser(userId, {
+                Authorization: `Bearer ${loginId}`,
+            });
             return response.users[0];
         } catch (error) {
             console.error('Error getting user from backend:', error);
@@ -453,13 +457,15 @@ export class FirebaseUnifiedService {
         }
     }
 
-    private async createUserInBackend(userId: string, username: string): Promise<KioscoinUser | null> {
+    private async createUserInBackend(userId: string, username: string, idToken: string): Promise<KioscoinUser | null> {
         try {
             const createUserRequest: CreateUserRequest = {
                 id: userId,
                 username: username
             }
-            const response = await client.createUser(createUserRequest);
+            const response = await client.createUser(createUserRequest, {
+                Authorization: `Bearer ${idToken}`
+            });
             return response.users[0];
         } catch (error) {
             console.error('Error creating user in backend:', error);
@@ -467,22 +473,22 @@ export class FirebaseUnifiedService {
         }
     }
 
-    private async getOrCreateUserInBackend(userId: string, username: string): Promise<KioscoinUser | null> {
-        try {
-            // First try to get the user
-            const existingUser = await this.getUserFromBackend(userId);
+    // private async getOrCreateUserInBackend(userId: string, username: string): Promise<KioscoinUser | null> {
+    //     try {
+    //         // First try to get the user
+    //         // const existingUser = await this.getUserFromBackend(userId);
 
-            if (existingUser) {
-                return existingUser;
-            }
+    //         // if (existingUser) {
+    //         //     return existingUser;
+    //         // }
 
-            // If user doesn't exist, create it
-            return await this.createUserInBackend(userId, username);
-        } catch (error) {
-            console.error('Error getting or creating user in backend:', error);
-            return null;
-        }
-    }
+    //         // If user doesn't exist, create it
+    //         return await this.createUserInBackend(userId, username);
+    //     } catch (error) {
+    //         console.error('Error getting or creating user in backend:', error);
+    //         return null;
+    //     }
+    // }
 }
 
 // Create a singleton instance

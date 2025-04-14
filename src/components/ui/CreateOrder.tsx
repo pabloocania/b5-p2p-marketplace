@@ -43,7 +43,7 @@ export default function CreateOrder({
   const [tokenCode, setTokenCode] = useState<string>("PDOC");
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
-  const { user, isLoggedIn } = useUserContext();
+  const { user, isLoggedIn, loginId } = useUserContext();
   const { openConnectModal } = useConnectModal();
   const { t } = useTranslation();
   const [blockchain, setBlockchain] = useState<string>("");
@@ -143,6 +143,7 @@ export default function CreateOrder({
       const ordersResponse = await client.createOrder(newOrder, {
         "Content-Type": "application/json",
         "x-blockchain": blockchain,
+        Authorization: `Bearer ${loginId}`,
       });
 
       console.log("Respuesta de la API:", ordersResponse);

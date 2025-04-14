@@ -5,9 +5,9 @@ import { LoadingButton } from "./LoadingButton";
 import { ErrorAlert } from "./ErrorAlert";
 import { useTranslation } from "react-i18next";
 import { KioscoinUser } from "b5-api-client";
-import { p2pMarketAPIClient } from "@/lib/APIClients";
+
 interface EmailLoginFormProps {
-  readonly onLogin: (user: KioscoinUser) => void;
+  readonly onLogin: (user: KioscoinUser, token: string) => void;
   readonly onSwitchToRegister?: () => void;
 }
 
@@ -29,11 +29,13 @@ export const EmailLoginForm = ({
     try {
       const result = await firebaseService.signInWithEmail(email, password);
 
-      if (result.success && result.user && result.userData) {
-        const userResponse = await p2pMarketAPIClient.getUser(
-          result.userData.id
-        );
-        onLogin(userResponse.users[0]);
+      if (
+        result.success &&
+        result.user &&
+        result.userData &&
+        result.userData.idToken
+      ) {
+        onLogin(result.user, result.userData.idToken);
       } else {
         setError(result.error || t("login_failed"));
       }

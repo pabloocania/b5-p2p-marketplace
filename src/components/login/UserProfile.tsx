@@ -79,7 +79,7 @@ export const UserProfile = ({
         <Button
           onClick={onLogout}
           variant="default"
-          className="w-full text-white bg-terciary"
+          className="w-full text-white bg-primary"
         >
           <LogOut className="mr-2 h-4 w-4" />
           Log Out
