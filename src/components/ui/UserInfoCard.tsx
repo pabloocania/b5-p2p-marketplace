@@ -19,12 +19,24 @@ export const UserInfoCard = ({ user, order }: UserInfoCardProps) => {
         <UserStats
           rating={user.totalRating ?? "0"}
           transactionCount={Number(user.tradesCompleted ?? "0")}
+          userMetrics={{
+            userId: user.id ?? "",
+            avgTimeToLock: user.timeToLock ?? 0,
+            avgTimeToRelease: user.timeToRelease ?? 0,
+            avgTimeToFiatSent: user.timeToFiatSent ?? 0,
+          }}
         />
       )) ||
         (order && (
           <UserStats
             rating={order.creatorRating ?? "0"}
             transactionCount={Number(order.transactionsCount ?? "0")}
+            userMetrics={
+              order.userMetrics && order.userMetrics.length > 0
+                ? order.userMetrics[0]
+                : undefined
+            }
+            isSeller={order.type === "SELL" && order.creatorId === user?.id}
           />
         ))}
     </div>

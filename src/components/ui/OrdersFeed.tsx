@@ -57,11 +57,9 @@ export default function OrdersFeed({
     try {
       let response;
       const userId = user?.id || buyerId || creatorId;
-      console.log("loginId", loginId);
       if (filter === Filter.ALL) {
         response = await client.getOrders({ status: [Filter.PENDING] });
       } else if (filter === Filter.PENDING) {
-        console.log("loginId", loginId);
         response = await client.getOrders(
           {
             status: [Filter.PENDING],

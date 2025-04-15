@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Clipboard } from "lucide-react";
+import { Clipboard, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface AddressProps {
   address: string;
@@ -19,15 +20,15 @@ const Address: React.FC<AddressProps> = ({ address }) => {
       <p className="text-terciary text-xs flex-grow">
         {address.slice(0, 30)}...{address.slice(-4)}
       </p>
-      <button
+      <Button
+        className="p-1 border-secondary/50 bg-white bo ml-1"
+        variant="outline"
+        size="link"
         onClick={handleCopy}
-        className={`${
-          isCopied ? "text-secondary" : "text-primary hover:text-blue-600"
-        } ml-auto flex-none rounded-full bg-secondary`}
-        aria-label="Copy address"
       >
-        <Clipboard className="h-5 w-5 p-1 text-white" />
-      </button>
+        {/* <RefreshCw className="h-4 w-4" /> */}
+        <Clipboard className="h-4 w-4" />
+      </Button>
     </div>
   );
 };

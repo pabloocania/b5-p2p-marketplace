@@ -51,7 +51,7 @@ export const UserProfile = ({
   return (
     <Card className="w-full mb-4" variant="shadow">
       <CardHeader>
-        <CardTitle className="flex justify-center items-center align-center mt-2">
+        <CardTitle className="flex justify-center items-center align-center mt-2 w-full">
           <UserInfoCard user={user} order={undefined} />
         </CardTitle>
       </CardHeader>

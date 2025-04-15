@@ -1,54 +1,128 @@
 import React from "react";
-import { LucideProps, Star } from "lucide-react";
+import { LucideProps, Star, Clock, Timer, CheckCircle2 } from "lucide-react";
 import UserStatBadge from "./UserStatBadge"; // Adjust the import path as necessary
 
 interface UserStatsProps {
-  rating: string;
-  transactionCount: number;
+  rating?: string;
+  transactionCount?: number;
+  userMetrics?: {
+    userId: string;
+    avgTimeToLock: number;
+    avgTimeToRelease: number;
+    avgTimeToFiatSent: number;
+  };
+  isSeller?: boolean;
 }
-
-const CustomCircleCheckIcon = React.forwardRef<SVGSVGElement, LucideProps>(
-  (props, ref) => {
-    return (
-      <svg
-        ref={ref}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className={`w-4 h-4 ${props.className || ""}`}
-        {...props}
-      >
-        <circle
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="2"
-          fill="none"
-        />
-        <path
-          d="M7 12l4 4 6-6"
-          stroke="currentColor"
-          strokeWidth="2"
-          fill="none"
-        />
-      </svg>
-    );
-  }
-);
 
 export const UserStats: React.FC<UserStatsProps> = ({
   rating,
   transactionCount,
+  userMetrics,
+  isSeller,
 }) => {
+  // Calculate time metrics based on user role
+  const getTimeMetrics = () => {
+    if (isSeller === undefined) {
+      // Calculate average only using available non-zero values
+      const availableValues = [];
+      if (
+        userMetrics?.avgTimeToLock !== undefined &&
+        userMetrics.avgTimeToLock > 0
+      ) {
+        availableValues.push(userMetrics.avgTimeToLock);
+      }
+
+      if (
+        userMetrics?.avgTimeToRelease !== undefined &&
+        userMetrics.avgTimeToRelease > 0
+      ) {
+        availableValues.push(userMetrics.avgTimeToRelease);
+      }
+
+      if (
+        userMetrics?.avgTimeToFiatSent !== undefined &&
+        userMetrics.avgTimeToFiatSent > 0
+      ) {
+        availableValues.push(userMetrics.avgTimeToFiatSent);
+      }
+
+      if (availableValues.length === 0) {
+        return null;
+      }
+
+      const totalTime = availableValues.reduce((sum, value) => sum + value, 0);
+      const averageTime = totalTime / availableValues.length;
+      return formatTime(averageTime);
+    }
+
+    if (isSeller) {
+      // For sellers: avgTimeToLock + avgTimeToRelease
+      if (
+        userMetrics?.avgTimeToLock === undefined ||
+        userMetrics?.avgTimeToRelease === undefined
+      ) {
+        return null;
+      }
+
+      // Only include non-zero values in the calculation
+      const values = [];
+      if (userMetrics.avgTimeToLock > 0) {
+        values.push(userMetrics.avgTimeToLock);
+      }
+      if (userMetrics.avgTimeToRelease > 0) {
+        values.push(userMetrics.avgTimeToRelease);
+      }
+
+      if (values.length === 0) {
+        return null;
+      }
+
+      const totalTime = values.reduce((sum, value) => sum + value, 0);
+      return formatTime(totalTime);
+    } else {
+      // For buyers: avgTimeToFiatSent
+      if (
+        userMetrics?.avgTimeToFiatSent === undefined ||
+        userMetrics.avgTimeToFiatSent === 0
+      ) {
+        return null;
+      }
+      return formatTime(userMetrics.avgTimeToFiatSent);
+    }
+  };
+
+  // Format time in seconds to a readable format (e.g., "2m 30s")
+  const formatTime = (seconds: number): string => {
+    if (seconds < 60) return `${seconds}s`;
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+
+    if (remainingSeconds === 0) return `${minutes}m`;
+    return `${minutes}m ${remainingSeconds}s`;
+  };
+
+  const timeMetrics = getTimeMetrics();
+
   return (
     <div className="flex space-x-1 w-full">
-      <UserStatBadge value={rating} Icon={Star} color="text-yellow-500" />
-      <UserStatBadge
-        value={transactionCount.toString()}
-        Icon={CustomCircleCheckIcon}
-        color="text-green-500"
-      />
+      {rating && (
+        <UserStatBadge value={rating} Icon={Star} color="text-yellow-500" />
+      )}
+      {timeMetrics && (
+        <UserStatBadge
+          value={timeMetrics}
+          Icon={Timer}
+          color="text-primary/80"
+        />
+      )}
+      {transactionCount !== undefined && transactionCount !== null && (
+        <UserStatBadge
+          value={transactionCount.toString()}
+          Icon={CheckCircle2}
+          color="text-green-500"
+        />
+      )}
     </div>
   );
 };

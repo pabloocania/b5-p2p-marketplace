@@ -146,6 +146,11 @@ i18n.use(initReactI18next).init({
         enter_your_email_address: "Please enter your email address first",
         signing_in: "Signing in...",
         sign_in_with_email: "Sign in with Email",
+        available: "Available",
+        estimated_gas_fee: "Estimated gas fee",
+        smart_wallet_benefits:
+          "Send funds to your Smart Wallet and you can buy and sell crypto without paying gas fees.",
+        learn_about_smart_wallet: "Learn about your wallets",
       },
     },
     es: {
@@ -293,6 +298,11 @@ i18n.use(initReactI18next).init({
         enter_your_email_address: "Por favor, ingresa tu dirección de correo electrónico primero",
         signing_in: "Iniciando sesión...",
         sign_in_with_email: "Ingresar con correo electrónico",
+        available: "Disponible",
+        estimated_gas_fee: "Tarifa de gas estimada",
+        smart_wallet_benefits:
+          "Envía fondos a tu Smart Wallet y podrás comprar y vender cripto sin pagar tarifas de gas.",
+        learn_about_smart_wallet: "Aprende sobre tus wallets",
       },
     },
   },

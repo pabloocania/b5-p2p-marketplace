@@ -5,6 +5,67 @@ export interface TokenBalance {
     address: string;
 }
 
+/**
+ * Immutable data class that represents a token transfer operation
+ */
+export class TokenTransfer {
+    readonly tokenSymbol: string;
+    readonly tokenAddress: string;
+    readonly amount: string;
+    readonly sourceType: 'eoa' | 'smartWallet';
+    readonly destinationType: 'eoa' | 'smartWallet';
+    readonly timestamp: number;
+    readonly status: 'pending' | 'completed' | 'failed';
+    readonly txHash?: string;
+
+    private constructor(params: {
+        tokenSymbol: string;
+        tokenAddress: string;
+        amount: string;
+        sourceType: 'eoa' | 'smartWallet';
+        destinationType: 'eoa' | 'smartWallet';
+        timestamp?: number;
+        status?: 'pending' | 'completed' | 'failed';
+        txHash?: string;
+    }) {
+        this.tokenSymbol = params.tokenSymbol;
+        this.tokenAddress = params.tokenAddress;
+        this.amount = params.amount;
+        this.sourceType = params.sourceType;
+        this.destinationType = params.destinationType;
+        this.timestamp = params.timestamp || Date.now();
+        this.status = params.status || 'pending';
+        this.txHash = params.txHash;
+    }
+
+    static create(params: {
+        tokenSymbol: string;
+        tokenAddress: string;
+        amount: string;
+        sourceType: 'eoa' | 'smartWallet';
+        destinationType: 'eoa' | 'smartWallet';
+        timestamp?: number;
+        status?: 'pending' | 'completed' | 'failed';
+        txHash?: string;
+    }): TokenTransfer {
+        return new TokenTransfer(params);
+    }
+
+    withStatus(status: 'pending' | 'completed' | 'failed'): TokenTransfer {
+        return new TokenTransfer({
+            ...this,
+            status
+        });
+    }
+
+    withTxHash(txHash: string): TokenTransfer {
+        return new TokenTransfer({
+            ...this,
+            txHash
+        });
+    }
+}
+
 export interface TokenBalanceBlockchain {
     blockchain: string;
     balances: TokenBalance[]

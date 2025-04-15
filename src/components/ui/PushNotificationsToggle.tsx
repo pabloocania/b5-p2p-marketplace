@@ -50,7 +50,7 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
 
       setIsSubscribed(true);
 
-      const token = await firebaseService.requestNotificationPermission();
+      const token = await firebaseService.fetchToken();
       if (!token) {
         throw new Error("Failed to fetch token");
       }
