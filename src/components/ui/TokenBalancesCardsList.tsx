@@ -7,6 +7,10 @@ import { ArrowLeftRightIcon, ChevronRightIcon, WalletIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CryptoAmountIcon } from "./CryptoIcon";
 import TransferAmountInput from "@/lib/web3/TransferComponent";
+import { useTransactionHandler } from "@/lib/web3/InternalTransferServices";
+import { useTransaction } from "@/lib/web3/TransactionContext";
+import { useTranslation } from "react-i18next";
+import { useTransactionStatusChecker } from "@/lib/useTransactionStatusChecker";
 
 /**
  * Immutable data class for token card state
@@ -42,7 +46,15 @@ export default function TokenBalanceCardList({
   balanceType,
   onTokenSelect,
 }: TokenBalanceCardListProps) {
+  const { setTransaction } = useTransaction();
+  const { t } = useTranslation();
   const [state, setState] = useState<TokenCardState>(TokenCardState.create());
+  const { checkTransactionStatus } = useTransactionStatusChecker();
+  const { handleTransaction } = useTransactionHandler(
+    setTransaction,
+    t,
+    checkTransactionStatus
+  );
 
   const handleSelectToken = (token: TokenBalance) => {
     const isCurrentlySelected = state.isSelected(token.name);
@@ -54,11 +66,25 @@ export default function TokenBalanceCardList({
     onTokenSelect(isCurrentlySelected ? null : token);
   };
 
-  const handleTransfer = (transferAmount: string) => {
-    console.log(
-      `Transferring ${transferAmount} of token ${state.selectedTokenId}`
-    );
-    // Here you would implement the actual transfer logic
+  const handleTransfer = async (transferAmount: string) => {
+    if (selectedToken) {
+      const amount = parseFloat(transferAmount);
+      if (isNaN(amount) || amount <= 0) return;
+      const sourceBalance =
+        balanceType === "eoa"
+          ? parseFloat(selectedToken.eoaBalance)
+          : parseFloat(selectedToken.smartWalletBalance);
+
+      if (amount > sourceBalance) return;
+
+      const transactionType =
+        balanceType === "eoa" ? "EOAToSW" : "EtherspotToEOA";
+      await handleTransaction(
+        transactionType,
+        selectedToken.address,
+        transferAmount
+      );
+    }
   };
 
   // Format balances for display with smart number formatting

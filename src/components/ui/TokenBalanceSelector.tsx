@@ -1,7 +1,7 @@
 "use client";
 
 import { TokenBalance } from "@/lib/web3/types";
-import TokenBalanceCardList from "./TokenBalancesAlt";
+import TokenBalanceCardList from "./TokenBalancesCardsList";
 
 interface TokenBalanceSelectorProps {
   balances?: TokenBalance[];

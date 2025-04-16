@@ -57,14 +57,14 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
     <CardHeader>
       <CardTitle className="flex w-full items-center">
         {/* Left Side */}
-        <div className="flex space-x-2 w-full">
+        <div className="flex space-x-2 w-full h-full">
           <UserInfoCard order={order} user={undefined} />
         </div>
 
         {/* Right Side */}
-        <div className="flex flex-col items-end">
-          <div className="text-right mb-1 ml-2">
-            <Badge className={`text-xs ${mapOrderVariant(order)}`}>
+        <div className="flex flex-col items-end h-full">
+          <div className="text-right ml-2 h-full">
+            <Badge className={`text-xs ${mapOrderVariant(order)} h-full`}>
               {mapOrderStatus(order.status ?? "Unknown")}
             </Badge>
           </div>

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { LogOut, Loader2 } from "lucide-react";
+import { LogOut, Loader2, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { UserInfoCard } from "../ui/UserInfoCard";
 import PushNotificationsToggle from "../ui/PushNotificationsToggle";
@@ -31,6 +31,17 @@ export const UserProfile = ({
   onConnectingChange,
 }: UserProfileProps) => {
   const { t } = useTranslation();
+
+  // Define the reset onboarding handler here
+  const handleResetOnboardingState = () => {
+    localStorage.removeItem("hasSeenSmartWalletOnboarding");
+    alert(
+      t(
+        "onboarding_reset_description",
+        "Onboarding will show next time you connect your wallet"
+      )
+    );
+  };
 
   function ConnectWalletButton() {
     return (
@@ -73,6 +84,17 @@ export const UserProfile = ({
         )}
         <div className="w-full">
           <PushNotificationsToggle userId={user.id!}></PushNotificationsToggle>
+        </div>
+        <div className="w-full">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleResetOnboardingState}
+            className="flex items-center border border-primary/50 text-primary"
+          >
+            <RotateCcw className="h-3 w-3 mr-1" />
+            <span className="text-xs">{t("reset_onboarding")}</span>
+          </Button>
         </div>
       </CardContent>
       <CardFooter className="py-2">

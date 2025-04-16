@@ -220,17 +220,6 @@ export default function InternalTransfersComponent() {
     setState(state.withShowOnboarding(true));
   };
 
-  const handleResetOnboardingState = () => {
-    // Clear localStorage entry to reset onboarding state
-    localStorage.removeItem("hasSeenSmartWalletOnboarding");
-    alert(
-      t(
-        "onboarding_reset_description",
-        "Onboarding will show next time you connect your wallet"
-      )
-    );
-  };
-
   const handleTabChange = (value: string) => {
     setState(state.withActiveTab(value as "kioscoinWallet" | "myWallet"));
   };
@@ -352,15 +341,6 @@ export default function InternalTransfersComponent() {
             />
           </TabsContent>
         </Tabs>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleResetOnboardingState}
-          className="flex items-center"
-        >
-          <RotateCcw className="h-3 w-3 mr-1" />
-          <span className="text-xs">{t("reset_onboarding")}</span>
-        </Button>
       </div>
     </>
   );
