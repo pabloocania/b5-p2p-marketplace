@@ -199,21 +199,31 @@ export class FirebaseUnifiedService {
     async signInWithEmail(email: string, password: string): Promise<AuthResult> {
         try {
             if (!this.auth) {
+                console.error("Firebase Auth not initialized");
                 return AuthResult.failure("Firebase Auth not initialized");
             }
+
+            console.log("Attempting to sign in with email:", email);
             const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
+            console.log("Firebase auth successful, getting ID token");
+
             const idToken = await userCredential.user.getIdToken();
-            // Get user data from your Kotlin backend
+            console.log("Got ID token, fetching user from backend");
+
             const backendUser = await this.getUserFromBackend(userCredential.user.uid, idToken);
+            console.log("Backend user fetch result:", backendUser);
 
             if (backendUser) {
-                // Use the new helper method
                 return this._createSuccessAuthResult(userCredential.user, backendUser, AuthProvider.EMAIL, idToken);
             } else {
                 return AuthResult.failure('User not found in backend');
             }
         } catch (error: any) {
-            console.error('Error signing in with email:', error);
+            console.error('Detailed error signing in with email:', {
+                code: error.code,
+                message: error.message,
+                fullError: error
+            });
             return AuthResult.failure(error.message || 'Authentication failed');
         }
     }

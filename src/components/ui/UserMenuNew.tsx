@@ -25,7 +25,7 @@ const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
   const { t } = useTranslation();
   const [isConnecting, setIsConnecting] = useState(false);
   const { connectModalOpen } = useConnectModal();
-  const [activeTab, setActiveTab] = useState("mock");
+  const [activeTab, setActiveTab] = useState("email");
 
   // useEffect(() => {
   //   async function fetchUsers() {
