@@ -37,7 +37,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   onSelect,
   setOrder,
 }) => {
-  const { user, isLoggedIn } = useUserContext();
+  const { user, isLoggedIn, loginId } = useUserContext();
   const { isConnected } = useAccount();
   const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
@@ -54,7 +54,9 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         status: "FIAT_SENT",
         orderId: order.id ?? "",
       };
-      await client.updateOrder(updateRequest);
+      await client.updateOrder(updateRequest, {
+        Authorization: `Bearer ${loginId}`,
+      });
       if (onRefresh) {
         onRefresh(); // Call the refresh callback
       }
@@ -88,7 +90,9 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         } as TakeBuyOrderRequest;
       }
 
-      const response = await client.takeOrder(takeOrderRequest);
+      const response = await client.takeOrder(takeOrderRequest, {
+        Authorization: `Bearer ${loginId}`,
+      });
       setOrderTaken(true);
       setIsButtonVisible(false);
       if (response.orders.length == 1) {

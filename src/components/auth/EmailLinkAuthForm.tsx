@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { firebaseAuthService, AuthResult } from "../../lib/FirebaseAuthService";
+import { firebaseService, AuthResult } from "../../lib/FirebaseUnifiedService";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -33,7 +33,7 @@ export function EmailLinkAuthForm({
     setIsLoading(true);
 
     try {
-      const result = await firebaseAuthService.sendSignInLinkToEmail(email);
+      const result = await firebaseService.sendSignInLinkToEmail(email);
 
       if (result) {
         setSuccess(true);

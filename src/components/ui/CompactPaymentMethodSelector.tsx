@@ -103,7 +103,7 @@ const CompactPaymentMethodSelector: React.FC<
     const methodToRender = selectedMethod || method;
 
     if (methodToRender.type === "FINTECH") {
-      return methodToRender.alias ? `@${methodToRender.alias}` : "";
+      return methodToRender.alias ? `${methodToRender.alias}` : "";
     }
     return methodToRender.cbu && methodToRender.type === "BANK"
       ? methodToRender.cbu

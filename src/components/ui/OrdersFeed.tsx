@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Order, OrderStatus } from "b5-api-client";
+import { Order, OrderStatus, OrderType, PaymentMethod } from "b5-api-client";
 import { OrderCard } from "./OrderCard";
 import { ScrollableContainer } from "./ScrollabelContainer";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
@@ -14,6 +14,12 @@ import {
 import UserMenuNew from "@/components/ui/UserMenuNew";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useTranslation } from "react-i18next";
+import {
+  FilterBar,
+  FilterState,
+  FilterGroupType,
+  FilterGroupConfig,
+} from "./filter";
 
 export enum Filter {
   ALL = "ALL",
@@ -32,6 +38,7 @@ interface OrderFeedProps {
   refreshInterval?: number; // Add refreshInterval prop
   resetSelectedOrder?: boolean; // Add resetSelectedOrder prop
   onBack?: () => void; // Add onBack prop
+  filterGroups?: FilterGroupConfig[]; // Add filterGroups prop
 }
 
 export default function OrdersFeed({
@@ -44,8 +51,9 @@ export default function OrdersFeed({
   refreshInterval = 15000,
   resetSelectedOrder,
   onBack,
+  filterGroups,
 }: OrderFeedProps) {
-  const { user, login, logout } = useUserContext();
+  const { user, login, logout, loginId } = useUserContext();
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
     undefined
@@ -53,31 +61,112 @@ export default function OrdersFeed({
   const { t } = useTranslation();
   const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
 
+  // Initialize filter state
+  const [filterState, setFilterState] = useState<FilterState>({
+    orderType: [],
+    status: [],
+    blockchain: [],
+    tokenCode: [],
+    paymentMethods: [],
+    fiatCode: [],
+    fiatAmountRange: {
+      min: undefined,
+      max: undefined,
+    },
+    dateRange: {
+      from: undefined,
+      to: undefined,
+    },
+    search: "",
+  });
+
+  // Define default filter groups if none are provided
+  const defaultFilterGroups: FilterGroupConfig[] = [
+    // { type: FilterGroupType.SEARCH },
+    { type: FilterGroupType.ORDER_TYPE, title: "Order Type" },
+    // { type: FilterGroupType.STATUS, title: "Status" },
+    { type: FilterGroupType.BLOCKCHAIN, title: "Blockchain" },
+    { type: FilterGroupType.TOKEN_CODE, title: "Token" },
+    { type: FilterGroupType.PAYMENT_METHODS, title: "Payment Methods" },
+    { type: FilterGroupType.FIAT_AMOUNT_RANGE, title: "Fiat Amount" },
+  ];
+
   const fetchOrders = async () => {
     try {
       let response;
-      const userId = user?.userId || buyerId || creatorId;
+      const userId = user?.id || buyerId || creatorId;
 
-      if (filter === Filter.ALL) {
-        response = await client.getOrders({ status: [Filter.PENDING] });
-      } else if (filter === Filter.PENDING) {
-        response = await client.getOrders({
-          status: [Filter.PENDING],
-          user: userId,
-        });
-      } else if (filter === Filter.WAITING_PAYMENT) {
-        response = await client.getOrders({
-          status: ["WAITING_PAYMENT" as OrderStatus, "ACTIVE", "FIAT_SENT"],
-          user: userId,
-        });
-        // const buyerOrdersList = response?.orders || [];
-        // return buyerOrdersList;
-      } else if (filter === Filter.CLOSED) {
-        response = await client.getOrders({
-          status: ["RELEASED", "COMPLETED_BY_ADMIN"],
-          user: userId,
-        });
+      // Base parameters for the API call
+      const params: any = {};
+
+      // Add user filter if available
+      if (userId) {
+        params.user = userId;
       }
+
+      // Add status filter based on the current filter enum
+      if (filter === Filter.ALL) {
+        params.status = [Filter.PENDING];
+      } else if (filter === Filter.PENDING) {
+        params.status = [Filter.PENDING];
+      } else if (filter === Filter.WAITING_PAYMENT) {
+        params.status = [
+          "WAITING_PAYMENT" as OrderStatus,
+          "ACTIVE",
+          "FIAT_SENT",
+        ];
+      } else if (filter === Filter.CLOSED) {
+        params.status = ["RELEASED", "COMPLETED_BY_ADMIN"];
+      }
+
+      // Add filter parameters from FilterBar
+      if (filterState.orderType.length > 0) {
+        params.orderType = filterState.orderType;
+      }
+
+      if (filterState.status.length > 0) {
+        // Override the status from the filter enum if filterState has status
+        params.status = filterState.status;
+      }
+
+      if (filterState.blockchain.length > 0) {
+        params.blockchain = filterState.blockchain;
+      }
+
+      if (filterState.tokenCode.length > 0) {
+        params.tokenCode = filterState.tokenCode;
+      }
+
+      if (filterState.paymentMethods.length > 0) {
+        params.paymentMethods = filterState.paymentMethods;
+      }
+
+      if (filterState.fiatCode.length > 0) {
+        params.fiatCode = filterState.fiatCode;
+      }
+
+      if (
+        filterState.fiatAmountRange.min !== undefined ||
+        filterState.fiatAmountRange.max !== undefined
+      ) {
+        params.fiatAmountRange = filterState.fiatAmountRange;
+      }
+
+      if (
+        filterState.dateRange.from !== undefined ||
+        filterState.dateRange.to !== undefined
+      ) {
+        params.dateRange = filterState.dateRange;
+      }
+
+      if (filterState.search) {
+        params.search = filterState.search;
+      }
+
+      // Make the API call with the constructed parameters
+      response = await client.getOrders(params, {
+        Authorization: `Bearer ${loginId}`,
+      });
 
       if (response) {
         setOrders(response.orders);
@@ -101,7 +190,7 @@ export default function OrdersFeed({
     if (filter === Filter.ALL || user) {
       fetchOrders();
     }
-  }, [user, creatorId, buyerId, filter, refreshKey]);
+  }, [user, creatorId, buyerId, filter, refreshKey, filterState]);
 
   // Clear orders when user logs out
   useEffect(() => {
@@ -118,7 +207,7 @@ export default function OrdersFeed({
 
     // Clear interval on component unmount
     return () => clearInterval(intervalId);
-  }, [filter, refreshInterval, user, creatorId, buyerId]);
+  }, [filter, refreshInterval, user, creatorId, buyerId, filterState]);
 
   const handleOrderSelect = (order: Order) => {
     setSelectedOrder(order);
@@ -142,15 +231,24 @@ export default function OrdersFeed({
               onRefresh={refreshOrders}
             />
           ) : orders && orders.length > 0 ? (
-            orders.map((order) => (
-              <div key={order.id} className="mb-7">
-                <OrderCard
-                  orderDTO={order}
-                  onSelect={handleOrderSelect}
-                  onRefresh={refreshOrders}
+            <div>
+              <div className="mb-4">
+                <FilterBar
+                  filters={filterState}
+                  setFilters={setFilterState}
+                  filterGroups={filterGroups || defaultFilterGroups}
                 />
               </div>
-            ))
+              {orders.map((order) => (
+                <div key={order.id} className="mb-7">
+                  <OrderCard
+                    orderDTO={order}
+                    onSelect={handleOrderSelect}
+                    onRefresh={refreshOrders}
+                  />
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="flex flex-col items-center h-full">
               <div className="mb-5 text-primary font-bold">

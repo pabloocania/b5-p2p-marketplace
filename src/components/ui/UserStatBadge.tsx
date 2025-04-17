@@ -21,7 +21,7 @@ const UserStatBadge: React.FC<UserStatBadgeProps> = ({
       className={`flex items-center space-x-1 ${color} text-m rounded-lg px-1 py-1 border border-terciary border-opacity-40 bg-white`}
     >
       <span className="text-xs font-semibold">{value}</span>
-      <Icon className="w-3 h-3" style={{ fill: "currentColor" }} />
+      <Icon className="w-3 h-3" />
     </div>
   );
 };

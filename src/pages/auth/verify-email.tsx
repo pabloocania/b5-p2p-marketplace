@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { firebaseAuthService } from "../../lib/FirebaseAuthService";
+import { firebaseService } from "../../lib/FirebaseUnifiedService";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -23,22 +23,20 @@ export default function VerifyEmailPage() {
     const verifyEmailLink = async () => {
       try {
         // Check if the current URL is a sign-in link
-        if (!firebaseAuthService.isSignInWithEmailLink()) {
+        if (!firebaseService.isSignInWithEmailLink()) {
           setError("Invalid sign-in link. Please try again.");
           setIsLoading(false);
           return;
         }
 
         // Get the email from localStorage
-        const savedEmail = firebaseAuthService.getEmailForSignIn();
+        const savedEmail = firebaseService.getEmailForSignIn();
 
         if (savedEmail) {
           setEmail(savedEmail);
 
           // Sign in with the email link
-          const result = await firebaseAuthService.signInWithEmailLink(
-            savedEmail
-          );
+          const result = await firebaseService.signInWithEmailLink(savedEmail);
 
           if (result.success) {
             // Redirect to dashboard on success
@@ -70,7 +68,7 @@ export default function VerifyEmailPage() {
 
     try {
       // Sign in with the email link
-      const result = await firebaseAuthService.signInWithEmailLink(emailInput);
+      const result = await firebaseService.signInWithEmailLink(emailInput);
 
       if (result.success) {
         // Redirect to dashboard on success

@@ -24,7 +24,7 @@ import { useUserContext } from "./UserContext";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useTranslation } from "react-i18next";
 import TokenSelector from "@/lib/web3/TokenSelector";
-import { ExchangeRatesService } from "@/lib/web3/ExchangeRates";
+import { ExchangeRatesService } from "@/lib/web3/ExchangeRatesService";
 import { ScrollableContainer } from "./ScrollabelContainer";
 import CompactPaymentMethodSelector from "./CompactPaymentMethodSelector";
 
@@ -43,37 +43,73 @@ export default function CreateOrder({
   const [tokenCode, setTokenCode] = useState<string>("PDOC");
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
-  const { user, isLoggedIn } = useUserContext();
+  const { user, isLoggedIn, loginId } = useUserContext();
   const { openConnectModal } = useConnectModal();
   const { t } = useTranslation();
   const [blockchain, setBlockchain] = useState<string>("");
   const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>([]);
-  const [suggestedRate, setSuggestedRate] = useState<number>(1000);
-  const [customRate, setCustomRate] = useState<number>(1000);
+  const [suggestedRate, setSuggestedRate] = useState<number | null>(null);
+  const [customRate, setCustomRate] = useState<number | null>(null);
   const [fiatCode, setFiatCode] = useState<"ARS" | "EUR">("ARS");
+  const [rateError, setRateError] = useState<string | null>(null);
+  const [isLoadingRate, setIsLoadingRate] = useState(false);
 
   useEffect(() => {
-    const fetchSuggestedRate = async () => {
+    const fetchRate = async () => {
+      if (!tokenCode || !fiatCode) return;
+
+      setIsLoadingRate(true);
+      setRateError(null);
+      setSuggestedRate(null);
+      setCustomRate(null);
+
       try {
-        const rates = await ExchangeRatesService.fetchPricesWithRetry();
-        const rate =
-          tokenCode === "USDC"
-            ? fiatCode === "ARS"
-              ? rates.ars
-              : rates.eur
-            : 1000; // fallback para otros tokens
-        setSuggestedRate(rate);
-        setCustomRate(rate);
+        const rate = await ExchangeRatesService.fetchRateWithRetry(
+          tokenCode,
+          fiatCode
+        );
+
+        if (rate !== null) {
+          setSuggestedRate(rate);
+          setCustomRate(rate);
+          setRateError(null);
+        } else {
+          // Handle case where rate is explicitly null (e.g., not found after retries)
+          setRateError(
+            t("no_rate_available", { token: tokenCode, currency: fiatCode })
+          );
+        }
       } catch (error) {
-        console.error("Error fetching suggested rate:", error);
+        console.error("Error fetching suggested rate via service:", error);
+        let errorMessage = t("failed_to_fetch_rate");
+        if (error instanceof Error) {
+          if (error.message.startsWith("Unsupported token")) {
+            errorMessage = t("unsupported_token", { token: tokenCode });
+            setSuggestedRate(1);
+            setCustomRate(1);
+          } else if (error.message.startsWith("CoinGecko API error")) {
+            errorMessage = t("coingecko_api_error", {
+              error: error.message.replace("CoinGecko API error: ", ""),
+            });
+          } else if (
+            error.message === "Failed to fetch rate after multiple attempts"
+          ) {
+            errorMessage = t("failed_to_fetch_rate"); // Use the specific translation
+          }
+          // Keep the original error message for other unexpected errors if desired
+          // errorMessage = error.message;
+        }
+        setRateError(errorMessage);
+      } finally {
+        setIsLoadingRate(false);
       }
     };
 
-    fetchSuggestedRate();
-  }, [tokenCode, fiatCode]);
+    fetchRate();
+  }, [tokenCode, fiatCode, t]);
 
   const calculateFiatEquivalent = () => {
-    if (customRate === 0 || tokenAmount === 0) return 0;
+    if (customRate === null || tokenAmount === 0) return 0;
     return Math.round(tokenAmount * customRate * 100) / 100; // Redondear a 2 decimales
   };
 
@@ -143,9 +179,8 @@ export default function CreateOrder({
       const ordersResponse = await client.createOrder(newOrder, {
         "Content-Type": "application/json",
         "x-blockchain": blockchain,
+        Authorization: `Bearer ${loginId}`,
       });
-
-      console.log("Respuesta de la API:", ordersResponse);
 
       if (ordersResponse.orders.length === 1) {
         setCreatedOrder(ordersResponse.orders[0]);
@@ -163,7 +198,7 @@ export default function CreateOrder({
       tokenAmount > 0 &&
       blockchain !== "" &&
       tokenCode !== "" &&
-      customRate > 0 &&
+      customRate !== null &&
       (orderType === "SELL" || walletAddress)
     );
   };
@@ -237,7 +272,7 @@ export default function CreateOrder({
                       <div className="flex justify-between items-start gap-4">
                         <div className="space-y-2">
                           <Label className="font-bold">
-                            Quiero recibir en:
+                            {t("i_want_to_receive_in")}
                           </Label>
                           <RadioGroup
                             value={fiatCode}
@@ -261,10 +296,12 @@ export default function CreateOrder({
                           </Label>
                           <div className="text-sm font-medium">
                             1 {tokenCode} = {fiatCode === "EUR" ? "€" : "$"}{" "}
-                            {suggestedRate.toLocaleString("es-AR", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
+                            {suggestedRate !== null
+                              ? suggestedRate.toLocaleString("es-AR", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })
+                              : "Loading..."}
                           </div>
                         </div>
                       </div>
@@ -273,9 +310,14 @@ export default function CreateOrder({
                         <div>
                           <Label
                             htmlFor="custom-rate"
-                            className="text-xs font-semibold"
+                            className="text-xs font-semibold flex items-center gap-2"
                           >
                             {t("your_rate")}
+                            {isLoadingRate && (
+                              <span className="text-secondary">
+                                {t("loading_rate")}
+                              </span>
+                            )}
                           </Label>
                           <Input
                             id="custom-rate"
@@ -286,7 +328,7 @@ export default function CreateOrder({
                             onChange={(e) => {
                               const value = e.target.value;
                               if (value === "") {
-                                setCustomRate(0);
+                                setCustomRate(null);
                                 return;
                               }
 
@@ -303,28 +345,29 @@ export default function CreateOrder({
                               }
                             }}
                             className={`mt-1 ${
-                              customRate === 0 ? "border-red-500" : ""
+                              customRate === null ? "border-red-500" : ""
                             }`}
-                            placeholder="Ingresa el tipo de cambio"
+                            placeholder={t("enter_amount")}
                           />
-                          {customRate === 0 && (
-                            <span className="text-xs text-red-500 mt-1">
-                              El tipo de cambio debe ser mayor a 0
+                          {(customRate === null || rateError) && (
+                            <span className="text-xs text-primary mt-1 block">
+                              {rateError || t("rate_must_be_positive")}
                             </span>
                           )}
                         </div>
                       </div>
                     </>
                   )}
-                  <div className="flex items-center justify-end space-x-2">
-                    <Label className="text-xs font-semibold">
-                      {t("en")} {fiatCode === "EUR" ? "€" : "$"}:
+                  <div className="flex items-center justify-end space-x-1">
+                    <Label className="text-md font-semibold">
+                      {t("receive_in")}
                     </Label>
-                    <div className="text-xs font-semibold">
+                    <div className="text-md font-semibold">
                       {calculateFiatEquivalent().toLocaleString("es-AR", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      })}
+                      })}{" "}
+                      {fiatCode === "EUR" ? "€" : "$"}:
                     </div>
                   </div>
                   <CompactPaymentMethodSelector

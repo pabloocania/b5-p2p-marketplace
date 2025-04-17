@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { KioscoinUser } from "b5-api-client";
 
 interface RegisterFormProps {
-  readonly onLogin: (user: KioscoinUser) => void;
+  readonly onLogin: (user: KioscoinUser, loginId: string) => void;
   readonly onSwitchToEmailLogin: () => void;
 }
 
@@ -79,8 +79,8 @@ export const RegisterForm = ({
         registerForm.username
       );
 
-      if (result.success && result.user) {
-        onLogin(result.user);
+      if (result.success && result.user && result.userData?.idToken) {
+        onLogin(result.user, result.userData?.idToken);
       } else {
         setError(result.error || "Registration failed");
       }

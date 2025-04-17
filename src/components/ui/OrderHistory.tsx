@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useTranslation } from "react-i18next";
+import { useUserContext } from "./UserContext";
 
 interface OrderEvent {
   eventType: string;
@@ -17,6 +18,7 @@ export default function OrderHistory({ orderId }: OrderHistoryProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
+  const { loginId } = useUserContext();
 
   useEffect(() => {
     if (!orderId) {
@@ -27,7 +29,9 @@ export default function OrderHistory({ orderId }: OrderHistoryProps) {
     const fetchOrderEvents = async () => {
       setLoading(true);
       try {
-        const response = await client.getOrderEvents(orderId);
+        const response = await client.getOrderEvents(orderId, {
+          Authorization: `Bearer ${loginId}`,
+        });
         setEvents(response.orderEvents || []);
       } catch (err: any) {
         console.error("Error fetching order events:", err);

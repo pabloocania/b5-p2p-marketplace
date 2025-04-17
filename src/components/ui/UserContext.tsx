@@ -5,8 +5,9 @@ import { KioscoinUser } from "b5-api-client";
 interface UserContextProps {
   user: KioscoinUser | undefined;
   isLoggedIn: boolean;
-  login: (userData: KioscoinUser) => void;
+  login: (userData: KioscoinUser, loginId: string) => void;
   logout: () => void;
+  loginId: string | undefined;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
