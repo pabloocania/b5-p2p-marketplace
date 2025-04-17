@@ -77,6 +77,7 @@ export class UserData {
             this.email,
             this.username,
             true,
+            this.idToken
         );
     }
 }

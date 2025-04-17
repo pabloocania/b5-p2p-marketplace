@@ -83,15 +83,15 @@ const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
   }
 
   return (
-    <Card className="w-full mb-4 border-none" variant="shadow">
+    <Card className="w-full mb-4 border-secondary/50" variant="border">
       <CardHeader></CardHeader>
-      <CardContent className="py-4">
+      <CardContent className="py-2">
         <Tabs
           defaultValue="mock"
           value={activeTab}
           onValueChange={setActiveTab}
         >
-          <TabsList className="grid grid-cols-2 mb-3 bg-primary/10">
+          <TabsList className="grid grid-cols-2 mb-3 bg-secondary/10">
             <TabsTrigger value="email" className="text-primary">
               <Mail className="mr-2 h-4 w-4 text-primary" />
               {t("login")}

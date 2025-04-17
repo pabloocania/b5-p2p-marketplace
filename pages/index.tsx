@@ -86,7 +86,7 @@ export default function Home() {
             order={transaction.order}
             onClose={resetTransaction}
           />
-          <div className="w-full max-w-md mx-auto py-5 px-5">
+          <div className="w-full max-w-md mx-auto py-2 px-4">
             {renderComponent()}
           </div>
         </main>

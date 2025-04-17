@@ -93,6 +93,12 @@ export const getBlockchainDisplayName = (blockchain: BlockchainName): string => 
             return "Arbitrum Sepolia";
         case BlockchainName.RSK_TESTNET:
             return "Rootstock Testnet";
+        case BlockchainName.BASE_SEPOLIA:
+            return "Base Sepolia";
+        case BlockchainName.BASE_MAINNET:
+            return "Base Mainnet";
+        case BlockchainName.ARBITRUM_MAINNET:
+            return "Arbitrum Mainnet";
     }
 };
 
