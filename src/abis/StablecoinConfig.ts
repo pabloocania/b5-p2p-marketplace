@@ -29,6 +29,15 @@ export const defaultSystemStablecoins: StablecoinConfig = {
                 }
             ],
             name: "USDK",
+        },
+        {
+            addresses: [
+                {
+                    blockchain: "BASE_SEPOLIA",
+                    address: "0xE11a8D5D9032e2DdFe03c4F4E59371832502b64A"
+                }
+            ],
+            name: "USDK",
         }
     ]
 } as const;

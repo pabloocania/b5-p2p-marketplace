@@ -212,7 +212,6 @@ export class FirebaseUnifiedService {
             console.log("Got ID token, fetching user from backend");
 
             const backendUser = await this.getUserFromBackend(userCredential.user.uid, idToken);
-            console.log("Backend user fetch result:", backendUser);
 
             if (backendUser) {
                 return this._createSuccessAuthResult(userCredential.user, backendUser, AuthProvider.EMAIL, idToken);

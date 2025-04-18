@@ -59,17 +59,20 @@ export const useEtherspotFlow = () => {
   ): Promise<string | undefined> => {
     try {
       if (address && primeSdk) {
+        console.log(address);
         const data = encodeFunctionData({
           abi: ERC20abi,
           functionName: "transfer",
           args: [address, amount],
         });
+        console.log(data);
 
         // Prepare the operation data
         const operation = {
           to: tokenAddress,
           data: data,
         };
+        console.log(operation);
         return await executeTransaction([operation], chainId);
       }
       throw new Error("Address or PrimeSdk instance is not available.");
@@ -151,6 +154,8 @@ export const useEtherspotFlow = () => {
   };
 
   const getUserOperationReceipt = async (userOperationHash: string): Promise<OPSReceipt | undefined> => {
+    console.log(userOperationHash);
+    console.log(primeSdk);
     if (primeSdk && userOperationHash !== "") {
       return await primeSdk.getUserOpReceipt(userOperationHash);
     }

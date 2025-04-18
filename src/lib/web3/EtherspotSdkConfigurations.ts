@@ -33,7 +33,7 @@ const sdkOptionsMap: Record<ChainId, SdkOptions> = {
             ChainId.BASE_SEPOLIA,
             "etherspot_3ZVooGBfUwejKEQFJzmvMxKK",
             "https://testnet-rpc.etherspot.io/v1/" + ChainId.BASE_SEPOLIA
-        ),
+        )
     },
     [ChainId.BASE_MAINNET]: {
         chainId: ChainId.BASE_MAINNET,

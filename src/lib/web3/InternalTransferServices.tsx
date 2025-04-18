@@ -1,6 +1,5 @@
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 import { TransactionStatusResponse } from "b5-api-client";
-import { PublicClientManager } from "./PublicClientManager";
 import { useChainId } from "wagmi";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 
@@ -42,6 +41,9 @@ export const useTransactionHandler = (
         );
         await checkTransactionStatus(transactionHash, chainId);
       } else {
+        console.log(selectedCoinAddress);
+        console.log(transferAmount);
+        console.log(chainId);
         const hash = await transferFromSmartWalletToEOA(
           selectedCoinAddress,
           transferAmount,
