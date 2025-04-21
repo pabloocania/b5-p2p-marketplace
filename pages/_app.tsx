@@ -8,7 +8,7 @@ import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
 import { config } from "../src/wagmi";
-import { EtherspotSdkProvider } from "@/lib/web3/EtherspotSdkProvider";
+import { EtherspotSdkProvider } from "@/lib/web3/AccountAbstraction/EtherspotSdkProvider";
 import { TransactionProvider } from "@/lib/web3/TransactionContext";
 import { arbitrumSepolia, rootstockTestnet } from "wagmi/chains";
 import "../src/i18n"; // Adjust the path as necessary

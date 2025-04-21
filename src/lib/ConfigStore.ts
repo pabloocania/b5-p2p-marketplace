@@ -71,6 +71,12 @@ export class ConfigStore {
 
         return stablecoin?.addresses.find(address => address.blockchain === blockchain)?.address!!;
     };
+
+    public getKioscoinEscrowAddressByBlockchain(blockchainName: string): string {
+        return this.config?.config.blockchains.find(
+            (b: any) => b.name === blockchainName
+        )?.escrowAddress!!;
+    };
 }
 
 export function initConfig() {

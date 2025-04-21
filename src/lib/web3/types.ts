@@ -79,6 +79,7 @@ export interface BlockchainAddress {
 export interface Stablecoin {
     addresses: BlockchainAddress[];
     name: string;
+    escrowAddress: string;
 }
 
 export interface StablecoinConfig {

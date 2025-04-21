@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TokenBalance, TokenTransfer } from "./types";
-import { useEtherspotSdk } from "./EtherspotSdkProvider";
+import { useEtherspotSdk } from "./AccountAbstraction/EtherspotSdkProvider";
 import { useAccount } from "wagmi";
 import TokenBalanceSelector from "@/components/ui/TokenBalanceSelector";
 import { useTransaction } from "./TransactionContext";

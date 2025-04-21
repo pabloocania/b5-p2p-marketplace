@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
-import { useEtherspotSdk } from "../../lib/web3/EtherspotSdkProvider";
+import { useEtherspotSdk } from "./AccountAbstraction/EtherspotSdkProvider";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
 import { useTransaction } from "./TransactionContext";
@@ -53,6 +53,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
         }
         setIsTransacting(true);
         const txHashPromise = batchApproveAndEscrow(order);
+        console.log("txHashPromise", txHashPromise);
         setTransaction({
           status: "idle",
           message: t("initiating_transaction"),

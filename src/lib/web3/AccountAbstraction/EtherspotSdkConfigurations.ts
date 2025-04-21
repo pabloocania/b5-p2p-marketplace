@@ -1,5 +1,5 @@
 import { EtherspotBundler, SdkOptions } from "@etherspot/prime-sdk";
-import { ChainId } from "./PublicClientManager";
+import { ChainId } from "@/lib/web3/PublicClientManager";
 
 // Define SDK options for each chain
 const sdkOptionsMap: Record<ChainId, SdkOptions> = {
@@ -19,19 +19,11 @@ const sdkOptionsMap: Record<ChainId, SdkOptions> = {
             "https://testnet-rpc.etherspot.io/v1/" + ChainId.RSK_TESTNET
         ),
     },
-    [ChainId.ARBITRUM_MAINNET]: {
-        chainId: ChainId.ARBITRUM_MAINNET,
-        bundlerProvider: new EtherspotBundler(
-            ChainId.ARBITRUM_MAINNET,
-            "etherspot_3ZVooGBfUwejKEQFJzmvMxKK",
-            "https://rpc.etherspot.io/v1/" + ChainId.ARBITRUM_MAINNET
-        ),
-    },
     [ChainId.BASE_SEPOLIA]: {
         chainId: ChainId.BASE_SEPOLIA,
         bundlerProvider: new EtherspotBundler(
             ChainId.BASE_SEPOLIA,
-            "etherspot_3ZVooGBfUwejKEQFJzmvMxKK",
+            "etherspot_public_key",
             "https://testnet-rpc.etherspot.io/v1/" + ChainId.BASE_SEPOLIA
         )
     },
@@ -39,10 +31,18 @@ const sdkOptionsMap: Record<ChainId, SdkOptions> = {
         chainId: ChainId.BASE_MAINNET,
         bundlerProvider: new EtherspotBundler(
             ChainId.BASE_MAINNET,
-            "etherspot_3ZVooGBfUwejKEQFJzmvMxKK",
+            "etherspot_public_key",
             "https://rpc.etherspot.io/v1/" + ChainId.BASE_MAINNET
         ),
     },
+    [ChainId.ARBITRUM_MAINNET]: {
+        chainId: ChainId.ARBITRUM_MAINNET,
+        bundlerProvider: new EtherspotBundler(
+            ChainId.ARBITRUM_MAINNET,
+            "etherspot_public_key",
+            "https://rpc.etherspot.io/v1/" + ChainId.ARBITRUM_MAINNET
+        ),
+    }
 };
 
 // Function to get SDK options for a given chain ID

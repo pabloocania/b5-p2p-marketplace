@@ -8,7 +8,7 @@ import {
 import { toUtf8Bytes } from "ethers/lib/utils";
 import { ERC20abi } from "../abis/StablecoinConfig";
 import { Order } from "b5-api-client";
-import { useEtherspotSdk } from "@/lib/web3/EtherspotSdkProvider";
+import { useEtherspotSdk } from "@/lib/web3/AccountAbstraction/EtherspotSdkProvider";
 import { OPSReceipt } from "@/lib/web3/types";
 import { getKioscoinEscrowAddressByBlockchain, KioscoinEscrowContractConfig } from "@/abis/KioscoinEscrowConfig";
 import { PublicClientManager } from "@/lib/web3/PublicClientManager";
@@ -32,10 +32,20 @@ export const useEtherspotFlow = () => {
     if (walletClient && address && primeSdk) {
       try {
         const etherspotAddress = await primeSdk.getCounterFactualAddress();
+
+        // Get the token name from the address to determine decimals
+        const stablecoins = ConfigStore.getInstance().getBackendStablecoins()?.supportedStablecoins || [];
+        const tokenInfo = stablecoins.find(stablecoin =>
+          stablecoin.addresses.some(addr => addr.address.toLowerCase() === tokenAddress.toLowerCase())
+        );
+
+        // Use 6 decimals for USDC, 18 for other tokens
+        const decimals = tokenInfo?.name === "USDC" ? 6 : 18;
+
         const data = encodeFunctionData({
           abi: ERC20abi,
           functionName: "transfer",
-          args: [etherspotAddress, amount],
+          args: [etherspotAddress, parseUnits(amount, decimals)],
         });
 
         const transactionHash = await walletClient.sendTransaction({
@@ -111,10 +121,13 @@ export const useEtherspotFlow = () => {
   const batchApproveAndEscrow = async (order: Order): Promise<string | undefined> => {
     if (primeSdk && address) {
       const orderBlockchain = order.blockchain!!
-      const contractAddress = getKioscoinEscrowAddressByBlockchain(orderBlockchain)
+      const contractAddress = ConfigStore.getInstance().getKioscoinEscrowAddressByBlockchain(orderBlockchain)
       const amountInt = parseUnits(order.amount ?? "0", 18); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
       const totalAmount = amountInt + feeInt; // Sum is also a BigInt
+      console.log(totalAmount);
+      console.log(contractAddress);
+      console.log(order.tokenCode);
 
       // Encode the approve function call
       const approveData = encodeFunctionData({
@@ -144,7 +157,7 @@ export const useEtherspotFlow = () => {
 
       const operations = [
         { to: address, data: approveData },
-        { to: contractAddress, data: escrowData }
+        // { to: contractAddress, data: escrowData }
       ];
       const chainId = PublicClientManager.getChainIdForBlockchain(order.blockchain!!)
       return executeTransaction(operations, chainId!!);
