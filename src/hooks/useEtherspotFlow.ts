@@ -15,7 +15,7 @@ import { PublicClientManager } from "@/lib/web3/PublicClientManager";
 import { ConfigStore } from "@/lib/ConfigStore";
 
 export const useEtherspotFlow = () => {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { primeSdk, executeTransaction } = useEtherspotSdk();
 
@@ -28,20 +28,12 @@ export const useEtherspotFlow = () => {
       try {
         const etherspotAddress = await primeSdk.getCounterFactualAddress();
 
-        // Get the token name from the address to determine decimals
-        const stablecoins = ConfigStore.getInstance().getBackendStablecoins()?.supportedStablecoins || [];
-        const tokenInfo = stablecoins.find(stablecoin =>
-          stablecoin.addresses.some(addr => addr.address.toLowerCase() === tokenAddress.toLowerCase())
-        );
-
-        // Use 6 decimals for USDC, 18 for other tokens
-        const decimals = tokenInfo?.name === "USDC" ? 6 : 18;
-
         const data = encodeFunctionData({
           abi: ERC20abi,
           functionName: "transfer",
-          args: [etherspotAddress, parseUnits(amount, decimals)],
+          args: [etherspotAddress, amount],
         });
+
 
         const transactionHash = await walletClient.sendTransaction({
           to: getAddress(tokenAddress),
@@ -69,7 +61,10 @@ export const useEtherspotFlow = () => {
           functionName: "transfer",
           args: [address, amount],
         });
-        console.log(data);
+        console.log("Transfer data:", {
+          tokenAddress,
+          amount
+        });
 
         // Prepare the operation data
         const operation = {

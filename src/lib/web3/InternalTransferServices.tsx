@@ -33,7 +33,7 @@ export const useTransactionHandler = (
         ),
         progress: transactionType === "EOAToSW" ? 25 : 10,
       });
-
+      console.log("transferAmount", transferAmount);
       if (transactionType === "EOAToSW") {
         const transactionHash = await transferFromEOAToSW(
           selectedCoinAddress,

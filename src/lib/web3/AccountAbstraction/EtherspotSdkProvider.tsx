@@ -74,7 +74,11 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     arkaUrl: string
   ): ArkaPaymaster => {
     if (!arkaPaymasterInstance) {
-      arkaPaymasterInstance = new ArkaPaymaster(chainId, arkaApiKey, arkaUrl);
+      arkaPaymasterInstance = new ArkaPaymaster(
+        chainId,
+        arkaApiKey + "&useVp=true",
+        arkaUrl
+      );
     }
     return arkaPaymasterInstance;
   };
@@ -294,7 +298,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     const op = await primeSdk.estimate({
       paymasterDetails: {
         url:
-          "https://arka.etherspot.io?apiKey=" +
+          "https://arka.etherspot.io?useVp=true&apiKey=" +
           arka_api_key +
           "&chainId=" +
           chainId,
