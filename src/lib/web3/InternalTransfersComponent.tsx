@@ -19,6 +19,8 @@ import { useTransactionStatusChecker } from "../useTransactionStatusChecker";
 import { useTransactionHandler } from "./InternalTransferServices";
 import Address from "./Address";
 import TransferAmountInput from "./TransferComponent";
+import { ConfigStore } from "../ConfigStore";
+import { parseUnits } from "viem";
 
 export default function InternalTransfersComponent() {
   const { t } = useTranslation();
@@ -70,6 +72,27 @@ export default function InternalTransfersComponent() {
     if (selectedToken) {
       const amount = parseFloat(transferAmount);
       if (isNaN(amount) || amount <= 0) return;
+
+      // Get stablecoins from ConfigStore
+      const stablecoins =
+        ConfigStore.getInstance().getBackendStablecoins()
+          ?.supportedStablecoins || [];
+      const tokenInfo = stablecoins.find((stablecoin) =>
+        stablecoin.addresses.some(
+          (addr) =>
+            addr.address.toLowerCase() === selectedToken.address.toLowerCase()
+        )
+      );
+      console.log("tokenInfo", tokenInfo);
+      const tokenDecimals =
+        tokenInfo?.name === "USDC" || tokenInfo?.name === "USDT" ? 6 : 18;
+
+      // Use parseUnits instead of formatUnits to convert to wei
+      const formattedAmount = parseUnits(
+        transferAmount,
+        tokenDecimals
+      ).toString();
+      console.log("formattedAmount", formattedAmount);
       const sourceBalance =
         activeTab === "myWallet"
           ? parseFloat(selectedToken.eoaBalance)
@@ -82,7 +105,7 @@ export default function InternalTransfersComponent() {
       await handleTransaction(
         transactionType,
         selectedToken.address,
-        transferAmount
+        formattedAmount
       );
     }
   };

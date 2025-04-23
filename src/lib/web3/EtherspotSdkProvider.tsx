@@ -24,7 +24,7 @@ function mapNetworkNameToFormattedName(
   return networkNameToFormattedNameMap[networkName] || null;
 }
 
-export const arka_api_key = "etherspot_public_key";
+export const arka_api_key = "etherspot_3ZVooGBfUwejKEQFJzmvMxKK";
 export const arka_url = "https://arka.etherspot.io";
 export const queryString = `?apiKey=${arka_api_key}&chainId=`;
 
@@ -74,7 +74,11 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     arkaUrl: string
   ): ArkaPaymaster => {
     if (!arkaPaymasterInstance) {
-      arkaPaymasterInstance = new ArkaPaymaster(chainId, arkaApiKey, arkaUrl);
+      arkaPaymasterInstance = new ArkaPaymaster(
+        chainId,
+        arkaApiKey + "&useVp=true",
+        arkaUrl
+      );
     }
     return arkaPaymasterInstance;
   };
@@ -171,9 +175,17 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     const tokenBalances: TokenBalance[] = [];
 
     try {
+      console.log("currentBlockchain", currentBlockchain);
+      if (currentBlockchain === "ARBITRUM") {
+        currentBlockchain = "ARBITRUM_MAINNET";
+      }
+      if (currentBlockchain === "BASE") {
+        currentBlockchain = "BASE_MAINNET";
+      }
       const stablecoinsByBlockchain =
         ConfigStore.getInstance().getStablecoinsByBlockchain(currentBlockchain);
       // Use Promise.all to fetch balances concurrently for better performance
+      console.log("stablecoinsByBlockchain", stablecoinsByBlockchain);
       await Promise.all(
         stablecoinsByBlockchain.map(async (stablecoin) => {
           const relevantAddresses = stablecoin.addresses.filter(
@@ -185,7 +197,6 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
                 getStablecoinBalance(address, smartWalletAddress, chainId),
                 getStablecoinBalance(address, eoaAddress, chainId),
               ]);
-
               // Map the balances to the TokenBalance type
               tokenBalances.push({
                 name: stablecoin.name ?? "Unknown",
@@ -194,6 +205,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
                 address:
                   address ?? "0x0000000000000000000000000000000000000000",
               });
+              console.log("tokenBalances", tokenBalances);
             } catch (balanceError) {
               console.error(
                 `Error fetching balance for ${stablecoin.name} at address ${address}:`,
@@ -249,16 +261,30 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     chainId: number
   ) => {
     const client = PublicClientManager.getInstance({ chainId });
+
+    // Get token name to determine decimals
+    const stablecoins =
+      ConfigStore.getInstance().getBackendStablecoins()?.supportedStablecoins ||
+      [];
+    const tokenInfo = stablecoins.find((stablecoin) =>
+      stablecoin.addresses.some(
+        (addr) => addr.address.toLowerCase() === tokenAddress.toLowerCase()
+      )
+    );
+
+    // Use 6 decimals for USDC, 18 for other tokens
+    const decimals =
+      tokenInfo?.name === "USDC" || tokenInfo?.name === "USDT" ? 6 : 18;
+    console.log("decimals", decimals);
     const balance = await client.readContract({
       address: getAddress(tokenAddress),
       abi: ERC20abi,
       functionName: "balanceOf",
       args: [walletAddress],
     });
-
     if (balance !== undefined && balance !== null) {
       const formattedBalance = BigInt(balance.toString());
-      return formatUnits(formattedBalance, 18);
+      return formatUnits(formattedBalance, decimals);
     }
   };
 
@@ -268,6 +294,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     chainId: number
   ): Promise<string | undefined> => {
     try {
+      console.log("operations", operations);
       const userOpReceipt = await processBatchOperations(operations, chainId);
       return userOpReceipt;
     } catch (error) {
@@ -291,7 +318,9 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     const op = await primeSdk.estimate({
       paymasterDetails: {
         url:
-          "https://arka.etherspot.io?apiKey=etherspot_public_key&chainId=" +
+          "https://arka.etherspot.io?useVp=true&apiKey=" +
+          arka_api_key +
+          "&chainId=" +
           chainId,
         context: { mode: "sponsor" },
       },

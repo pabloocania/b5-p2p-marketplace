@@ -35,7 +35,7 @@ export const useEtherspotFlow = () => {
         const data = encodeFunctionData({
           abi: ERC20abi,
           functionName: "transfer",
-          args: [etherspotAddress, parseUnits(amount, 18)],
+          args: [etherspotAddress, amount],
         });
 
         const transactionHash = await walletClient.sendTransaction({
@@ -62,7 +62,7 @@ export const useEtherspotFlow = () => {
         const data = encodeFunctionData({
           abi: ERC20abi,
           functionName: "transfer",
-          args: [address, parseUnits(amount, 18)],
+          args: [address, amount],
         });
 
         // Prepare the operation data

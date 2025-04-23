@@ -1,5 +1,5 @@
 import { createPublicClient, http, PublicClient } from 'viem';
-import { rootstockTestnet, arbitrumSepolia } from "wagmi/chains";
+import { rootstockTestnet, arbitrumSepolia, baseSepolia, base, arbitrum } from "wagmi/chains";
 
 interface PublicClientConfig {
     chainId: number;
@@ -8,14 +8,20 @@ interface PublicClientConfig {
 // Enum for blockchain names
 export enum BlockchainName {
     ARBITRUM_TESTNET = "ARBITRUM_TESTNET",
+    ARBITRUM_MAINNET = "ARBITRUM_MAINNET",
     RSK_TESTNET = "RSK_TESTNET",
+    BASE_SEPOLIA = "BASE_SEPOLIA",
+    BASE_MAINNET = "BASE_MAINNET",
     // Add more blockchain names as needed
 }
 
 // Enum for chain IDs
 export enum ChainId {
     ARBITRUM_TESTNET = 421614,
+    ARBITRUM_MAINNET = 42161,
     RSK_TESTNET = 31,
+    BASE_SEPOLIA = 84532,
+    BASE_MAINNET = 8453,
     // Add more chain IDs as needed
 }
 
@@ -48,7 +54,7 @@ export class PublicClientManager {
     public static getInstance(config: PublicClientConfig) {
         this.resetInstance()
         if (!PublicClientManager.instance) {
-            PublicClientManager.instance = PublicClientManager.createClient(config);
+            PublicClientManager.instance = PublicClientManager.createClient(config) as unknown as PublicClient;
         }
         return PublicClientManager.instance;
     }
@@ -63,6 +69,21 @@ export class PublicClientManager {
             case 31: // RSK Testnet Chain ID
                 return createPublicClient({
                     chain: rootstockTestnet,
+                    transport: http(),
+                });
+            case 84532: // Base Sepolia Chain ID
+                return createPublicClient({
+                    chain: baseSepolia,
+                    transport: http(),
+                });
+            case 8453: // Base Mainnet Chain ID
+                return createPublicClient({
+                    chain: base,
+                    transport: http(),
+                });
+            case 42161: // Arbitrum Mainnet Chain ID
+                return createPublicClient({
+                    chain: arbitrum,
                     transport: http(),
                 });
             default:
@@ -81,9 +102,14 @@ export class PublicClientManager {
                 return 421614;
             case "RSK_TESTNET":
                 return 31;
+            case "BASE_SEPOLIA":
+                return 84532;
+            case "BASE_MAINNET":
+                return 8453;
+            case "ARBITRUM_MAINNET":
+                return 42161;
             default:
                 throw new Error(`Unsupported blockchain: ${blockchain}`);
         }
     }
-
 }
