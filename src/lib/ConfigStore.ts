@@ -77,6 +77,16 @@ export class ConfigStore {
             (b: any) => b.name === blockchainName
         )?.escrowAddress!!;
     };
+
+    public getStablecoinByAddress(tokenAddress: string): Stablecoin | undefined {
+        return this.backendStablecoins?.supportedStablecoins.find(stablecoin =>
+            stablecoin.addresses.some(address => address.address === tokenAddress)
+        );
+    }
+
+    public getTokenDecimals(tokenAddress: string): number {
+        return this.getStablecoinByAddress(tokenAddress)?.decimals ?? 6;
+    }
 }
 
 export function initConfig() {

@@ -7,6 +7,7 @@ interface TokenBalanceSelectorProps {
   balances?: TokenBalance[];
   balanceType: "eoa" | "sw";
   onTokenSelect: (token: TokenBalance | null) => void;
+  handleTransfer: (transferAmount: string) => void;
 }
 
 /**
@@ -16,12 +17,14 @@ export default function TokenBalanceSelector({
   balances = [],
   balanceType,
   onTokenSelect,
+  handleTransfer,
 }: TokenBalanceSelectorProps) {
   return (
     <TokenBalanceCardList
       balances={balances}
       balanceType={balanceType}
       onTokenSelect={onTokenSelect}
+      handleTransfer={handleTransfer}
     />
   );
 }

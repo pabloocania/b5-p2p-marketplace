@@ -39,12 +39,14 @@ interface TokenBalanceCardListProps {
   balances?: TokenBalance[];
   balanceType: "eoa" | "sw";
   onTokenSelect: (token: TokenBalance | null) => void;
+  handleTransfer: (transferAmount: string) => void;
 }
 
 export default function TokenBalanceCardList({
   balances = [],
   balanceType,
   onTokenSelect,
+  handleTransfer,
 }: TokenBalanceCardListProps) {
   const { setTransaction } = useTransaction();
   const { t } = useTranslation();
@@ -64,27 +66,6 @@ export default function TokenBalanceCardList({
 
     setState(newState);
     onTokenSelect(isCurrentlySelected ? null : token);
-  };
-
-  const handleTransfer = async (transferAmount: string) => {
-    if (selectedToken) {
-      const amount = parseFloat(transferAmount);
-      if (isNaN(amount) || amount <= 0) return;
-      const sourceBalance =
-        balanceType === "eoa"
-          ? parseFloat(selectedToken.eoaBalance)
-          : parseFloat(selectedToken.smartWalletBalance);
-
-      if (amount > sourceBalance) return;
-
-      const transactionType =
-        balanceType === "eoa" ? "EOAToSW" : "EtherspotToEOA";
-      await handleTransaction(
-        transactionType,
-        selectedToken.address,
-        transferAmount
-      );
-    }
   };
 
   // Format balances for display with smart number formatting

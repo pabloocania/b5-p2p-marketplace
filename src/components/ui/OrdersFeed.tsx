@@ -100,7 +100,7 @@ export default function OrdersFeed({
       const params: any = {};
 
       // Add user filter if available
-      if (userId) {
+      if (userId && filter !== Filter.ALL) {
         params.user = userId;
       }
 

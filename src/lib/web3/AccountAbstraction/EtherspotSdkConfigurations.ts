@@ -31,7 +31,7 @@ const sdkOptionsMap: Record<ChainId, SdkOptions> = {
         chainId: ChainId.BASE_MAINNET,
         bundlerProvider: new EtherspotBundler(
             ChainId.BASE_MAINNET,
-            "etherspot_public_key",
+            "etherspot_3ZVooGBfUwejKEQFJzmvMxKK",
             "https://rpc.etherspot.io/v1/" + ChainId.BASE_MAINNET
         ),
     },
@@ -39,7 +39,7 @@ const sdkOptionsMap: Record<ChainId, SdkOptions> = {
         chainId: ChainId.ARBITRUM_MAINNET,
         bundlerProvider: new EtherspotBundler(
             ChainId.ARBITRUM_MAINNET,
-            "etherspot_public_key",
+            "etherspot_3ZVooGBfUwejKEQFJzmvMxKK",
             "https://rpc.etherspot.io/v1/" + ChainId.ARBITRUM_MAINNET
         ),
     }
@@ -60,7 +60,7 @@ export const networkNameToFormattedNameMap: Record<string, string> = {
     sepolia: "SEPOLIA",
     optimism: "OPTIMISM",
     polygon: "POLYGON",
-    arbitrum: "ARBITRUM",
+    arbitrum: "ARBITRUM_MAINNET",
     arbitrumSepolia: "ARBITRUM_TESTNET",
     chiado: "CHIADO",
     fuse: "FUSE",
@@ -75,7 +75,7 @@ export const networkNameToFormattedNameMap: Record<string, string> = {
     mantle: "MANTLE",
     mantleSepolia: "MANTLE_SEPOLIA",
     avalanche: "AVALANCHE",
-    base: "BASE",
+    base: "BASE_MAINNET",
     bsc: "BSC",
     bscTestnet: "BSC_TESTNET",
     fuji: "FUJI",

@@ -14,11 +14,6 @@ import { getKioscoinEscrowAddressByBlockchain, KioscoinEscrowContractConfig } fr
 import { PublicClientManager } from "@/lib/web3/PublicClientManager";
 import { ConfigStore } from "@/lib/ConfigStore";
 
-export const arka_api_key = "etherspot_3ZVooGBfUwejKEQFJzmvMxKK";
-export const arka_url = "https://arka.etherspot.io";
-export const queryString = `?apiKey=${arka_api_key}&chainId=`;
-
-
 export const useEtherspotFlow = () => {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
@@ -69,7 +64,6 @@ export const useEtherspotFlow = () => {
   ): Promise<string | undefined> => {
     try {
       if (address && primeSdk) {
-        console.log(address);
         const data = encodeFunctionData({
           abi: ERC20abi,
           functionName: "transfer",

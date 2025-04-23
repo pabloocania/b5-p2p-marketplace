@@ -2,17 +2,17 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
 import { PrimeSdk, ArkaPaymaster } from "@etherspot/prime-sdk";
-import { ERC20abi } from "../../abis/StablecoinConfig";
+import { ERC20abi } from "@/abis/StablecoinConfig";
 import { getAddress, formatUnits } from "viem";
-import { OPSReceipt, TokenBalance } from "./types";
+import { TokenBalance } from "@/lib/web3/types";
 import { getBalance } from "@wagmi/core";
-import { config } from "../../wagmi";
-import { PublicClientManager } from "./PublicClientManager"; // Import the manager
+import { config } from "@/wagmi";
+import { PublicClientManager } from "@/lib/web3/PublicClientManager"; // Import the manager
 import {
   getSdkOptionsForChainId,
   networkNameToFormattedNameMap,
 } from "./EtherspotSdkConfigurations";
-import { ConfigStore } from "../ConfigStore";
+import { ConfigStore } from "@/lib/ConfigStore";
 
 // Function to map network name to formatted blockchain name
 function mapNetworkNameToFormattedName(
@@ -23,8 +23,8 @@ function mapNetworkNameToFormattedName(
   }
   return networkNameToFormattedNameMap[networkName] || null;
 }
-
-export const arka_api_key = "etherspot_public_key";
+//etherspot_public_key
+export const arka_api_key = "etherspot_3ZVooGBfUwejKEQFJzmvMxKK";
 export const arka_url = "https://arka.etherspot.io";
 export const queryString = `?apiKey=${arka_api_key}&chainId=`;
 
@@ -223,6 +223,8 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       primeSdk?.state.network.name
     )!!;
 
+    console.log("currentBlockchain", currentBlockchain);
+
     const formattedBalance = BigInt(eoaNativeBalance?.value.toString() ?? "0");
 
     const nativeBalance: TokenBalance = {
@@ -258,7 +260,8 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
 
     if (balance !== undefined && balance !== null) {
       const formattedBalance = BigInt(balance.toString());
-      return formatUnits(formattedBalance, 18);
+      const decimals = ConfigStore.getInstance().getTokenDecimals(tokenAddress);
+      return formatUnits(formattedBalance, decimals);
     }
   };
 
@@ -291,7 +294,9 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     const op = await primeSdk.estimate({
       paymasterDetails: {
         url:
-          "https://arka.etherspot.io?apiKey=etherspot_public_key&chainId=" +
+          "https://arka.etherspot.io?apiKey=" +
+          arka_api_key +
+          "&chainId=" +
           chainId,
         context: { mode: "sponsor" },
       },

@@ -332,6 +332,7 @@ export default function InternalTransfersComponent() {
 
             <TokenBalanceSelector
               onTokenSelect={handleTokenSelect}
+              handleTransfer={handleTransfer}
               balanceType="sw"
               balances={balances}
             />
@@ -360,6 +361,7 @@ export default function InternalTransfersComponent() {
             </div>
             <TokenBalanceSelector
               onTokenSelect={handleTokenSelect}
+              handleTransfer={handleTransfer}
               balanceType="eoa"
               balances={balances}
             />

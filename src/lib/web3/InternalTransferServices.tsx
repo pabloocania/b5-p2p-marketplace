@@ -41,9 +41,6 @@ export const useTransactionHandler = (
         );
         await checkTransactionStatus(transactionHash, chainId);
       } else {
-        console.log(selectedCoinAddress);
-        console.log(transferAmount);
-        console.log(chainId);
         const hash = await transferFromSmartWalletToEOA(
           selectedCoinAddress,
           transferAmount,
