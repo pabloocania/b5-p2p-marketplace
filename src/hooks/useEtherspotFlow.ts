@@ -83,7 +83,7 @@ export const useEtherspotFlow = () => {
 
   const releaseFunds = async (order: Order): Promise<string | undefined> => {
     try {
-      const contractAddress = getKioscoinEscrowAddressByBlockchain(order.blockchain!!)
+      const contractAddress = ConfigStore.getInstance().getKioscoinEscrowAddressByBlockchain(order.blockchain!!)
       if (primeSdk) {
         const releaseParams = [
           order.id,
@@ -111,12 +111,10 @@ export const useEtherspotFlow = () => {
     if (primeSdk && address) {
       const orderBlockchain = order.blockchain!!
       const contractAddress = ConfigStore.getInstance().getKioscoinEscrowAddressByBlockchain(orderBlockchain)
-      const amountInt = parseUnits(order.amount ?? "0", 18); // Ensure order.amount is not undefined
+      const tokenDecimals = ConfigStore.getInstance().getTokenDecimals(order.tokenCode!!)
+      const amountInt = parseUnits(order.amount ?? "0", tokenDecimals); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
       const totalAmount = amountInt + feeInt; // Sum is also a BigInt
-      console.log(totalAmount);
-      console.log(contractAddress);
-      console.log(order.tokenCode);
 
       // Encode the approve function call
       const approveData = encodeFunctionData({
@@ -128,10 +126,10 @@ export const useEtherspotFlow = () => {
       const buyerHashBuffer = order.buyerHash ? keccak256(toUtf8Bytes(order.buyerHash)) : undefined;
       const sellerHashBuffer = order.sellerHash ? keccak256(toUtf8Bytes(order.sellerHash)) : undefined;
 
-      const address = ConfigStore.getInstance().getTokenAddressByNameAndBlockchain(order.tokenCode?.toUpperCase()!!, orderBlockchain)
+      const tokenAddress = ConfigStore.getInstance().getTokenAddressByNameAndBlockchain(order.tokenCode?.toUpperCase()!!, orderBlockchain)
       const escrowParams = [
         order.id,
-        address,
+        tokenAddress,
         order.buyerAddress,
         buyerHashBuffer,
         sellerHashBuffer,
@@ -145,8 +143,8 @@ export const useEtherspotFlow = () => {
       });
 
       const operations = [
-        { to: address, data: approveData },
-        // { to: contractAddress, data: escrowData }
+        { to: tokenAddress, data: approveData },
+        { to: contractAddress, data: escrowData }
       ];
       const chainId = PublicClientManager.getChainIdForBlockchain(order.blockchain!!)
       return executeTransaction(operations, chainId!!);
