@@ -3,7 +3,7 @@ import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
 import { PrimeSdk, ArkaPaymaster } from "@etherspot/prime-sdk";
 import { ERC20abi } from "@/abis/StablecoinConfig";
-import { getAddress, formatUnits } from "viem";
+import { getAddress, formatUnits, parseUnits, parseGwei } from "viem";
 import { TokenBalance } from "@/lib/web3/types";
 import { getBalance } from "@wagmi/core";
 import { config } from "@/wagmi";
@@ -13,6 +13,7 @@ import {
   networkNameToFormattedNameMap,
 } from "./EtherspotSdkConfigurations";
 import { ConfigStore } from "@/lib/ConfigStore";
+import { TransactionGasInfoForUserOp } from "@etherspot/prime-sdk/dist/sdk/base/TransactionDetailsForUserOp";
 
 // Function to map network name to formatted blockchain name
 function mapNetworkNameToFormattedName(
@@ -295,6 +296,25 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       await primeSdk.addUserOpsToBatch(operation);
     }
     await whitelistPaymaster(smartWalletAddress);
+    const client = PublicClientManager.getInstance({ chainId });
+    const block = await client.getBlock({ blockTag: "latest" });
+    const baseFee = block?.baseFeePerGas ?? BigInt(0);
+    console.log("baseFee", baseFee);
+
+    // Get the current blockchain name and its maxPriorityFeePerGasGwei
+    const currentBlockchain = mapNetworkNameToFormattedName(
+      primeSdk?.state.network.name
+    )!!;
+    const maxPriorityFeePerGasGwei =
+      ConfigStore.getInstance().getMaxPriorityFeePerGasGwei(currentBlockchain);
+    const maxPriorityFeePerGas = parseGwei(maxPriorityFeePerGasGwei.toString());
+    console.log("maxPriorityFeePerGas", maxPriorityFeePerGas);
+    const maxFeePerGas = baseFee + maxPriorityFeePerGas;
+    const gasDetails: TransactionGasInfoForUserOp = {
+      maxFeePerGas: maxFeePerGas,
+      maxPriorityFeePerGas: maxPriorityFeePerGas,
+    };
+    console.log("gasDetails", gasDetails);
     const op = await primeSdk.estimate({
       paymasterDetails: {
         url:
@@ -304,6 +324,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
           chainId,
         context: { mode: "sponsor" },
       },
+      gasDetails: gasDetails,
     });
     console.log("Estimate UserOp: ", await printOp(op));
     try {

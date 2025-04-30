@@ -9,7 +9,7 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
 import { config } from "../src/wagmi";
 import { EtherspotSdkProvider } from "@/lib/web3/AccountAbstraction/EtherspotSdkProvider";
-import { TransactionProvider } from "@/lib/web3/TransactionContext";
+import { TransactionProvider } from "@/lib/web3/Transactions/TransactionContext";
 import { arbitrumSepolia, rootstockTestnet } from "wagmi/chains";
 import "../src/i18n"; // Adjust the path as necessary
 import { useEffect } from "react";

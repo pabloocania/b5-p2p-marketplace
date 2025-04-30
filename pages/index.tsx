@@ -12,7 +12,7 @@ import { Plus, User, Languages, Globe } from "lucide-react";
 import { useUserContext } from "../src/components/ui/UserContext";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useDisconnect } from "wagmi";
-import { useTransaction } from "@/lib/web3/TransactionContext";
+import { useTransaction } from "@/lib/web3/Transactions/TransactionContext";
 import { TransactionStatus } from "@/components/ui/TransactionStatus";
 import UserOrdersMenu from "@/components/ui/TopLevelSubMenu";
 import { useTranslation } from "react-i18next";

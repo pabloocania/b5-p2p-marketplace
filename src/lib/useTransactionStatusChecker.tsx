@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useTransaction } from "./web3/TransactionContext";
+import { useTransaction } from "./web3/Transactions/TransactionContext";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { TransactionStatusResponse } from "b5-api-client";
 import { BlockchainMapper } from "./web3/PublicClientManager";

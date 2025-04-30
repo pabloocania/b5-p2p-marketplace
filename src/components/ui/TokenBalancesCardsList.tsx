@@ -7,8 +7,7 @@ import { ArrowLeftRightIcon, ChevronRightIcon, WalletIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CryptoAmountIcon } from "./CryptoIcon";
 import TransferAmountInput from "@/lib/web3/TransferComponent";
-import { useTransactionHandler } from "@/lib/web3/InternalTransferServices";
-import { useTransaction } from "@/lib/web3/TransactionContext";
+import { useTransaction } from "@/lib/web3/Transactions/TransactionContext";
 import { useTranslation } from "react-i18next";
 import { useTransactionStatusChecker } from "@/lib/useTransactionStatusChecker";
 
@@ -52,11 +51,6 @@ export default function TokenBalanceCardList({
   const { t } = useTranslation();
   const [state, setState] = useState<TokenCardState>(TokenCardState.create());
   const { checkTransactionStatus } = useTransactionStatusChecker();
-  const { handleTransaction } = useTransactionHandler(
-    setTransaction,
-    t,
-    checkTransactionStatus
-  );
 
   const handleSelectToken = (token: TokenBalance) => {
     const isCurrentlySelected = state.isSelected(token.name);

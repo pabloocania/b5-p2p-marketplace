@@ -4,7 +4,7 @@ import { useEtherspotFlow } from "@/hooks/useEtherspotFlow";
 import { useEtherspotSdk } from "../AccountAbstraction/EtherspotSdkProvider";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
-import { useTransaction } from "../Transactions/TransactionContext";
+import { useTransaction } from "@/lib/web3/Transactions/TransactionContext";
 import {
   Sheet,
   SheetTrigger,

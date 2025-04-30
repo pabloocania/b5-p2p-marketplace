@@ -1,7 +1,7 @@
 import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { TransactionStatusResponse } from "b5-api-client";
 import { useTranslation } from "react-i18next";
-import { useTransaction } from "./TransactionContext";
+import { useTransaction } from "@/lib/web3/Transactions/TransactionContext";
 
 export const checkTransactionStatus = async (
   transactionHash: string

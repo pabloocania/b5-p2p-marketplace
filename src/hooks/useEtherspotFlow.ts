@@ -71,7 +71,6 @@ export const useEtherspotFlow = () => {
           to: tokenAddress,
           data: data,
         };
-        console.log(operation);
         return await executeTransaction([operation], chainId);
       }
       throw new Error("Address or PrimeSdk instance is not available.");

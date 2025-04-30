@@ -8,7 +8,7 @@ import { TokenBalance, TokenTransfer } from "./types";
 import { useEtherspotSdk } from "./AccountAbstraction/EtherspotSdkProvider";
 import { useAccount } from "wagmi";
 import TokenBalanceSelector from "@/components/ui/TokenBalanceSelector";
-import { useTransaction } from "./TransactionContext";
+import { useTransaction } from "@/lib/web3/Transactions/TransactionContext";
 import { useTransactionStatusChecker } from "../useTransactionStatusChecker";
 import { useTransactionHandler } from "./InternalTransferServices";
 import Address from "./Address";

@@ -87,6 +87,21 @@ export class ConfigStore {
     public getTokenDecimals(tokenAddress: string): number {
         return this.getStablecoinByAddress(tokenAddress)?.decimals ?? 6;
     }
+
+    public getChainIdFromBlockchain(blockchain: string | undefined): number {
+        if (!blockchain) return 0;
+        const chainConfig = this.config?.config.blockchains.find(
+            (b: { name: string; chainId: number }) => b.name === blockchain
+        );
+        return chainConfig?.chainId ?? 0;
+    }
+
+    public getMaxPriorityFeePerGasGwei(blockchain: string): number {
+        const chainConfig = this.config?.config.blockchains.find(
+            (b: any) => b.name === blockchain
+        );
+        return chainConfig?.maxPriorityFeePerGasGwei ?? 0.03; // fallback to a safe default
+    }
 }
 
 export function initConfig() {

@@ -11,13 +11,18 @@ import {
 } from "b5-api-client";
 import { Button } from "@/components/ui/button";
 import LockFundsButton from "@/lib/web3/LockFundsButton";
-import ReleaseFundsButton from "@/lib/web3/ReleaseFundsButton";
+import ReleaseFundsButton from "@/lib/web3/Escrow/ReleaseFundsButton";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useTranslation } from "react-i18next";
 import { useUserContext } from "./UserContext";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { ConnectToContinueButton } from "./ConnectToContinueButton";
 import NotifyFiatSentButton from "./NotifyFiatSentButton";
+import ReleaseFundsConfirmation from "@/components/ui/ReleaseFundsConfirmation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { ConfigStore, getBlockchainDisplayName } from "@/lib/ConfigStore";
+import { BlockchainName } from "@/lib/web3/PublicClientManager";
 
 interface OrderCardFooterProps {
   order: Order;
@@ -39,9 +44,12 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
 }) => {
   const { user, isLoggedIn, loginId } = useUserContext();
   const { isConnected } = useAccount();
+  const chainId = useChainId();
   const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [orderTaken, setOrderTaken] = useState(false);
+  const [isReleaseOpen, setIsReleaseOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const isSeller: boolean = order.sellerId === user?.id;
   const canSelectOrder = isLoggedIn && user?.id !== order?.creatorId;
 
@@ -106,6 +114,32 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     }
   };
 
+  const renderWrongNetworkAlert = (blockchain: string | undefined) => {
+    if (!blockchain) return null;
+    const orderChainId = getChainIdFromBlockchain(blockchain);
+    const isCorrectChain = chainId === orderChainId;
+
+    if (!isCorrectChain) {
+      return (
+        <Alert
+          variant="destructive"
+          className="bg-red-50 border-none text-left pl-2 text-sm"
+        >
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle className="font-semibold">
+            {t("wrong_network")}
+          </AlertTitle>
+          <AlertDescription className="text-xs">
+            {t("please_switch_to_network", {
+              network: getBlockchainDisplayName(blockchain as BlockchainName),
+            })}
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    return null;
+  };
+
   const renderActionButton = () => {
     if (order.status === "ACTIVE" && !isSeller) {
       return (
@@ -119,6 +153,9 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     }
 
     if (order.status === "WAITING_PAYMENT" && isSeller) {
+      const wrongNetworkAlert = renderWrongNetworkAlert(order.blockchain);
+      if (wrongNetworkAlert) return wrongNetworkAlert;
+
       return isConnected ? (
         <LockFundsButton order={order} canLock={isSeller} />
       ) : (
@@ -127,6 +164,9 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     }
 
     if (order.status === "FIAT_SENT" && isSeller) {
+      const wrongNetworkAlert = renderWrongNetworkAlert(order.blockchain);
+      if (wrongNetworkAlert) return wrongNetworkAlert;
+
       return isConnected ? (
         <ReleaseFundsButton
           order={order}
@@ -139,6 +179,11 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     }
 
     return null;
+  };
+
+  // Helper function to convert blockchain name to chain ID using ConfigStore
+  const getChainIdFromBlockchain = (blockchain: string | undefined): number => {
+    return ConfigStore.getInstance().getChainIdFromBlockchain(blockchain);
   };
 
   const isUserInvolved = [
@@ -179,7 +224,9 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         className="w-full bg-secondary text-white font-semibold"
         onClick={() => !orderTaken && takeOrder(order)}
       >
-        {t("take_order")}
+        {order.type === "BUY"
+          ? `${t("sell")} ${order.tokenCode}`
+          : `${t("buy")} ${order.tokenCode}`}
       </Button>
     </CardFooter>
   ) : null;
