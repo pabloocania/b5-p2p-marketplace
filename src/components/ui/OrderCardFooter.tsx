@@ -10,7 +10,7 @@ import {
   KioscoinUser,
 } from "b5-api-client";
 import { Button } from "@/components/ui/button";
-import LockFundsButton from "@/lib/web3/LockFundsButton";
+import LockFundsButton from "@/lib/web3/Escrow/LockFundsButton";
 import ReleaseFundsButton from "@/lib/web3/Escrow/ReleaseFundsButton";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useTranslation } from "react-i18next";
