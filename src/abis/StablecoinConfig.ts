@@ -7,37 +7,12 @@ export const defaultSystemStablecoins: StablecoinConfig = {
             addresses: [
                 {
                     blockchain: "RSK_TESTNET",
-                    address: "0xee5e8291b551603a19ef41eea69ae49592ed14f8"
+                    address: "0xee5e8291b551603a19ef41eea69ae49592ed14f8",
                 }
             ],
             name: "PDOC",
-        },
-        {
-            addresses: [
-                {
-                    blockchain: "ARBITRUM_TESTNET",
-                    address: "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d"
-                }
-            ],
-            name: "USDC",
-        },
-        {
-            addresses: [
-                {
-                    blockchain: "ARBITRUM_TESTNET",
-                    address: "0x3cfA72437c8992D417e154f92308b5A2EA07EDbc"
-                }
-            ],
-            name: "USDK",
-        },
-        {
-            addresses: [
-                {
-                    blockchain: "BASE_SEPOLIA",
-                    address: "0xE11a8D5D9032e2DdFe03c4F4E59371832502b64A"
-                }
-            ],
-            name: "USDK",
+            escrowAddress: "0x0000000000000000000000000000000000000000",
+            decimals: 18
         }
     ]
 } as const;
