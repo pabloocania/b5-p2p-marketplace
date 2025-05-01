@@ -203,14 +203,8 @@ export class FirebaseUnifiedService {
                 console.error("Firebase Auth not initialized");
                 return AuthResult.failure("Firebase Auth not initialized");
             }
-
-            console.log("Attempting to sign in with email:", email);
             const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-            console.log("Firebase auth successful, getting ID token");
-
             const idToken = await userCredential.user.getIdToken();
-            console.log("Got ID token, fetching user from backend");
-
             const backendUser = await this.getUserFromBackend(userCredential.user.uid, idToken);
 
             if (backendUser) {

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import CreateOrder from "../src/components/ui/CreateOrder";
-import OrdersFeed, { Filter } from "../src/components/ui/OrdersFeed";
+import CreateOrder from "../src/components/kioscoin/orders/CreateOrder";
+import OrdersFeed, {
+  Filter,
+} from "../src/components/kioscoin/orders/OrdersFeed";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -9,15 +11,15 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Plus, User, Languages, Globe } from "lucide-react";
-import { useUserContext } from "../src/components/ui/UserContext";
+import { useUserContext } from "../src/components/kioscoin/users/UserContext";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useDisconnect } from "wagmi";
-import { useTransaction } from "@/lib/web3/Transactions/TransactionContext";
-import { TransactionStatus } from "@/components/ui/TransactionStatus";
-import UserOrdersMenu from "@/components/ui/TopLevelSubMenu";
+import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
+import { TransactionStatus } from "@/components/kioscoin/TransactionStatus";
+import UserOrdersMenu from "@/components/kioscoin/TopLevelSubMenu";
 import { useTranslation } from "react-i18next";
-import { TopBar } from "@/components/ui/TopBar";
-import UserMenuNew from "@/components/ui/UserMenuNew";
+import { TopBar } from "@/components/kioscoin/TopBar";
+import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");

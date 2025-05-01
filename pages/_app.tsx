@@ -2,14 +2,13 @@ import Head from "next/head";
 import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { AppProps } from "next/app";
-import { UserProvider } from "../src/components/ui/UserContext";
+import { UserProvider } from "../src/components/kioscoin/users/UserContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-
-import { config } from "../src/wagmi";
-import { EtherspotSdkProvider } from "@/lib/web3/AccountAbstraction/EtherspotSdkProvider";
-import { TransactionProvider } from "@/lib/web3/Transactions/TransactionContext";
+import { config } from "@/components/web3/wagmi";
+import { EtherspotSdkProvider } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { TransactionProvider } from "@/components/web3/Transactions/TransactionContext";
 import { arbitrumSepolia, rootstockTestnet } from "wagmi/chains";
 import "../src/i18n"; // Adjust the path as necessary
 import { useEffect } from "react";

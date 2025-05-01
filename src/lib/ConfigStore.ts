@@ -1,7 +1,7 @@
 import { ConfigResponse } from "b5-api-client/dist/types";
 import { p2pMarketAPIClient } from "./APIClients";
-import { BlockchainName } from "./web3/PublicClientManager";
-import { Stablecoin, StablecoinConfig } from "./web3/types";
+import { BlockchainName } from "../components/web3/Web3RPCClientManager";
+import { Stablecoin, StablecoinConfig } from "../components/web3/types";
 
 const DEFAULT_CONFIG: ConfigResponse<any> = {
     config: {
