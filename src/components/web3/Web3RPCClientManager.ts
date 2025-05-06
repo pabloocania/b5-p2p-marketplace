@@ -1,5 +1,5 @@
 import { createPublicClient, http, PublicClient } from 'viem';
-import { rootstockTestnet, arbitrumSepolia, baseSepolia, base, arbitrum } from "wagmi/chains";
+import { rootstockTestnet, arbitrumSepolia, baseSepolia, base, arbitrum, bsc, polygon } from "wagmi/chains";
 
 interface PublicClientConfig {
     chainId: number;
@@ -12,6 +12,8 @@ export enum BlockchainName {
     RSK_TESTNET = "RSK_TESTNET",
     BASE_SEPOLIA = "BASE_SEPOLIA",
     BASE_MAINNET = "BASE_MAINNET",
+    BSC_MAINNET = "BSC_MAINNET",
+    POLYGON_MAINNET = "POLYGON_MAINNET",
     // Add more blockchain names as needed
 }
 
@@ -22,6 +24,8 @@ export enum ChainId {
     RSK_TESTNET = 31,
     BASE_SEPOLIA = 84532,
     BASE_MAINNET = 8453,
+    BSC_MAINNET = 56,
+    POLYGON_MAINNET = 137,
     // Add more chain IDs as needed
 }
 
@@ -86,6 +90,16 @@ export class PublicClientManager {
                     chain: arbitrum,
                     transport: http(),
                 });
+            case 56: // BNB Mainnet Chain ID
+                return createPublicClient({
+                    chain: bsc,
+                    transport: http(),
+                });
+            case 137: // Polygon Mainnet Chain ID
+                return createPublicClient({
+                    chain: polygon,
+                    transport: http(),
+                });
             default:
                 throw new Error(`Unsupported chain ID: ${chainId}`);
         }
@@ -108,6 +122,10 @@ export class PublicClientManager {
                 return 8453;
             case "ARBITRUM_MAINNET":
                 return 42161;
+            case "BSC_MAINNET":
+                return 56;
+            case "POLYGON_MAINNET":
+                return 137;
             default:
                 throw new Error(`Unsupported blockchain: ${blockchain}`);
         }

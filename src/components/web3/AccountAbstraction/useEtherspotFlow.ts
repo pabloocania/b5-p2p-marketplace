@@ -153,8 +153,6 @@ export const useEtherspotFlow = () => {
   };
 
   const getUserOperationReceipt = async (userOperationHash: string): Promise<OPSReceipt | undefined> => {
-    console.log(userOperationHash);
-    console.log(primeSdk);
     if (primeSdk && userOperationHash !== "") {
       return await primeSdk.getUserOpReceipt(userOperationHash);
     }

@@ -84,15 +84,6 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     return arkaPaymasterInstance;
   };
 
-  // Bundler
-  //https://testnet-rpc.etherspot.io/v2/421614?api-key=etherspot_3ZVooGBfUwejKEQFJzmvMxKK
-
-  // Paymaster
-  //https://rpc.etherspot.io/paymaster/{endpoint-here}?api-key=etherspot_3ZVooGBfUwejKEQFJzmvMxKK
-
-  //Data Utils
-  //https://rpc.etherspot.io/data-utils/{endpoint-here}?api-key=etherspot_3ZVooGBfUwejKEQFJzmvMxKK
-
   useEffect(() => {
     const handleChainIdChange = async () => {
       if (primeSdk) {

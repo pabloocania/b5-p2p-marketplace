@@ -42,6 +42,14 @@ const sdkOptionsMap: Record<ChainId, SdkOptions> = {
             "etherspot_3ZVooGBfUwejKEQFJzmvMxKK",
             "https://rpc.etherspot.io/v1/" + ChainId.ARBITRUM_MAINNET
         ),
+    },
+    [ChainId.BSC_MAINNET]: {
+        chainId: ChainId.BSC_MAINNET,
+        bundlerProvider: new EtherspotBundler(
+            ChainId.BSC_MAINNET,
+            "etherspot_3ZVooGBfUwejKEQFJzmvMxKK",
+            "https://rpc.etherspot.io/v1/" + ChainId.BSC_MAINNET
+        ),
     }
 };
 
@@ -76,7 +84,7 @@ export const networkNameToFormattedNameMap: Record<string, string> = {
     mantleSepolia: "MANTLE_SEPOLIA",
     avalanche: "AVALANCHE",
     base: "BASE_MAINNET",
-    bsc: "BSC",
+    bsc: "BSC_MAINNET",
     bscTestnet: "BSC_TESTNET",
     fuji: "FUJI",
     linea: "LINEA",
@@ -87,7 +95,7 @@ export const networkNameToFormattedNameMap: Record<string, string> = {
     scroll: "SCROLL",
     ancient8Testnet: "ANCIENT8_TESTNET",
     ancient8: "ANCIENT8",
-    amoy: "AMOY",
+    amoy: "AMOY"
 };
 
 
