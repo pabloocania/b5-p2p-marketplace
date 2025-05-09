@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import { useTransaction } from "./TransactionContext";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { TransactionStatusResponse } from "b5-api-client";
-import { BlockchainChainIdMapper } from "../BlockchainChainIdMapper";
 import { getBlockchainNameByChainId } from "@/lib/ConfigStore";
 
 export const useTransactionStatusChecker = () => {
