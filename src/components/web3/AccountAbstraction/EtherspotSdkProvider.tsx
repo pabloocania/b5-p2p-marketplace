@@ -7,11 +7,11 @@ import { getAddress, formatUnits, parseGwei, parseUnits } from "viem";
 import { TokenBalance } from "@/components/web3/types";
 import { getBalance } from "@wagmi/core";
 import { config } from "@/components/web3/wagmi";
-import { PublicClientManager } from "@/components/web3/Web3RPCClientManager"; // Import the manager
+import { PublicClientManager } from "@/components/web3/PublicClientManager"; // Import the manager
 import {
   getSdkOptionsForChainId,
   networkNameToFormattedNameMap,
-} from "./EtherspotSdkConfigurations";
+} from "./EtherspotSdksManager";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { TransactionGasInfoForUserOp } from "@etherspot/prime-sdk/dist/sdk/base/TransactionDetailsForUserOp";
 
@@ -98,10 +98,12 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
         if (!walletProvider.address) {
           throw new Error("Wallet provider address is undefined");
         }
-        const primeSdkInstance = new PrimeSdk(
-          walletProvider,
-          getSdkOptionsForChainId(chainId)
-        );
+        const sdkOptions = await getSdkOptionsForChainId(chainId);
+        if (!sdkOptions) {
+          console.warn(`No SDK options available for chain ${chainId}`);
+          return;
+        }
+        const primeSdkInstance = new PrimeSdk(walletProvider, sdkOptions);
         if (primeSdkInstance !== null) {
           const smartWalletAddress =
             await primeSdkInstance?.getCounterFactualAddress();
@@ -132,10 +134,12 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
         if (!walletProvider.address) {
           throw new Error("Wallet provider address is undefined");
         }
-        const primeSdkInstance = new PrimeSdk(
-          walletProvider,
-          getSdkOptionsForChainId(chainId)
-        );
+        const sdkOptions = await getSdkOptionsForChainId(chainId);
+        if (!sdkOptions) {
+          console.warn(`No SDK options available for chain ${chainId}`);
+          return;
+        }
+        const primeSdkInstance = new PrimeSdk(walletProvider, sdkOptions);
         if (primeSdkInstance !== null) {
           const smartWalletAddress =
             await primeSdkInstance?.getCounterFactualAddress();
@@ -175,24 +179,25 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
           const relevantAddresses = stablecoin.addresses.filter(
             (address) => address.blockchain === currentBlockchain
           );
-          for (const { address } of relevantAddresses) {
+          for (const { address: tokenAddress } of relevantAddresses) {
             try {
               const [swTokenBalance, eoaTokenBalance] = await Promise.all([
-                getStablecoinBalance(address, smartWalletAddress, chainId),
-                getStablecoinBalance(address, eoaAddress, chainId),
+                getStablecoinBalance(tokenAddress, smartWalletAddress, chainId),
+                getStablecoinBalance(tokenAddress, eoaAddress, chainId),
               ]);
 
               // Map the balances to the TokenBalance type
               tokenBalances.push({
                 name: stablecoin.name ?? "Unknown",
-                eoaBalance: eoaTokenBalance ?? "-0.00",
-                smartWalletBalance: swTokenBalance ?? "-0.00",
+                eoaBalance: eoaTokenBalance ?? "0",
+                smartWalletBalance: swTokenBalance ?? "0",
                 address:
-                  address ?? "0x0000000000000000000000000000000000000000",
+                  tokenAddress ?? "0x0000000000000000000000000000000000000000",
+                decimals: stablecoin.decimals ?? 6,
               });
             } catch (balanceError) {
               console.error(
-                `Error fetching balance for ${stablecoin.name} at address ${address}:`,
+                `Error fetching balance for ${stablecoin.name} at address ${tokenAddress}:`,
                 balanceError
               );
             }
@@ -219,13 +224,12 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       primeSdk?.state.network.name
     )!!;
 
-    const formattedBalance = BigInt(eoaNativeBalance?.value.toString() ?? "0");
-
     const nativeBalance: TokenBalance = {
       name: eoaNativeBalance.symbol,
-      smartWalletBalance: swNativeBalance ?? "0.00",
-      eoaBalance: formatUnits(formattedBalance, 18),
+      smartWalletBalance: swNativeBalance ?? "0.0",
+      eoaBalance: eoaNativeBalance?.value.toString() ?? "0.0 ",
       address: "0x0000000000000000000000000000000000000000",
+      decimals: 18,
     };
 
     const balances = await fetchStablecoinBalances(
@@ -251,11 +255,11 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       functionName: "balanceOf",
       args: [walletAddress],
     });
-
     if (balance !== undefined && balance !== null) {
       const formattedBalance = BigInt(balance.toString());
       const decimals = ConfigStore.getInstance().getTokenDecimals(tokenAddress);
-      return formatUnits(formattedBalance, decimals);
+      const adjustedBalance = formattedBalance / BigInt(10 ** (18 - decimals));
+      return adjustedBalance.toString();
     }
   };
 
@@ -312,33 +316,9 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     // }
 
     const maxPriorityFeePerGas = parseGwei(maxPriorityFeePerGasGwei.toString());
-    const maxFeePerGas = baseFee + maxPriorityFeePerGas * BigInt(2); // Double for safety
-
-    // 7. Estimate with enhanced gas parameters
-    // const estimatedOp = await primeSdk.estimate({
-    //   paymasterDetails: {
-    //     url: `https://arka.etherspot.io?useVp=true&apiKey=${arka_api_key}&chainId=${chainId}`,
-    //     context: { mode: "sponsor" },
-    //   },
-    //   gasDetails: {
-    //     maxFeePerGas,
-    //     maxPriorityFeePerGas,
-    //   },
-    // });
-    // const client = PublicClientManager.getInstance({ chainId });
-    // const block = await client.getBlock({ blockTag: "latest" });
-    // const baseFee = block?.baseFeePerGas ?? BigInt(0);
-    // console.log("baseFee", baseFee);
-
-    // // Get the current blockchain name and its maxPriorityFeePerGasGwei
-    // const currentBlockchain = mapNetworkNameToFormattedName(
-    //   primeSdk?.state.network.name
-    // )!!;
-    // const maxPriorityFeePerGasGwei =
-    //   ConfigStore.getInstance().getMaxPriorityFeePerGasGwei(currentBlockchain);
-    // const maxPriorityFeePerGas = parseGwei(maxPriorityFeePerGasGwei.toString());
-    // console.log("maxPriorityFeePerGas", maxPriorityFeePerGas);
-    // const maxFeePerGas = baseFee + maxPriorityFeePerGas;
+    const maxFeePerGas =
+      baseFee + maxPriorityFeePerGas * BigInt(2) * BigInt(20); // Double for safety
+    console.log("maxFeePerGas", maxFeePerGas);
     const gasDetails: TransactionGasInfoForUserOp = {
       maxFeePerGas: maxFeePerGas,
       maxPriorityFeePerGas: maxPriorityFeePerGas,

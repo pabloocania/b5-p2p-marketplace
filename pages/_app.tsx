@@ -6,21 +6,44 @@ import { UserProvider } from "../src/components/kioscoin/users/UserContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { config } from "@/components/web3/wagmi";
+import { createWagmiConfig } from "@/components/web3/wagmi";
 import { EtherspotSdkProvider } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import { TransactionProvider } from "@/components/web3/Transactions/TransactionContext";
-import { arbitrumSepolia, rootstockTestnet } from "wagmi/chains";
+import { arbitrumSepolia } from "wagmi/chains";
 import "../src/i18n"; // Adjust the path as necessary
-import { useEffect } from "react";
-import { initConfig } from "@/lib/ConfigStore";
+import { useEffect, useState } from "react";
+import type { Config } from "wagmi";
+import { ConfigStore } from "@/lib/ConfigStore";
 
 const queryClient = new QueryClient();
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  const [isConfigLoaded, setIsConfigLoaded] = useState(false);
+  const [wagmiConfig, setWagmiConfig] = useState<Config>(
+    createWagmiConfig([arbitrumSepolia])
+  );
+
   useEffect(() => {
-    // Initialize configuration
-    initConfig();
+    const loadConfigs = async () => {
+      try {
+        const configStore = ConfigStore.getInstance();
+        await configStore.getConfig();
+        const enabledChains = await configStore.getEnabledChains();
+        setWagmiConfig(createWagmiConfig(enabledChains));
+      } catch (error) {
+        console.error("Failed to load configs:", error);
+        // fallback to default config already set
+      } finally {
+        setIsConfigLoaded(true);
+      }
+    };
+
+    loadConfigs();
   }, []);
+
+  if (!isConfigLoaded) {
+    return <div>Loading...</div>; // Or your loading component
+  }
 
   return (
     <>
@@ -59,7 +82,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         {/* <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/> */}
       </Head>
       <UserProvider>
-        <WagmiProvider config={config}>
+        <WagmiProvider config={wagmiConfig}>
           <QueryClientProvider client={queryClient}>
             <RainbowKitProvider
               modalSize="compact"

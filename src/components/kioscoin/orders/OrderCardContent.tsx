@@ -9,8 +9,11 @@ import { BuyerText } from "./BuyerText";
 import AddressInput from "./AddressInput";
 import { CryptoAmountIcon } from "../CryptoIcon";
 import OrderCreatedDate from "./OrderCreatedDate";
-import { getBlockchainDisplayName } from "@/lib/ConfigStore";
-import { BlockchainName } from "@/components/web3/Web3RPCClientManager";
+import {
+  BlockchainName,
+  ConfigStore,
+  getBlockchainDisplayName,
+} from "@/lib/ConfigStore";
 import { MessageCircle } from "lucide-react";
 import {
   Sheet,
@@ -21,7 +24,8 @@ import {
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { Button } from "../../ui/button";
 import { Rating } from "../Rating";
-import { formatFiatAmount } from "@/lib/utils";
+import { formatFiatAmount, formatTokenAmount } from "@/lib/utils";
+import { parseUnits } from "viem";
 
 interface OrderCardContentProps {
   order: Order;
@@ -103,7 +107,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
             </span>
             <span className="flex">
               <CryptoAmountIcon
-                amount={order.amount!!}
+                formattedAmount={order.amount!!}
                 tokenCode={order.tokenCode?.toLowerCase()!!}
               />
             </span>

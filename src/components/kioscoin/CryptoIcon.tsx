@@ -2,14 +2,15 @@ import React from "react";
 
 interface CryptoAmountIconProps {
   tokenCode: string; // Código del token (por ejemplo, "btc", "eth", "usdt")
-  amount?: string; // Monto de la criptomoneda
+  formattedAmount?: string; // Monto de la criptomoneda
   showAmount?: boolean; // Flag to control if amount is displayed
   textSizeClass?: string; // Class for text size
+  decimals?: number;
 }
 
 export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
   tokenCode,
-  amount,
+  formattedAmount,
   showAmount = true,
   textSizeClass = "text-2xl",
 }) => {
@@ -23,10 +24,9 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
 
   // Determine font size based on amount length
   const getAmountFontSize = () => {
-    if (!amount) return textSizeClass;
+    if (!formattedAmount) return textSizeClass;
 
-    const numericValue = amount.replace(/,/g, "");
-    const length = numericValue.length;
+    const length = formattedAmount.length;
 
     if (length > 9) return "text-sm";
     if (length > 7) return "text-base";
@@ -37,10 +37,9 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
 
   // Determine image size based on amount length
   const getImageSize = () => {
-    if (!amount) return "w-[25px] h-[25px]";
+    if (!formattedAmount) return "w-[25px] h-[25px]";
 
-    const numericValue = amount.replace(/,/g, "");
-    const length = numericValue.length;
+    const length = formattedAmount.length;
 
     if (length > 9) return "w-[18px] h-[18px]";
     if (length > 7) return "w-[20px] h-[20px]";
@@ -55,7 +54,7 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
         <span
           className={`font-medium ${amountFontSize} font-bold text-terciary mr-1`}
         >
-          {amount}
+          {formattedAmount}
         </span>
       )}
       <span
@@ -68,7 +67,7 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
           className={`ml-1 ${imageSize}`}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = `/criptoicon/generic.svg`;
+            target.style.display = "none"; // Hide the image if it fails to load
           }}
         />
       </span>

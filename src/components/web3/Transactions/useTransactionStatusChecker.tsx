@@ -2,7 +2,8 @@ import { useTranslation } from "react-i18next";
 import { useTransaction } from "./TransactionContext";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { TransactionStatusResponse } from "b5-api-client";
-import { BlockchainMapper } from "../Web3RPCClientManager";
+import { BlockchainChainIdMapper } from "../BlockchainChainIdMapper";
+import { getBlockchainNameByChainId } from "@/lib/ConfigStore";
 
 export const useTransactionStatusChecker = () => {
   const { t } = useTranslation();
@@ -14,14 +15,13 @@ export const useTransactionStatusChecker = () => {
   ): Promise<TransactionStatusResponse> => {
     const pollInterval = 5000; // Poll every 5 seconds
     const timeout = Date.now() + 300000; // 5 minute timeout
-
+    const blockchainName = await getBlockchainNameByChainId(chainId);
     while (Date.now() < timeout) {
       try {
         const response = await p2pMarketAPIClient.getTransactionStatus(
           transactionHash,
           {
-            "x-blockchain":
-              BlockchainMapper.getBlockchainNameByChainId(chainId),
+            "x-blockchain": blockchainName,
           }
         );
 

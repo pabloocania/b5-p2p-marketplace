@@ -7,10 +7,7 @@ import { ArrowLeftRightIcon, ChevronRightIcon, WalletIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CryptoAmountIcon } from "./CryptoIcon";
 import InternalTransferAmountInput from "@/components/web3/Transfers/TransferComponent";
-import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
-import { useTranslation } from "react-i18next";
-import { useTransactionStatusChecker } from "@/components/web3/Transactions/useTransactionStatusChecker";
-
+import { formatTokenAmount } from "@/lib/utils";
 /**
  * Immutable data class for token card state
  */
@@ -47,10 +44,7 @@ export default function TokenBalanceCardList({
   onTokenSelect,
   handleTransfer,
 }: TokenBalanceCardListProps) {
-  const { setTransaction } = useTransaction();
-  const { t } = useTranslation();
   const [state, setState] = useState<TokenCardState>(TokenCardState.create());
-  const { checkTransactionStatus } = useTransactionStatusChecker();
 
   const handleSelectToken = (token: TokenBalance) => {
     const isCurrentlySelected = state.isSelected(token.name);
@@ -60,36 +54,6 @@ export default function TokenBalanceCardList({
 
     setState(newState);
     onTokenSelect(isCurrentlySelected ? null : token);
-  };
-
-  // Format balances for display with smart number formatting
-  const formatBalance = (balance: string): string => {
-    const value = parseFloat(balance);
-
-    if (value === 0) return "0";
-    if (value < 0.001 && value > 0) return "<0.001";
-
-    // For very large numbers, use compact notation
-    if (value >= 1000000) {
-      return new Intl.NumberFormat("en-US", {
-        notation: "compact",
-        maximumFractionDigits: 2,
-      }).format(value);
-    }
-
-    // For medium-large numbers, use fewer decimal places
-    if (value >= 1000) {
-      return value.toLocaleString(undefined, {
-        maximumFractionDigits: 2,
-        minimumFractionDigits: 2,
-      });
-    }
-
-    // For smaller numbers, show more precision
-    return value.toLocaleString(undefined, {
-      maximumFractionDigits: 4,
-      minimumFractionDigits: 2,
-    });
   };
 
   // For empty state
@@ -111,9 +75,11 @@ export default function TokenBalanceCardList({
     const balanceA = parseFloat(
       balanceType === "eoa" ? a.eoaBalance : a.smartWalletBalance
     );
+    // console.log(balanceA);
     const balanceB = parseFloat(
       balanceType === "eoa" ? b.eoaBalance : b.smartWalletBalance
     );
+    // console.log(balanceB);
     return balanceB - balanceA; // Descending order
   });
 
@@ -174,9 +140,13 @@ export default function TokenBalanceCardList({
                     <div className="mt-2 pb-1 text-center w-full flex justify-center">
                       <CryptoAmountIcon
                         tokenCode={token.name}
-                        amount={formatBalance(balance)}
+                        formattedAmount={formatTokenAmount(
+                          balance,
+                          token.decimals
+                        )}
                         showAmount={true}
                         textSizeClass="text-lg"
+                        decimals={token.decimals}
                       />
                     </div>
 
@@ -207,7 +177,11 @@ export default function TokenBalanceCardList({
             >
               <CardContent className="p-2">
                 <div className="flex flex-col items-center">
-                  <CryptoAmountIcon tokenCode={token.name} amount="0" />
+                  <CryptoAmountIcon
+                    decimals={token.decimals}
+                    tokenCode={token.name}
+                    formattedAmount={"0"}
+                  />
                 </div>
               </CardContent>
             </Card>

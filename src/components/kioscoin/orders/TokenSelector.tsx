@@ -6,9 +6,12 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select"; // Adjust as needed
-import { ConfigStore, getBlockchainDisplayName } from "@/lib/ConfigStore";
+import {
+  BlockchainName,
+  ConfigStore,
+  getBlockchainDisplayName,
+} from "@/lib/ConfigStore";
 import { useTranslation } from "react-i18next";
-import { BlockchainName } from "@/components/web3/Web3RPCClientManager";
 import { StablecoinConfig } from "@/components/web3/types";
 
 interface Blockchain {

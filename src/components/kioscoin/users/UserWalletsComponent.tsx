@@ -10,7 +10,7 @@ import { useAccount } from "wagmi";
 import TokenBalanceSelector from "@/components/kioscoin/TokenBalanceSelector";
 import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
 import { useTransactionStatusChecker } from "@/components/web3/Transactions/useTransactionStatusChecker";
-import { useTransactionHandler } from "@/components/web3/Transfers/InternalTransferServices";
+import { useTransactionHandler } from "@/components/web3/Transfers/useTransactionsHandler";
 import Address from "@/components/web3/Transfers/Address";
 import SmartWalletOnboarding from "./SmartWalletOnboarding";
 import { Button } from "@/components/ui/button";
@@ -163,27 +163,10 @@ export default function UserWalletsComponent() {
     if (state.selectedToken) {
       const amount = parseFloat(transferAmount);
       if (isNaN(amount) || amount <= 0) return;
-
-      // Get stablecoins from ConfigStore
-      const stablecoins =
-        ConfigStore.getInstance().getBackendStablecoins()
-          ?.supportedStablecoins || [];
-      const tokenInfo = stablecoins.find((stablecoin) =>
-        stablecoin.addresses.some(
-          (addr) =>
-            addr.address.toLowerCase() ===
-            state.selectedToken?.address.toLowerCase()
-        )
-      );
-      const tokenDecimals =
-        tokenInfo?.name === "USDC" || tokenInfo?.name === "USDT" ? 6 : 18;
-
-      // Use parseUnits instead of formatUnits to convert to wei
       const formattedAmount = parseUnits(
         transferAmount,
-        tokenDecimals
+        state.selectedToken.decimals
       ).toString();
-
       const sourceBalance =
         state.activeTab === "myWallet"
           ? parseFloat(state.selectedToken.eoaBalance)

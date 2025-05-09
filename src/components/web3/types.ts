@@ -1,8 +1,11 @@
+import { ConfigStore } from '../../lib/ConfigStore';
+
 export interface TokenBalance {
     name: string;
     eoaBalance: string;
     smartWalletBalance: string;
     address: string;
+    decimals: number;
 }
 
 /**

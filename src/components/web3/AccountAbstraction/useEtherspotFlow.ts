@@ -11,7 +11,7 @@ import { Order } from "b5-api-client";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import { OPSReceipt } from "@/components/web3/types";
 import { getKioscoinEscrowAddressByBlockchain, KioscoinEscrowContractConfig } from "@/components/web3/abis/KioscoinEscrowConfig";
-import { PublicClientManager } from "@/components/web3/Web3RPCClientManager";
+import { PublicClientManager } from "@/components/web3/PublicClientManager";
 import { ConfigStore } from "@/lib/ConfigStore";
 
 export const useEtherspotFlow = () => {
@@ -26,6 +26,10 @@ export const useEtherspotFlow = () => {
   ): Promise<string> => {
     if (walletClient && address && primeSdk) {
       try {
+        console.log("transferFromEOAToSW", {
+          tokenAddress,
+          amount
+        });
         const etherspotAddress = await primeSdk.getCounterFactualAddress();
 
         const data = encodeFunctionData({
@@ -110,7 +114,7 @@ export const useEtherspotFlow = () => {
     if (primeSdk && address) {
       const orderBlockchain = order.blockchain!!
       const contractAddress = ConfigStore.getInstance().getKioscoinEscrowAddressByBlockchain(orderBlockchain)
-      const tokenDecimals = ConfigStore.getInstance().getTokenDecimals(order.tokenCode!!)
+      const tokenDecimals = ConfigStore.getInstance().getTokenDecimalsByTokenCode(order.tokenCode)
       const amountInt = parseUnits(order.amount ?? "0", tokenDecimals); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
       const totalAmount = amountInt + feeInt; // Sum is also a BigInt
@@ -146,7 +150,7 @@ export const useEtherspotFlow = () => {
         { to: contractAddress, data: escrowData }
       ];
       const chainId = PublicClientManager.getChainIdForBlockchain(order.blockchain!!)
-      return executeTransaction(operations, chainId!!);
+      return executeTransaction(operations, chainId);
     } else {
       throw new Error("PrimeSdk instance or user address is not available.");
     }

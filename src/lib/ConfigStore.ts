@@ -1,7 +1,28 @@
 import { ConfigResponse } from "b5-api-client/dist/types";
 import { p2pMarketAPIClient } from "./APIClients";
-import { BlockchainName } from "../components/web3/Web3RPCClientManager";
 import { Stablecoin, StablecoinConfig } from "../components/web3/types";
+import { arbitrumSepolia, baseSepolia, rootstock, rootstockTestnet, base, arbitrum, type Chain, bsc, polygon } from "wagmi/chains";
+
+// Backend configuration types
+export interface BackendSupportedCoin {
+    readonly tokenCode: string;
+    readonly address: string;
+    readonly decimals: number;
+}
+
+export interface BackendBlockchainConfig {
+    readonly name: string;
+    readonly escrowAddress: string;
+    readonly supportedCoins: BackendSupportedCoin[];
+    readonly chainId: number;
+    readonly maxPriorityFeePerGasGwei: number;
+}
+
+// Type for blockchain names from backend
+export type BlockchainName = string;
+
+// Type for chain IDs from backend
+export type ChainId = number;
 
 const DEFAULT_CONFIG: ConfigResponse<any> = {
     config: {
@@ -18,9 +39,9 @@ const DEFAULT_CONFIG: ConfigResponse<any> = {
         blockchains: [
             {
                 name: "ARBITRUM_TESTNET",
-                escrow_address: "0xA3C6696665F62928c908ed5b729Ef7CF7566B57a",
-                supported_coins: [{
-                    token_code: "USDK",
+                escrowAddress: "0xA3C6696665F62928c908ed5b729Ef7CF7566B57a",
+                supportedCoins: [{
+                    tokenCode: "USDK",
                     address: "0x3cfA72437c8992D417e154f92308b5A2EA07EDbc"
                 }]
             }
@@ -30,8 +51,14 @@ const DEFAULT_CONFIG: ConfigResponse<any> = {
 
 export class ConfigStore {
     private static instance: ConfigStore;
-    private config?: ConfigResponse<any>; // Initialize with default config
-    private backendStablecoins?: StablecoinConfig
+    private config?: ConfigResponse<any>;
+    private backendStablecoins?: StablecoinConfig;
+    private isInitialized: boolean = false;
+    private initializationPromise?: Promise<void>;
+
+    private constructor() {
+        // Private constructor to enforce singleton pattern
+    }
 
     public static getInstance(): ConfigStore {
         if (!ConfigStore.instance) {
@@ -40,19 +67,56 @@ export class ConfigStore {
         return ConfigStore.instance;
     }
 
+    private async initialize(): Promise<void> {
+        if (this.initializationPromise) {
+            return this.initializationPromise;
+        }
+
+        this.initializationPromise = new Promise((resolve, reject) => {
+            p2pMarketAPIClient.getConfig()
+                .then((config: ConfigResponse<any>) => {
+                    this.setConfig(config);
+                    this.setBackendStablecoins(mapBlockchainsToStablecoinConfig(config.config));
+                    resolve();
+                })
+                .catch((error: any) => {
+                    this.setConfig(DEFAULT_CONFIG);
+                    console.error("Failed to load configuration:", error);
+                    resolve(); // Still resolve to prevent hanging
+                });
+        });
+        return this.initializationPromise;
+    }
+
     public setConfig(config: ConfigResponse<any>) {
-        this.config = config;
+        this.config = Object.freeze(config);
+        this.isInitialized = true;
     }
 
     public setBackendStablecoins(values: any) {
-        this.backendStablecoins = values
+        this.backendStablecoins = Object.freeze(values);
     }
 
     public getBackendStablecoins(): StablecoinConfig | undefined {
+        if (!this.isInitialized) {
+            throw new Error('ConfigStore not initialized. Call initConfig() first.');
+        }
         return this.backendStablecoins;
     }
 
-    public getConfig(): ConfigResponse<any> | undefined {
+    public async getConfig(): Promise<ConfigResponse<any>> {
+        return this.waitForConfig();
+    }
+
+    public async waitForConfig(): Promise<ConfigResponse<any>> {
+        if (!this.isInitialized) {
+            await this.initialize();
+        }
+
+        if (!this.config) {
+            throw new Error('Configuration not loaded');
+        }
+
         return this.config;
     }
 
@@ -88,54 +152,151 @@ export class ConfigStore {
         return this.getStablecoinByAddress(tokenAddress)?.decimals ?? 6;
     }
 
+    public getTokenDecimalsByTokenCode(tokenCode: string | undefined): number {
+        const stablecoin = this.backendStablecoins?.supportedStablecoins.find(stablecoin => {
+            console.log("stablecoin.name", stablecoin.name);
+            console.log("tokenCode", tokenCode);
+            return stablecoin.name.toUpperCase() === tokenCode?.toUpperCase()
+        });
+        console.log("stablecoin", stablecoin);
+        return stablecoin?.decimals ?? 6;
+    }
+
     public getChainIdFromBlockchain(blockchain: string | undefined): number {
         if (!blockchain) return 0;
         const chainConfig = this.config?.config.blockchains.find(
-            (b: { name: string; chainId: number }) => b.name === blockchain
+            (b: BackendBlockchainConfig) => b.name === blockchain
         );
         return chainConfig?.chainId ?? 0;
     }
 
     public getMaxPriorityFeePerGasGwei(blockchain: string): number {
         const chainConfig = this.config?.config.blockchains.find(
-            (b: any) => b.name === blockchain
+            (b: BackendBlockchainConfig) => b.name === blockchain
         );
         return chainConfig?.maxPriorityFeePerGasGwei ?? 0.03; // fallback to a safe default
     }
+
+    public getBlockchainName(chainId: ChainId): BlockchainName | undefined {
+        if (!this.config) return undefined;
+
+        const blockchain = this.config.config.blockchains.find(
+            (b: BackendBlockchainConfig) => b.chainId === chainId
+        );
+        return blockchain?.name;
+    }
+
+    public isValidChainId(chainId: ChainId): boolean {
+        return this.getBlockchainName(chainId) !== undefined;
+    }
+
+    public isValidBlockchainName(blockchainName: BlockchainName): boolean {
+        return this.getChainIdFromBlockchain(blockchainName) !== 0;
+    }
+
+    public getAllChainIds(): ChainId[] {
+        if (!this.config) return [];
+
+        return this.config.config.blockchains.map(
+            (b: BackendBlockchainConfig) => b.chainId
+        );
+    }
+
+    public getAllBlockchainNames(): BlockchainName[] {
+        if (!this.config) return [];
+
+        return this.config.config.blockchains.map(
+            (b: BackendBlockchainConfig) => b.name
+        );
+    }
+
+    public async getEnabledChains(): Promise<readonly [Chain, ...Chain[]]> {
+        if (!this.isInitialized) {
+            await this.initialize();
+        }
+
+        if (!this.backendStablecoins) {
+            return [rootstock] as const;
+        }
+
+        const enabledChains = this.backendStablecoins.supportedStablecoins
+            .flatMap(stablecoin => stablecoin.addresses.map(addr => addr.blockchain))
+            .filter((value, index, self) => self.indexOf(value) === index) // Remove duplicates
+            .map(blockchain => {
+                switch (blockchain) {
+                    case "ARBITRUM_TESTNET":
+                        return arbitrumSepolia;
+                    case "RSK_TESTNET":
+                        return rootstockTestnet;
+                    case "BASE_SEPOLIA":
+                        return baseSepolia;
+                    case "BASE_MAINNET":
+                        return base;
+                    case "ARBITRUM_MAINNET":
+                        return arbitrum;
+                    case "ROOTSTOCK_MAINNET":
+                        return rootstock;
+                    case "BSC_MAINNET":
+                        return bsc;
+                    case "POLYGON_MAINNET":
+                        return polygon;
+                    default:
+                        return null;
+                }
+            })
+            .filter((chain): chain is NonNullable<typeof chain> => chain !== null);
+
+        // Ensure we always return a non-empty array with at least one chain
+        if (enabledChains.length === 0) {
+            return [rootstock] as const;
+        }
+
+        // Create a new array with the first chain and the rest
+        const [first, ...rest] = enabledChains;
+        return [first, ...rest] as const;
+    }
 }
 
-export function initConfig() {
-    if (ConfigStore.getInstance().getConfig() === undefined) {
+export async function initConfig() {
+    const store = ConfigStore.getInstance();
+    try {
+        await store.getConfig();
+    } catch {
+        // If getConfig fails, it means we need to initialize
         p2pMarketAPIClient.getConfig().then((config: ConfigResponse<any>) => {
-            ConfigStore.getInstance().setConfig(config);
-            ConfigStore.getInstance().setBackendStablecoins(mapBlockchainsToStablecoinConfig(config.config))
+            store.setConfig(config);
+            store.setBackendStablecoins(mapBlockchainsToStablecoinConfig(config.config))
         }).catch((error: any) => {
-            ConfigStore.getInstance().setConfig(DEFAULT_CONFIG)
+            store.setConfig(DEFAULT_CONFIG)
             console.error("Failed to load configuration:", error);
         });
-    } else {
-
     }
 }
 
 export const getBlockchainDisplayName = (blockchain: BlockchainName): string => {
     switch (blockchain) {
-        case BlockchainName.ARBITRUM_TESTNET:
+        case "ARBITRUM_TESTNET":
             return "Arbitrum Sepolia";
-        case BlockchainName.RSK_TESTNET:
+        case "RSK_TESTNET":
             return "Rootstock Testnet";
-        case BlockchainName.BASE_SEPOLIA:
+        case "BASE_SEPOLIA":
             return "Base Sepolia";
-        case BlockchainName.BASE_MAINNET:
-            return "Base Mainnet";
-        case BlockchainName.ARBITRUM_MAINNET:
-            return "Arbitrum Mainnet";
+        case "BASE_MAINNET":
+            return "Base";
+        case "ARBITRUM_MAINNET":
+            return "Arbitrum";
+        case "BSC_MAINNET":
+            return "Binance Smart Chain";
+        case "POLYGON_MAINNET":
+            return "Polygon";
+        default:
+            return "Unknown";
     }
 };
 
 function mapBlockchainsToStablecoinConfig(config: any): StablecoinConfig {
     const blockchains = config.blockchains;
-    const supportedStablecoins = blockchains.map((blockchain: any) => {
+    const supportedStablecoins: Stablecoin[] = blockchains.map((blockchain: any) => {
         return blockchain.supportedCoins.map((coin: any) => (
             {
                 addresses: [
@@ -145,7 +306,26 @@ function mapBlockchainsToStablecoinConfig(config: any): StablecoinConfig {
                     },
                 ],
                 name: coin.tokenCode,
+                escrowAddress: blockchain.escrowAddress,
+                decimals: coin.decimals,
             }));
     }).flat();
     return { supportedStablecoins };
+}
+
+export async function getBlockchainNameByChainId(chainId: ChainId): Promise<BlockchainName> {
+    const config = await ConfigStore.getInstance().getConfig();
+    if (!config) {
+        throw new Error('Configuration not loaded');
+    }
+
+    const blockchain = config.config.blockchains.find(
+        (b: BackendBlockchainConfig) => b.chainId === chainId
+    );
+
+    if (!blockchain) {
+        throw new Error(`Unsupported chain ID: ${chainId}`);
+    }
+
+    return blockchain.name;
 }

@@ -20,8 +20,11 @@ import { ConnectToContinueButton } from "./ConnectToContinueButton";
 import NotifyFiatSentButton from "../NotifyFiatSentButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { ConfigStore, getBlockchainDisplayName } from "@/lib/ConfigStore";
-import { BlockchainName } from "@/components/web3/Web3RPCClientManager";
+import {
+  BlockchainName,
+  ConfigStore,
+  getBlockchainDisplayName,
+} from "@/lib/ConfigStore";
 
 interface OrderCardFooterProps {
   order: Order;
@@ -47,8 +50,6 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [orderTaken, setOrderTaken] = useState(false);
-  const [isReleaseOpen, setIsReleaseOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const isSeller: boolean = order.sellerId === user?.id;
   const canSelectOrder = isLoggedIn && user?.id !== order?.creatorId;
 
@@ -117,7 +118,6 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     if (!blockchain) return null;
     const orderChainId = getChainIdFromBlockchain(blockchain);
     const isCorrectChain = chainId === orderChainId;
-
     if (!isCorrectChain) {
       return (
         <Alert

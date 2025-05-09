@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeftRight, ArrowRight, InfoIcon } from "lucide-react";
-import { TokenBalance, TokenTransfer } from "../types";
+import { TokenBalance } from "../types";
 import { useTranslation } from "react-i18next";
 import {
   Tooltip,
@@ -10,6 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { formatTokenAmount } from "@/lib/utils";
 
 interface InternalTransferAmountInputProps {
   selectedToken: TokenBalance | null;
@@ -24,7 +25,6 @@ const InternalTransferAmountInput: React.FC<
   const [transferAmount, setTransferAmount] = useState("");
   const [gasEstimate, setGasEstimate] = useState<string | null>(null);
   const [isEstimating, setIsEstimating] = useState(false);
-
   // Ensure hooks are called unconditionally
   useEffect(() => {
     if (selectedToken) {
@@ -107,14 +107,14 @@ const InternalTransferAmountInput: React.FC<
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          {/* <Label htmlFor="transfer-amount" className="text-xs text-primary">
-            Wh
-          </Label> */}
           <span className="text-xs text-primary">
             {t("available")}:{" "}
-            {isEOA
-              ? parseFloat(selectedToken.eoaBalance).toFixed(6)
-              : parseFloat(selectedToken.smartWalletBalance).toFixed(6)}{" "}
+            {formatTokenAmount(
+              isEOA
+                ? selectedToken.eoaBalance
+                : selectedToken.smartWalletBalance,
+              selectedToken.decimals
+            )}{" "}
             {selectedToken.name}
           </span>
         </div>
