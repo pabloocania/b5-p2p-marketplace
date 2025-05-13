@@ -27,32 +27,66 @@ import TokenSelector from "@/components/kioscoin/orders/TokenSelector";
 import { ExchangeRatesService } from "@/components/web3/ExchangeRatesService";
 import { ScrollableContainer } from "../ScrollabelContainer";
 import CompactPaymentMethodSelector from "./CompactPaymentMethodSelector";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import UserMenuNew from "../users/UserMenuNew";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface CreateOrderProps {
   onClose: () => void;
-  onConnectWallet: () => void; // Add this prop
+  onConnectWallet: () => void;
+  preFilledData?: {
+    type: OrderType;
+    amount: string;
+    tokenCode: string;
+    fiatAmount: string;
+    fiatCode: "ARS" | "EUR";
+    paymentMethods: PaymentMethod[];
+    description: string;
+    blockchain: string;
+  };
 }
 
 export default function CreateOrder({
   onClose,
   onConnectWallet,
+  preFilledData,
 }: CreateOrderProps) {
-  const [orderType, setOrderType] = useState<OrderType>("SELL");
-  const [description, setDescription] = useState<string>("");
-  const [tokenAmount, setTokenAmount] = useState<number>(0);
-  const [tokenCode, setTokenCode] = useState<string>("PDOC");
+  const [orderType, setOrderType] = useState<OrderType>(
+    preFilledData?.type || "SELL"
+  );
+  const [description, setDescription] = useState<string>(
+    preFilledData?.description || ""
+  );
+  const [tokenAmount, setTokenAmount] = useState<number>(
+    preFilledData ? parseFloat(preFilledData.amount) : 0
+  );
+  const [tokenCode, setTokenCode] = useState<string>(
+    preFilledData?.tokenCode || "PDOC"
+  );
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
-  const { user, isLoggedIn, loginId } = useUserContext();
+  const { user, isLoggedIn, loginId, login, logout } = useUserContext();
   const { openConnectModal } = useConnectModal();
   const { t } = useTranslation();
-  const [blockchain, setBlockchain] = useState<string>("");
-  const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>([]);
+  const [blockchain, setBlockchain] = useState<string>(
+    preFilledData?.blockchain || ""
+  );
+  const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>(
+    preFilledData?.paymentMethods || []
+  );
   const [suggestedRate, setSuggestedRate] = useState<number | null>(null);
   const [customRate, setCustomRate] = useState<number | null>(null);
-  const [fiatCode, setFiatCode] = useState<"ARS" | "EUR">("ARS");
+  const [fiatCode, setFiatCode] = useState<"ARS" | "EUR">(
+    preFilledData?.fiatCode || "ARS"
+  );
   const [rateError, setRateError] = useState<string | null>(null);
   const [isLoadingRate, setIsLoadingRate] = useState(false);
+  const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
 
   useEffect(() => {
     const fetchRate = async () => {
@@ -115,13 +149,6 @@ export default function CreateOrder({
 
   const handleOrderTypeChange = (value: string) => {
     setOrderType(value as OrderType);
-  };
-
-  const handleConnectButton = () => {
-    if (openConnectModal) {
-      openConnectModal();
-    }
-    onConnectWallet();
   };
 
   const handleBlockchainChange = (blockchain: string) => {
@@ -206,204 +233,223 @@ export default function CreateOrder({
   return (
     <ScrollableContainer>
       <div className="flex justify-center items-center pt-8">
-        <Card className="w-full max-w-md border border-primary border-opacity-20">
-          <CardHeader className="flex justify-center items-center">
-            <CardTitle className="text-center text-primary">
-              {t("create_order")}
-            </CardTitle>
-          </CardHeader>
-          <Separator className="my-2"></Separator>
-          <CardContent className="text-primary">
-            {!isLoggedIn ? (
-              <Button
-                className="p-4 text-center w-full text-white"
-                onClick={handleConnectButton} // Use the handler
+        {!isLoggedIn ? (
+          <div className="flex flex-col items-center h-full">
+            <Button
+              onClick={() => setIsLoginSheetOpen(true)}
+              className="w-full bg-primary text-white"
+            >
+              {t("login_to_view")}
+            </Button>
+            <Sheet open={isLoginSheetOpen} onOpenChange={setIsLoginSheetOpen}>
+              <SheetTrigger asChild>
+                <div />
+              </SheetTrigger>
+              <SheetContent
+                side="bottom"
+                className="h-[90vh]"
+                closeText={t("close")}
               >
-                {t("connect_to_continue")}
-              </Button>
-            ) : createdOrder ? null : (
-              <form onSubmit={handleSubmit}>
-                <div className="space-y-3">
-                  <Label className="font-bold">{t("i_want_to")}</Label>
-                  <div>
-                    <RadioGroup
-                      id="order_type"
-                      value={orderType}
-                      onValueChange={handleOrderTypeChange}
-                      className="flex space-x-4"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem id="sell" value="SELL" />
-                        <Label htmlFor="sell">{t("sell")}</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem id="buy" value="BUY" />
-                        <Label htmlFor="buy">{t("buy")}</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    {/* <BlockchainSelector
-                    onBlockchainChange={handleBlockchainChange}
-                    onCoinChange={handleCoinChange}
-                  /> */}
-                    <TokenSelector
-                      onBlockchainChange={handleBlockchainChange}
-                      onTokenChange={handleTokenChange}
-                    />
-                  </div>
-                  {blockchain !== "" && tokenCode !== "" && (
-                    <>
-                      <div className="flex items-center space-x-2">
-                        <Input
-                          id="token-amount"
-                          type="number"
-                          placeholder={t("enter_amount")}
-                          value={tokenAmount === 0 ? "" : tokenAmount}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            setTokenAmount(
-                              value === "" ? 0 : parseFloat(value) || 0
-                            );
-                          }}
-                        />
-                      </div>
-
-                      <div className="flex justify-between items-start gap-4">
-                        <div className="space-y-2">
-                          <Label className="font-bold">
-                            {t("i_want_to_receive_in")}
-                          </Label>
-                          <RadioGroup
-                            value={fiatCode}
-                            onValueChange={handleFiatCodeChange}
-                            className="flex space-x-4"
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem id="ars" value="ARS" />
-                              <Label htmlFor="ars">ARS</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem id="eur" value="EUR" />
-                              <Label htmlFor="eur">EUR</Label>
-                            </div>
-                          </RadioGroup>
-                        </div>
-
-                        <div className="bg-secondary bg-opacity-10 p-2 rounded-md">
-                          <Label className="text-xs font-semibold">
-                            {t("suggested_rate")}
-                          </Label>
-                          <div className="text-sm font-medium">
-                            1 {tokenCode} = {fiatCode === "EUR" ? "€" : "$"}{" "}
-                            {suggestedRate !== null
-                              ? suggestedRate.toLocaleString("es-AR", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
-                              : "Loading..."}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div>
-                          <Label
-                            htmlFor="custom-rate"
-                            className="text-xs font-semibold flex items-center gap-2"
-                          >
-                            {t("your_rate")}
-                            {isLoadingRate && (
-                              <span className="text-secondary">
-                                {t("loading_rate")}
-                              </span>
-                            )}
-                          </Label>
-                          <Input
-                            id="custom-rate"
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={customRate || ""}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              if (value === "") {
-                                setCustomRate(null);
-                                return;
-                              }
-
-                              const numValue = parseFloat(value);
-                              if (!isNaN(numValue) && numValue >= 0) {
-                                const roundedValue =
-                                  Math.round(numValue * 100) / 100;
-                                setCustomRate(roundedValue);
-                              }
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "e" || e.key === "-") {
-                                e.preventDefault();
-                              }
-                            }}
-                            className={`mt-1 ${
-                              customRate === null ? "border-red-500" : ""
-                            }`}
-                            placeholder={t("enter_amount")}
-                          />
-                          {(customRate === null || rateError) && (
-                            <span className="text-xs text-primary mt-1 block">
-                              {rateError || t("rate_must_be_positive")}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  <div className="flex items-center justify-end space-x-1">
-                    <Label className="text-md font-semibold">
-                      {t("receive_in")}
-                    </Label>
-                    <div className="text-md font-semibold">
-                      {calculateFiatEquivalent().toLocaleString("es-AR", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}{" "}
-                      {fiatCode === "EUR" ? "€" : "$"}:
-                    </div>
-                  </div>
-                  <CompactPaymentMethodSelector
-                    selectedMethods={selectedMethods}
-                    onToggle={handleToggle}
-                    onUpdateMethod={handleUpdateMethod}
-                  />
-                  {orderType === "BUY" && (
+                <VisuallyHidden>
+                  <SheetTitle>User Menu Dialog</SheetTitle>
+                </VisuallyHidden>
+                <UserMenuNew user={user} onLogin={login} onLogout={logout} />
+              </SheetContent>
+            </Sheet>
+          </div>
+        ) : (
+          <Card className="w-full max-w-md border border-primary border-opacity-20">
+            <CardHeader className="flex justify-center items-center">
+              <CardTitle className="text-center text-primary">
+                {t("create_order")}
+              </CardTitle>
+            </CardHeader>
+            <Separator className="my-2"></Separator>
+            <CardContent className="text-primary">
+              {createdOrder ? null : (
+                <form onSubmit={handleSubmit}>
+                  <div className="space-y-3">
+                    <Label className="font-bold">{t("i_want_to")}</Label>
                     <div>
-                      <Label className="font-bold" htmlFor="wallet-address">
-                        {t("address")}
-                      </Label>
-                      <Input
-                        id="wallet-address"
-                        placeholder={t("insert_wallet_address")}
-                        value={walletAddress}
-                        onChange={(e) => setWalletAddress(e.target.value)}
+                      <RadioGroup
+                        id="order_type"
+                        value={orderType}
+                        onValueChange={handleOrderTypeChange}
+                        className="flex space-x-4"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem id="sell" value="SELL" />
+                          <Label htmlFor="sell">{t("sell")}</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem id="buy" value="BUY" />
+                          <Label htmlFor="buy">{t("buy")}</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <TokenSelector
+                        onBlockchainChange={handleBlockchainChange}
+                        onTokenChange={handleTokenChange}
+                        preSelectedBlockchain={blockchain}
+                        preSelectedToken={tokenCode}
                       />
                     </div>
-                  )}
-                </div>
-              </form>
+                    {blockchain !== "" && tokenCode !== "" && (
+                      <>
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            id="token-amount"
+                            type="number"
+                            placeholder={t("enter_amount")}
+                            value={tokenAmount === 0 ? "" : tokenAmount}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setTokenAmount(
+                                value === "" ? 0 : parseFloat(value) || 0
+                              );
+                            }}
+                          />
+                        </div>
+
+                        <div className="flex justify-between items-start gap-4">
+                          <div className="space-y-2">
+                            <Label className="font-bold">
+                              {t("i_want_to_receive_in")}
+                            </Label>
+                            <RadioGroup
+                              value={fiatCode}
+                              onValueChange={handleFiatCodeChange}
+                              className="flex space-x-4"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem id="ars" value="ARS" />
+                                <Label htmlFor="ars">ARS</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem id="eur" value="EUR" />
+                                <Label htmlFor="eur">EUR</Label>
+                              </div>
+                            </RadioGroup>
+                          </div>
+
+                          <div className="bg-secondary bg-opacity-10 p-2 rounded-md">
+                            <Label className="text-xs font-semibold">
+                              {t("suggested_rate")}
+                            </Label>
+                            <div className="text-sm font-medium">
+                              1 {tokenCode} = {fiatCode === "EUR" ? "€" : "$"}{" "}
+                              {suggestedRate !== null
+                                ? suggestedRate.toLocaleString("es-AR", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                                : "Loading..."}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div>
+                            <Label
+                              htmlFor="custom-rate"
+                              className="text-xs font-semibold flex items-center gap-2"
+                            >
+                              {t("your_rate")}
+                              {isLoadingRate && (
+                                <span className="text-secondary">
+                                  {t("loading_rate")}
+                                </span>
+                              )}
+                            </Label>
+                            <Input
+                              id="custom-rate"
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={customRate || ""}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "") {
+                                  setCustomRate(null);
+                                  return;
+                                }
+
+                                const numValue = parseFloat(value);
+                                if (!isNaN(numValue) && numValue >= 0) {
+                                  const roundedValue =
+                                    Math.round(numValue * 100) / 100;
+                                  setCustomRate(roundedValue);
+                                }
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "e" || e.key === "-") {
+                                  e.preventDefault();
+                                }
+                              }}
+                              className={`mt-1 ${
+                                customRate === null ? "border-red-500" : ""
+                              }`}
+                              placeholder={t("enter_amount")}
+                            />
+                            {(customRate === null || rateError) && (
+                              <span className="text-xs text-primary mt-1 block">
+                                {rateError || t("rate_must_be_positive")}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    <div className="flex items-center justify-end space-x-1">
+                      <Label className="text-md font-semibold">
+                        {t("receive_in")}
+                      </Label>
+                      <div className="text-md font-semibold">
+                        {calculateFiatEquivalent().toLocaleString("es-AR", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}{" "}
+                        {fiatCode === "EUR" ? "€" : "$"}:
+                      </div>
+                    </div>
+                    <CompactPaymentMethodSelector
+                      selectedMethods={selectedMethods}
+                      onToggle={handleToggle}
+                      onUpdateMethod={handleUpdateMethod}
+                    />
+                    {orderType === "BUY" && (
+                      <div>
+                        <Label className="font-bold" htmlFor="wallet-address">
+                          {t("address")}
+                        </Label>
+                        <Input
+                          id="wallet-address"
+                          placeholder={t("insert_wallet_address")}
+                          value={walletAddress}
+                          onChange={(e) => setWalletAddress(e.target.value)}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </form>
+              )}
+            </CardContent>
+            {!createdOrder && (
+              <CardFooter className="py-2">
+                <Button
+                  className="w-full text-white bg-secondary"
+                  onClick={handleSubmit}
+                  disabled={!isFormComplete()}
+                >
+                  {orderType === "BUY"
+                    ? t("buy_now", { amount: tokenAmount, crypto: tokenCode })
+                    : t("sell_now", { amount: tokenAmount, crypto: tokenCode })}
+                </Button>
+              </CardFooter>
             )}
-          </CardContent>
-          {!createdOrder && (
-            <CardFooter className="py-2 mx-4">
-              <Button
-                className="w-full text-white bg-secondary"
-                onClick={handleSubmit}
-                disabled={!isFormComplete()}
-              >
-                {t("create_order")}
-              </Button>
-            </CardFooter>
-          )}
-        </Card>
+          </Card>
+        )}
       </div>
     </ScrollableContainer>
   );

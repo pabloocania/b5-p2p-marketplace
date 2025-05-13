@@ -26,10 +26,6 @@ export const useEtherspotFlow = () => {
   ): Promise<string> => {
     if (walletClient && address && primeSdk) {
       try {
-        console.log("transferFromEOAToSW", {
-          tokenAddress,
-          amount
-        });
         const etherspotAddress = await primeSdk.getCounterFactualAddress();
 
         const data = encodeFunctionData({

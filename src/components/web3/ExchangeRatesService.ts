@@ -15,7 +15,7 @@ const DEFAULT_USDC_PRICES: UsdcPriceData = {
   ars: 1000,
 };
 
-const RETRY_ATTEMPTS = 3;
+const RETRY_ATTEMPTS = 1;
 const RETRY_DELAY = 1000; // 1 second
 
 // Mapping from token codes to CoinGecko IDs

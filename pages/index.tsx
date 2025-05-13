@@ -20,6 +20,7 @@ import UserOrdersMenu from "@/components/kioscoin/TopLevelSubMenu";
 import { useTranslation } from "react-i18next";
 import { TopBar } from "@/components/kioscoin/TopBar";
 import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
+import OrderCreationFlow from "@/components/kioscoin/orders/OrderCreationFlow";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -89,6 +90,7 @@ export default function Home() {
             onClose={resetTransaction}
           />
           <div className="w-full max-w-md mx-auto py-2 px-4">
+            <OrderCreationFlow />
             {renderComponent()}
           </div>
         </main>

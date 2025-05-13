@@ -1,12 +1,6 @@
 import { PaymentMethod } from "b5-api-client/dist/types";
 import { useTranslation } from "react-i18next";
-import {
-  Tally1,
-  Handshake,
-  Landmark,
-  LucideIcon,
-  WalletMinimal,
-} from "lucide-react";
+import { Tally1, Landmark, LucideIcon, WalletMinimal } from "lucide-react";
 
 interface PaymentMethodDisplayProps {
   method: PaymentMethod;

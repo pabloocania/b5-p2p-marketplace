@@ -22,18 +22,29 @@ interface Blockchain {
 interface TokenSelectorProps {
   onTokenChange: (token: string) => void;
   onBlockchainChange: (blockchain: string) => void;
+  preSelectedToken?: string;
+  preSelectedBlockchain?: string;
 }
 
 export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
-  ({ onTokenChange, onBlockchainChange }) => {
+  ({
+    onTokenChange,
+    onBlockchainChange,
+    preSelectedToken,
+    preSelectedBlockchain,
+  }) => {
     const [blockchains, setBlockchains] = useState<Blockchain | undefined>(
       undefined
     );
     const [stablecoinConfig, setStablecoinConfig] = useState<
       StablecoinConfig | undefined
     >(undefined);
-    const [selectedToken, setSelectedToken] = useState<string>("");
-    const [selectedBlockchain, setSelectedBlockchain] = useState<string>("");
+    const [selectedToken, setSelectedToken] = useState<string>(
+      preSelectedToken || ""
+    );
+    const [selectedBlockchain, setSelectedBlockchain] = useState<string>(
+      preSelectedBlockchain || ""
+    );
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -43,6 +54,18 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
         setStablecoinConfig(backendStablecoinsConfig);
       }
     }, []);
+
+    // Update selected values when pre-selected values change
+    useEffect(() => {
+      if (preSelectedToken) {
+        setSelectedToken(preSelectedToken);
+        onTokenChange(preSelectedToken);
+      }
+      if (preSelectedBlockchain) {
+        setSelectedBlockchain(preSelectedBlockchain);
+        onBlockchainChange(preSelectedBlockchain);
+      }
+    }, [preSelectedToken, preSelectedBlockchain]);
 
     // Helper function to get unique tokens
     const getUniqueTokenNames = (
@@ -87,7 +110,11 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
       <div className="flex flex-col gap-3 w-full">
         {/* Token Selector */}
         <div>
-          <Select onValueChange={handleTokenChange} required>
+          <Select
+            onValueChange={handleTokenChange}
+            value={selectedToken}
+            required
+          >
             <SelectTrigger>
               <SelectValue placeholder={t("select_token")} />
             </SelectTrigger>
@@ -110,7 +137,11 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
               paddingLeft: "1rem",
             }}
           >
-            <Select onValueChange={handleBlockchainChange} required>
+            <Select
+              onValueChange={handleBlockchainChange}
+              value={selectedBlockchain}
+              required
+            >
               <SelectTrigger>
                 <SelectValue placeholder={t("select_blockchain")} />
               </SelectTrigger>
