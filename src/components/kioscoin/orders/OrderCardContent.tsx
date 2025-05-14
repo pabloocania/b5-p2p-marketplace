@@ -1,7 +1,13 @@
 // OrderCardContent.tsx
 import React, { useEffect, useState } from "react";
 import { CardContent } from "@/components/ui/card";
-import { KioscoinUser, Order, OrderStatus, OrderType } from "b5-api-client";
+import {
+  KioscoinUser,
+  Order,
+  OrderStatus,
+  OrderType,
+  PaymentMethod,
+} from "b5-api-client";
 import PaymentMethodDisplay from "../PaymentMethodDisplay";
 import { useTranslation } from "react-i18next";
 import { SellerText } from "./SellerText";
@@ -25,7 +31,7 @@ import { ChatInterface } from "@/components/chat/ChatInterface";
 import { Button } from "../../ui/button";
 import { Rating } from "../Rating";
 import { formatFiatAmount, formatTokenAmount } from "@/lib/utils";
-import { parseUnits } from "viem";
+import CompactPaymentMethodSelector from "./CompactPaymentMethodSelector";
 
 interface OrderCardContentProps {
   order: Order;
@@ -33,6 +39,7 @@ interface OrderCardContentProps {
   showDetails: boolean;
   walletAddress: string;
   setWalletAddress: (value: string) => void;
+  onPaymentMethodsChange?: (methods: PaymentMethod[]) => void;
 }
 
 const finishedStatusesList: OrderStatus[] = [
@@ -51,9 +58,13 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   showDetails,
   walletAddress,
   setWalletAddress,
+  onPaymentMethodsChange,
 }) => {
   const { t } = useTranslation();
   const [clipboardSupported, setClipboardSupported] = useState(false);
+  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
+    PaymentMethod[]
+  >([]);
 
   useEffect(() => {
     setClipboardSupported("clipboard" in navigator);
@@ -94,6 +105,26 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
 
     return completedStatuses.includes(status);
   }
+
+  const handleTogglePaymentMethod = (method: PaymentMethod) => {
+    const newSelectedMethods = selectedPaymentMethods.some(
+      (m) => m.entity === method.entity
+    )
+      ? selectedPaymentMethods.filter((m) => m.entity !== method.entity)
+      : [...selectedPaymentMethods, method];
+
+    setSelectedPaymentMethods(newSelectedMethods);
+    onPaymentMethodsChange?.(newSelectedMethods);
+  };
+
+  const handleUpdatePaymentMethod = (updatedMethod: PaymentMethod) => {
+    const newSelectedMethods = selectedPaymentMethods.map((method) =>
+      method.entity === updatedMethod.entity ? updatedMethod : method
+    );
+
+    setSelectedPaymentMethods(newSelectedMethods);
+    onPaymentMethodsChange?.(newSelectedMethods);
+  };
 
   return (
     <CardContent className="pb-3 mt-2">
@@ -203,6 +234,16 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
             walletAddress={walletAddress}
             setWalletAddress={setWalletAddress}
             orderStatus={order.status ? order.status : "CANCELED"}
+          />
+        </div>
+      )}
+      {user && showDetails && order.type === ("BUY" as OrderType) && (
+        <div className="py-2">
+          <CompactPaymentMethodSelector
+            selectedMethods={selectedPaymentMethods}
+            onToggle={handleTogglePaymentMethod}
+            onUpdateMethod={handleUpdatePaymentMethod}
+            readOnly={true}
           />
         </div>
       )}

@@ -8,6 +8,7 @@ import {
   TakeSellOrderRequest,
   UpdateOrderRequest,
   KioscoinUser,
+  PaymentMethod,
 } from "b5-api-client";
 import { Button } from "@/components/ui/button";
 import LockFundsButton from "@/components/web3/Escrow/LockFundsButton";
@@ -34,6 +35,7 @@ interface OrderCardFooterProps {
   showDetails: boolean;
   onSelect?: (order: Order) => void;
   setOrder: (order: Order) => void;
+  paymentMethods: PaymentMethod[];
 }
 
 const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
@@ -43,6 +45,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   showDetails,
   onSelect,
   setOrder,
+  paymentMethods,
 }) => {
   const { user, isLoggedIn, loginId } = useUserContext();
   const { isConnected } = useAccount();
@@ -95,6 +98,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
           amount: order.fiatAmount?.toString() ?? "0",
           username: user?.username,
           hash: order.sellerHash,
+          paymentMethods: paymentMethods,
         } as TakeBuyOrderRequest;
       }
 

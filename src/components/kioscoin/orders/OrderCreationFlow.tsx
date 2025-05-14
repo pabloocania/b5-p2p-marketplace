@@ -1,24 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BannerOffer } from "../banner/types";
 import { transformBannerOfferToOrderRequest } from "../banner/utils";
 import OrdersBanner from "../banner/OrdersBanner";
 import CreateOrder from "./CreateOrder";
 import { useUserContext } from "../users/UserContext";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
 import { ConfigStore } from "@/lib/ConfigStore";
+import { CreateOrderContainer } from "./CreateOrderContainer";
+import { UserMenuSheet } from "../users/UserMenuSheet";
 
 export default function OrderCreationFlow() {
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<BannerOffer | null>(null);
-  const { user } = useUserContext();
+  const { user, login, logout } = useUserContext();
   const { t } = useTranslation();
 
   const handleOfferClick = (offer: BannerOffer) => {
     setSelectedOffer(offer);
-    setIsCreateOrderOpen(true);
+    if (!user) {
+      setIsLoginOpen(true);
+    } else {
+      setIsCreateOrderOpen(true);
+    }
   };
 
   const handleClose = () => {
@@ -27,7 +33,6 @@ export default function OrderCreationFlow() {
   };
 
   const handleConnectWallet = () => {
-    // Handle wallet connection
     setIsCreateOrderOpen(false);
   };
 
@@ -37,15 +42,12 @@ export default function OrderCreationFlow() {
       user?.id,
       user?.username
     );
-
-    // Get the blockchain name from the token address
     const configStore = ConfigStore.getInstance();
     const blockchain = configStore
       .getBackendStablecoins()
       ?.supportedStablecoins.find(
         (stablecoin) => stablecoin.name === transformed.tokenCode
       )?.addresses[0]?.blockchain;
-
     return {
       type: transformed.type,
       amount: transformed.amount,
@@ -54,7 +56,7 @@ export default function OrderCreationFlow() {
       fiatCode: transformed.fiatCode as "ARS" | "EUR",
       paymentMethods: transformed.paymentMethods || [],
       description: transformed.description,
-      blockchain: blockchain || "ARBITRUM_TESTNET", // Default to ARBITRUM_TESTNET if not found
+      blockchain: blockchain || "ARBITRUM_TESTNET",
       action:
         transformed.type === "BUY"
           ? t("buy_now", {
@@ -68,21 +70,37 @@ export default function OrderCreationFlow() {
     };
   };
 
+  // Watch for login success
+  useEffect(() => {
+    if (isLoginOpen && user) {
+      setIsLoginOpen(false);
+      setIsCreateOrderOpen(true);
+    }
+  }, [user, isLoginOpen]);
+
   return (
     <>
       <OrdersBanner onOfferClick={handleOfferClick} />
-
-      <Dialog open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
-        <DialogContent className="max-w-2xl">
-          {selectedOffer && (
-            <CreateOrder
-              onClose={handleClose}
-              onConnectWallet={handleConnectWallet}
-              preFilledData={getPreFilledData(selectedOffer)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      <UserMenuSheet
+        open={isLoginOpen}
+        onOpenChange={setIsLoginOpen}
+        user={user}
+        onLogin={login}
+        onLogout={logout}
+      />
+      <CreateOrderContainer
+        open={isCreateOrderOpen}
+        onOpenChange={setIsCreateOrderOpen}
+        variant="sheet"
+      >
+        {selectedOffer && (
+          <CreateOrder
+            onClose={handleClose}
+            onConnectWallet={handleConnectWallet}
+            preFilledData={getPreFilledData(selectedOffer)}
+          />
+        )}
+      </CreateOrderContainer>
     </>
   );
 }

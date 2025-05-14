@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Separator } from "@/components/ui/separator";
-import { Order } from "b5-api-client";
+import { Order, PaymentMethod } from "b5-api-client";
 import { useUserContext } from "../users/UserContext";
 import OrderStatusBar from "./OrderStatus";
 import { useTranslation } from "react-i18next";
@@ -27,11 +27,18 @@ export function OrderCard({
   const { t } = useTranslation();
   const [walletAddress, setWalletAddress] = useState("");
   const [order, setOrder] = useState(orderDTO);
+  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
+    PaymentMethod[]
+  >([]);
   const { user, isLoggedIn } = useUserContext();
 
   useEffect(() => {
     setOrder(orderDTO);
   }, [orderDTO]);
+
+  const handlePaymentMethodsChange = (methods: PaymentMethod[]) => {
+    setSelectedPaymentMethods(methods);
+  };
 
   if (!order) {
     return (
@@ -53,6 +60,7 @@ export function OrderCard({
         walletAddress={walletAddress}
         showDetails={showDetails}
         setWalletAddress={setWalletAddress}
+        onPaymentMethodsChange={handlePaymentMethodsChange}
       ></OrderCardContent>
       <OrderCardFooter
         order={order}
@@ -62,6 +70,7 @@ export function OrderCard({
         walletAddress={walletAddress}
         showDetails={showDetails}
         setOrder={setOrder}
+        paymentMethods={selectedPaymentMethods}
       ></OrderCardFooter>
       <Separator className="mb-1" />
       <div className="pl-4 pr-4 flex items-center justify-between text-sm">

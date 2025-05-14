@@ -30,6 +30,7 @@ interface CompactPaymentMethodSelectorProps {
   selectedMethods: PaymentMethod[];
   onToggle: (method: ExtendedPaymentMethod) => void;
   onUpdateMethod: (updatedMethod: ExtendedPaymentMethod) => void;
+  readOnly?: boolean;
 }
 
 const CompactPaymentMethodSelector: React.FC<
@@ -39,6 +40,7 @@ const CompactPaymentMethodSelector: React.FC<
   selectedMethods,
   onToggle,
   onUpdateMethod,
+  readOnly = false,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [editingMethod, setEditingMethod] =
@@ -60,9 +62,9 @@ const CompactPaymentMethodSelector: React.FC<
   const getColor = (type: string) => {
     switch (type) {
       case "BANK":
-        return "bg-primary bg-opacity-5"; // More subtle primary color
+        return "bg-primary bg-opacity-5";
       case "FINTECH":
-        return "bg-secondary bg-opacity-5"; // More subtle secondary color
+        return "bg-secondary bg-opacity-5";
       default:
         return "bg-muted";
     }
@@ -96,7 +98,6 @@ const CompactPaymentMethodSelector: React.FC<
   };
 
   const renderMethodValue = (method: ExtendedPaymentMethod) => {
-    // Find the matching selected method to show updated values
     const selectedMethod = selectedMethods.find(
       (m) => m.entity === method.entity
     );
@@ -141,11 +142,12 @@ const CompactPaymentMethodSelector: React.FC<
   ) => {
     e.preventDefault();
     onToggle(method);
-    // Clear editing state if we're unselecting the method
-    if (selectedMethods.some((m) => m.entity === method.entity)) {
-      setEditingMethod(null);
-    } else {
-      setEditingMethod(method);
+    if (!readOnly) {
+      if (selectedMethods.some((m) => m.entity === method.entity)) {
+        setEditingMethod(null);
+      } else {
+        setEditingMethod(method);
+      }
     }
   };
 
@@ -198,13 +200,13 @@ const CompactPaymentMethodSelector: React.FC<
                     <span className="font-medium text-sm text-primary">
                       {method.entity}
                     </span>
-                    {renderMethodValue(method) && (
+                    {!readOnly && renderMethodValue(method) && (
                       <span className="ml-auto text-xs text-primary text-opacity-70">
                         {renderMethodValue(method)}
                       </span>
                     )}
                   </button>
-                  {editingMethod?.entity === method.entity && (
+                  {!readOnly && editingMethod?.entity === method.entity && (
                     <div className="flex gap-2 px-1 w-full">
                       <div
                         style={{

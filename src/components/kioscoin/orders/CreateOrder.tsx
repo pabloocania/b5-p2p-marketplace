@@ -234,42 +234,33 @@ export default function CreateOrder({
     <ScrollableContainer>
       <div className="flex justify-center items-center pt-8">
         {!isLoggedIn ? (
-          <div className="flex flex-col items-center h-full">
-            <Button
-              onClick={() => setIsLoginSheetOpen(true)}
-              className="w-full bg-primary text-white"
+          <Sheet open>
+            <SheetContent
+              side="bottom"
+              className="h-[90vh]"
+              closeText={t("close")}
             >
-              {t("login_to_view")}
-            </Button>
-            <Sheet open={isLoginSheetOpen} onOpenChange={setIsLoginSheetOpen}>
-              <SheetTrigger asChild>
-                <div />
-              </SheetTrigger>
-              <SheetContent
-                side="bottom"
-                className="h-[90vh]"
-                closeText={t("close")}
-              >
-                <VisuallyHidden>
-                  <SheetTitle>User Menu Dialog</SheetTitle>
-                </VisuallyHidden>
-                <UserMenuNew user={user} onLogin={login} onLogout={logout} />
-              </SheetContent>
-            </Sheet>
-          </div>
+              <VisuallyHidden>
+                <SheetTitle>User Menu Dialog</SheetTitle>
+              </VisuallyHidden>
+              <UserMenuNew user={user} onLogin={login} onLogout={logout} />
+            </SheetContent>
+          </Sheet>
         ) : (
-          <Card className="w-full max-w-md border border-primary border-opacity-20">
-            <CardHeader className="flex justify-center items-center">
-              <CardTitle className="text-center text-primary">
+          <Card className="w-full max-w-md border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
+            <CardHeader className="flex justify-center items-center pb-2">
+              <CardTitle className="text-center text-primary text-2xl font-bold">
                 {t("create_order")}
               </CardTitle>
             </CardHeader>
-            <Separator className="my-2"></Separator>
-            <CardContent className="text-primary">
+            <Separator className="mb-2" />
+            <CardContent className="text-primary px-4 py-2 space-y-2">
               {createdOrder ? null : (
                 <form onSubmit={handleSubmit}>
-                  <div className="space-y-3">
-                    <Label className="font-bold">{t("i_want_to")}</Label>
+                  <div className="space-y-2">
+                    <Label className="font-bold text-base mb-1">
+                      {t("i_want_to")}
+                    </Label>
                     <div>
                       <RadioGroup
                         id="order_type"
@@ -309,12 +300,13 @@ export default function CreateOrder({
                                 value === "" ? 0 : parseFloat(value) || 0
                               );
                             }}
+                            className="focus:ring-primary focus:border-primary"
                           />
                         </div>
 
                         <div className="flex justify-between items-start gap-4">
-                          <div className="space-y-2">
-                            <Label className="font-bold">
+                          <div className="space-y-1">
+                            <Label className="font-bold text-base mb-1">
                               {t("i_want_to_receive_in")}
                             </Label>
                             <RadioGroup
@@ -333,7 +325,7 @@ export default function CreateOrder({
                             </RadioGroup>
                           </div>
 
-                          <div className="bg-secondary bg-opacity-10 p-2 rounded-md">
+                          <div className="bg-secondary/10 p-2 rounded-md">
                             <Label className="text-xs font-semibold">
                               {t("suggested_rate")}
                             </Label>
@@ -349,7 +341,7 @@ export default function CreateOrder({
                           </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <div>
                             <Label
                               htmlFor="custom-rate"
@@ -387,7 +379,7 @@ export default function CreateOrder({
                                   e.preventDefault();
                                 }
                               }}
-                              className={`mt-1 ${
+                              className={`mt-1 focus:ring-primary focus:border-primary ${
                                 customRate === null ? "border-red-500" : ""
                               }`}
                               placeholder={t("enter_amount")}
@@ -413,6 +405,9 @@ export default function CreateOrder({
                         {fiatCode === "EUR" ? "€" : "$"}:
                       </div>
                     </div>
+                    <Label className="font-bold text-base border-l-4 border-primary pl-2 mb-1">
+                      {t("payment_method")}
+                    </Label>
                     <CompactPaymentMethodSelector
                       selectedMethods={selectedMethods}
                       onToggle={handleToggle}
@@ -428,6 +423,7 @@ export default function CreateOrder({
                           placeholder={t("insert_wallet_address")}
                           value={walletAddress}
                           onChange={(e) => setWalletAddress(e.target.value)}
+                          className="focus:ring-primary focus:border-primary"
                         />
                       </div>
                     )}
@@ -436,9 +432,9 @@ export default function CreateOrder({
               )}
             </CardContent>
             {!createdOrder && (
-              <CardFooter className="py-2">
+              <CardFooter className="p-0">
                 <Button
-                  className="w-full text-white bg-secondary"
+                  className="w-full rounded-b-xl text-lg font-semibold shadow-none transition-colors bg-primary text-white hover:bg-primary/90"
                   onClick={handleSubmit}
                   disabled={!isFormComplete()}
                 >
