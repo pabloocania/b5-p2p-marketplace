@@ -4,7 +4,7 @@ import OrdersFeed, {
   Filter,
 } from "../src/components/kioscoin/orders/OrdersFeed";
 import { Button } from "@/components/ui/button";
-import { Plus, User, Languages } from "lucide-react";
+import { Plus, User, Languages, HelpCircle } from "lucide-react";
 import { useUserContext } from "../src/components/kioscoin/users/UserContext";
 import { useDisconnect } from "wagmi";
 import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
@@ -15,6 +15,7 @@ import { TopBar } from "@/components/kioscoin/TopBar";
 import OrderCreationFlow from "@/components/kioscoin/orders/OrderCreationFlow";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/CreateOrderContainer";
 import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
+import { HelpDialog } from "@/components/kioscoin/HelpDialog";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -25,6 +26,7 @@ export default function Home() {
   const { transaction, resetTransaction } = useTransaction();
   const { i18n, t } = useTranslation();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -132,8 +134,20 @@ export default function Home() {
                 />
               </CreateOrderContainer>
             </div>
+            <div className="absolute bottom-4 right-20">
+              <Button
+                size="icon"
+                className="rounded-full w-14 h-14 shadow-lg text-white bg-primary hover:bg-terciary/90"
+                onClick={() => setIsHelpOpen(true)}
+              >
+                <HelpCircle className="h-6 w-6" />
+                <span className="sr-only">Help & Tutorials</span>
+              </Button>
+            </div>
           </div>
         </div>
+
+        <HelpDialog open={isHelpOpen} onOpenChange={setIsHelpOpen} />
       </div>
     </div>
   );

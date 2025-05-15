@@ -57,7 +57,8 @@ i18n.use(initReactI18next).init({
         transaction_status_timeout: "Transaction status check timed out.",
         transfering: "Transferring...",
         funds_released: "Funds released",
-        releasing_funds: "You have to sign the transaction with your wallet to release the funds to the buyer",
+        releasing_funds:
+          "You have to sign the transaction with your wallet to release the funds to the buyer",
         funds_locked: "Funds are locked in the smart contract",
         //Sign the transaction with your wallet in order to the deposit of fund
         approve_and_lock:
@@ -66,7 +67,8 @@ i18n.use(initReactI18next).init({
         connect_to_continue: "Connect your wallet to continue",
         connect_wallet: "Connect your wallet",
         wrong_network: "Wrong network",
-        please_switch_to_network: "Please switch to {{network}} network to release funds",
+        please_switch_to_network:
+          "Please switch to {{network}} network to release funds",
         transfer: "Transfer",
         transfer_amount: "Transfer Amount",
         enter_transfer_amount:
@@ -128,7 +130,8 @@ i18n.use(initReactI18next).init({
         suggested_rate: "Suggested rate",
         your_rate: "Your rate",
         send: "You must send",
-        please_verify_payment_details: "Please verify payment details. Once you send the funds, click on the button below to notify the seller.",
+        please_verify_payment_details:
+          "Please verify payment details. Once you send the funds, click on the button below to notify the seller.",
         to_receive: "to receive your purchase, through:",
         seller_has_locked: "has locked the crypto in the smart contract",
         ago: "ago",
@@ -139,12 +142,14 @@ i18n.use(initReactI18next).init({
         passwords_do_not_match: "Passwords do not match",
         confirm_password: "Confirm Password",
         password_too_short: "Password must be at least 8 characters long",
-        password_must_contain_special_character: "Password must contain at least 1 special character",
+        password_must_contain_special_character:
+          "Password must contain at least 1 special character",
         login: "Login",
         register: "Register",
         forgot_password: "Forgot password?",
         login_failed: "Login failed. Please check your credentials.",
-        unexpected_error_occurred: "An unexpected error occurred. Please try again.",
+        unexpected_error_occurred:
+          "An unexpected error occurred. Please try again.",
         enter_your_email_address: "Please enter your email address first",
         signing_in: "Signing in...",
         sign_in_with_email: "Sign in with Email",
@@ -171,6 +176,22 @@ i18n.use(initReactI18next).init({
         on: "on",
         receive_in: "You'll receive",
         pay: "You must pay",
+        help_and_tutorials: "How Kioskoin Works",
+        help_description:
+          "Learn how to use Kioskoin to safely buy and sell crypto with real people.",
+        getting_started: "Getting Started",
+        getting_started_description:
+          "1. Create your account and verify your wallet.\n2. Choose your local currency and preferred stablecoin.\n3. Start buying or selling using the order list or post your own offer.",
+        how_to_trade: "How to Trade",
+        how_to_trade_description:
+          "1. Select an offer or create your own.\n2. Agree on payment details with the other user.\n3. Make the payment or wait to receive it.\n4. Confirm and release the crypto (or wait to receive it if you’re buying).",
+        safety_tips: "Safety Tips",
+        safety_tips_description:
+          "• Always double-check payment details.\n• Never release crypto until payment is confirmed.\n• Use the in-app chat to communicate.\n• Report suspicious behavior.",
+        video_intro_title: "Watch this quick guide",
+        video_intro_description:
+          "Learn how to sell USDC easily and safely in just 1 minute.",
+
         // purchase_instantly: "Purchase {{crypto}} {{instantly}}",
         // sell_instantly: "Sell {{crypto}} {{instantly}}",
         // buy_now: "Buy {{amount}} {{crypto}} {{instantly}}",
@@ -232,7 +253,8 @@ i18n.use(initReactI18next).init({
           "El chequeo del estado de la transacción ha expirado.",
         transfering: "Transfiriendo...",
         funds_released: "Fondos enviados al comprador.",
-        releasing_funds: "Debes firmar la transacción con tu wallet para liberarle los fondos al comprador",
+        releasing_funds:
+          "Debes firmar la transacción con tu wallet para liberarle los fondos al comprador",
         funds_locked: "Los fondos están asegurados en el contrato inteligente",
         approve_and_lock:
           "Debes firmar la transacción con tu wallet para depositar los fondos en el contrato inteligente",
@@ -240,7 +262,8 @@ i18n.use(initReactI18next).init({
         connect_to_continue: "Conectar wallet para continuar",
         connect_wallet: "Conecta tu wallet",
         wrong_network: "Red incorrecta",
-        please_switch_to_network: "Por favor, cambia a la red {{network}} para liberar los fondos",
+        please_switch_to_network:
+          "Por favor, cambia a la red {{network}} para liberar los fondos",
         transfer: "Transferir",
         transfer_amount: "Cantidad a transferir",
         enter_transfer_amount:
@@ -305,7 +328,8 @@ i18n.use(initReactI18next).init({
         your_rate: "Tu tipo de cambio",
         send: "Debes enviar",
         to_receive: "para recibir tu compra, a traves de:",
-        please_verify_payment_details: "Por favor, verifica los detalles de pago. Una vez que envíes los fondos, haz click en el botón de abajo para notificar al vendedor.",
+        please_verify_payment_details:
+          "Por favor, verifica los detalles de pago. Una vez que envíes los fondos, haz click en el botón de abajo para notificar al vendedor.",
         seller_has_locked: "ha depositado la cripto en el contrato inteligente",
         ago: "atras",
         already_have_account: "¿Ya tienes una cuenta?",
@@ -315,13 +339,17 @@ i18n.use(initReactI18next).init({
         passwords_do_not_match: "Las contraseñas no coinciden",
         confirm_password: "Confirmar contraseña",
         password_too_short: "La contraseña debe tener al menos 8 caracteres",
-        password_must_contain_special_character: "La contraseña debe contener al menos 1 caracter especial",
+        password_must_contain_special_character:
+          "La contraseña debe contener al menos 1 caracter especial",
         login: "Ingresar",
         register: "Registrarme",
         forgot_password: "¿Olvidaste tu contraseña?",
-        login_failed: "Inicio de sesión fallido. Por favor, verifica tus credenciales.",
-        unexpected_error_occurred: "Ocurrió un error inesperado. Por favor, intenta nuevamente.",
-        enter_your_email_address: "Por favor, ingresa tu dirección de correo electrónico primero",
+        login_failed:
+          "Inicio de sesión fallido. Por favor, verifica tus credenciales.",
+        unexpected_error_occurred:
+          "Ocurrió un error inesperado. Por favor, intenta nuevamente.",
+        enter_your_email_address:
+          "Por favor, ingresa tu dirección de correo electrónico primero",
         signing_in: "Iniciando sesión...",
         sign_in_with_email: "Ingresar con correo electrónico",
         available: "Disponible",
@@ -332,8 +360,10 @@ i18n.use(initReactI18next).init({
         rate_must_be_positive: "El tipo de cambio debe ser mayor a 0",
         loading_rate: "Cargando tipo de cambio...",
         unsupported_token: "Debes ingresar un tipo de cambio para este token",
-        coingecko_api_error: "Error en el servicio de tipos de cambio: {{error}}",
-        no_rate_available: "Tipo de cambio no disponible para {{token}} en {{currency}}",
+        coingecko_api_error:
+          "Error en el servicio de tipos de cambio: {{error}}",
+        no_rate_available:
+          "Tipo de cambio no disponible para {{token}} en {{currency}}",
         failed_to_fetch_rate: "Error al obtener el tipo de cambio",
         i_want_to_receive_in: "Quiero recibir en",
         receive_in: "Recibirás",
@@ -351,6 +381,21 @@ i18n.use(initReactI18next).init({
         sell_now: "Vender ahora",
         on: "en",
         pay: "Debes pagar",
+        help_and_tutorials: "Cómo funciona Kioskoin",
+        help_description:
+          "Aprendé cómo usar Kioskoin para comprar y vender cripto con personas reales de forma segura.",
+        getting_started: "Primeros pasos",
+        getting_started_description:
+          "1. Creá tu cuenta y verificá tu wallet.\n2. Elegí tu moneda local y tu stablecoin preferida.\n3. Empezá a comprar o vender usando la lista de órdenes o publicando una propia.",
+        how_to_trade: "Cómo hacer una operación",
+        how_to_trade_description:
+          "1. Elegí una oferta o creá la tuya.\n2. Acordá los detalles de pago con la otra persona.\n3. Hacé el pago o esperá recibirlo.\n4. Confirmá y liberá los fondos (o esperá recibirlos si estás comprando).",
+        safety_tips: "Consejos de seguridad",
+        safety_tips_description:
+          "• Verificá siempre los datos de pago.\n• Nunca liberes cripto hasta confirmar el pago.\n• Usá el chat de la app para comunicarte.\n• Reportá cualquier comportamiento sospechoso.",
+        video_intro_title: "Mirá esta guía rápida",
+        video_intro_description:
+          "Aprendé cómo vender USDC fácil y seguro en solo 1 minuto.",
       },
     },
   },
