@@ -191,6 +191,25 @@ i18n.use(initReactI18next).init({
         video_intro_title: "Watch this quick guide",
         video_intro_description:
           "Learn how to sell USDC easily and safely in just 1 minute.",
+        kioskoin_onboarding_title: "Welcome to Kioscoin",
+        kioskoin_onboarding_subtitle:
+          "Learn how to get started in 3 simple steps",
+
+        kioskoin_step_1_title: "What is Kioscoin?",
+        kioskoin_step_1_desc:
+          "Kioscoin es una app para comprar y vender stablecoins con otras personas,\nusando un escrow seguro y descentralizado.",
+
+        kioskoin_step_2_title: "Connect your wallet",
+        kioskoin_step_2_desc:
+          "Use Metamask or your favorite wallet to get started.\nJust sign once — no gas required.",
+
+        kioskoin_step_3_title: "Activate your Smart Wallet",
+        kioskoin_step_3_subtitle: "Make things easier — no gas fees, no stress",
+        kioskoin_step_3_benefit_1: "No need to hold native tokens",
+        kioskoin_step_3_benefit_2: "Recover your account if you lose it",
+        kioskoin_step_3_benefit_3: "Use the app without hassle",
+        kioskoin_step_3_note:
+          "After this step, you can activate it from your profile.",
 
         // purchase_instantly: "Purchase {{crypto}} {{instantly}}",
         // sell_instantly: "Sell {{crypto}} {{instantly}}",
@@ -381,9 +400,9 @@ i18n.use(initReactI18next).init({
         sell_now: "Vender ahora",
         on: "en",
         pay: "Debes pagar",
-        help_and_tutorials: "Cómo funciona Kioskoin",
+        help_and_tutorials: "Cómo funciona Kioscoin",
         help_description:
-          "Aprendé cómo usar Kioskoin para comprar y vender cripto con personas reales de forma segura.",
+          "Aprendé cómo usar Kioscoin para comprar y vender cripto con personas reales de forma segura.",
         getting_started: "Primeros pasos",
         getting_started_description:
           "1. Creá tu cuenta y verificá tu wallet.\n2. Elegí tu moneda local y tu stablecoin preferida.\n3. Empezá a comprar o vender usando la lista de órdenes o publicando una propia.",
@@ -396,6 +415,24 @@ i18n.use(initReactI18next).init({
         video_intro_title: "Mirá esta guía rápida",
         video_intro_description:
           "Aprendé cómo vender USDC fácil y seguro en solo 1 minuto.",
+        kioskoin_onboarding_title: "Bienvenido a Kioscoin",
+        kioskoin_onboarding_subtitle: "Aprende cómo empezar en 3 pasos simples",
+
+        kioskoin_step_1_title: "Que es Kioscoin?",
+        kioskoin_step_1_desc:
+          "Kioscoin es una app para comprar y vender stablecoins con otras personas,\nusando un escrow seguro y descentralizado.",
+
+        kioskoin_step_2_title: "Conecta tu wallet",
+        kioskoin_step_2_desc:
+          "Usá Metamask o tu wallet favorita para empezar.\nSolo tenés que firmar una vez, sin pagar nada.",
+
+        kioskoin_step_3_title: "Activá tu Smart Wallet",
+        kioskoin_step_3_subtitle: "Hacé las cosas más fácil y sin pagar gas",
+        kioskoin_step_3_benefit_1: "No necesitás tener tokens nativos",
+        kioskoin_step_3_benefit_2: "Podés recuperar tu cuenta si la perdés",
+        kioskoin_step_3_benefit_3: "Usás la app sin complicaciones",
+        kioskoin_step_3_note:
+          "Cuando cierres este paso, vas a poder activarla desde tu perfil.",
       },
     },
   },

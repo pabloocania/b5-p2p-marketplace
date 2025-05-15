@@ -16,6 +16,7 @@ import OrderCreationFlow from "@/components/kioscoin/orders/OrderCreationFlow";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/CreateOrderContainer";
 import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
 import { HelpDialog } from "@/components/kioscoin/HelpDialog";
+import SmartWalletOnboarding from "@/components/kioscoin/users/SmartWalletOnboarding";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
@@ -27,6 +28,9 @@ export default function Home() {
   const { i18n, t } = useTranslation();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
+  const [showSmartWalletOnboarding, setShowSmartWalletOnboarding] =
+    useState(false);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -38,7 +42,14 @@ export default function Home() {
     }
   }, [user, disconnect]);
 
-  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
+  useEffect(() => {
+    if (user && !localStorage.getItem("hasSeenSmartWalletOnboarding")) {
+      setTimeout(() => {
+        setShowSmartWalletOnboarding(true);
+        localStorage.setItem("hasSeenSmartWalletOnboarding", "true");
+      }, 600);
+    }
+  }, [user]);
 
   const handleCreateOrderClose = () => {
     setIsCreateOrderOpen(false);
@@ -77,7 +88,6 @@ export default function Home() {
           setActiveComponent={setActiveComponent}
         />
 
-        {/* Main scrollable area with padding bottom for buttons */}
         <main className="flex-1 overflow-y-auto pb-36">
           <TransactionStatus
             status={transaction.status}
@@ -92,7 +102,6 @@ export default function Home() {
           </div>
         </main>
 
-        {/* Fixed bottom buttons container */}
         <div className="fixed bottom-0 w-full pb-4 pt-8">
           <div className="relative px-4">
             <div className="absolute bottom-4 left-4">
@@ -148,6 +157,11 @@ export default function Home() {
         </div>
 
         <HelpDialog open={isHelpOpen} onOpenChange={setIsHelpOpen} />
+        {showSmartWalletOnboarding && (
+          <SmartWalletOnboarding
+            onComplete={() => setShowSmartWalletOnboarding(false)}
+          />
+        )}
       </div>
     </div>
   );

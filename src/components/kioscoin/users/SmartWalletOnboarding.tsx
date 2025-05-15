@@ -9,210 +9,133 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Shield, Wallet, Zap } from "lucide-react";
+import { Zap, Shield, Wallet, Info, CheckCircle2 } from "lucide-react";
 
-/**
- * Immutable data class representing onboarding state
- */
-class OnboardingState {
-  readonly isVisible: boolean;
-  readonly currentStep: number;
-  readonly totalSteps: number;
-  readonly hasSeenOnboarding: boolean;
-
-  private constructor(params: {
-    isVisible: boolean;
-    currentStep: number;
-    totalSteps: number;
-    hasSeenOnboarding: boolean;
-  }) {
-    this.isVisible = params.isVisible;
-    this.currentStep = params.currentStep;
-    this.totalSteps = params.totalSteps;
-    this.hasSeenOnboarding = params.hasSeenOnboarding;
-  }
-
-  static create(params: {
-    isVisible?: boolean;
-    currentStep?: number;
-    totalSteps?: number;
-    hasSeenOnboarding?: boolean;
-  }): OnboardingState {
-    return new OnboardingState({
-      isVisible: params.isVisible ?? false,
-      currentStep: params.currentStep ?? 0,
-      totalSteps: params.totalSteps ?? 3,
-      hasSeenOnboarding: params.hasSeenOnboarding ?? false,
-    });
-  }
-
-  hide(): OnboardingState {
-    return new OnboardingState({
-      ...this,
-      isVisible: false,
-    });
-  }
-
-  show(): OnboardingState {
-    return new OnboardingState({
-      ...this,
-      isVisible: true,
-    });
-  }
-
-  nextStep(): OnboardingState {
-    const newStep = Math.min(this.currentStep + 1, this.totalSteps - 1);
-    return new OnboardingState({
-      ...this,
-      currentStep: newStep,
-    });
-  }
-
-  prevStep(): OnboardingState {
-    const newStep = Math.max(this.currentStep - 1, 0);
-    return new OnboardingState({
-      ...this,
-      currentStep: newStep,
-    });
-  }
-
-  markAsSeen(): OnboardingState {
-    return new OnboardingState({
-      ...this,
-      hasSeenOnboarding: true,
-    });
-  }
-}
-
-/**
- * Smart Wallet feature representation
- */
-class SmartWalletFeature {
-  readonly title: string;
-  readonly description: string;
-  readonly icon: React.ReactNode;
-
-  private constructor(params: {
-    title: string;
-    description: string;
-    icon: React.ReactNode;
-  }) {
-    this.title = params.title;
-    this.description = params.description;
-    this.icon = params.icon;
-  }
-
-  static create(params: {
-    title: string;
-    description: string;
-    icon: React.ReactNode;
-  }): SmartWalletFeature {
-    return new SmartWalletFeature(params);
-  }
-}
-
-interface SmartWalletOnboardingProps {
+interface KioskoinOnboardingProps {
   onComplete: () => void;
-  onStartTransfer?: () => void;
 }
 
-export default function SmartWalletOnboarding({
+export default function KioskoinOnboarding({
   onComplete,
-  onStartTransfer,
-}: SmartWalletOnboardingProps) {
+}: KioskoinOnboardingProps) {
   const { t } = useTranslation();
-  const [state, setState] = React.useState<OnboardingState>(
-    OnboardingState.create({ isVisible: true })
-  );
+  const [step, setStep] = React.useState(0);
 
-  // Define features using immutable objects
-  const features = React.useMemo(
-    () => [
-      SmartWalletFeature.create({
-        title: t("smart_wallet_feature_1_title", "Gasless Transactions"),
-        description: t(
-          "smart_wallet_feature_1_desc",
-          "Perform transactions without needing ETH for gas fees"
-        ),
-        icon: <Zap className="h-10 w-10 text-yellow-500" />,
-      }),
-      SmartWalletFeature.create({
-        title: t("smart_wallet_feature_2_title", "Enhanced Security"),
-        description: t(
-          "smart_wallet_feature_2_desc",
-          "Improved security with social recovery and multi-signature support"
-        ),
-        icon: <Shield className="h-10 w-10 text-green-500" />,
-      }),
-      SmartWalletFeature.create({
-        title: t("smart_wallet_feature_3_title", "Simplified Experience"),
-        description: t(
-          "smart_wallet_feature_3_desc",
-          "Use dApps with a simplified user experience, similar to Web2"
-        ),
-        icon: <Wallet className="h-10 w-10 text-blue-500" />,
-      }),
-    ],
-    [t]
-  );
+  const steps = [
+    {
+      title: t("kioskoin_step_1_title"),
+      description: t("kioskoin_step_1_desc"),
+      icon: <Info className="h-10 w-10 text-blue-500 animate-bounce" />,
+    },
+    {
+      title: t("kioskoin_step_2_title"),
+      description: t("kioskoin_step_2_desc"),
+      icon: <Wallet className="h-10 w-10 text-purple-500" />,
+      video: "https://www.youtube.com/embed/6LciO-EwQrM",
+    },
+    {
+      title: t("kioskoin_step_3_title"),
+      subtitle: t("kioskoin_step_3_subtitle"),
+      icon: (
+        <div className="relative flex items-center justify-center">
+          <div className="absolute h-14 w-14 rounded-full bg-yellow-300 opacity-30 animate-ping"></div>
+          <div className="z-10 bg-secondary bg-opacity-10 p-4 rounded-full shadow-lg animate-spin-slow">
+            <Zap className="h-8 w-8 text-yellow-500" />
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const current = steps[step];
 
   const handleNext = () => {
-    if (state.currentStep === state.totalSteps - 1) {
-      // Last step, complete onboarding
-      setState(state.hide().markAsSeen());
+    if (step === steps.length - 1) {
       onComplete();
     } else {
-      // Go to next step
-      setState(state.nextStep());
+      setStep(step + 1);
     }
   };
 
   const handlePrevious = () => {
-    setState(state.prevStep());
+    if (step > 0) setStep(step - 1);
   };
 
   const handleSkip = () => {
-    setState(state.hide().markAsSeen());
     onComplete();
   };
 
-  const currentFeature = features[state.currentStep];
-
   return (
-    <Dialog
-      open={state.isVisible}
-      onOpenChange={(open) => !open && handleSkip()}
-    >
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open onOpenChange={handleSkip}>
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto px-6 py-4">
         <DialogHeader>
-          <DialogTitle className="text-center text-xl font-bold text-primary">
-            {t("smart_wallet_onboarding_title", "Welcome to Smart Wallet")}
+          <DialogTitle className="text-xl font-bold text-center text-primary">
+            {t("kioskoin_onboarding_title")}
           </DialogTitle>
-          <DialogDescription className="text-center">
-            {t(
-              "smart_wallet_onboarding_subtitle",
-              "Learn about the benefits of using a Smart Wallet"
-            )}
+          <DialogDescription className="text-center text-sm">
+            {t("kioskoin_onboarding_subtitle")}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col items-center py-6 space-y-4">
-          <div className="bg-secondary bg-opacity-10 p-4 rounded-full">
-            {currentFeature.icon}
+        <div className="flex flex-col items-center pt-4 space-y-4">
+          <div className="flex flex-col items-center space-y-1 -mt-2">
+            {current.icon}
+            <h3 className="text-lg font-semibold text-primary text-center leading-tight">
+              {current.title}
+            </h3>
+            {step !== 2 && (
+              <p className="text-center text-sm text-muted-foreground leading-snug max-w-sm">
+                {current.description}
+              </p>
+            )}
+            {step === 2 && (
+              <p className="text-center text-sm text-muted-foreground">
+                {current.subtitle}
+              </p>
+            )}
           </div>
-          <h3 className="text-lg font-semibold text-primary">
-            {currentFeature.title}
-          </h3>
-          <p className="text-center text-sm text-primary opacity-80">
-            {currentFeature.description}
-          </p>
+
+          {step === 2 && (
+            <div className="bg-white border rounded-lg shadow-sm p-4 w-full space-y-3 mt-2">
+              {[
+                t("kioskoin_step_3_benefit_1"),
+                t("kioskoin_step_3_benefit_2"),
+                t("kioskoin_step_3_benefit_3"),
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="flex justify-between items-center border-b pb-1 last:border-b-0"
+                >
+                  <span className="text-sm text-primary">{item}</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 min-w-[1.25rem]" />
+                </div>
+              ))}
+              <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1 mt-2">
+                <Info className="w-3 h-3 text-muted-foreground" />
+                {t("kioskoin_step_3_note")}
+              </p>
+            </div>
+          )}
+
+          {current.video && (
+            <div className="w-full aspect-video mt-4 rounded-md overflow-hidden border">
+              <iframe
+                src={current.video}
+                title="Onboarding Video"
+                className="w-full h-full"
+                frameBorder={0}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          )}
 
           <div className="flex space-x-2 pt-4">
-            {Array.from({ length: features.length }).map((_, index) => (
+            {steps.map((_, index) => (
               <div
                 key={index}
                 className={`h-2 w-2 rounded-full ${
-                  index === state.currentStep ? "bg-secondary" : "bg-gray-200"
+                  index === step ? "bg-secondary" : "bg-gray-200"
                 }`}
               />
             ))}
@@ -220,7 +143,7 @@ export default function SmartWalletOnboarding({
         </div>
 
         <DialogFooter className="flex flex-col sm:flex-row gap-2">
-          {state.currentStep > 0 && (
+          {step > 0 && (
             <Button variant="outline" onClick={handlePrevious}>
               {t("previous", "Previous")}
             </Button>
@@ -229,8 +152,8 @@ export default function SmartWalletOnboarding({
             {t("skip", "Skip")}
           </Button>
           <Button className="bg-secondary text-white" onClick={handleNext}>
-            {state.currentStep === state.totalSteps - 1
-              ? t("got_it", "Got it!")
+            {step === steps.length - 1
+              ? t("activate_smart_wallet", "Activate Smart Wallet")
               : t("next", "Next")}
           </Button>
         </DialogFooter>
@@ -238,3 +161,8 @@ export default function SmartWalletOnboarding({
     </Dialog>
   );
 }
+
+// Tailwind custom animation class (add in your global styles or tailwind.config.js)
+// .animate-spin-slow {
+//   animation: spin 5s linear infinite;
+// }

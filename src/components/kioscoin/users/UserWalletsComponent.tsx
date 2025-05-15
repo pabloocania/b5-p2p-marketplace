@@ -236,12 +236,7 @@ export default function UserWalletsComponent() {
   return (
     <>
       {state.showOnboarding && (
-        <SmartWalletOnboarding
-          onComplete={handleOnboardingComplete}
-          onStartTransfer={() => {
-            setState((prev) => prev.withActiveTab("myWallet"));
-          }}
-        />
+        <SmartWalletOnboarding onComplete={handleOnboardingComplete} />
       )}
 
       <div className="flex flex-col items-center w-full rounded-lg px-1 bg-white space-y-3 py-1">
