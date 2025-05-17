@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import { TopBar } from "@/components/kioscoin/TopBar";
 import OrderCreationFlow from "@/components/kioscoin/orders/OrderCreationFlow";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/CreateOrderContainer";
-import { UserMenuSheet } from "@/components/kioscoin/users/UserMenuSheet";
 import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
 
 export default function Home() {
@@ -94,28 +93,10 @@ export default function Home() {
         {/* Fixed bottom buttons container */}
         <div className="fixed bottom-0 w-full pb-4 pt-8">
           <div className="relative px-4">
-            <div className="absolute bottom-20 left-4">
-              <UserMenuSheet
-                open={isUserMenuOpen}
-                onOpenChange={setIsUserMenuOpen}
-                user={user}
-                onLogin={login}
-                onLogout={logout}
-                trigger={
-                  <Button
-                    size="icon"
-                    className="rounded-full w-14 h-14 shadow-lg text-white bg-primary hover:bg-terciary/90"
-                  >
-                    <User className="h-6 w-6" />
-                    <span className="sr-only">User Menu</span>
-                  </Button>
-                }
-              />
-            </div>
             <div className="absolute bottom-4 left-4">
               <Button
                 size="icon"
-                className="bg-primary hover:bg-terciary/90 rounded-full w-14 h-14 shadow-lg text-white flex items-center justify-center"
+                className="bg-white border-2 border-secondary text-primary hover:bg-primary/90 hover:text-white rounded-full w-14 h-14 shadow-lg flex items-center justify-center"
                 onClick={() =>
                   changeLanguage(i18n.language === "en" ? "es" : "en")
                 }
@@ -135,11 +116,13 @@ export default function Home() {
                 trigger={
                   <Button
                     size="icon"
-                    className="rounded-full w-14 h-14 shadow-lg text-white bg-primary hover:bg-terciary/90"
+                    className="rounded-full px-5 text-lg font-bold w-30 h-14 shadow-lg hover:bg-terciary/90 bg-white border-2 border-secondary text-primary"
                     disabled={!user}
                   >
-                    <Plus className="h-6 w-6" />
-                    <span className="sr-only">Create order</span>
+                    <Plus className="h-6 w-6 pr-2" />
+                    <span className="transition-opacity duration-500">
+                      {t("create_order")}
+                    </span>
                   </Button>
                 }
               >

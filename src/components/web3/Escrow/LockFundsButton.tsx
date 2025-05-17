@@ -126,12 +126,22 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button
-            className="w-full text-white bg-yellow-500"
-            onClick={() => setIsOpen(true)}
+            className={`w-full ${
+              hasSufficientBalance
+                ? "text-white bg-yellow-500"
+                : "text-white bg-red-500 border-red-500"
+            }`}
+            onClick={() =>
+              hasSufficientBalance && !isLoading && setIsOpen(true)
+            }
+            disabled={isLoading || !hasSufficientBalance}
           >
             {hasSufficientBalance ? t("lock_funds") : t("not_enough_balance")}
           </Button>
         </SheetTrigger>
+        {!hasSufficientBalance && (
+          <p className="text-gray-600 mt-2">{t("info_text_fund_wallet")}</p>
+        )}
         <SheetContent
           side="bottom"
           className="h-[90vh] bg-backgroundMain"

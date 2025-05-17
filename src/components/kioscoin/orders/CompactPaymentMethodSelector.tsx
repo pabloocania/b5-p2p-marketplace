@@ -20,14 +20,22 @@ interface ExtendedPaymentMethod extends PaymentMethod {
   display: "alias" | "IBAN";
 }
 
-const acceptedPaymentMethods: ExtendedPaymentMethod[] = [
-  { type: "BANK", entity: "Revolut", display: "alias", alias: "" },
-  { type: "FINTECH", entity: "Mercado Pago", display: "alias", alias: "" },
-];
+const defaultPaymentMethod: ExtendedPaymentMethod = {
+  type: "BANK",
+  entity: "",
+  display: "alias",
+  alias: "",
+  cbu: "",
+};
+
+const acceptedPaymentMethods: ReadonlyArray<ExtendedPaymentMethod> = [
+  { ...defaultPaymentMethod, entity: "Revolut" },
+  { ...defaultPaymentMethod, type: "FINTECH", entity: "Mercado Pago" },
+] as const;
 
 interface CompactPaymentMethodSelectorProps {
-  methods?: ExtendedPaymentMethod[];
-  selectedMethods: PaymentMethod[];
+  methods?: ReadonlyArray<ExtendedPaymentMethod>;
+  selectedMethods: ReadonlyArray<PaymentMethod>;
   onToggle: (method: ExtendedPaymentMethod) => void;
   onUpdateMethod: (updatedMethod: ExtendedPaymentMethod) => void;
   readOnly?: boolean;
@@ -103,12 +111,12 @@ const CompactPaymentMethodSelector: React.FC<
     );
     const methodToRender = selectedMethod || method;
 
+    if (!methodToRender) return "";
+
     if (methodToRender.type === "FINTECH") {
-      return methodToRender.alias ? `${methodToRender.alias}` : "";
+      return methodToRender.alias || "";
     }
-    return methodToRender.cbu && methodToRender.type === "BANK"
-      ? methodToRender.cbu
-      : methodToRender.alias;
+    return methodToRender.cbu || methodToRender.alias || "";
   };
 
   const renderInputField = (method: ExtendedPaymentMethod) => {

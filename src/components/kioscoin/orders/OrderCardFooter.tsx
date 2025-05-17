@@ -102,6 +102,8 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         } as TakeBuyOrderRequest;
       }
 
+      console.log("takeOrderRequest", takeOrderRequest);
+
       const response = await client.takeOrder(takeOrderRequest, {
         Authorization: `Bearer ${loginId}`,
       });

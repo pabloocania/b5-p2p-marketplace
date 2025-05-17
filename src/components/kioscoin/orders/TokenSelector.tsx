@@ -55,13 +55,43 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
       }
     }, []);
 
+    // Set default values when stablecoinConfig is available
+    useEffect(() => {
+      if (stablecoinConfig) {
+        const tokens = getUniqueTokenNames(stablecoinConfig);
+        if (tokens.length > 0) {
+          // If there's a pre-selected token, use it, otherwise use the first available
+          const defaultToken = preSelectedToken || tokens[0];
+          setSelectedToken(defaultToken);
+          onTokenChange(defaultToken);
+
+          // Set default blockchain for the selected token
+          const availableBlockchains =
+            stablecoinConfig.supportedStablecoins.find(
+              (coin) => coin.name === defaultToken
+            )?.addresses || [];
+
+          if (availableBlockchains.length > 0) {
+            // If there's a pre-selected blockchain, use it, otherwise use the first available
+            const defaultBlockchain =
+              preSelectedBlockchain || availableBlockchains[0].blockchain;
+            setSelectedBlockchain(defaultBlockchain);
+            onBlockchainChange(defaultBlockchain);
+          }
+        }
+      }
+    }, [stablecoinConfig, preSelectedToken, preSelectedBlockchain]);
+
     // Update selected values when pre-selected values change
     useEffect(() => {
-      if (preSelectedToken) {
+      if (preSelectedToken && preSelectedToken !== selectedToken) {
         setSelectedToken(preSelectedToken);
         onTokenChange(preSelectedToken);
       }
-      if (preSelectedBlockchain) {
+      if (
+        preSelectedBlockchain &&
+        preSelectedBlockchain !== selectedBlockchain
+      ) {
         setSelectedBlockchain(preSelectedBlockchain);
         onBlockchainChange(preSelectedBlockchain);
       }
