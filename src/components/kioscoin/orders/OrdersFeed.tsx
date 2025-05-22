@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Order, OrderStatus, OrderType, PaymentMethod } from "b5-api-client";
+import {
+  Order,
+  OrderStatus,
+  OrderType,
+  PaymentMethod,
+  GetOrdersParams,
+} from "b5-api-client";
 import { OrderCard } from "./OrderCard";
 import { ScrollableContainer } from "../ScrollabelContainer";
 import { p2pMarketAPIClient as client } from "../../../lib/APIClients";
@@ -20,6 +26,8 @@ import {
   FilterGroupType,
   FilterGroupConfig,
 } from "../filter";
+import { initializeFilterConstants } from "../filter/constants";
+import { ConfigStore } from "@/lib/ConfigStore";
 
 export enum Filter {
   ALL = "ALL",
@@ -80,6 +88,11 @@ export default function OrdersFeed({
     search: "",
   });
 
+  // Initialize filter constants
+  useEffect(() => {
+    initializeFilterConstants();
+  }, []);
+
   // Define default filter groups if none are provided
   const defaultFilterGroups: FilterGroupConfig[] = [
     // { type: FilterGroupType.SEARCH },
@@ -97,7 +110,7 @@ export default function OrdersFeed({
       const userId = user?.id || buyerId || creatorId;
 
       // Base parameters for the API call
-      const params: any = {};
+      const params: GetOrdersParams = {};
 
       // Add user filter if available
       if (userId && filter !== Filter.ALL) {
@@ -124,13 +137,13 @@ export default function OrdersFeed({
         params.orderType = filterState.orderType;
       }
 
-      if (filterState.status.length > 0) {
-        // Override the status from the filter enum if filterState has status
-        params.status = filterState.status;
-      }
-
       if (filterState.blockchain.length > 0) {
-        params.blockchain = filterState.blockchain;
+        console.log("filterState.blockchain", filterState.blockchain);
+        const configStore = ConfigStore.getInstance();
+        const chainIds = configStore.getChainIdsFromBlockchains(
+          filterState.blockchain
+        );
+        params.blockchain = chainIds.map(String);
       }
 
       if (filterState.tokenCode.length > 0) {
@@ -149,14 +162,20 @@ export default function OrdersFeed({
         filterState.fiatAmountRange.min !== undefined ||
         filterState.fiatAmountRange.max !== undefined
       ) {
-        params.fiatAmountRange = filterState.fiatAmountRange;
+        params.fiatAmountRange = {
+          min: filterState.fiatAmountRange.min,
+          max: filterState.fiatAmountRange.max,
+        };
       }
 
       if (
         filterState.dateRange.from !== undefined ||
         filterState.dateRange.to !== undefined
       ) {
-        params.dateRange = filterState.dateRange;
+        params.dateRange = {
+          from: filterState.dateRange.from?.toISOString(),
+          to: filterState.dateRange.to?.toISOString(),
+        };
       }
 
       if (filterState.search) {
@@ -224,38 +243,40 @@ export default function OrdersFeed({
     <div className="w-full h-full">
       <ScrollableContainer>
         {filter === Filter.ALL || user ? (
-          selectedOrder ? (
-            <OrderCard
-              orderDTO={selectedOrder}
-              showDetails={true}
-              onRefresh={refreshOrders}
-            />
-          ) : orders && orders.length > 0 ? (
-            <div>
-              <div className="mb-4">
-                <FilterBar
-                  filters={filterState}
-                  setFilters={setFilterState}
-                  filterGroups={filterGroups || defaultFilterGroups}
-                />
+          <>
+            <div className="mb-4">
+              <FilterBar
+                filters={filterState}
+                setFilters={setFilterState}
+                filterGroups={filterGroups || defaultFilterGroups}
+              />
+            </div>
+            {selectedOrder ? (
+              <OrderCard
+                orderDTO={selectedOrder}
+                showDetails={true}
+                onRefresh={refreshOrders}
+              />
+            ) : orders && orders.length > 0 ? (
+              <div>
+                {orders.map((order) => (
+                  <div key={order.id} className="mb-7">
+                    <OrderCard
+                      orderDTO={order}
+                      onSelect={handleOrderSelect}
+                      onRefresh={refreshOrders}
+                    />
+                  </div>
+                ))}
               </div>
-              {orders.map((order) => (
-                <div key={order.id} className="mb-7">
-                  <OrderCard
-                    orderDTO={order}
-                    onSelect={handleOrderSelect}
-                    onRefresh={refreshOrders}
-                  />
+            ) : (
+              <div className="flex flex-col items-center h-full">
+                <div className="mb-5 text-primary font-bold">
+                  {t("no_orders_available")}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center h-full">
-              <div className="mb-5 text-primary font-bold">
-                {t("no_orders_available")}
               </div>
-            </div>
-          )
+            )}
+          </>
         ) : (
           <div className="flex flex-col items-center h-full">
             <Button

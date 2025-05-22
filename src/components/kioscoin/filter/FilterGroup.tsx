@@ -24,6 +24,7 @@ import {
   allTokenCodes,
   fiatAmountRanges,
 } from "./constants";
+import { getBlockchainDisplayName } from "@/lib/ConfigStore";
 
 interface FilterGroupProps {
   group: FilterGroupConfig;
@@ -184,7 +185,9 @@ export default function FilterGroup({
             options={group.options || allBlockchains}
             selectedItems={filters.blockchain}
             onToggle={toggleBlockchain}
-            renderItemContent={(blockchain) => blockchain}
+            renderItemContent={(blockchain) =>
+              getBlockchainDisplayName(blockchain)
+            }
             getKey={(blockchain) => blockchain}
           />
         );

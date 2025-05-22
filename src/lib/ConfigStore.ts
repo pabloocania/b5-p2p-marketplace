@@ -255,6 +255,14 @@ export class ConfigStore {
         const [first, ...rest] = enabledChains;
         return [first, ...rest] as const;
     }
+
+    public getChainIdsFromBlockchains(blockchains: string[]): number[] {
+        if (!this.config) return [];
+
+        return blockchains
+            .map(blockchain => this.getChainIdFromBlockchain(blockchain))
+            .filter(chainId => chainId !== 0); // Filter out invalid chain IDs
+    }
 }
 
 export async function initConfig() {
