@@ -47,30 +47,17 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
   };
 
   const imageSize = getImageSize();
+  const [imgError, setImgError] = React.useState(false);
+  const fallbackSrc = "/criptoicon/asset-placeholder.svg";
 
   return (
     <div className="inline-flex items-center justify-center">
-      {showAmount && (
-        <span
-          className={`font-medium ${amountFontSize} font-bold text-terciary mr-1`}
-        >
-          {formattedAmount}
-        </span>
-      )}
-      <span
-        className={`font-medium ${amountFontSize} font-bold text-terciary flex items-center`}
-      >
-        {tokenCode.toUpperCase()}
-        <img
-          src={iconSrc}
-          alt={tokenCode}
-          className={`ml-1 ${imageSize}`}
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.style.display = "none"; // Hide the image if it fails to load
-          }}
-        />
-      </span>
+      <img
+        src={imgError ? fallbackSrc : iconSrc}
+        alt={tokenCode}
+        className={imageSize}
+        onError={() => setImgError(true)}
+      />
     </div>
   );
 };
