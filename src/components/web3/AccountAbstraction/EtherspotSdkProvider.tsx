@@ -198,8 +198,8 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
               // Map the balances to the TokenBalance type
               tokenBalances.push({
                 name: stablecoin.name ?? "Unknown",
-                eoaBalance: eoaTokenBalance ?? "0",
-                smartWalletBalance: swTokenBalance ?? "0",
+                eoaBalance: eoaTokenBalance?.toString() ?? "0",
+                smartWalletBalance: swTokenBalance?.toString() ?? "0",
                 address:
                   tokenAddress ?? "0x0000000000000000000000000000000000000000",
                 decimals: stablecoin.decimals ?? 6,
