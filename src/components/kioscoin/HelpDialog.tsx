@@ -37,15 +37,10 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
           <p className="text-sm text-muted-foreground">
             {t("video_intro_description")}
           </p>
-          <div className="aspect-video w-full overflow-hidden rounded-md border">
-            <iframe
-              src="https://www.youtube.com/embed/Q2aJ7KnTwuA"
-              title="How to sell USDC safely"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            ></iframe>
+          <div className="aspect-video w-full overflow-hidden rounded-md border bg-muted flex items-center justify-center">
+            <div className="text-muted-foreground text-sm">
+              {t("video_placeholder_text", "Video placeholder")}
+            </div>
           </div>
         </div>
 

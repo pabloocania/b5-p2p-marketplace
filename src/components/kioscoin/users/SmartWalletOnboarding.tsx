@@ -31,7 +31,13 @@ export default function KioscoinOnboarding({
       title: t("kioskoin_step_2_title"),
       description: t("kioskoin_step_2_desc"),
       icon: <Wallet className="h-10 w-10 text-purple-500" />,
-      video: "https://www.youtube.com/embed/6LciO-EwQrM",
+      video: (
+        <div className="aspect-video w-full overflow-hidden rounded-md border bg-muted flex items-center justify-center">
+          <div className="text-muted-foreground text-sm">
+            {t("video_placeholder_text", "Video placeholder")}
+          </div>
+        </div>
+      ),
     },
     {
       title: t("kioskoin_step_3_title"),
@@ -45,9 +51,17 @@ export default function KioscoinOnboarding({
         </div>
       ),
     },
-  ];
+  ] as const;
 
-  const current = steps[step];
+  type Step = {
+    title: string;
+    description?: string;
+    subtitle?: string;
+    icon: JSX.Element;
+    video?: string | JSX.Element;
+  };
+
+  const current = steps[step] as Step;
 
   const handleNext = () => {
     if (step === steps.length - 1) {
@@ -119,14 +133,18 @@ export default function KioscoinOnboarding({
 
           {current.video && (
             <div className="w-full aspect-video mt-4 rounded-md overflow-hidden border">
-              <iframe
-                src={current.video}
-                title="Onboarding Video"
-                className="w-full h-full"
-                frameBorder={0}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
+              {typeof current.video === "string" ? (
+                <iframe
+                  src={current.video}
+                  title="Onboarding Video"
+                  className="w-full h-full"
+                  frameBorder={0}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              ) : (
+                current.video
+              )}
             </div>
           )}
 
