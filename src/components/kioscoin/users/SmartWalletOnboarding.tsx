@@ -11,13 +11,13 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { Zap, Shield, Wallet, Info, CheckCircle2 } from "lucide-react";
 
-interface KioskoinOnboardingProps {
+interface KioscoinOnboardingProps {
   onComplete: () => void;
 }
 
-export default function KioskoinOnboarding({
+export default function KioscoinOnboarding({
   onComplete,
-}: KioskoinOnboardingProps) {
+}: KioscoinOnboardingProps) {
   const { t } = useTranslation();
   const [step, setStep] = React.useState(0);
 
