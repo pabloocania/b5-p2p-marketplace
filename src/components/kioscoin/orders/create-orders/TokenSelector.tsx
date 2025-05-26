@@ -77,16 +77,15 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
       ? getUniqueTokenNames(stablecoinConfig)
       : [];
 
-    const handleTokenChange = (value: string) => {
+    const handleTokenChange = (e: React.MouseEvent, value: string) => {
+      e.stopPropagation();
+      e.preventDefault();
       setSelectedToken(value);
       setSelectedBlockchain("");
       onTokenChange(value);
     };
 
-    const handleBlockchainChange = (value: string) => {
-      setSelectedBlockchain(value);
-      onBlockchainChange(value);
-    };
+  
 
     const availableBlockchains = stablecoinConfig
       ? stablecoinConfig.supportedStablecoins
@@ -101,7 +100,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
           {tokens.map((token) => (
             <button
               key={token}
-              onClick={() => handleTokenChange(token)}
+              onClick={(e) => handleTokenChange(e, token)}
               className={`rounded-full border p-2 w-12 h-12 flex items-center justify-center transition
                 ${
                   selectedToken === token

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import CreateOrder from "../src/components/kioscoin/orders/CreateOrder";
+import CreateOrder from "../src/components/kioscoin/orders/create-orders/CreateOrder";
 import OrdersFeed, {
   Filter,
 } from "../src/components/kioscoin/orders/OrdersFeed";
@@ -13,7 +13,8 @@ import UserOrdersMenu from "@/components/kioscoin/TopLevelSubMenu";
 import { useTranslation } from "react-i18next";
 import { TopBar } from "@/components/kioscoin/TopBar";
 import OrderCreationFlow from "@/components/kioscoin/orders/OrderCreationFlow";
-import { CreateOrderContainer } from "@/components/kioscoin/orders/CreateOrderContainer";
+import { CreateOrderContainer } from "@/components/kioscoin/orders/create-orders/CreateOrderContainer";
+import { UserMenuSheet } from "@/components/kioscoin/users/UserMenuSheet";
 import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
 import { HelpDialog } from "@/components/kioscoin/HelpDialog";
 import SmartWalletOnboarding from "@/components/kioscoin/users/SmartWalletOnboarding";
@@ -140,6 +141,10 @@ export default function Home() {
                 <CreateOrder
                   onClose={handleCreateOrderClose}
                   onConnectWallet={handleUserMenuOpen}
+                  preFilledData={{
+                    fiatCode: "ARS",
+                    paymentMethods: [],
+                  }}
                 />
               </CreateOrderContainer>
             </div>

@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { CreateOrderContainer } from "../orders/CreateOrderContainer";
+import { CreateOrderContainer } from "../orders/create-orders/CreateOrderContainer";
 import UserMenuNew from "./UserMenuNew";
 import { KioscoinUser } from "b5-api-client";
 

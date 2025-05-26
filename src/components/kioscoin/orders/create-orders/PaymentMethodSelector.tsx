@@ -1,6 +1,6 @@
 "use client";
 import { Label } from "@/components/ui/label";
-import CompactPaymentMethodSelector from "../CompactPaymentMethodSelector";
+import CompactPaymentMethodSelector from "./CompactPaymentMethodSelector";
 import { PaymentMethod } from "b5-api-client";
 
 interface Props {

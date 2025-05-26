@@ -31,7 +31,7 @@ import { ChatInterface } from "@/components/chat/ChatInterface";
 import { Button } from "../../ui/button";
 import { Rating } from "../Rating";
 import { formatFiatAmount, formatTokenAmount } from "@/lib/utils";
-import CompactPaymentMethodSelector from "./CompactPaymentMethodSelector";
+import CompactPaymentMethodSelector from "./create-orders/CompactPaymentMethodSelector";
 
 interface OrderCardContentProps {
   order: Order;

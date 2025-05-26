@@ -12,7 +12,7 @@ interface Props {
   customRate: number | null;
   isLoadingRate: boolean;
   rateError: string | null;
-  setCustomRate: (value: number | null) => void;
+  onCustomRateChange: (value: number | null) => void;
 }
 
 export default function FiatRateSelector({
@@ -23,7 +23,7 @@ export default function FiatRateSelector({
   customRate,
   isLoadingRate,
   rateError,
-  setCustomRate,
+  onCustomRateChange,
 }: Props) {
   const { t } = useTranslation();
 
@@ -65,32 +65,24 @@ export default function FiatRateSelector({
       </div>
 
       <div className="space-y-1">
-        <Label
-          htmlFor="custom-rate"
-          className="text-xs font-semibold flex items-center gap-2"
-        >
-          {t("your_rate")}
-          {isLoadingRate && (
-            <span className="text-secondary">{t("loading_rate")}</span>
-          )}
-        </Label>
         <Input
           id="custom-rate"
           type="number"
           min="0"
           step="0.01"
-          value={customRate || ""}
+          value={customRate ?? ""}
           onChange={(e) => {
             const value = e.target.value;
+
             if (value === "") {
-              setCustomRate(null);
+              onCustomRateChange(null);
               return;
             }
 
             const numValue = parseFloat(value);
             if (!isNaN(numValue) && numValue >= 0) {
               const roundedValue = Math.round(numValue * 100) / 100;
-              setCustomRate(roundedValue);
+              onCustomRateChange(roundedValue);
             }
           }}
           onKeyDown={(e) => {
@@ -103,6 +95,7 @@ export default function FiatRateSelector({
           }`}
           placeholder={t("enter_amount")}
         />
+
         {(customRate === null || rateError) && (
           <span className="text-xs text-primary mt-1 block">
             {rateError || t("rate_must_be_positive")}

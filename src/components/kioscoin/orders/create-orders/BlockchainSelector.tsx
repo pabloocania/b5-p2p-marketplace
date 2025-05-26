@@ -1,9 +1,6 @@
 "use client";
 import { useTranslation } from "react-i18next";
-import {
-  BlockchainName,
-  getBlockchainDisplayName,
-} from "@/lib/ConfigStore";
+import { BlockchainName, getBlockchainDisplayName } from "@/lib/ConfigStore";
 import { cn } from "@/lib/utils"; // Asegurate de tener esta utilidad para concatenar clases opcionales
 
 interface BlockchainOption {
@@ -36,6 +33,7 @@ export default function BlockchainSelector({
         {availableBlockchains.map(({ blockchain }) => (
           <button
             key={blockchain}
+            type="button"
             onClick={() => onBlockchainChange(blockchain)}
             className={cn(
               "rounded-full border p-2 w-12 h-12 flex items-center justify-center transition",

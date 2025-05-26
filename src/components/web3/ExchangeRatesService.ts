@@ -1,5 +1,6 @@
 interface PriceResponse {
-  [key: string]: { // Use index signature for dynamic token IDs
+  [key: string]: {
+    // Use index signature for dynamic token IDs
     [key: string]: number; // Use index signature for dynamic fiat codes
   };
 }
@@ -48,7 +49,7 @@ export class ExchangeRatesService {
   ): Promise<number | null> {
     const coinGeckoId = this.getCoinGeckoId(tokenCode);
     if (!coinGeckoId) {
-      throw new Error(`Unsupported token: ${tokenCode}`); // Throw specific error
+      return 1; // Return 1 as default rate
     }
 
     const fiatCodeLower = fiatCode.toLowerCase();
@@ -56,7 +57,9 @@ export class ExchangeRatesService {
     for (let attempt = 0; attempt < RETRY_ATTEMPTS; attempt++) {
       try {
         console.log(
-          `Attempting to fetch rate for ${tokenCode}/${fiatCode} (attempt ${attempt + 1})`
+          `Attempting to fetch rate for ${tokenCode}/${fiatCode} (attempt ${
+            attempt + 1
+          })`
         );
 
         const response = await fetch(
@@ -76,24 +79,31 @@ export class ExchangeRatesService {
 
         const data: PriceResponse = await response.json();
 
-        if (!data[coinGeckoId] || data[coinGeckoId][fiatCodeLower] === undefined) {
+        if (
+          !data[coinGeckoId] ||
+          data[coinGeckoId][fiatCodeLower] === undefined
+        ) {
           // If rate is missing, treat as potentially temporary, retry
           if (attempt === RETRY_ATTEMPTS - 1) {
-            console.warn(`No rate available for ${tokenCode} in ${fiatCode} after retries.`);
+            console.warn(
+              `No rate available for ${tokenCode} in ${fiatCode} after retries.`
+            );
             return null; // Return null after all retries if rate not found
           }
           throw new Error(`Rate data missing for ${tokenCode} in ${fiatCode}`); // Temporary error for retry
         }
 
         return data[coinGeckoId][fiatCodeLower]; // Return rate on success
-
       } catch (error) {
         console.error(`Attempt ${attempt + 1} failed:`, error);
 
         if (attempt === RETRY_ATTEMPTS - 1) {
           // If it's the last attempt, re-throw the original error or a generic one
           // Check if it's the specific errors we want to propagate
-          if (error instanceof Error && error.message.startsWith('CoinGecko API error')) {
+          if (
+            error instanceof Error &&
+            error.message.startsWith("CoinGecko API error")
+          ) {
             throw error; // Re-throw the specific API error
           }
           console.warn("All retry attempts failed for fetching rate.");
