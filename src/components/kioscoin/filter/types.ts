@@ -1,3 +1,4 @@
+import { BlockchainName } from "@/lib/ConfigStore";
 import { OrderStatus, OrderType, PaymentMethod } from "b5-api-client";
 
 // Define structure for fiat amount ranges
@@ -39,7 +40,7 @@ export interface FilterGroupConfig {
 export interface FilterState {
     orderType: OrderType[];
     status: OrderStatus[];
-    blockchain: string[];
+    blockchain: BlockchainName[];
     tokenCode: string[];
     paymentMethods: PaymentMethod[];
     fiatCode: string[];

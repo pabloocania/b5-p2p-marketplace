@@ -228,25 +228,30 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
             }
           />
         )}
-      {user && showDetails && order.type === ("SELL" as OrderType) && (
-        <div className="py-2">
-          <AddressInput
-            walletAddress={walletAddress}
-            setWalletAddress={setWalletAddress}
-            orderStatus={order.status ? order.status : "CANCELED"}
-          />
-        </div>
-      )}
-      {user && showDetails && order.type === ("BUY" as OrderType) && (
-        <div className="py-2">
-          <CompactPaymentMethodSelector
-            selectedMethods={selectedPaymentMethods}
-            onToggle={handleTogglePaymentMethod}
-            onUpdateMethod={handleUpdatePaymentMethod}
-            readOnly={true}
-          />
-        </div>
-      )}
+      {order.status == "PENDING" &&
+        user &&
+        showDetails &&
+        order.type === ("SELL" as OrderType) && (
+          <div className="py-2">
+            <AddressInput
+              walletAddress={walletAddress}
+              setWalletAddress={setWalletAddress}
+              orderStatus={order.status ? order.status : "CANCELED"}
+            />
+          </div>
+        )}
+      {order.status == "PENDING" &&
+        user &&
+        showDetails &&
+        order.type === ("BUY" as OrderType) && (
+          <div className="py-2">
+            <CompactPaymentMethodSelector
+              selectedMethods={selectedPaymentMethods}
+              onToggle={handleTogglePaymentMethod}
+              onUpdateMethod={handleUpdatePaymentMethod}
+            />
+          </div>
+        )}
     </CardContent>
   );
 };

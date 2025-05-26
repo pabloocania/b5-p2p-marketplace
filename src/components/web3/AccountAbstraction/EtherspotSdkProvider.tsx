@@ -173,24 +173,33 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     try {
       const stablecoinsByBlockchain =
         ConfigStore.getInstance().getStablecoinsByBlockchain(currentBlockchain);
+      console.log("stablecoinsByBlockchain", stablecoinsByBlockchain);
       // Use Promise.all to fetch balances concurrently for better performance
       await Promise.all(
         stablecoinsByBlockchain.map(async (stablecoin) => {
+          console.log("stablecoin", stablecoin);
           const relevantAddresses = stablecoin.addresses.filter(
             (address) => address.blockchain === currentBlockchain
           );
+          console.log("relevantAddresses", relevantAddresses);
           for (const { address: tokenAddress } of relevantAddresses) {
             try {
+              console.log("currentBlockchain", currentBlockchain);
+              console.log("chainId", chainId);
+
               const [swTokenBalance, eoaTokenBalance] = await Promise.all([
                 getStablecoinBalance(tokenAddress, smartWalletAddress, chainId),
                 getStablecoinBalance(tokenAddress, eoaAddress, chainId),
               ]);
+              console.log("tokenAddress", tokenAddress);
+              console.log("swTokenBalance", swTokenBalance);
+              console.log("eoaTokenBalance", eoaTokenBalance);
 
               // Map the balances to the TokenBalance type
               tokenBalances.push({
                 name: stablecoin.name ?? "Unknown",
-                eoaBalance: eoaTokenBalance ?? "0",
-                smartWalletBalance: swTokenBalance ?? "0",
+                eoaBalance: eoaTokenBalance?.toString() ?? "0",
+                smartWalletBalance: swTokenBalance?.toString() ?? "0",
                 address:
                   tokenAddress ?? "0x0000000000000000000000000000000000000000",
                 decimals: stablecoin.decimals ?? 6,
@@ -255,11 +264,10 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       functionName: "balanceOf",
       args: [walletAddress],
     });
+    console.log("balance", balance);
     if (balance !== undefined && balance !== null) {
       const formattedBalance = BigInt(balance.toString());
-      const decimals = ConfigStore.getInstance().getTokenDecimals(tokenAddress);
-      const adjustedBalance = formattedBalance / BigInt(10 ** (18 - decimals));
-      return adjustedBalance.toString();
+      return formattedBalance;
     }
   };
 

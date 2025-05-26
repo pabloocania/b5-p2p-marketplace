@@ -66,7 +66,7 @@ export default function CreateOrder({
     preFilledData ? parseFloat(preFilledData.amount) : 0
   );
   const [tokenCode, setTokenCode] = useState<string>(
-    preFilledData?.tokenCode || "PDOC"
+    preFilledData?.tokenCode || "USDC"
   );
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
@@ -248,11 +248,11 @@ export default function CreateOrder({
           </Sheet>
         ) : (
           <Card className="w-full max-w-md border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
-            <CardHeader className="flex justify-center items-center pb-2">
+            {/* <CardHeader className="flex justify-center items-center pb-2">
               <CardTitle className="text-center text-primary text-2xl font-bold">
                 {t("create_order")}
               </CardTitle>
-            </CardHeader>
+            </CardHeader> */}
             <Separator className="mb-2" />
             <CardContent className="text-primary px-4 py-2 space-y-2">
               {createdOrder ? null : (
@@ -284,6 +284,7 @@ export default function CreateOrder({
                         onTokenChange={handleTokenChange}
                         preSelectedBlockchain={blockchain}
                         preSelectedToken={tokenCode}
+                        key={`${tokenCode}-${blockchain}`}
                       />
                     </div>
                     {blockchain !== "" && tokenCode !== "" && (
@@ -405,13 +406,11 @@ export default function CreateOrder({
                         {fiatCode === "EUR" ? "€" : "$"}:
                       </div>
                     </div>
-                    <Label className="font-bold text-base border-l-4 border-primary pl-2 mb-1">
-                      {t("payment_method")}
-                    </Label>
                     <CompactPaymentMethodSelector
                       selectedMethods={selectedMethods}
                       onToggle={handleToggle}
                       onUpdateMethod={handleUpdateMethod}
+                      readOnly={orderType === "BUY"}
                     />
                     {orderType === "BUY" && (
                       <div>
