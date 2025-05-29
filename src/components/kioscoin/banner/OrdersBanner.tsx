@@ -23,7 +23,7 @@ const cryptoOffers: BannerOffer[] = [
   {
     id: "1",
     title: "Buy USDT at best rate",
-    action: "Buy 100 USDT now",
+    action: "Buy 1 USDT now",
     fiatAmount: "$1.00",
     exchangeMethods: [
       { type: "BANK", entity: "Revolut" },
@@ -32,13 +32,13 @@ const cryptoOffers: BannerOffer[] = [
     type: "BUY",
     tokenCode: "USDC",
     blockchain: "BSC_MAINNET",
-    amount: "100",
+    amount: "1",
     fiatCode: "ARS",
   },
   {
     id: "2",
     title: "Sell USDC instantly",
-    action: "Sell 100 USDC now",
+    action: "Sell 1 USDC now",
     fiatAmount: "$0.99",
     exchangeMethods: [
       { type: "FINTECH", entity: "Mercado Pago" },
@@ -47,7 +47,37 @@ const cryptoOffers: BannerOffer[] = [
     type: "SELL",
     tokenCode: "USDC",
     blockchain: "BSC_MAINNET",
-    amount: "100",
+    amount: "1",
+    fiatCode: "ARS",
+  },
+  {
+    id: "3",
+    title: "Sell USDK instantly",
+    action: "Sell 1 USDK now",
+    fiatAmount: "$0.99",
+    exchangeMethods: [
+      { type: "FINTECH", entity: "Mercado Pago" },
+      { type: "BANK", entity: "Revolut" },
+    ],
+    type: "SELL",
+    tokenCode: "USDK",
+    blockchain: "ARBITRUM_TESTNET",
+    amount: "1",
+    fiatCode: "ARS",
+  },
+  {
+    id: "4",
+    title: "Sell USDK instantly",
+    action: "Sell 1 USDK now",
+    fiatAmount: "$0.99",
+    exchangeMethods: [
+      { type: "FINTECH", entity: "Mercado Pago" },
+      { type: "BANK", entity: "Revolut" },
+    ],
+    type: "SELL",
+    tokenCode: "USDK",
+    blockchain: "ARBITRUM_TESTNET",
+    amount: "1",
     fiatCode: "ARS",
   },
 ];

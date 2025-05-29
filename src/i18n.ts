@@ -46,6 +46,7 @@ i18n.use(initReactI18next).init({
         order_id: "Order ID",
         insert_wallet_address: "Receiver address",
         initiating_transaction: "Initiating transaction...",
+        initiating_transfer_escrow: "Sign transfer...",
         transaction_failed: "Transaction failed, please try again.",
         transaction_success: "Transaction successful",
         transaction_pending: "Transaction is pending...",
@@ -60,7 +61,7 @@ i18n.use(initReactI18next).init({
         funds_locked: "Funds are locked in the smart contract",
         //Sign the transaction with your wallet in order to the deposit of fund
         approve_and_lock:
-          "You have to sign the transaction with your wallet to deposito your funds in the smart contract",
+          "You have to sign the transaction with your wallet to deposit your funds in the smart contract",
         you: "you",
         connect_to_continue: "Connect your wallet to continue",
         connect_wallet: "Connect your wallet",
@@ -118,7 +119,7 @@ i18n.use(initReactI18next).init({
         select_blockchain: "Select a blockchain",
         write_message: "Write message",
         amount_to_deposit: "Amount to deposit",
-        sending: "Sending transaction",
+        sending: "Sending transaction to the blockchain...",
         sending_tx_blockchain:
           "Your transaction is being sent to the blockchain. Wait for its confirmation",
         view_history: "View history",
@@ -218,7 +219,8 @@ i18n.use(initReactI18next).init({
         user: "Usuario",
         order_id: "ID de órden",
         insert_wallet_address: "Dirección de la wallet de destino",
-        initiating_transaction: "Enviando transacción...",
+        initiating_transaction: "Enviando transacción a la blockchain...",
+        initiating_transfer_escrow: "Firma transferencia...",
         transaction_failed: "Transacción fallida, por favor intente de nuevo.",
         transaction_success: "Transacción exitosa",
         transaction_pending: "La transacción está pendiente...",

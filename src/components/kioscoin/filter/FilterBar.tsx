@@ -21,9 +21,9 @@ export default function FilterBar({
   const defaultFilterGroups = [
     //   { type: FilterGroupType.SEARCH },
     { type: FilterGroupType.ORDER_TYPE, title: t("order_type") },
-    { type: FilterGroupType.FIAT_AMOUNT_RANGE, title: t("amount_range") },
     { type: FilterGroupType.TOKEN_CODE, title: t("token") },
     { type: FilterGroupType.BLOCKCHAIN, title: t("blockchain") },
+    { type: FilterGroupType.FIAT_AMOUNT_RANGE, title: t("amount_range") },
     { type: FilterGroupType.PAYMENT_METHODS, title: t("payment_methods") },
   ];
 
