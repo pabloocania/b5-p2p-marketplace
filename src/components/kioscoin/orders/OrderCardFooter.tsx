@@ -26,6 +26,7 @@ import {
   ConfigStore,
   getBlockchainDisplayName,
 } from "@/lib/ConfigStore";
+import DisputeOrderButton from "@/components/kioscoin/dispute/DisputeOrderButton";
 
 interface OrderCardFooterProps {
   order: Order;
