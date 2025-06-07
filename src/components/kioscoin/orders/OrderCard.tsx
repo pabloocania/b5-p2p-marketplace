@@ -42,7 +42,7 @@ export function OrderCard({
   };
 
   // mostrar boton?
-  // 
+  //
   // const handleConfirmDispute = () => {
   // 🔒 Lógica para mostrar el botón solo si se cumplen condiciones (comentada temporalmente)
   // const canDisputeOrder = (order: Order, userId?: string): boolean => {
@@ -100,9 +100,7 @@ export function OrderCard({
         </div>
 
         {/* ✅ BOTÓN SIEMPRE VISIBLE */}
-        <DisputeOrderButton
-          order={order}
-        />
+        <DisputeOrderButton order={order} />
 
         {/* 👇 Para usar la lógica condicional, descomentá esto y comentá el de arriba */}
         {/* {canDisputeOrder(order, user?.id) && (

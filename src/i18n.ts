@@ -210,11 +210,6 @@ i18n.use(initReactI18next).init({
         kioskoin_step_3_benefit_3: "Use the app without hassle",
         kioskoin_step_3_note:
           "After this step, you can activate it from your profile.",
-
-        // purchase_instantly: "Purchase {{crypto}} {{instantly}}",
-        // sell_instantly: "Sell {{crypto}} {{instantly}}",
-        // buy_now: "Buy {{amount}} {{crypto}} {{instantly}}",
-        // sell_now: "Sell {{amount}} {{crypto}} {{instantly}}",
       },
     },
     es: {
@@ -394,8 +389,6 @@ i18n.use(initReactI18next).init({
         order_type: "Tipo",
         at_best_rate: "al mejor precio",
         instantly: "ya!",
-        // purchase_instantly: "Compra {{crypto}} {{instantly}}",
-        // sell_instantly: "Vende {{crypto}} {{instantly}}",
         buy_now: "Comprar ahora",
         sell_now: "Vender ahora",
         on: "en",

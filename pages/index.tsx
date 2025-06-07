@@ -105,6 +105,16 @@ export default function Home() {
 
         <div className="fixed bottom-0 w-full pb-4 pt-8">
           <div className="relative px-4">
+            <div className="absolute bottom-20 left-4">
+              <Button
+                size="icon"
+                className="rounded-full w-14 h-14 shadow-lg text-white bg-primary hover:bg-terciary/90"
+                onClick={() => setIsHelpOpen(true)}
+              >
+                <HelpCircle className="h-6 w-6" />
+                <span className="sr-only">Help & Tutorials</span>
+              </Button>
+            </div>
             <div className="absolute bottom-4 left-4">
               <Button
                 size="icon"
@@ -147,16 +157,6 @@ export default function Home() {
                   }}
                 />
               </CreateOrderContainer>
-            </div>
-            <div className="absolute bottom-4 right-20">
-              <Button
-                size="icon"
-                className="rounded-full w-14 h-14 shadow-lg text-white bg-primary hover:bg-terciary/90"
-                onClick={() => setIsHelpOpen(true)}
-              >
-                <HelpCircle className="h-6 w-6" />
-                <span className="sr-only">Help & Tutorials</span>
-              </Button>
             </div>
           </div>
         </div>

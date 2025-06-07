@@ -20,7 +20,6 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { p2pMarketAPIClient as client } from "../../../../lib/APIClients";
 import { useUserContext } from "../../users/UserContext";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useTranslation } from "react-i18next";
 import TokenSelector from "@/components/kioscoin/orders/create-orders/TokenSelector";
 import BlockchainSelector from "@/components/kioscoin/orders/create-orders/BlockchainSelector";
