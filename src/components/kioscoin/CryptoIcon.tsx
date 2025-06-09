@@ -52,6 +52,13 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
 
   return (
     <div className="inline-flex items-center justify-center">
+      {showAmount && formattedAmount && (
+        <span
+          className={`font-medium ${amountFontSize} font-bold text-terciary mr-1`}
+        >
+          {formattedAmount} {tokenCode.toUpperCase()}
+        </span>
+      )}
       <img
         src={imgError ? fallbackSrc : iconSrc}
         alt={tokenCode}
