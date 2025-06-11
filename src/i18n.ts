@@ -184,7 +184,7 @@ i18n.use(initReactI18next).init({
           "1. Create your account and verify your wallet.\n2. Choose your local currency and preferred stablecoin.\n3. Start buying or selling using the order list or post your own offer.",
         how_to_trade: "How to Trade",
         how_to_trade_description:
-          "1. Select an offer or create your own.\n2. Agree on payment details with the other user.\n3. Make the payment or wait to receive it.\n4. Confirm and release the crypto (or wait to receive it if you’re buying).",
+          "1. Select an offer or create your own.\n2. Agree on payment details with the other user.\n3. Make the payment or wait to receive it.\n4. Confirm and release the crypto (or wait to receive it if you're buying).",
         safety_tips: "Safety Tips",
         safety_tips_description:
           "• Always double-check payment details.\n• Never release crypto until payment is confirmed.\n• Use the in-app chat to communicate.\n• Report suspicious behavior.",
@@ -210,6 +210,9 @@ i18n.use(initReactI18next).init({
         kioskoin_step_3_benefit_3: "Use the app without hassle",
         kioskoin_step_3_note:
           "After this step, you can activate it from your profile.",
+        choose_token: "Choose token",
+        choose_network: "Choose a network",
+        custom_rate: "Exchange Rate",
       },
     },
     es: {
@@ -426,6 +429,9 @@ i18n.use(initReactI18next).init({
         kioskoin_step_3_benefit_3: "Usás la app sin complicaciones",
         kioskoin_step_3_note:
           "Cuando cierres este paso, vas a poder activarla desde tu perfil.",
+        choose_token: "Elige la moneda a utilizar",
+        choose_network: "Elije la red",
+        custom_rate: "Tasa de intercambio",
       },
     },
   },

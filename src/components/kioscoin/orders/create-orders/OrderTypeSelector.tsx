@@ -2,6 +2,7 @@
 import React from "react";
 import { OrderType } from "b5-api-client";
 import { useTranslation } from "react-i18next";
+import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
 
 interface OrderTypeSelectorProps {
   orderType: OrderType;
@@ -15,31 +16,45 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-1">
-      <label className="font-bold text-base mb-1">{t("i_want_to")}</label>
-      <div className="flex space-x-4">
-        <button
-          type="button"
-          onClick={() => onChange("BUY")}
-          className={`px-4 py-2 rounded font-bold border transition ${
-            orderType === "BUY"
-              ? "bg-green-500 text-white border-green-600"
-              : "bg-white text-green-600 border-green-500"
-          }`}
-        >
-          {t("buy")}
-        </button>
-        <button
-          type="button"
-          onClick={() => onChange("SELL")}
-          className={`px-4 py-2 rounded font-bold border transition ${
-            orderType === "SELL"
-              ? "bg-red-500 text-white border-red-600"
-              : "bg-white text-red-600 border-red-500"
-          }`}
-        >
-          {t("sell")}
-        </button>
+    <div className="w-full space-y-2">
+      {/* Título arriba */}
+      <label className="text-lg font-semibold text-gray-800 block">
+        {t("i_want_to")}
+      </label>
+
+      {/* Botonera horizontal */}
+      <div className="flex gap-2">
+        {[
+          {
+            id: "BUY",
+            label: t("buy"),
+            icon: <ArrowDownToLine className="w-5 h-5 mb-1" />,
+            isSelected: orderType === "BUY",
+          },
+          {
+            id: "SELL",
+            label: t("sell"),
+            icon: <ArrowUpFromLine className="w-5 h-5 mb-1" />,
+            isSelected: orderType === "SELL",
+          },
+        ].map((action) => (
+          <button
+            key={action.id}
+            type="button"
+            onClick={() => onChange(action.id as OrderType)}
+            className={`flex-1 flex flex-col items-center justify-center py-2 px-4 min-h-[40px] rounded-2xl transition shadow-sm
+
+              ${
+                action.isSelected
+                  ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+              }
+            `}
+          >
+            {action.icon}
+            <span className="text-sm font-semibold">{action.label}</span>
+          </button>
+        ))}
       </div>
     </div>
   );

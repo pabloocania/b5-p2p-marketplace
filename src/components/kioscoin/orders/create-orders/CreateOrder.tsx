@@ -6,6 +6,7 @@ import {
   Order,
   generateSecretAndHash,
   PaymentMethod,
+  OrderStatus,
 } from "b5-api-client";
 import {
   Card,
@@ -32,7 +33,7 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import UserMenuNew from "../../users/UserMenuNew";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ConfigStore } from "@/lib/ConfigStore";
-import { OrderStatus } from "b5-api-client";
+import SuggestedRateCard from "@/components/kioscoin/orders/create-orders/SuggestedRateCard";
 
 export default function CreateOrder({
   onClose,
@@ -147,12 +148,6 @@ export default function CreateOrder({
     };
 
     try {
-      console.log("🟢 Creating Order...");
-      console.log("🧾 Payload:", JSON.stringify(newOrder, null, 2));
-      console.log("📡 Headers:", {
-        "x-blockchain": blockchain,
-        Authorization: `Bearer ${loginId}`,
-      });
       const ordersResponse = await client.createOrder(newOrder, {
         "Content-Type": "application/json",
         "x-blockchain": blockchain,
@@ -209,12 +204,20 @@ export default function CreateOrder({
                     onChange={setOrderType}
                   />
 
-                  <TokenSelector
-                    onBlockchainChange={setBlockchain}
-                    onTokenChange={setTokenCode}
-                    preSelectedBlockchain={blockchain}
-                    preSelectedToken={tokenCode}
-                  />
+                  {/* Token selector con rate sugerido al lado */}
+                  <div className="flex justify-between items-start gap-2">
+                    <TokenSelector
+                      onBlockchainChange={setBlockchain}
+                      onTokenChange={setTokenCode}
+                      preSelectedBlockchain={blockchain}
+                      preSelectedToken={tokenCode}
+                    />
+                    <SuggestedRateCard
+                      tokenCode={tokenCode}
+                      fiatCode={fiatCode}
+                      suggestedRate={suggestedRate}
+                    />
+                  </div>
 
                   <BlockchainSelector
                     selectedToken={tokenCode}

@@ -4,7 +4,7 @@ import {
   OrderStatus,
   OrderType,
   PaymentMethod,
-  GetOrdersParams,
+  GetOrdersParams as OriginalGetOrdersParams,
 } from "b5-api-client";
 import { OrderCard } from "./OrderCard";
 import { ScrollableContainer } from "../ScrollabelContainer";
@@ -34,6 +34,23 @@ export enum Filter {
   PENDING = "PENDING",
   WAITING_PAYMENT = "WAITING_PAYMENT",
   CLOSED = "CLOSED",
+}
+
+interface GetOrdersParams extends OriginalGetOrdersParams {
+  orderType?: string[];
+  blockchain?: string[];
+  tokenCode?: string[];
+  paymentMethods?: string[];
+  fiatCode?: string[];
+  fiatAmountRange?: {
+    min?: number;
+    max?: number;
+  };
+  dateRange?: {
+    from?: string;
+    to?: string;
+  };
+  search?: string;
 }
 
 interface OrderFeedProps {
@@ -151,7 +168,8 @@ export default function OrdersFeed({
       }
 
       if (filterState.paymentMethods.length > 0) {
-        params.paymentMethods = filterState.paymentMethods;
+        console.log(filterState.paymentMethods[0]);
+        params.paymentMethods = filterState.paymentMethods.map(String);
       }
 
       if (filterState.fiatCode.length > 0) {
@@ -163,8 +181,12 @@ export default function OrdersFeed({
         filterState.fiatAmountRange.max !== undefined
       ) {
         params.fiatAmountRange = {
-          min: filterState.fiatAmountRange.min,
-          max: filterState.fiatAmountRange.max,
+          min: filterState.fiatAmountRange.min
+            ? Number(filterState.fiatAmountRange.min)
+            : undefined,
+          max: filterState.fiatAmountRange.max
+            ? Number(filterState.fiatAmountRange.max)
+            : undefined,
         };
       }
 

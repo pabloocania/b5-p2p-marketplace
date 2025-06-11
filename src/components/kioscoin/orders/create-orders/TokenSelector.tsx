@@ -4,6 +4,7 @@ import { ConfigStore } from "@/lib/ConfigStore";
 import { useTranslation } from "react-i18next";
 import { StablecoinConfig } from "@/components/web3/types";
 import { CryptoAmountIcon } from "@/components/kioscoin/CryptoIcon";
+import { GetOrdersParams as OriginalGetOrdersParams } from "b5-api-client";
 
 interface Blockchain {
   name: string;
@@ -15,6 +16,10 @@ interface TokenSelectorProps {
   onBlockchainChange: (blockchain: string) => void;
   preSelectedToken?: string;
   preSelectedBlockchain?: string;
+}
+
+interface GetOrdersParams extends OriginalGetOrdersParams {
+  orderType?: string[];
 }
 
 export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
@@ -85,8 +90,6 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
       onTokenChange(value);
     };
 
-  
-
     const availableBlockchains = stablecoinConfig
       ? stablecoinConfig.supportedStablecoins
           .filter((stablecoin) => stablecoin.name === selectedToken)
@@ -95,6 +98,12 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
 
     return (
       <div className="flex flex-col gap-3 w-full">
+        {/* Título del selector */}
+        <label className="text-base font-semibold text-gray-800">
+          {t("choose_token")} {/* Traducción, si estás usando i18n */}
+          {/* O directamente: "Elige la moneda a utilizar" */}
+        </label>
+
         {/* Stablecoin as buttons */}
         <div className="flex flex-wrap gap-2 justify-start">
           {tokens.map((token) => (
@@ -102,11 +111,11 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
               key={token}
               onClick={(e) => handleTokenChange(e, token)}
               className={`rounded-full border p-2 w-12 h-12 flex items-center justify-center transition
-                ${
-                  selectedToken === token
-                    ? "bg-primary/10 border-primary"
-                    : "border-gray-300"
-                }`}
+                  ${
+                    selectedToken === token
+                      ? "bg-primary/10 border-primary"
+                      : "border-gray-300"
+                  }`}
               aria-label={token}
             >
               <CryptoAmountIcon tokenCode={token} showAmount={false} />
