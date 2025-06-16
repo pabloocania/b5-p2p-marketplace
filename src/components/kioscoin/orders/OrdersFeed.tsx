@@ -5,6 +5,7 @@ import {
   OrderType,
   PaymentMethod,
   GetOrdersParams as OriginalGetOrdersParams,
+  GetOrdersParams,
 } from "b5-api-client";
 import { OrderCard } from "./OrderCard";
 import { ScrollableContainer } from "../ScrollabelContainer";
@@ -36,22 +37,7 @@ export enum Filter {
   CLOSED = "CLOSED",
 }
 
-interface GetOrdersParams extends OriginalGetOrdersParams {
-  orderType?: string[];
-  blockchain?: string[];
-  tokenCode?: string[];
-  paymentMethods?: string[];
-  fiatCode?: string[];
-  fiatAmountRange?: {
-    min?: number;
-    max?: number;
-  };
-  dateRange?: {
-    from?: string;
-    to?: string;
-  };
-  search?: string;
-}
+const params: GetOrdersParams = {};
 
 interface OrderFeedProps {
   orderId?: string | undefined;
@@ -154,22 +140,20 @@ export default function OrdersFeed({
         params.orderType = filterState.orderType;
       }
 
-      if (filterState.blockchain.length > 0) {
-        console.log("filterState.blockchain", filterState.blockchain);
-        const configStore = ConfigStore.getInstance();
-        const chainIds = configStore.getChainIdsFromBlockchains(
-          filterState.blockchain
-        );
-        params.blockchain = chainIds.map(String);
-      }
+      
 
       if (filterState.tokenCode.length > 0) {
         params.tokenCode = filterState.tokenCode;
       }
 
       if (filterState.paymentMethods.length > 0) {
-        console.log(filterState.paymentMethods[0]);
-        params.paymentMethods = filterState.paymentMethods.map(String);
+        params.paymentMethods = filterState.paymentMethods.map(method => ({
+          type: method.type,
+          alias: method.alias,
+          cbu: method.cbu,
+          fullName: method.fullName,
+          entity: method.entity,
+        }));
       }
 
       if (filterState.fiatCode.length > 0) {
@@ -182,10 +166,10 @@ export default function OrdersFeed({
       ) {
         params.fiatAmountRange = {
           min: filterState.fiatAmountRange.min
-            ? Number(filterState.fiatAmountRange.min)
+            ? filterState.fiatAmountRange.min.toString()
             : undefined,
           max: filterState.fiatAmountRange.max
-            ? Number(filterState.fiatAmountRange.max)
+            ? filterState.fiatAmountRange.max.toString()
             : undefined,
         };
       }
