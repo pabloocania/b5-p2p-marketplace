@@ -18,7 +18,7 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
   return (
     <div className="w-full space-y-2">
       {/* Título arriba */}
-      <label className="text-lg font-semibold text-gray-800 block">
+      <label className="text-base font-bold text-primary block">
         {t("i_want_to")}
       </label>
 

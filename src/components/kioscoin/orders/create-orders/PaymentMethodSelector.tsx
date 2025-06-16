@@ -30,9 +30,6 @@ export default function PaymentMethodSelector({
 
   return (
     <>
-      <Label className="font-bold text-base border-l-4 border-primary pl-2 mb-1">
-        Método de pago
-      </Label>
       <CompactPaymentMethodSelector
         selectedMethods={selectedMethods}
         onToggle={handleToggle}

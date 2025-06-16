@@ -50,7 +50,6 @@ const CompactPaymentMethodSelector: React.FC<
   onUpdateMethod,
   readOnly = false,
 }) => {
-  const [isOpen, setIsOpen] = useState(true);
   const [editingMethod, setEditingMethod] =
     useState<ExtendedPaymentMethod | null>(null);
 
@@ -76,12 +75,6 @@ const CompactPaymentMethodSelector: React.FC<
       default:
         return "bg-muted";
     }
-  };
-
-  const toggleOpen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    setIsOpen(!isOpen);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,28 +155,12 @@ const CompactPaymentMethodSelector: React.FC<
   return (
     <Card className="w-full">
       <CardContent className="p-3">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center mb-2">
           <h3 className="text-base font-semibold text-primary">
             {t("payment_method")}
           </h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-8 h-8 p-0 hover:bg-transparent text-primary"
-            onClick={toggleOpen}
-          >
-            {isOpen ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-          </Button>
         </div>
-        <div
-          className={`overflow-hidden transition-all duration-300 ease-in-out ${
-            isOpen ? "max-h-[1000px]" : "max-h-0"
-          }`}
-        >
+        <div>
           {methods.length > 0 ? (
             <div className="space-y-1.5">
               {methods.map((method) => (

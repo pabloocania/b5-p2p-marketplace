@@ -39,7 +39,7 @@ export default function FiatRateSelector({
       <div className="flex flex-col gap-2 flex-1">
         {/* Selector de moneda fiat */}
         <div className="space-y-1">
-          <Label className="font-bold text-base mb-1">
+          <Label className="text-base font-bold text-primary mb-1">
             {t("i_want_to_receive_in")}
           </Label>
           <div className="flex gap-2">

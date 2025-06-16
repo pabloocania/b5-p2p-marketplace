@@ -47,8 +47,8 @@ export default function BlockchainSelector({
   if (!selectedToken) return null;
 
   return (
-    <div className="w-full rounded-xl border border-muted p-4 bg-muted/10 space-y-2">
-      <Label className="font-bold text-base">
+    <div className="w-full space-y-2">
+      <Label className="text-base font-bold text-primary">
         {t("choose_network") || "Elegí la red"}
       </Label>
 

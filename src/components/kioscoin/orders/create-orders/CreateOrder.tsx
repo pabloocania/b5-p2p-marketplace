@@ -197,15 +197,26 @@ export default function CreateOrder({
             </CardHeader>
             <Separator className="mb-2" />
             <form onSubmit={handleSubmit}>
-              <CardContent className="text-primary px-4 py-2 space-y-2">
-                <div className="space-y-2">
+              <CardContent className="text-primary px-0 py-2 space-y-2">
+                <div className="space-y-2 px-4">
                   <OrderTypeSelector
                     orderType={orderType}
                     onChange={setOrderType}
                   />
 
+                  {/* Input de cantidad debajo de los botones de tipo de orden */}
+                  <Input
+                    type="number"
+                    placeholder={t("enter_amount")}
+                    value={tokenAmount === 0 ? "" : tokenAmount}
+                    onChange={(e) =>
+                      setTokenAmount(parseFloat(e.target.value) || 0)
+                    }
+                    className="focus:ring-primary focus:border-primary"
+                  />
+
                   {/* Token selector con rate sugerido al lado */}
-                  <div className="flex justify-between items-start gap-2">
+                  <div className="flex justify-between items-end gap-2">
                     <TokenSelector
                       onBlockchainChange={setBlockchain}
                       onTokenChange={setTokenCode}
@@ -219,6 +230,7 @@ export default function CreateOrder({
                     />
                   </div>
 
+                  {/* BlockchainSelector alineado sin Card extra */}
                   <BlockchainSelector
                     selectedToken={tokenCode}
                     selectedBlockchain={blockchain}
@@ -228,16 +240,6 @@ export default function CreateOrder({
                         ?.flatMap((v) => v.addresses) || []
                     }
                     onBlockchainChange={setBlockchain}
-                  />
-
-                  <Input
-                    type="number"
-                    placeholder={t("enter_amount")}
-                    value={tokenAmount === 0 ? "" : tokenAmount}
-                    onChange={(e) =>
-                      setTokenAmount(parseFloat(e.target.value) || 0)
-                    }
-                    className="focus:ring-primary focus:border-primary"
                   />
 
                   <FiatRateSelector
