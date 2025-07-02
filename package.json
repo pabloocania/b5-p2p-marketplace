@@ -24,7 +24,7 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "@rainbow-me/rainbowkit": "^2.1.6",
     "@tanstack/react-query": "^5.56.2",
-    "b5-api-client": "^0.0.19",
+    "b5-api-client": "^0.0.21",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",

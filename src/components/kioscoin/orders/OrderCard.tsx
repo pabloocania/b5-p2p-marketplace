@@ -94,23 +94,15 @@ export function OrderCard({
         paymentMethods={selectedPaymentMethods}
       />
       <Separator className="mb-1" />
-      <div className="pl-4 pr-4 flex items-center justify-between text-sm">
-        <div className="flex items-center gap-2 text-blue-500">
-          <OrderIdLink orderId={order.id} />
+      {order.status !== "PENDING" && (
+        <div className="pl-4 pb-1 pt-1 flex items-center gap-4 text-sm h-8">
+          <OrderIdLink orderId={order.id}/>
+          <span className="mx-2 pb-2.5 text-black-400 select-none">•</span>
+          <span className="-pl-6 -mt-2 flex items-center text-sm">
+            <DisputeOrderButton order={order} />
+          </span>
         </div>
-
-        {/* ✅ BOTÓN SIEMPRE VISIBLE */}
-        <DisputeOrderButton order={order} />
-
-        {/* 👇 Para usar la lógica condicional, descomentá esto y comentá el de arriba */}
-        {/* {canDisputeOrder(order, user?.id) && (
-          <DisputeOrderButton
-            onConfirmDispute={() =>
-              console.log(`🚨 Disputa iniciada para la orden ${order.id}`)
-            }
-          />
-        )} */}
-      </div>
+      )}
     </Card>
   );
 }
