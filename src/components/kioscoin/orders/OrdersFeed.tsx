@@ -19,7 +19,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import UserMenuNew from "../users/UserMenuNew";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useTranslation } from "react-i18next";
 import {
   FilterBar,
@@ -140,14 +139,12 @@ export default function OrdersFeed({
         params.orderType = filterState.orderType;
       }
 
-      
-
       if (filterState.tokenCode.length > 0) {
         params.tokenCode = filterState.tokenCode;
       }
 
       if (filterState.paymentMethods.length > 0) {
-        params.paymentMethods = filterState.paymentMethods.map(method => ({
+        params.paymentMethods = filterState.paymentMethods.map((method) => ({
           type: method.type,
           alias: method.alias,
           cbu: method.cbu,
@@ -300,9 +297,6 @@ export default function OrdersFeed({
                 className="h-[90vh]"
                 closeText={t("close")}
               >
-                <VisuallyHidden>
-                  <SheetTitle>User Menu Dialog</SheetTitle>
-                </VisuallyHidden>
                 <UserMenuNew user={user} onLogin={login} onLogout={logout} />
               </SheetContent>
             </Sheet>

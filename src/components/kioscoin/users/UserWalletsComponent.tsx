@@ -94,13 +94,15 @@ class TransferState {
 }
 import { ConfigStore } from "../../../lib/ConfigStore";
 import { parseUnits } from "viem";
+import { useWeb3Auth } from "@web3auth/modal/react";
 
 export default function UserWalletsComponent() {
   const { t } = useTranslation();
   const { setTransaction } = useTransaction();
-  const { balances, swAddress, getTokensBalances, primeSdk } =
+  const { balances, swAddress, getTokensBalances, primeSdk, eoaAddress } =
     useEtherspotSdk();
-  const { isConnected, address } = useAccount();
+  // const { isConnected, address } = useAccount();
+  const { isConnected } = useWeb3Auth();
   const [state, setState] = useState<TransferState>(
     TransferState.create({
       previousConnectionState: false,
@@ -318,10 +320,10 @@ export default function UserWalletsComponent() {
             value="myWallet"
             className="px-2 bg-secondary bg-opacity-10 rounded-lg py-2 space-y-2"
           >
-            {address && (
+            {eoaAddress && (
               <div className="space-y-1">
                 <p className="font-bold text-primary text-sm">{t("address")}</p>
-                <Address address={address} />
+                <Address address={eoaAddress} />
               </div>
             )}
             <div className="flex items-center">

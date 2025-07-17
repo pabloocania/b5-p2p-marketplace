@@ -13,7 +13,6 @@ export const getTokenCodes = async (): Promise<string[]> => {
   const configStore = ConfigStore.getInstance();
   await configStore.waitForConfig();
   const stablecoins = configStore.getBackendStablecoins()?.supportedStablecoins || [];
-  console.log("stablecoins", stablecoins)
   return Array.from(new Set(stablecoins.map(stablecoin => stablecoin.name)));
 };
 

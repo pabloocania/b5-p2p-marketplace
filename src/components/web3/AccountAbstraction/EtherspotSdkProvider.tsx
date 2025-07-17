@@ -1,9 +1,20 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
-import { PrimeSdk, ArkaPaymaster } from "@etherspot/prime-sdk";
+import {
+  PrimeSdk,
+  ArkaPaymaster,
+  Web3WalletProvider,
+} from "@etherspot/prime-sdk";
 import { ERC20abi } from "@/components/web3/abis/StablecoinConfig";
-import { getAddress, formatUnits, parseGwei, parseUnits } from "viem";
+import {
+  getAddress,
+  formatUnits,
+  parseGwei,
+  parseUnits,
+  custom,
+  createWalletClient,
+} from "viem";
 import { TokenBalance } from "@/components/web3/types";
 import { getBalance } from "@wagmi/core";
 import { config } from "@/components/web3/wagmi";
@@ -14,6 +25,11 @@ import {
 } from "./EtherspotSdksManager";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { TransactionGasInfoForUserOp } from "@etherspot/prime-sdk/dist/sdk/base/TransactionDetailsForUserOp";
+import {
+  useWeb3Auth,
+  useWeb3AuthConnect,
+  useWeb3AuthDisconnect,
+} from "@web3auth/modal/react";
 
 // Function to map network name to formatted blockchain name
 function mapNetworkNameToFormattedName(
@@ -32,6 +48,7 @@ export const queryString = `?apiKey=${arka_api_key}&chainId=`;
 interface EtherspotSdkContextType {
   primeSdk: PrimeSdk | null;
   swAddress: string;
+  eoaAddress: string;
   balances: TokenBalance[];
   getTokensBalances: (sdkInstance: PrimeSdk) => {};
   executeTransaction: (
@@ -44,15 +61,28 @@ const EtherspotSdkContext = createContext<EtherspotSdkContextType | undefined>(
   undefined
 );
 
-export const EtherspotSdkProvider: React.FC = ({ children }) => {
+export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { address, isConnected } = useAccount();
+  // const { isConnected: isConnectedWeb3Auth } = useWeb3AuthConnect();
   const [primeSdk, setPrimeSdk] = useState<PrimeSdk | null>(null);
   const [arkaInstance, setArkaInstance] = useState<ArkaPaymaster | null>(null);
   const [smartWalletAddress, setSwAddress] = useState<string>("");
+  const [eoaAddress, setEoaAddress] = useState<string>("");
   const [balances, setBalances] = useState<TokenBalance[]>([]);
   const { data: walletClient } = useWalletClient();
   const account = useAccount();
   const chainId = useChainId();
+  const {
+    web3Auth,
+    isConnected: isConnectedWeb3Auth,
+    isInitializing,
+    provider,
+    status,
+    initError,
+  } = useWeb3Auth();
+  const { disconnect } = useWeb3AuthDisconnect();
 
   const createWalletProvider = () => ({
     ...walletClient,
@@ -66,6 +96,34 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       return walletClient!!.signTypedData(params);
     },
   });
+
+  // const createWeb3AuthWalletProvider = async (web3authProvider: any) => {
+  //   if (!web3authProvider) throw new Error("Web3Auth provider not initialized");
+
+  //   const walletClient = createWalletClient({
+  //     transport: custom(web3authProvider),
+  //   });
+  //   const addresses = await walletClient.getAddresses();
+  //   const address = addresses[0];
+
+  //   return {
+  //     address,
+  //     signMessage: async (message: string) =>
+  //       walletClient.signMessage({ account: address, message }),
+  //     signTypedData: async (params: any) =>
+  //       walletClient.signTypedData({
+  //         account: address,
+  //         ...params,
+  //       }),
+  //   };
+  // };
+
+  const createWeb3AuthWalletProvider = async (web3authProvider: any) => {
+    if (!web3authProvider) throw new Error("Web3Auth provider not initialized");
+    // Use the Etherspot wrapper
+    // return new Web3WalletProvider(web3authProvider);
+    return await Web3WalletProvider.connect(web3authProvider);
+  };
 
   let arkaPaymasterInstance: ArkaPaymaster | null = null;
 
@@ -84,53 +142,57 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     return arkaPaymasterInstance;
   };
 
-  useEffect(() => {
-    const handleChainIdChange = async () => {
-      if (primeSdk) {
-        primeSdk.destroy();
-        setPrimeSdk(null);
-      }
-      if (arkaInstance) {
-        setArkaInstance(null);
-      }
-      if (walletClient && isConnected) {
-        const walletProvider = createWalletProvider();
-        if (!walletProvider.address) {
-          throw new Error("Wallet provider address is undefined");
-        }
-        const sdkOptions = await getSdkOptionsForChainId(chainId);
-        if (!sdkOptions) {
-          console.warn(`No SDK options available for chain ${chainId}`);
-          return;
-        }
-        const primeSdkInstance = new PrimeSdk(walletProvider, sdkOptions);
-        if (primeSdkInstance !== null) {
-          const smartWalletAddress =
-            await primeSdkInstance?.getCounterFactualAddress();
-          const arkaInstance = getArkaPaymasterInstance(
-            chainId,
-            arka_api_key,
-            arka_url
-          );
-          setSwAddress(smartWalletAddress);
-          setPrimeSdk(primeSdkInstance);
-          setArkaInstance(arkaInstance);
-          getTokensBalances(primeSdkInstance);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const handleChainIdChange = async () => {
+  //     if (primeSdk) {
+  //       primeSdk.destroy();
+  //       setPrimeSdk(null);
+  //     }
+  //     if (arkaInstance) {
+  //       setArkaInstance(null);
+  //     }
+  //     if (walletClient && isConnected) {
+  //       const walletProvider = createWalletProvider();
+  //       if (!walletProvider.address) {
+  //         throw new Error("Wallet provider address is undefined");
+  //       }
+  //       const sdkOptions = await getSdkOptionsForChainId(chainId);
+  //       if (!sdkOptions) {
+  //         console.warn(`No SDK options available for chain ${chainId}`);
+  //         return;
+  //       }
+  //       const primeSdkInstance = new PrimeSdk(walletProvider, sdkOptions);
+  //       if (primeSdkInstance !== null) {
+  //         const smartWalletAddress =
+  //           await primeSdkInstance?.getCounterFactualAddress();
+  //         const arkaInstance = getArkaPaymasterInstance(
+  //           chainId,
+  //           arka_api_key,
+  //           arka_url
+  //         );
+  //         setSwAddress(smartWalletAddress);
+  //         setPrimeSdk(primeSdkInstance);
+  //         setArkaInstance(arkaInstance);
+  //         getTokensBalances(primeSdkInstance);
+  //       }
+  //     }
+  //   };
 
-    handleChainIdChange();
-  }, [chainId]);
+  //   handleChainIdChange();
+  // }, [chainId]);
 
   useEffect(() => {
     const connectToSdk = async () => {
-      if (!walletClient && !isConnected && primeSdk) {
+      if (!isConnectedWeb3Auth && primeSdk) {
         primeSdk.destroy();
         setPrimeSdk(null);
       }
-      if (walletClient && isConnected && !primeSdk) {
-        const walletProvider = createWalletProvider();
+      if (isConnectedWeb3Auth && !primeSdk) {
+        console.log("isConnectedWeb3Auth", isConnectedWeb3Auth);
+        console.log("web3Auth", web3Auth);
+        console.log("provider", provider);
+        console.log("status", status);
+        const walletProvider = await createWeb3AuthWalletProvider(provider);
         if (!walletProvider.address) {
           throw new Error("Wallet provider address is undefined");
         }
@@ -148,6 +210,9 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
             arka_api_key,
             arka_url
           );
+          console.log("smartWalletAddress", smartWalletAddress);
+          console.log("eoaAddress", walletProvider.address);
+          setEoaAddress(walletProvider.address);
           setSwAddress(smartWalletAddress);
           setPrimeSdk(primeSdkInstance);
           setArkaInstance(arkaInstance);
@@ -160,7 +225,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
     };
 
     connectToSdk();
-  }, [walletClient, isConnected]);
+  }, [isConnectedWeb3Auth]);
 
   // Function to fetch balances for stablecoins on a given blockchain
   async function fetchStablecoinBalances(
@@ -177,23 +242,17 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       // Use Promise.all to fetch balances concurrently for better performance
       await Promise.all(
         stablecoinsByBlockchain.map(async (stablecoin) => {
-          console.log("stablecoin", stablecoin);
           const relevantAddresses = stablecoin.addresses.filter(
             (address) => address.blockchain === currentBlockchain
           );
-          console.log("relevantAddresses", relevantAddresses);
           for (const { address: tokenAddress } of relevantAddresses) {
             try {
-              console.log("currentBlockchain", currentBlockchain);
-              console.log("chainId", chainId);
-
+              console.log("smartWalletAddress", smartWalletAddress);
+              console.log("eoaAddress", eoaAddress);
               const [swTokenBalance, eoaTokenBalance] = await Promise.all([
                 getStablecoinBalance(tokenAddress, smartWalletAddress, chainId),
                 getStablecoinBalance(tokenAddress, eoaAddress, chainId),
               ]);
-              console.log("tokenAddress", tokenAddress);
-              console.log("swTokenBalance", swTokenBalance);
-              console.log("eoaTokenBalance", eoaTokenBalance);
 
               // Map the balances to the TokenBalance type
               tokenBalances.push({
@@ -221,35 +280,39 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
   }
 
   const getTokensBalances = async (primeSdk?: PrimeSdk) => {
-    const smartWalletAddress = await primeSdk?.getCounterFactualAddress();
+    if (isConnectedWeb3Auth && primeSdk && eoaAddress) {
+      const smartWalletAddress = await primeSdk?.getCounterFactualAddress();
 
-    const eoaNativeBalance = await getBalance(config, {
-      address: account.address ?? "0x0000000000000000000000000000000000000000",
-    });
+      const eoaNativeBalance = await getBalance(config, {
+        address:
+          getAddress(eoaAddress) ??
+          "0x0000000000000000000000000000000000000000",
+      });
 
-    const swNativeBalance = await primeSdk?.getNativeBalance();
+      const swNativeBalance = await primeSdk?.getNativeBalance();
 
-    const currentBlockchain = mapNetworkNameToFormattedName(
-      primeSdk?.state.network.name
-    )!!;
+      const currentBlockchain = mapNetworkNameToFormattedName(
+        primeSdk?.state.network.name
+      )!!;
 
-    const nativeBalance: TokenBalance = {
-      name: eoaNativeBalance.symbol,
-      smartWalletBalance: swNativeBalance ?? "0.0",
-      eoaBalance: eoaNativeBalance?.value.toString() ?? "0.0 ",
-      address: "0x0000000000000000000000000000000000000000",
-      decimals: 18,
-    };
+      const nativeBalance: TokenBalance = {
+        name: eoaNativeBalance.symbol,
+        smartWalletBalance: swNativeBalance ?? "0.0",
+        eoaBalance: eoaNativeBalance?.value.toString() ?? "0.0 ",
+        address: "0x0000000000000000000000000000000000000000",
+        decimals: 18,
+      };
 
-    const balances = await fetchStablecoinBalances(
-      smartWalletAddress ?? (await primeSdk?.getCounterFactualAddress()!!),
-      account.address!!,
-      currentBlockchain
-    );
+      const balances = await fetchStablecoinBalances(
+        smartWalletAddress ?? (await primeSdk?.getCounterFactualAddress()!!),
+        eoaAddress,
+        currentBlockchain
+      );
 
-    balances.push(nativeBalance);
+      balances.push(nativeBalance);
 
-    setBalances(balances);
+      setBalances(balances);
+    }
   };
 
   const getStablecoinBalance = async (
@@ -376,6 +439,7 @@ export const EtherspotSdkProvider: React.FC = ({ children }) => {
       value={{
         primeSdk,
         swAddress: smartWalletAddress,
+        eoaAddress: eoaAddress,
         balances,
         getTokensBalances,
         executeTransaction,

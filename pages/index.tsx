@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import { TopBar } from "@/components/kioscoin/TopBar";
 import OrderCreationFlow from "@/components/kioscoin/orders/OrderCreationFlow";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/create-orders/CreateOrderContainer";
-import { UserMenuSheet } from "@/components/kioscoin/users/UserMenuSheet";
 import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
 import { HelpDialog } from "@/components/kioscoin/HelpDialog";
 import SmartWalletOnboarding from "@/components/kioscoin/users/SmartWalletOnboarding";

@@ -13,18 +13,20 @@ import { OPSReceipt } from "@/components/web3/types";
 import { getKioscoinEscrowAddressByBlockchain, KioscoinEscrowContractConfig } from "@/components/web3/abis/KioscoinEscrowConfig";
 import { PublicClientManager } from "@/components/web3/PublicClientManager";
 import { ConfigStore } from "@/lib/ConfigStore";
+import { useWeb3Auth } from "@web3auth/modal/react";
 
 export const useEtherspotFlow = () => {
-  const { address } = useAccount();
+  // const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
-  const { primeSdk, executeTransaction } = useEtherspotSdk();
+  const { isConnected: isConnectedWeb3Auth } = useWeb3Auth();
+  const { primeSdk, executeTransaction, eoaAddress } = useEtherspotSdk();
 
 
   const transferFromEOAToSW = async (
     tokenAddress: string,
     amount: string
   ): Promise<string> => {
-    if (walletClient && address && primeSdk) {
+    if (primeSdk) {
       try {
         const etherspotAddress = await primeSdk.getCounterFactualAddress();
 
@@ -35,11 +37,11 @@ export const useEtherspotFlow = () => {
         });
 
 
-        const transactionHash = await walletClient.sendTransaction({
+        const transactionHash = await walletClient?.sendTransaction({
           to: getAddress(tokenAddress),
           data: data,
         });
-        return transactionHash
+        return transactionHash ?? ""
       } catch (error) {
         console.error("Error during transaction:", error);
         return Promise.reject(error);
@@ -55,11 +57,11 @@ export const useEtherspotFlow = () => {
     chainId: number
   ): Promise<string | undefined> => {
     try {
-      if (address && primeSdk) {
+      if (primeSdk) {
         const data = encodeFunctionData({
           abi: ERC20abi,
           functionName: "transfer",
-          args: [address, amount],
+          args: [eoaAddress, amount],
         });
         console.log("Transfer data:", {
           tokenAddress,
@@ -107,7 +109,7 @@ export const useEtherspotFlow = () => {
   }
 
   const batchApproveAndEscrow = async (order: Order): Promise<string | undefined> => {
-    if (primeSdk && address) {
+    if (primeSdk && isConnectedWeb3Auth) {
       const orderBlockchain = order.blockchain!!
       const contractAddress = ConfigStore.getInstance().getKioscoinEscrowAddressByBlockchain(orderBlockchain)
       const tokenDecimals = ConfigStore.getInstance().getTokenDecimalsByTokenCode(order.tokenCode)

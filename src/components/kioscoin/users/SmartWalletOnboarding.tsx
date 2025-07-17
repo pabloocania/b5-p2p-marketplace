@@ -57,8 +57,8 @@ export default function KioscoinOnboarding({
     title: string;
     description?: string;
     subtitle?: string;
-    icon: JSX.Element;
-    video?: string | JSX.Element;
+    icon: React.ReactNode;
+    video?: string | React.ReactNode;
   };
 
   const current = steps[step] as Step;

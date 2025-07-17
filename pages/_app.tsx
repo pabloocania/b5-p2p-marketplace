@@ -14,6 +14,9 @@ import "../src/i18n"; // Adjust the path as necessary
 import { useEffect, useState } from "react";
 import type { Config } from "wagmi";
 import { ConfigStore } from "@/lib/ConfigStore";
+import web3AuthContextConfig from "@/services/web3auth";
+import { Web3AuthProvider } from "@web3auth/modal/react";
+import { useTranslation } from "react-i18next";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +25,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const [wagmiConfig, setWagmiConfig] = useState<Config>(
     createWagmiConfig([arbitrumSepolia])
   );
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     const loadConfigs = async () => {
@@ -37,9 +41,13 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         setIsConfigLoaded(true);
       }
     };
-
+    // console.log(i18n.language, t("login_to_view"));
     loadConfigs();
   }, []);
+
+  useEffect(() => {
+    console.log(i18n.language, t("login_to_view"));
+  }, [i18n.language, t]);
 
   if (!isConfigLoaded) {
     return <div>Loading...</div>; // Or your loading component
@@ -81,23 +89,25 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="rgba(225, 234, 240)" />
         {/* <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/> */}
       </Head>
-      <UserProvider>
-        <WagmiProvider config={wagmiConfig}>
-          <QueryClientProvider client={queryClient}>
-            <RainbowKitProvider
-              modalSize="compact"
-              coolMode
-              initialChain={arbitrumSepolia}
-            >
-              <EtherspotSdkProvider>
-                <TransactionProvider>
-                  <Component {...pageProps} />
-                </TransactionProvider>
-              </EtherspotSdkProvider>
-            </RainbowKitProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
-      </UserProvider>
+      <Web3AuthProvider config={web3AuthContextConfig}>
+        <UserProvider>
+          <WagmiProvider config={wagmiConfig}>
+            <QueryClientProvider client={queryClient}>
+              <RainbowKitProvider
+                modalSize="compact"
+                coolMode
+                initialChain={arbitrumSepolia}
+              >
+                <EtherspotSdkProvider>
+                  <TransactionProvider>
+                    <Component {...pageProps} />
+                  </TransactionProvider>
+                </EtherspotSdkProvider>
+              </RainbowKitProvider>
+            </QueryClientProvider>
+          </WagmiProvider>
+        </UserProvider>
+      </Web3AuthProvider>
     </>
   );
 }

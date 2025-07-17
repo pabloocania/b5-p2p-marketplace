@@ -31,7 +31,6 @@ import { ExchangeRatesService } from "@/components/web3/ExchangeRatesService";
 import { ScrollableContainer } from "../../ScrollabelContainer";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import UserMenuNew from "../../users/UserMenuNew";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ConfigStore } from "@/lib/ConfigStore";
 import SuggestedRateCard from "@/components/kioscoin/orders/create-orders/SuggestedRateCard";
 
@@ -182,9 +181,6 @@ export default function CreateOrder({
               className="h-[90vh]"
               closeText={t("close")}
             >
-              <VisuallyHidden>
-                <SheetTitle>User Menu Dialog</SheetTitle>
-              </VisuallyHidden>
               <UserMenuNew user={user} onLogin={login} onLogout={logout} />
             </SheetContent>
           </Sheet>
