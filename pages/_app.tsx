@@ -16,7 +16,7 @@ import type { Config } from "wagmi";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { Web3AuthProvider } from "@web3auth/modal/react";
 import { useTranslation } from "react-i18next";
-import web3AuthContextConfig from "../src/services/web3auth";
+import web3AuthContextConfig from "../src/components/web3/web3auth";
 
 const queryClient = new QueryClient();
 
