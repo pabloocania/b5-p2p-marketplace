@@ -14,9 +14,9 @@ import "../src/i18n"; // Adjust the path as necessary
 import { useEffect, useState } from "react";
 import type { Config } from "wagmi";
 import { ConfigStore } from "@/lib/ConfigStore";
-import web3AuthContextConfig from "@/services/web3auth";
 import { Web3AuthProvider } from "@web3auth/modal/react";
 import { useTranslation } from "react-i18next";
+import web3AuthContextConfig from "../src/services/web3auth";
 
 const queryClient = new QueryClient();
 
