@@ -95,12 +95,12 @@ class TransferState {
 import { ConfigStore } from "../../../lib/ConfigStore";
 import { parseUnits } from "viem";
 import { useWeb3Auth } from "@web3auth/modal/react";
+import { EtherspotSdksManager } from "@/components/web3/AccountAbstraction/EtherspotSdksManager";
 
 export default function UserWalletsComponent() {
   const { t } = useTranslation();
   const { setTransaction } = useTransaction();
-  const { balances, swAddress, getTokensBalances, primeSdk, eoaAddress } =
-    useEtherspotSdk();
+  const { balances, swAddress, primeSdk, eoaAddress } = useEtherspotSdk();
   // const { isConnected, address } = useAccount();
   const { isConnected } = useWeb3Auth();
   const [state, setState] = useState<TransferState>(
@@ -208,7 +208,10 @@ export default function UserWalletsComponent() {
 
   const handleRefresh = async () => {
     if (primeSdk) {
-      await getTokensBalances(primeSdk);
+      await EtherspotSdksManager.getInstance().getTokensBalances(
+        primeSdk,
+        eoaAddress
+      );
     } else {
       console.error("PrimeSdk is not initialized.");
     }

@@ -27,6 +27,7 @@ import {
   getBlockchainDisplayName,
 } from "@/lib/ConfigStore";
 import DisputeOrderButton from "@/components/kioscoin/dispute/DisputeOrderButton";
+import { useWeb3AuthConnect } from "@web3auth/modal/react";
 
 interface OrderCardFooterProps {
   order: Order;
@@ -50,6 +51,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
 }) => {
   const { user, isLoggedIn, loginId } = useUserContext();
   const { isConnected } = useAccount();
+  const { isConnected: isConnectedWeb3Auth } = useWeb3AuthConnect();
   const chainId = useChainId();
   const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
@@ -162,7 +164,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       const wrongNetworkAlert = renderWrongNetworkAlert(order.blockchain);
       if (wrongNetworkAlert) return wrongNetworkAlert;
 
-      return isConnected ? (
+      return isConnected || isConnectedWeb3Auth ? (
         <LockFundsButton order={order} canLock={isSeller} />
       ) : (
         <ConnectToContinueButton />
@@ -173,7 +175,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       const wrongNetworkAlert = renderWrongNetworkAlert(order.blockchain);
       if (wrongNetworkAlert) return wrongNetworkAlert;
 
-      return isConnected ? (
+      return isConnected || isConnectedWeb3Auth ? (
         <ReleaseFundsButton
           order={order}
           onRefresh={onRefresh}

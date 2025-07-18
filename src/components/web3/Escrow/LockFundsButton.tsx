@@ -80,7 +80,6 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
             while (opsReceipt == null && Date.now() < timeout) {
               await sleep(5);
               opsReceipt = await getUserOperationReceipt(uoOpsHash);
-              console.log("opsReceipt", opsReceipt);
             }
           }
           if (opsReceipt != undefined && opsReceipt.success) {

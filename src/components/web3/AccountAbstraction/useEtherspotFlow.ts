@@ -3,23 +3,30 @@ import {
   getAddress,
   encodeFunctionData,
   parseUnits,
-  keccak256
+  keccak256,
+  parseGwei
 } from "viem";
 import { toUtf8Bytes } from "ethers/lib/utils";
 import { ERC20abi } from "@/components/web3/abis/StablecoinConfig";
 import { Order } from "b5-api-client";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
-import { OPSReceipt } from "@/components/web3/types";
-import { getKioscoinEscrowAddressByBlockchain, KioscoinEscrowContractConfig } from "@/components/web3/abis/KioscoinEscrowConfig";
+import { OPSReceipt, TokenBalance } from "@/components/web3/types";
+import { KioscoinEscrowContractConfig } from "@/components/web3/abis/KioscoinEscrowConfig";
 import { PublicClientManager } from "@/components/web3/PublicClientManager";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { useWeb3Auth } from "@web3auth/modal/react";
+import { TransactionGasInfoForUserOp } from "@etherspot/prime-sdk/dist/sdk/base/TransactionDetailsForUserOp";
+import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
+import { arka_api_key, whitelistPaymaster } from "./ArkaPaymasterService";
+import { EtherspotSdksManager } from "./EtherspotSdksManager";
+import { getBalance } from "@wagmi/core";
+import { config } from "@/components/web3/wagmi";
 
 export const useEtherspotFlow = () => {
   // const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { isConnected: isConnectedWeb3Auth } = useWeb3Auth();
-  const { primeSdk, executeTransaction, eoaAddress } = useEtherspotSdk();
+  const { primeSdk, eoaAddress, swAddress } = useEtherspotSdk();
 
 
   const transferFromEOAToSW = async (
@@ -161,11 +168,92 @@ export const useEtherspotFlow = () => {
     return undefined;
   }
 
+  // Example of updating transaction status
+  const executeTransaction = async (
+    operations: { to: string; data: string }[],
+    chainId: number
+  ): Promise<string | undefined> => {
+    try {
+      const userOpReceipt = await processBatchOperations(operations, chainId);
+      return userOpReceipt;
+    } catch (error) {
+      console.log("error while executing transaction", error);
+      return Promise.reject(new Error("Transaction failed"));
+    }
+  };
+
+  const processBatchOperations = async (
+    operations: { to: string; data: string }[],
+    chainId: number
+  ): Promise<string | undefined> => {
+    if (!primeSdk) {
+      throw new Error("PrimeSdk instance is not available.");
+    }
+    await primeSdk.clearUserOpsFromBatch();
+    for (const operation of operations) {
+      await primeSdk.addUserOpsToBatch(operation);
+    }
+    await whitelistPaymaster(swAddress);
+
+    // 4. Get current network state
+    const client = PublicClientManager.getInstance({ chainId });
+    const block = await client.getBlock({ blockTag: "latest" });
+    const baseFee = block?.baseFeePerGas ?? BigInt(0);
+
+    // 5. Get network-specific gas settings with dynamic adjustment
+    const currentBlockchain = EtherspotSdksManager.getInstance().mapNetworkNameToFormattedName(
+      primeSdk?.state.network.name
+    )!!;
+    let maxPriorityFeePerGasGwei =
+      ConfigStore.getInstance().getMaxPriorityFeePerGasGwei(currentBlockchain);
+
+    // // 6. Dynamic gas price adjustment based on network conditions
+    // const gasFee = await primeSdk.getGasFee();
+    // if (gasFee && gasFee.maxPriorityFeePerGas) {
+    //   // Use the higher of our config value or the SDK's suggestion
+    //   const suggestedPriorityFee = Number(
+    //     formatUnits(BigInt(gasFee.maxPriorityFeePerGas.toString()), "gwei")
+    //   );
+    //   maxPriorityFeePerGasGwei = Math.max(
+    //     Number(maxPriorityFeePerGasGwei),
+    //     suggestedPriorityFee
+    //   );
+    // }
+
+    const maxPriorityFeePerGas = parseGwei(maxPriorityFeePerGasGwei.toString());
+    const maxFeePerGas =
+      baseFee + maxPriorityFeePerGas * BigInt(2) * BigInt(20); // Double for safety
+    console.log("maxFeePerGas", maxFeePerGas);
+    const gasDetails: TransactionGasInfoForUserOp = {
+      maxFeePerGas: maxFeePerGas,
+      maxPriorityFeePerGas: maxPriorityFeePerGas,
+    };
+    console.log("gasDetails", gasDetails);
+    const op = await primeSdk.estimate({
+      paymasterDetails: {
+        url:
+          "https://arka.etherspot.io?useVp=true&apiKey=" +
+          arka_api_key +
+          "&chainId=" +
+          chainId,
+        context: { mode: "sponsor" },
+      },
+      gasDetails: gasDetails,
+    });
+    console.log("Estimate UserOp: ", await printOp(op));
+    try {
+      return await primeSdk.send(op);
+    } catch (error) {
+      console.error("Error sending UserOp:", error);
+      return undefined;
+    }
+  };
+
   return {
     transferFromEOAToSW,
     transferFromSmartWalletToEOA,
     batchApproveAndEscrow,
     releaseFunds,
-    getUserOperationReceipt
+    getUserOperationReceipt,
   };
 };
