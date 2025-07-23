@@ -1,11 +1,140 @@
-import { EtherspotBundler, SdkOptions } from "@etherspot/prime-sdk";
+import { EtherspotBundler, SdkOptions, PrimeSdk } from "@etherspot/prime-sdk";
 import { ConfigStore, ChainId, BlockchainName, BackendBlockchainConfig } from "../../../lib/ConfigStore";
+import { getBalance } from "@wagmi/core";
+import { config } from "@/components/web3/wagmi";
+import { getAddress } from "viem";
+import { TokenBalance } from "../types";
+import { PublicClientManager } from "../PublicClientManager";
+import { ERC20abi } from "@/components/web3/abis/StablecoinConfig";
 
-class EtherspotSdksManager {
+export class EtherspotSdksManager {
     private static instance: EtherspotSdksManager;
     private sdkOptionsMap: Record<ChainId, SdkOptions> | null = null;
 
     private constructor() { }
+
+    public async createPrimeSdk(walletProvider: any, chainId: number): Promise<PrimeSdk | null> {
+        const sdkOptions = await this.getSdkOptionsForChainId(chainId);
+        if (!sdkOptions) {
+            console.warn(`No SDK options available for chain ${chainId}`);
+            return null;
+        }
+        const primeSdk = new PrimeSdk(walletProvider, sdkOptions);
+        if (primeSdk !== null) {
+            return primeSdk;
+        }
+        console.error(`Failed to create PrimeSdk for chain ${chainId}, ${JSON.stringify(walletProvider)}`);
+        return null;
+    }
+
+    public async getTokensBalances(primeSdk: PrimeSdk, eoaAddress: string) {
+        if (primeSdk && eoaAddress) {
+            const smartWalletAddress = await primeSdk?.getCounterFactualAddress();
+
+            const eoaNativeBalance = await getBalance(config, {
+                address:
+                    getAddress(eoaAddress) ??
+                    "0x0000000000000000000000000000000000000000",
+            });
+
+            const swNativeBalance = await primeSdk?.getNativeBalance();
+
+            const currentBlockchain = this.mapNetworkNameToFormattedName(
+                primeSdk?.state.network.name
+            )!!;
+
+            const nativeBalance: TokenBalance = {
+                name: eoaNativeBalance.symbol,
+                smartWalletBalance: swNativeBalance ?? "0.0",
+                eoaBalance: eoaNativeBalance?.value.toString() ?? "0.0 ",
+                address: "0x0000000000000000000000000000000000000000",
+                decimals: 18,
+            };
+
+            const balances = await this.fetchStablecoinBalances(
+                smartWalletAddress ?? (await primeSdk?.getCounterFactualAddress()!!),
+                eoaAddress,
+                currentBlockchain
+            );
+
+            balances.push(nativeBalance);
+
+            return balances;
+        }
+    };
+
+    // Function to fetch balances for stablecoins on a given blockchain
+    private async fetchStablecoinBalances(
+        smartWalletAddress: string,
+        eoaAddress: string,
+        currentBlockchain: string
+    ): Promise<TokenBalance[]> {
+        const tokenBalances: TokenBalance[] = [];
+
+        try {
+            const configStore = ConfigStore.getInstance();
+            const stablecoinsByBlockchain =
+                configStore.getStablecoinsByBlockchain(currentBlockchain);
+            const chainId = configStore.getChainIdFromBlockchain(currentBlockchain);
+            console.log("stablecoinsByBlockchain", stablecoinsByBlockchain);
+            // Use Promise.all to fetch balances concurrently for better performance
+            await Promise.all(
+                stablecoinsByBlockchain.map(async (stablecoin) => {
+                    const relevantAddresses = stablecoin.addresses.filter(
+                        (address) => address.blockchain === currentBlockchain
+                    );
+                    for (const { address: tokenAddress } of relevantAddresses) {
+                        try {
+                            console.log("smartWalletAddress", smartWalletAddress);
+                            console.log("eoaAddress", eoaAddress);
+                            const [swTokenBalance, eoaTokenBalance] = await Promise.all([
+                                this.getStablecoinBalance(tokenAddress, smartWalletAddress, chainId),
+                                this.getStablecoinBalance(tokenAddress, eoaAddress, chainId),
+                            ]);
+
+                            // Map the balances to the TokenBalance type
+                            tokenBalances.push({
+                                name: stablecoin.name ?? "Unknown",
+                                eoaBalance: eoaTokenBalance?.toString() ?? "0",
+                                smartWalletBalance: swTokenBalance?.toString() ?? "0",
+                                address:
+                                    tokenAddress ?? "0x0000000000000000000000000000000000000000",
+                                decimals: stablecoin.decimals ?? 6,
+                            });
+                        } catch (balanceError) {
+                            console.error(
+                                `Error fetching balance for ${stablecoin.name} at address ${tokenAddress}:`,
+                                balanceError
+                            );
+                        }
+                    }
+                })
+            );
+        } catch (error) {
+            console.error("Error fetching stablecoin balances:", error);
+        }
+
+        return tokenBalances;
+    }
+
+    private async getStablecoinBalance(
+        tokenAddress: string,
+        walletAddress: string,
+        chainId: number
+    ): Promise<BigInt | undefined> {
+        const client = PublicClientManager.getInstance({ chainId });
+        const balance = await client.readContract({
+            address: getAddress(tokenAddress),
+            abi: ERC20abi,
+            functionName: "balanceOf",
+            args: [walletAddress],
+        });
+        console.log("balance", balance);
+        if (balance !== undefined && balance !== null) {
+            const formattedBalance = BigInt(balance.toString());
+            return formattedBalance;
+        }
+    };
 
     public static getInstance(): EtherspotSdksManager {
         if (!EtherspotSdksManager.instance) {
@@ -62,11 +191,15 @@ class EtherspotSdksManager {
     public invalidateCache(): void {
         this.sdkOptionsMap = null;
     }
-}
 
-// Function to get SDK options for a given chain ID
-export function getSdkOptionsForChainId(chainId: ChainId): Promise<SdkOptions | null> {
-    return EtherspotSdksManager.getInstance().getSdkOptionsForChainId(chainId);
+    public mapNetworkNameToFormattedName(
+        networkName: string | undefined
+    ): string | null {
+        if (!networkName) {
+            return null;
+        }
+        return networkNameToFormattedNameMap[networkName] || null;
+    }
 }
 
 // Mapping of network names to formatted blockchain names

@@ -6,7 +6,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useTranslation } from "react-i18next";
 
 interface CreateOrderContainerProps {
@@ -37,9 +36,6 @@ export function CreateOrderContainer({
           className={`h-[90vh] bg-backgroundMain ${className || ""}`}
           closeText={t("close")}
         >
-          <VisuallyHidden>
-            <SheetTitle>Create Order Dialog</SheetTitle>
-          </VisuallyHidden>
           {children}
         </SheetContent>
       </Sheet>

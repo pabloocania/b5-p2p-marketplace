@@ -5,6 +5,14 @@ import { LoadingButton } from "./LoadingButton";
 import { ErrorAlert } from "./ErrorAlert";
 import { useTranslation } from "react-i18next";
 import { KioscoinUser } from "b5-api-client";
+import { AUTH_CONNECTION, WALLET_CONNECTORS } from "@web3auth/modal";
+import {
+  useWeb3AuthConnect,
+  useWeb3AuthDisconnect,
+  useWeb3AuthUser,
+  useManageMFA,
+  useEnableMFA,
+} from "@web3auth/modal/react";
 
 interface EmailLoginFormProps {
   readonly onLogin: (user: KioscoinUser, token: string) => void;
@@ -20,12 +28,25 @@ export const EmailLoginForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
+  const {
+    connectTo,
+    isConnected,
+    connectorName,
+    loading: connectLoading,
+    error: connectError,
+  } = useWeb3AuthConnect();
+  const {
+    disconnect,
+    loading: disconnectLoading,
+    error: disconnectError,
+  } = useWeb3AuthDisconnect();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
-
+    await disconnect();
+    console.log("disconnected");
     try {
       const result = await firebaseService.signInWithEmail(email, password);
 

@@ -7,6 +7,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserProfile, EmailLoginForm, RegisterForm } from "./login";
 import { KioscoinUser } from "b5-api-client";
+import { useWeb3Auth } from "@web3auth/modal/react";
 
 interface UserMenuNewProps {
   readonly user: KioscoinUser | undefined;
@@ -16,7 +17,8 @@ interface UserMenuNewProps {
 
 const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
   const [mockUsers, setMockUsers] = useState<KioscoinUser[]>([]);
-  const { isConnected } = useAccount();
+  // const { isConnected } = useAccount();
+  const { isConnected } = useWeb3Auth();
   const { t } = useTranslation();
   const [isConnecting, setIsConnecting] = useState(false);
   const { connectModalOpen } = useConnectModal();

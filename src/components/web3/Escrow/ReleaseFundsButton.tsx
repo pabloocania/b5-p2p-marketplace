@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import ReleaseFundsConfirmation from "@/components/web3/Escrow/ReleaseFundsConfirmation";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
+import { useWeb3AuthConnect } from "@web3auth/modal/react";
 
 interface ReleaseFundsButtonProps {
   order: Order;
@@ -27,6 +28,7 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
 }) => {
   const [isTransacting, setIsTransacting] = useState(false);
   const { isConnected } = useAccount();
+  const { isConnected: isConnectedWeb3Auth } = useWeb3AuthConnect();
   const { t } = useTranslation();
   const { releaseFunds, getUserOperationReceipt } = useEtherspotFlow(); // Import the lockFunds function from the hook
   const { setTransaction } = useTransaction();
@@ -102,7 +104,7 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  return canRelease && isConnected ? (
+  return canRelease && (isConnected || isConnectedWeb3Auth) ? (
     <div>
       <Sheet open={isReleaseOpen} onOpenChange={setIsReleaseOpen}>
         <SheetTrigger asChild>
