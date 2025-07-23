@@ -41,25 +41,14 @@ export function OrderCard({
     setSelectedPaymentMethods(methods);
   };
 
-  // mostrar boton?
-  //
-  // const handleConfirmDispute = () => {
-  // 🔒 Lógica para mostrar el botón solo si se cumplen condiciones (comentada temporalmente)
-  // const canDisputeOrder = (order: Order, userId?: string): boolean => {
-  //   if (!order || !userId) return false;
+  // 2️⃣ Determinar si el usuario es comprador o vendedor
+  const isBuyer = user?.id === order?.buyerId;
+  const isSeller = user?.id === order?.sellerId;
 
-  //   const isUserInvolved =
-  //     order.creatorId === userId ||
-  //     order.buyerId === userId ||
-  //     order.sellerId === userId;
-
-  //   const disputableStatus = ["ACTIVE", "WAITING_PAYMENT", "FIAT_SENT"];
-  //   const isStatusValid = disputableStatus.includes(order.status);
-
-  //   const canDispute = order.buyerCanDispute || order.sellerCanDispute;
-
-  //   return isUserInvolved && isStatusValid && canDispute;
-  // };
+  // 3️⃣ Definir la lógica de visibilidad del botón
+  const canShowDisputeButton =
+    (isBuyer && order?.status === "FIAT_SENT") ||
+    (isSeller && order?.status === "ACTIVE");
 
   if (!order) {
     return (
@@ -94,22 +83,12 @@ export function OrderCard({
         paymentMethods={selectedPaymentMethods}
       />
       <Separator className="mb-1" />
-      <div className="pl-4 pr-4 flex items-center justify-between text-sm">
-        <div className="flex items-center gap-2 text-blue-500">
-          <OrderIdLink orderId={order.id} />
-        </div>
-
-        {/* ✅ BOTÓN SIEMPRE VISIBLE */}
-        <DisputeOrderButton order={order} />
-
-        {/* 👇 Para usar la lógica condicional, descomentá esto y comentá el de arriba */}
-        {/* {canDisputeOrder(order, user?.id) && (
-          <DisputeOrderButton
-            onConfirmDispute={() =>
-              console.log(`🚨 Disputa iniciada para la orden ${order.id}`)
-            }
-          />
-        )} */}
+      <div className="pl-4 pb-1 pt-1 flex items-center gap-4 text-sm h-8">
+        {user && <OrderIdLink orderId={order.id} />}
+        {user && canShowDisputeButton && (
+          <span className="mx-2 text-gray-400 select-none">•</span>
+        )}
+        {canShowDisputeButton && <DisputeOrderButton order={order} />}
       </div>
     </Card>
   );

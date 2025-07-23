@@ -60,7 +60,6 @@ i18n.use(initReactI18next).init({
         releasing_funds:
           "You have to sign the transaction with your wallet to release the funds to the buyer",
         funds_locked: "Funds are locked in the smart contract",
-        //Sign the transaction with your wallet in order to the deposit of fund
         approve_and_lock:
           "You have to sign the transaction with your wallet to deposit your funds in the smart contract",
         you: "you",
@@ -213,6 +212,20 @@ i18n.use(initReactI18next).init({
         choose_token: "Choose token",
         choose_network: "Choose a network",
         custom_rate: "Exchange Rate",
+        dispute_order: "Dispute order",
+        order_disputed: "Order disputed",
+        dispute_confirm_title: "Are you sure?",
+        dispute_confirm_message:
+          "This action will put the order in dispute. It cannot be undone and the support team will review the case.",
+        dispute_reason: "Dispute reason",
+        dispute_success_title: "Dispute created",
+        dispute_success_message: "The dispute was created successfully.",
+        dispute_button_yes: "Yes, dispute",
+        dispute_button_no: "No",
+        dispute_already_title: "Order in dispute",
+        dispute_already_message:
+          "This order is already in dispute. Please contact support via TELEGRAM.",
+        dispute_button_close: "Close",
       },
     },
     es: {
@@ -432,6 +445,20 @@ i18n.use(initReactI18next).init({
         choose_token: "Elige la moneda a utilizar",
         choose_network: "Elije la red",
         custom_rate: "Tasa de intercambio",
+        dispute_order: "Disputar orden",
+        order_disputed: "Orden en disputa",
+        dispute_confirm_title: "¿Estás seguro?",
+        dispute_confirm_message:
+          "Esta acción pondrá la orden en disputa. No podrá deshacerse y el equipo de soporte intervendrá para revisar el caso.",
+        dispute_reason: "Motivo de disputa",
+        dispute_success_title: "Disputa creada",
+        dispute_success_message: "La disputa fue creada con éxito.",
+        dispute_button_yes: "Sí, disputar",
+        dispute_button_no: "No",
+        dispute_already_title: "Orden en disputa",
+        dispute_already_message:
+          "Esta orden ya está en disputa. Por favor, contacta al equipo de soporte vía TELEGRAM.",
+        dispute_button_close: "Cerrar",
       },
     },
   },

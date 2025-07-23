@@ -8,93 +8,217 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Order } from "b5-api-client";
 import { p2pMarketAPIClient as client } from "@/lib/APIClients";
-// import { DisputeOrderRequest } from "b5-api-client"; // o el path correcto
-interface DisputeOrderRequest {
-  orderId: string;
-  reason: string;
-}
+import { useUserContext } from "@/components/kioscoin/users/UserContext";
+import { CreateDisputeRequest } from "b5-api-client";
+
+// interface DisputeOrderRequest {
+//   orderId: string;
+//   reason: string;
+// }
 
 interface DisputeOrderButtonProps {
   order: Order;
 }
 
 export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
+  const { user, loginId } = useUserContext();
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [apiResult, setApiResult] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const { t } = useTranslation();
+
+  const isBuyer = user?.id === order.buyerId;
+  const isSeller = user?.id === order.sellerId;
+
+  const canBuyerDispute = isBuyer && order.buyerCanDispute;
+  const canSellerDispute = isSeller && order.sellerCanDispute;
+
+  const buyerDisputed = isBuyer && order.buyerDisputed;
+  const sellerDisputed = isSeller && order.sellerDisputed;
+  const alreadyDisputed = buyerDisputed || sellerDisputed;
+
+  const canShowDisputeButton =
+    (canBuyerDispute || canSellerDispute) && !alreadyDisputed;
+
+  function getDisputeReason(
+    order: Order
+  ): "SELLER_NOT_RELEASING" | "BUYER_FIAT_NOT_SENT" | "SELLER_NOT_LOCKING" {
+    if (canBuyerDispute && order.status === "FIAT_SENT") {
+      return "SELLER_NOT_RELEASING";
+    }
+    if (canSellerDispute && order.status === "ACTIVE") {
+      return "BUYER_FIAT_NOT_SENT";
+    }
+    return "SELLER_NOT_LOCKING";
+  }
 
   const onConfirmDispute = async () => {
-    console.log(`🚨 Iniciando disputa para orden ${order.id}...`);
+    setLoading(true);
+    setApiResult(null);
+    setApiError(null);
+
+    const reason = getDisputeReason(order);
+
     try {
-      const request: DisputeOrderRequest = {
+      const request: CreateDisputeRequest = {
         orderId: order.id ?? "",
-        reason: "USER_DISPUTE", // o el motivo adecuado si hay múltiples
+        reason: reason,
+        creatorId: user?.id ?? "",
       };
 
-      //   const headers = {
-      //     Authorization: `Bearer ${loginId}`, // suponiendo que usás un token
-      //   };
-      //   const response = await client.disputeOrder(request, headers);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Simulación de respuesta de éxito
-      const response = {
-        message: "Disputa iniciada (mock)",
-        disputedOrderId: request.orderId,
+      const headers = {
+        Authorization: `Bearer ${loginId}`,
       };
-      console.log("✅ Disputa iniciada con éxito:", response);
 
-      // Podés cerrar el modal, mostrar una notificación, refrescar el estado, etc.
+      const response = await client.createDispute(request, headers);
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      setApiResult("✅ Disputa creada con éxito.");
     } catch (err) {
-      console.error("❌ Error al iniciar la disputa:", err);
-      alert("No se pudo iniciar la disputa. Intentalo más tarde.");
+      setApiError("❌ No se pudo iniciar la disputa. Intentalo más tarde.");
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleClose = () => {
+    setOpen(false);
+    setApiResult(null);
+    setApiError(null);
+  };
+
+  const disputeReason = getDisputeReason(order);
+
+  if (alreadyDisputed) {
+    return (
+      <>
+        <span
+          className="flex items-center gap-1 text-red-600 cursor-pointer select-none"
+          onClick={() => setOpen(true)}
+          role="button"
+          tabIndex={0}
+          title={t("order_disputed")}
+          style={{ lineHeight: "2" }}
+        >
+          <AlertCircle className="w-4 h-4" />
+          {t("order_disputed")}
+        </span>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t("dispute_already_title")}</DialogTitle>
+            </DialogHeader>
+            <div className="text-red-600 text-center py-4">
+              {t("dispute_already_message")}
+            </div>
+            <DialogFooter className="flex justify-end gap-2 mt-4">
+              <Button variant="secondary" onClick={handleClose}>
+                {t("dispute_button_close")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </>
+    );
+  }
+
+  if (!canShowDisputeButton) {
+    return null;
+  }
+
   return (
     <>
-      <Button
-        variant="destructive"
-        size="sm"
-        className="px-3 py-1 text-xs h-auto flex items-center"
+      <span
+        className="flex items-center gap-1 text-red-600 cursor-pointer select-none"
         onClick={() => setOpen(true)}
+        role="button"
+        tabIndex={0}
+        title={t("dispute_order")}
+        style={{ lineHeight: "2" }}
       >
-        <AlertCircle className="mr-1 w-4 h-4" />
-        Disputar orden
-      </Button>
+        <AlertCircle className="w-4 h-4" />
+        {t("dispute_order")}
+      </span>
 
-      <Dialog open={open} onOpenChange={(isOpen) => setOpen(isOpen)}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>¿Estás seguro?</DialogTitle>
+            <DialogTitle>
+              {apiResult
+                ? t("dispute_success_title")
+                : apiError
+                ? t("error")
+                : t("dispute_confirm_title")}
+            </DialogTitle>
           </DialogHeader>
 
-          <div className="bg-muted p-3 rounded-md mt-2 text-sm">
-            <p>
-              <strong>ID:</strong> {order.id}
-            </p>
-            <p>
-              <strong>Estado:</strong> {order.status}
-            </p>
-            <p>
-              <strong>Monto:</strong> {order.amount} {order.tokenCode}
-            </p>
-          </div>
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-6">
+              <Loader2 className="animate-spin w-8 h-8 mb-2 text-red-600" />
+              <span>{t("sending")}</span>
+            </div>
+          )}
 
-          <p className="mt-4">
-            Esta acción pondrá la orden en disputa. No podrá deshacerse y el
-            equipo de soporte intervendrá para revisar el caso.
-          </p>
+          {!loading && apiResult && (
+            <div className="text-green-600 text-center py-4">
+              {t("dispute_success_message")}
+            </div>
+          )}
+          {!loading && apiError && (
+            <div className="text-red-600 text-center py-4">{apiError}</div>
+          )}
+
+          {!loading && !apiResult && !apiError && (
+            <>
+              <div className="bg-muted p-3 rounded-md mt-2 text-sm">
+                <p>
+                  <strong>ID:</strong> {order.id}
+                </p>
+                <p>
+                  <strong>{t("status")} </strong> {order.status}
+                </p>
+                <p>
+                  <strong>{t("amount")} </strong> {order.amount}{" "}
+                  {order.tokenCode}
+                </p>
+                <p>
+                  <strong>{t("dispute_reason")}:</strong> {disputeReason}
+                </p>
+              </div>
+              <p className="mt-4">{t("dispute_confirm_message")}</p>
+            </>
+          )}
 
           <DialogFooter className="flex justify-end gap-2 mt-4">
-            <Button variant="ghost" onClick={() => setOpen(false)}>
-              No
-            </Button>
-            <Button variant="destructive" onClick={() => onConfirmDispute()}>
-              Sí, disputar
-            </Button>
+            {!loading && (apiResult || apiError) ? (
+              <Button variant="default" onClick={handleClose}>
+                {t("dispute_button_close")}
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="default"
+                  onClick={handleClose}
+                  disabled={loading}
+                >
+                  {t("dispute_button_no")}
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={onConfirmDispute}
+                  disabled={loading}
+                >
+                  {loading ? t("sending") : t("dispute_button_yes")}
+                </Button>
+              </>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
