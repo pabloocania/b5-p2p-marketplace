@@ -122,8 +122,9 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
         id="push-notifications"
         checked={isSubscribed}
         onCheckedChange={handleToggle}
+        className="scale-90 sm:scale-100"
       />
-      <Label htmlFor="push-notifications">
+      <Label htmlFor="push-notifications" className="text-xs sm:text-sm">
         {t("enable_push_notifications")}
       </Label>
     </div>

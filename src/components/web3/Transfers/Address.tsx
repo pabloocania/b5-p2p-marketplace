@@ -20,15 +20,23 @@ const Address: React.FC<AddressProps> = ({ address }) => {
       <p className="text-terciary text-xs flex-grow">
         {address.slice(0, 30)}...{address.slice(-4)}
       </p>
-      <Button
-        className="p-1 border-secondary/50 bg-white bo ml-1"
-        variant="outline"
-        size="link"
-        onClick={handleCopy}
-      >
-        {/* <RefreshCw className="h-4 w-4" /> */}
-        <Clipboard className="h-4 w-4" />
-      </Button>
+      <div className="relative">
+        <Button
+          className="p-1 border-secondary/50 bg-white bo ml-1"
+          variant="outline"
+          size="link"
+          onClick={handleCopy}
+        >
+          {/* <RefreshCw className="h-4 w-4" /> */}
+          <Clipboard className="h-4 w-4" />
+        </Button>
+        {/* Feedback visual simple y localizado */}
+        {isCopied && (
+          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded shadow-lg z-10">
+            ¡Copiado!
+          </div>
+        )}
+      </div>
     </div>
   );
 };

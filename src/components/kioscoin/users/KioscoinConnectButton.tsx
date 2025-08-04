@@ -37,6 +37,13 @@ const KioscoinConnectButton = ({
               <KioscoinOnboarding onComplete={handleOnboardingComplete} />
             )}
 
+            {/* 
+              // Botón "Conecta tu wallet" - OCULTO
+              // Este botón permitía a los usuarios conectar su wallet digital
+              // Funcionalidad: Abría el tutorial de onboarding y luego el modal de conexión
+              // Comentado para eliminar la opción de conectar wallet desde esta interfaz
+            */}
+            {/* 
             {!connected && !isConnecting && (
               <button
                 onClick={handleConnectClick}
@@ -46,6 +53,7 @@ const KioscoinConnectButton = ({
                 {t("connect_wallet")}
               </button>
             )}
+            */}
 
             {chain?.unsupported && (
               <button

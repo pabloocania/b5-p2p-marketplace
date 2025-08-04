@@ -35,34 +35,34 @@ export function TopBar({ activeComponent, setActiveComponent }: TopBarProps) {
   ];
 
   return (
-    <div className="border-b-4 border-b-secondary py-2 sticky top-0 bg-white z-10 w-full">
-      <div className="flex h-20 items-center px-2 max-w-md mx-auto">
+    <div className="border-b-4 border-b-secondary py-1.5 sticky top-0 bg-white z-10 w-full">
+      <div className="flex h-12 sm:h-16 items-center px-1 sm:px-2 max-w-md mx-auto">
         <button
           onClick={() => setActiveComponent("OrderFeed")}
           className="flex items-end"
         >
-          <KioscoinIcon className="h-20 w-20" />
-          <span className="text-primary md:text-xl text-md font-semibold mr-2">
+          <KioscoinIcon className="h-12 w-12 sm:h-16 sm:w-16" />
+          <span className="text-primary text-xs sm:text-sm md:text-lg font-semibold mr-1 sm:mr-2">
             Kioscoin
           </span>
         </button>
 
-        <div className="h-20 w-px bg-primary mx-2"></div>
+        <div className="h-12 sm:h-16 w-px bg-primary mx-1 sm:mx-2"></div>
 
-        <nav className="pl-2 flex items-center gap-1 ml-auto">
+        <nav className="pl-1 sm:pl-2 flex items-center gap-0.5 sm:gap-1 ml-auto">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveComponent(item.id)}
               className={cn(
-                "flex flex-col items-center min-w-[60px] px-2 py-3 rounded-lg transition-colors h-20",
+                "flex flex-col items-center min-w-[40px] sm:min-w-[50px] px-1 sm:px-1.5 py-1.5 sm:py-2 rounded-lg transition-colors h-12 sm:h-16",
                 item.active
                   ? "bg-secondary/20 text-primary"
                   : "text-primary/80 hover:bg-white/10 border border-transparent"
               )}
             >
-              <item.icon className="h-6 w-6 text-primary" />
-              <span className="text-xs mt-1 font-medium text-primary">
+              <item.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              <span className="text-xs mt-0.5 font-medium text-primary">
                 {item.label}
               </span>
             </button>

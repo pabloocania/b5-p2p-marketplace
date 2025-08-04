@@ -60,14 +60,14 @@ export const UserProfile = ({
   }
 
   return (
-    <Card className="w-full mb-4" variant="shadow">
-      <CardHeader>
-        <CardTitle className="flex justify-center items-center align-center mt-2 w-full">
+    <Card className="w-full mb-2 sm:mb-4" variant="shadow">
+      <CardHeader className="pb-2 sm:pb-4">
+        <CardTitle className="flex justify-center items-center align-center mt-1 sm:mt-2 w-full">
           <UserInfoCard user={user} order={undefined} />
         </CardTitle>
       </CardHeader>
-      <Separator className="mt-2 mb-4" />
-      <CardContent className="space-y-4">
+      <Separator className="mt-1 sm:mt-2 mb-2 sm:mb-4" />
+      <CardContent className="space-y-2 sm:space-y-4">
         <div className="w-full">{ConnectWalletButton()}</div>
         {isConnecting && (
           <div className="flex items-center justify-center h-full">
@@ -85,6 +85,13 @@ export const UserProfile = ({
         <div className="w-full">
           <PushNotificationsToggle userId={user.id!}></PushNotificationsToggle>
         </div>
+        {/* 
+          // Botón para reiniciar el estado del onboarding
+          // Permite al usuario volver a ver el tutorial de Smart Wallet
+          // Funcionalidad: Borra el localStorage "hasSeenSmartWalletOnboarding"
+          // y muestra un alert confirmando que el onboarding se mostrará en la próxima conexión
+        */}
+        {/* 
         <div className="w-full">
           <Button
             variant="outline"
@@ -96,14 +103,15 @@ export const UserProfile = ({
             <span className="text-xs">{t("reset_onboarding")}</span>
           </Button>
         </div>
+        */}
       </CardContent>
-      <CardFooter className="py-2">
+      <CardFooter className="py-1 sm:py-2">
         <Button
           onClick={onLogout}
           variant="default"
-          className="w-full text-white bg-primary"
+          className="w-full text-white bg-primary text-sm sm:text-base py-2 sm:py-3"
         >
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
           Log Out
         </Button>
       </CardFooter>

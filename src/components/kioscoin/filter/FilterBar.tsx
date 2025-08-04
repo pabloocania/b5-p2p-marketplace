@@ -56,8 +56,8 @@ export default function FilterBar({
       <style jsx global>
         {scrollbarHideClass}
       </style>
-      <div className="mb-2">
-        <div className="flex items-center space-x-2 bg-secondary bg-opacity-40 px-2 py-2 rounded-md">
+      <div className="mb-1 md:mb-2">
+        <div className="flex items-center space-x-2 bg-secondary bg-opacity-40 px-2 py-1 md:py-2 rounded-md">
           <div className="relative flex-grow min-w-0">
             <div
               ref={mainFilterRef}

@@ -14,25 +14,23 @@ import { useTransactionHandler } from "@/components/web3/Transfers/useTransactio
 import Address from "@/components/web3/Transfers/Address";
 import SmartWalletOnboarding from "./SmartWalletOnboarding";
 import { Button } from "@/components/ui/button";
+import UserBalance from "./UserBalance";
 
 /**
  * Immutable class representing the state of the transfers component
  */
 class TransferState {
-  readonly activeTab: "kioscoinWallet" | "myWallet";
   readonly selectedToken: TokenBalance | null;
   readonly showOnboarding: boolean;
   readonly transferHistory: TokenTransfer[];
   readonly previousConnectionState: boolean;
 
   private constructor(params: {
-    activeTab: "kioscoinWallet" | "myWallet";
     selectedToken: TokenBalance | null;
     showOnboarding: boolean;
     transferHistory: TokenTransfer[];
     previousConnectionState: boolean;
   }) {
-    this.activeTab = params.activeTab;
     this.selectedToken = params.selectedToken;
     this.showOnboarding = params.showOnboarding;
     this.transferHistory = params.transferHistory;
@@ -41,7 +39,6 @@ class TransferState {
 
   static create(
     params?: Partial<{
-      activeTab: "kioscoinWallet" | "myWallet";
       selectedToken: TokenBalance | null;
       showOnboarding: boolean;
       transferHistory: TokenTransfer[];
@@ -49,18 +46,10 @@ class TransferState {
     }>
   ): TransferState {
     return new TransferState({
-      activeTab: params?.activeTab ?? "kioscoinWallet",
       selectedToken: params?.selectedToken ?? null,
       showOnboarding: params?.showOnboarding ?? false,
       transferHistory: params?.transferHistory ?? [],
       previousConnectionState: params?.previousConnectionState ?? false,
-    });
-  }
-
-  withActiveTab(activeTab: "kioscoinWallet" | "myWallet"): TransferState {
-    return new TransferState({
-      ...this,
-      activeTab,
     });
   }
 
@@ -108,6 +97,10 @@ export default function UserWalletsComponent() {
       previousConnectionState: false,
     })
   );
+
+  // State for UserBalance component
+  const [selectedToken, setSelectedToken] = useState("USDK");
+  const [selectedBlockchain, setSelectedBlockchain] = useState("BSC_MAINNET");
 
   const { checkTransactionStatus } = useTransactionStatusChecker();
   const { handleTransaction } = useTransactionHandler(
@@ -169,23 +162,19 @@ export default function UserWalletsComponent() {
         transferAmount,
         state.selectedToken.decimals
       ).toString();
-      const sourceBalance =
-        state.activeTab === "myWallet"
-          ? parseFloat(state.selectedToken.eoaBalance)
-          : parseFloat(state.selectedToken.smartWalletBalance);
+      const sourceBalance = parseFloat(state.selectedToken.smartWalletBalance);
 
       if (amount > sourceBalance) return;
 
-      const transactionType =
-        state.activeTab === "myWallet" ? "EOAToSW" : "EtherspotToEOA";
+      const transactionType = "EtherspotToEOA";
 
       // Create a TokenTransfer object
       const newTransfer = TokenTransfer.create({
         tokenSymbol: state.selectedToken.name,
         tokenAddress: state.selectedToken.address,
         amount: transferAmount,
-        sourceType: state.activeTab === "myWallet" ? "eoa" : "smartWallet",
-        destinationType: state.activeTab === "myWallet" ? "smartWallet" : "eoa",
+        sourceType: "smartWallet",
+        destinationType: "eoa",
       });
 
       // Execute transfer immediately
@@ -230,8 +219,15 @@ export default function UserWalletsComponent() {
     setState(state.withShowOnboarding(true));
   };
 
-  const handleTabChange = (value: string) => {
-    setState(state.withActiveTab(value as "kioscoinWallet" | "myWallet"));
+  // Handlers for UserBalance component
+  const handleTokenChange = (token: string) => {
+    setSelectedToken(token);
+    console.log("Token changed to:", token);
+  };
+
+  const handleBlockchainChange = (blockchain: string) => {
+    setSelectedBlockchain(blockchain);
+    console.log("Blockchain changed to:", blockchain);
   };
 
   if (!balances) {
@@ -244,110 +240,46 @@ export default function UserWalletsComponent() {
         <SmartWalletOnboarding onComplete={handleOnboardingComplete} />
       )}
 
-      <div className="flex flex-col items-center w-full rounded-lg px-1 bg-white space-y-3 py-1">
+      <div className="flex flex-col items-center w-full rounded-lg px-1 bg-white space-y-2 sm:space-y-3 py-1">
         <div className="w-full flex items-center justify-between">
           <Button
             variant="outline"
             size="sm"
             onClick={handleShowOnboarding}
-            className="flex items-center w-full border-secondary/50 font-bold text-secondary"
+            className="flex items-center w-full border-secondary/50 font-bold text-secondary text-xs sm:text-sm py-1 sm:py-2"
           >
             <Info className="h-3 w-3 mr-1" />
             <span className="text-xs">{t("learn_about_smart_wallet")}</span>
           </Button>
         </div>
 
-        <Tabs
-          value={state.activeTab}
-          className="w-full"
-          onValueChange={handleTabChange}
-        >
-          <TabsList className="grid w-full grid-cols-2 bg-secondary bg-opacity-10">
-            <TabsTrigger
-              value="kioscoinWallet"
-              className={`flex items-center justify-center w-full ${
-                state.activeTab === "kioscoinWallet"
-                  ? "border border-secondary bg-primary"
-                  : "text-primary bg-transparent"
-              }`}
-            >
-              <span className="flex items-center text-primary font-bold">
-                Smart Wallet
-              </span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="myWallet"
-              className={`flex items-center justify-center w-full ${
-                state.activeTab === "myWallet"
-                  ? "border border-secondary bg-primary"
-                  : "text-primary bg-transparent"
-              }`}
-            >
-              <span className="flex items-center text-primary font-bold">
-                EOA Wallet
-              </span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent
-            value="kioscoinWallet"
-            className="px-2 bg-secondary bg-opacity-10 rounded-lg py-2 space-y-2"
-          >
-            {swAddress && (
-              <div className="space-y-1">
-                <p className="font-bold text-primary text-sm">{t("address")}</p>
-                <Address address={swAddress} />
-              </div>
-            )}
-            <div className="flex items-center">
-              <p className="font-bold text-primary text-sm">Balances</p>
-              <Button
-                variant="outline"
-                className="p-1 border-secondary/50 bg-white ml-2"
-                size="link"
-                onClick={handleRefresh}
-              >
-                <RefreshCw className="h-4 w-4" />
-              </Button>
+        <div className="px-1 sm:px-2 bg-secondary bg-opacity-10 rounded-lg py-1.5 sm:py-2 space-y-1.5 sm:space-y-2">
+          {swAddress && (
+            <div className="space-y-1">
+              {/* <p className="font-bold text-primary text-sm">{t("address")}</p> */}
+              <Address address={swAddress} />
             </div>
+          )}
+          {/* <div className="flex items-center">
+            <p className="font-bold text-primary text-sm">Balances</p>
+            <Button
+              variant="outline"
+              className="p-1 border-secondary/50 bg-white ml-2"
+              size="link"
+              onClick={handleRefresh}
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div> */}
 
-            <TokenBalanceSelector
-              onTokenSelect={handleTokenSelect}
-              handleTransfer={handleTransfer}
-              balanceType="sw"
-              balances={balances}
-            />
-          </TabsContent>
-
-          <TabsContent
-            value="myWallet"
-            className="px-2 bg-secondary bg-opacity-10 rounded-lg py-2 space-y-2"
-          >
-            {eoaAddress && (
-              <div className="space-y-1">
-                <p className="font-bold text-primary text-sm">{t("address")}</p>
-                <Address address={eoaAddress} />
-              </div>
-            )}
-            <div className="flex items-center">
-              <p className="font-bold text-primary text-sm">Balances</p>
-              <Button
-                variant="outline"
-                className="p-1 border-secondary/50 bg-white ml-2"
-                size="link"
-                onClick={handleRefresh}
-              >
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-            </div>
-            <TokenBalanceSelector
-              onTokenSelect={handleTokenSelect}
-              handleTransfer={handleTransfer}
-              balanceType="eoa"
-              balances={balances}
-            />
-          </TabsContent>
-        </Tabs>
+          <UserBalance
+            balances={balances}
+            selectedToken={selectedToken}
+            selectedBlockchain={selectedBlockchain}
+            onTokenChange={handleTokenChange}
+            onBlockchainChange={handleBlockchainChange}
+          />
+        </div>
       </div>
     </>
   );
