@@ -80,57 +80,59 @@ const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
   }
 
   return (
-    <Card className="w-full mb-4 border-secondary/50" variant="border">
-      <CardHeader></CardHeader>
-      <CardContent className="py-2">
-        <Tabs
-          defaultValue="mock"
-          value={activeTab}
-          onValueChange={setActiveTab}
-        >
-          <TabsList className="grid grid-cols-2 mb-3 bg-secondary/10">
-            <TabsTrigger value="email" className="text-primary">
-              <Mail className="mr-2 h-4 w-4 text-primary" />
-              {t("login")}
-            </TabsTrigger>
-            {/* <TabsTrigger value="email-link">
+    <div className="flex items-center justify-center min-h-[80vh]">
+      <Card className="w-full max-w-md border-secondary/50" variant="border">
+        <CardHeader></CardHeader>
+        <CardContent className="py-2">
+          <Tabs
+            defaultValue="mock"
+            value={activeTab}
+            onValueChange={setActiveTab}
+          >
+            <TabsList className="grid grid-cols-2 mb-3 bg-secondary/10">
+              <TabsTrigger value="email" className="text-primary">
+                <Mail className="mr-2 h-4 w-4 text-primary" />
+                {t("login")}
+              </TabsTrigger>
+              {/* <TabsTrigger value="email-link">
               <Key className="mr-2 h-4 w-4" />
               Email Link
             </TabsTrigger> */}
-            <TabsTrigger value="register" className="text-primary">
-              <UserPlus className="mr-2 h-4 w-4 text-primary" />
-              {t("register")}
-            </TabsTrigger>
-            {/* <TabsTrigger value="mock" className="text-primary">
+              <TabsTrigger value="register" className="text-primary">
+                <UserPlus className="mr-2 h-4 w-4 text-primary" />
+                {t("register")}
+              </TabsTrigger>
+              {/* <TabsTrigger value="mock" className="text-primary">
               <User className="mr-2 h-4 w-4 text-primary" />
               Mock Users
             </TabsTrigger> */}
-          </TabsList>
+            </TabsList>
 
-          <TabsContent value="email">
-            <EmailLoginForm
-              onLogin={onLogin}
-              onSwitchToRegister={() => setActiveTab("register")}
-            />
-          </TabsContent>
+            <TabsContent value="email">
+              <EmailLoginForm
+                onLogin={onLogin}
+                onSwitchToRegister={() => setActiveTab("register")}
+              />
+            </TabsContent>
 
-          {/* <TabsContent value="email-link">
+            {/* <TabsContent value="email-link">
             <EmailLinkLoginForm />
           </TabsContent> */}
 
-          <TabsContent value="register">
-            <RegisterForm
-              onLogin={onLogin}
-              onSwitchToEmailLogin={() => setActiveTab("email")}
-            />
-          </TabsContent>
+            <TabsContent value="register">
+              <RegisterForm
+                onLogin={onLogin}
+                onSwitchToEmailLogin={() => setActiveTab("email")}
+              />
+            </TabsContent>
 
-          {/* <TabsContent value="mock" className="space-y-4">
+            {/* <TabsContent value="mock" className="space-y-4">
             <MockUsersList mockUsers={mockUsers} onLogin={onLogin} />
           </TabsContent> */}
-        </Tabs>
-      </CardContent>
-    </Card>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

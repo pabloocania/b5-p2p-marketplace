@@ -83,12 +83,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white flex justify-center">
       <div className="w-full bg-backgroundMain flex flex-col relative h-screen">
-        <TopBar
-          activeComponent={activeComponent}
-          setActiveComponent={setActiveComponent}
-        />
-
-        <main className="flex-1 overflow-y-auto pb-36">
+        <main className="flex-1 overflow-y-auto pb-20">
           <TransactionStatus
             status={transaction.status}
             message={transaction.message}
@@ -97,14 +92,19 @@ export default function Home() {
             onClose={resetTransaction}
           />
           <div className="w-full max-w-md mx-auto py-2 px-4">
-            <OrderCreationFlow />
+            <OrderCreationFlow activeComponent={activeComponent} />
             {renderComponent()}
           </div>
         </main>
 
+        <TopBar
+          activeComponent={activeComponent}
+          setActiveComponent={setActiveComponent}
+        />
+
         <div className="fixed bottom-0 w-full pb-4 pt-8">
           <div className="relative px-4">
-            <div className="absolute bottom-20 left-4">
+            <div className="absolute bottom-48 left-4">
               <Button
                 size="icon"
                 className="rounded-full w-14 h-14 shadow-lg text-white bg-primary hover:bg-terciary/90"
@@ -114,7 +114,7 @@ export default function Home() {
                 <span className="sr-only">Help & Tutorials</span>
               </Button>
             </div>
-            <div className="absolute bottom-4 left-4">
+            <div className="absolute bottom-32 left-4">
               <Button
                 size="icon"
                 className="bg-white border-2 border-secondary text-primary hover:bg-primary/90 hover:text-white rounded-full w-14 h-14 shadow-lg flex items-center justify-center"
@@ -127,36 +127,37 @@ export default function Home() {
                 <span className="sr-only">Change Language</span>
               </Button>
             </div>
-            <div className="absolute bottom-4 right-4">
-              <CreateOrderContainer
-                open={isCreateOrderOpen}
-                onOpenChange={(open) => {
-                  setIsCreateOrderOpen(open);
-                  if (!open) handleCreateOrderClose();
-                }}
-                trigger={
-                  <Button
-                    size="icon"
-                    className="rounded-full px-5 text-lg font-bold w-30 h-14 shadow-lg hover:bg-terciary/90 bg-white border-2 border-secondary text-primary"
-                    disabled={!user}
-                  >
-                    <Plus className="h-6 w-6 pr-2" />
-                    <span className="transition-opacity duration-500">
-                      {t("create_order")}
-                    </span>
-                  </Button>
-                }
-              >
-                <CreateOrder
-                  onClose={handleCreateOrderClose}
-                  onConnectWallet={handleUserMenuOpen}
-                  preFilledData={{
-                    fiatCode: "ARS",
-                    paymentMethods: [],
+            {user && (
+              <div className="absolute bottom-32 right-4">
+                <CreateOrderContainer
+                  open={isCreateOrderOpen}
+                  onOpenChange={(open) => {
+                    setIsCreateOrderOpen(open);
+                    if (!open) handleCreateOrderClose();
                   }}
-                />
-              </CreateOrderContainer>
-            </div>
+                  trigger={
+                    <Button
+                      size="icon"
+                      className="rounded-full px-5 text-lg font-bold w-30 h-14 shadow-lg hover:bg-terciary/90 bg-white border-2 border-secondary text-primary"
+                    >
+                      <Plus className="h-6 w-6 pr-2" />
+                      <span className="transition-opacity duration-500">
+                        {t("create_order")}
+                      </span>
+                    </Button>
+                  }
+                >
+                  <CreateOrder
+                    onClose={handleCreateOrderClose}
+                    onConnectWallet={handleUserMenuOpen}
+                    preFilledData={{
+                      fiatCode: "ARS",
+                      paymentMethods: [],
+                    }}
+                  />
+                </CreateOrderContainer>
+              </div>
+            )}
           </div>
         </div>
 
