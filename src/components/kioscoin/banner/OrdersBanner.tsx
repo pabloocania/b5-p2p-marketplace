@@ -178,7 +178,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
   }
 
   return (
-    <div className="relative w-full px-0 py-1 sm:px-2 sm:py-2 md:py-4 md:px-4 rounded-xl bg-secondary/40 shadow-lg mb-1 sm:mb-2 md:mb-4">
+    <div className="relative w-full px-0 py-1 sm:px-2 sm:py-2 md:py-4 md:px-4 rounded-xl bg-secondary/40 shadow-lg mb-1 sm:mb-2 md:mb-4 mt-2 sm:mt-3">
       <Carousel
         opts={{
           align: "start",
@@ -191,10 +191,10 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
           {validOffers.map((offer, idx) => (
             <CarouselItem
               key={offer.id}
-              className={`w-full max-w-[260px] sm:max-w-[340px] flex-shrink-0 flex-grow-0`}
+              className={`w-full max-w-[320px] sm:max-w-[380px] flex-shrink-0 flex-grow-0`}
             >
               <Card
-                className="h-full shadow rounded-lg border-0 cursor-pointer transition-transform hover:scale-[1.01] p-0 flex flex-col justify-between min-h-[100px] sm:min-h-[120px] md:min-h-[160px] max-w-[240px] sm:max-w-[340px]"
+                className="h-full shadow rounded-lg border-0 cursor-pointer transition-transform hover:scale-[1.01] p-0 flex flex-col justify-between min-h-[100px] sm:min-h-[120px] md:min-h-[160px] max-w-[300px] sm:max-w-[360px]"
                 onClick={() => handleCardClick(offer)}
               >
                 <div className="flex-1 p-2 sm:p-3 flex flex-col">

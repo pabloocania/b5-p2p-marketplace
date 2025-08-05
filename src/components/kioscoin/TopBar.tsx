@@ -35,7 +35,7 @@ export function TopBar({ activeComponent, setActiveComponent }: TopBarProps) {
   ];
 
   return (
-    <div className="border-b-4 border-b-secondary py-1.5 sticky top-0 bg-white z-10 w-full">
+    <div className="border-b-4 border-b-secondary py-1.5 fixed bottom-0 bg-white z-50 w-full">
       <div className="flex h-12 sm:h-16 items-center px-1 sm:px-2 max-w-md mx-auto">
         <button
           onClick={() => setActiveComponent("OrderFeed")}
