@@ -1,73 +1,102 @@
 "use client";
-import { Wallet, User } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { KioscoinIcon } from "@/icons/KioscoinIcon";
-import { MarketplaceIcon } from "@/icons/MarketplaceIcon";
+import { Button } from "@/components/ui/button";
 
 interface TopBarProps {
   activeComponent: string;
-  setActiveComponent: (component: string) => void;
 }
 
-export function TopBar({ activeComponent, setActiveComponent }: TopBarProps) {
+export function TopBar({ activeComponent }: TopBarProps) {
   const { t } = useTranslation();
 
-  const navItems = [
-    {
-      id: "OrderFeed",
-      label: t("p2p_market"),
-      icon: MarketplaceIcon,
-      active: activeComponent === "OrderFeed",
-    },
-    {
-      id: "MyOrders",
-      label: t("my_orders"),
-      icon: Wallet,
-      active: activeComponent === "MyOrders",
-    },
-    {
-      id: "UserMenu",
-      label: t("my_account"),
-      icon: User,
-      active: activeComponent === "UserMenu",
-    },
-  ];
+  const handleNotificationClick = () => {
+    // Placeholder - no action for now
+    console.log("Notification button clicked");
+  };
+
+  const handleMenuClick = () => {
+    // Placeholder - no action for now
+    console.log("Menu button clicked");
+  };
+
+  const renderContent = () => {
+    switch (activeComponent) {
+      case "OrderFeed":
+        return (
+          <>
+            {/* Logo como título */}
+            <div className="flex items-center">
+              <KioscoinIcon className="h-6 w-6 sm:h-8 sm:w-8" />
+              <span className="text-primary text-lg sm:text-xl font-semibold ml-2">
+                Kioscoin
+              </span>
+            </div>
+            {/* Botón campanita */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleNotificationClick}
+              className="p-2 hover:bg-gray-100"
+            >
+              <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            </Button>
+          </>
+        );
+
+      case "MyOrders":
+        return (
+          <>
+            {/* Título centrado */}
+            <div className="flex-1 text-center">
+              <h1 className="text-lg sm:text-xl font-semibold text-primary">
+                {t("my_orders")}
+              </h1>
+            </div>
+            {/* Botón campanita */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleNotificationClick}
+              className="p-2 hover:bg-gray-100"
+            >
+              <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            </Button>
+          </>
+        );
+
+      case "UserMenu":
+        return (
+          <>
+            {/* Título centrado */}
+            <div className="flex-1 text-center">
+              <h1 className="text-lg sm:text-xl font-semibold text-primary">
+                {t("my_account")}
+              </h1>
+            </div>
+            {/* Botón hamburguesa */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleMenuClick}
+              className="p-2 hover:bg-gray-100"
+            >
+              <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            </Button>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="border-b-4 border-b-secondary py-1.5 fixed bottom-0 bg-white z-50 w-full">
-      <div className="flex h-12 sm:h-16 items-center px-1 sm:px-2 max-w-md mx-auto">
-        <button
-          onClick={() => setActiveComponent("OrderFeed")}
-          className="flex items-end"
-        >
-          <KioscoinIcon className="h-12 w-12 sm:h-16 sm:w-16" />
-          <span className="text-primary text-xs sm:text-sm md:text-lg font-semibold mr-1 sm:mr-2">
-            Kioscoin
-          </span>
-        </button>
-
-        <div className="h-12 sm:h-16 w-px bg-primary mx-1 sm:mx-2"></div>
-
-        <nav className="pl-1 sm:pl-2 flex items-center gap-0.5 sm:gap-1 ml-auto">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveComponent(item.id)}
-              className={cn(
-                "flex flex-col items-center min-w-[40px] sm:min-w-[50px] px-1 sm:px-1.5 py-1.5 sm:py-2 rounded-lg transition-colors h-12 sm:h-16",
-                item.active
-                  ? "bg-secondary/20 text-primary"
-                  : "text-primary/80 hover:bg-white/10 border border-transparent"
-              )}
-            >
-              <item.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-              <span className="text-xs mt-0.5 font-medium text-primary">
-                {item.label}
-              </span>
-            </button>
-          ))}
-        </nav>
+    <div className="fixed top-0 bg-white z-50 w-full border-b border-gray-200 shadow-sm">
+      <div className="flex h-14 sm:h-19 items-center justify-between px-4 sm:px-6 max-w-md mx-auto">
+        {renderContent()}
       </div>
     </div>
   );

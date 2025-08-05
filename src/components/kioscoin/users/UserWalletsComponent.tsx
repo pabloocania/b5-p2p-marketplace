@@ -240,20 +240,20 @@ export default function UserWalletsComponent() {
         <SmartWalletOnboarding onComplete={handleOnboardingComplete} />
       )}
 
-      <div className="flex flex-col items-center w-full rounded-lg px-1 bg-white space-y-2 sm:space-y-3 py-1">
-        <div className="w-full flex items-center justify-between">
+      <div className="flex flex-col items-center w-full rounded-lg bg-white space-y-2 sm:space-y-3 py-1">
+        <div className="w-full">
           <Button
             variant="outline"
             size="sm"
             onClick={handleShowOnboarding}
-            className="flex items-center w-full border-secondary/50 font-bold text-secondary text-xs sm:text-sm py-1 sm:py-2"
+            className="flex items-center w-full border-secondary/50 font-bold text-secondary text-xs sm:text-sm py-2 px-2"
           >
             <Info className="h-3 w-3 mr-1" />
             <span className="text-xs">{t("learn_about_smart_wallet")}</span>
           </Button>
         </div>
 
-        <div className="px-1 sm:px-2 bg-secondary bg-opacity-10 rounded-lg py-1.5 sm:py-2 space-y-1.5 sm:space-y-2">
+        <div className="w-full px-2 bg-secondary bg-opacity-10 rounded-lg py-2 space-y-1.5 sm:space-y-2">
           {swAddress && (
             <div className="space-y-1">
               {/* <p className="font-bold text-primary text-sm">{t("address")}</p> */}
