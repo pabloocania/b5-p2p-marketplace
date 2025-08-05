@@ -26,33 +26,16 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-500 to-yellow-500 flex flex-col overflow-hidden">
-      {/* Hero Section */}
-      <div className="text-center py-4 px-4 flex-1 flex flex-col justify-center">
-        <div className="flex justify-center mb-4">
-          <img
-            src="/icons/kioscoin-isotipo.png"
-            alt="Kioscoin Isotipo"
-            className="h-32 w-32 sm:h-42 sm:w-42"
-          />
-        </div>
-
-        {/* White Logo Image */}
-        <div className="mb-4 flex justify-center">
-          <img
-            src="/icons/kioscoin-logotipo-blanco.png"
-            alt="Kioscoin Logo"
-            className="h-16 sm:h-21 md:h-26"
-          />
-        </div>
-
-        <p className="text-lg sm:text-xl text-white/90 mb-4 max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-500 to-yellow-500 flex flex-col">
+      {/* Hero Section - Much more compressed */}
+      <div className="text-center py-1 px-4 flex-1 flex flex-col justify-center">
+        <p className="text-lg sm:text-xl text-white/90 mb-1 max-w-2xl mx-auto">
           The future of P2P crypto trading. Buy and sell stablecoins with real
           people, using secure and decentralized escrow.
         </p>
 
-        {/* Features */}
-        <div className="flex flex-wrap justify-center gap-4 mb-4">
+        {/* Features - Much more compressed */}
+        <div className="flex flex-wrap justify-center gap-4 mb-1">
           <div className="flex items-center text-white/90">
             <span className="text-xl mr-2">🔒</span>
             <span className="text-sm">Secure Escrow</span>
@@ -68,11 +51,11 @@ export function LandingPage() {
         </div>
       </div>
 
-      {/* Auth Section */}
-      <div className="max-w-md mx-auto px-4 pb-6">
-        <div className="bg-white rounded-2xl shadow-2xl p-6">
+      {/* Auth Section - Moved much higher */}
+      <div className="max-w-md mx-auto px-4 pb-64">
+        <div className="bg-white rounded-2xl shadow-2xl p-4">
           {/* Toggle Buttons */}
-          <div className="flex bg-gray-100 rounded-lg p-1 mb-4">
+          <div className="flex bg-gray-100 rounded-lg p-1 mb-3">
             <button
               onClick={() => setAuthMode("login")}
               className={cn(
@@ -98,7 +81,7 @@ export function LandingPage() {
           </div>
 
           {/* Form */}
-          <div className="min-h-[250px]">
+          <div className="min-h-[200px]">
             {authMode === "login" ? (
               <EmailLoginForm
                 onLogin={handleLogin}
@@ -114,8 +97,8 @@ export function LandingPage() {
         </div>
       </div>
 
-      {/* Social Proof - Compact */}
-      <div className="text-center py-2 px-4">
+      {/* Social Proof - Much more compressed */}
+      <div className="text-center py-1 px-4">
         <div className="flex justify-center gap-8 text-white/80 text-sm">
           <div className="text-center">
             <div className="text-xl font-bold text-white">10,000+</div>
