@@ -10,7 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useEffect, useState, useRef } from "react";
-import { BannerOffer, BannerOfferClickHandler } from "./types";
+import { BannerOfferClickHandler } from "./types";
 
 import PaymentMethodDisplay from "../PaymentMethodDisplay";
 import { CryptoAmountIcon } from "../CryptoIcon";
@@ -18,70 +18,8 @@ import { useTranslation } from "react-i18next";
 import { formatFiatAmount } from "@/lib/utils";
 import { ExchangeRatesService } from "@/components/web3/ExchangeRatesService";
 import { getBlockchainDisplayName } from "@/lib/ConfigStore";
-
-// Sample data for the crypto offers
-const cryptoOffers: BannerOffer[] = [
-  {
-    id: "1",
-    title: "Buy USDT at best rate",
-    action: "Buy 1 USDT now",
-    fiatAmount: "$1.00",
-    exchangeMethods: [
-      { type: "BANK", entity: "Revolut" },
-      { type: "FINTECH", entity: "Mercado Pago" },
-    ],
-    type: "BUY",
-    tokenCode: "USDC",
-    blockchain: "BSC_MAINNET",
-    amount: "1",
-    fiatCode: "ARS",
-  },
-  {
-    id: "2",
-    title: "Sell USDC instantly",
-    action: "Sell 1 USDC now",
-    fiatAmount: "$0.99",
-    exchangeMethods: [
-      { type: "FINTECH", entity: "Mercado Pago" },
-      { type: "BANK", entity: "Revolut" },
-    ],
-    type: "SELL",
-    tokenCode: "USDC",
-    blockchain: "BSC_MAINNET",
-    amount: "1",
-    fiatCode: "ARS",
-  },
-  {
-    id: "3",
-    title: "Sell USDK instantly",
-    action: "Sell 1 USDK now",
-    fiatAmount: "$0.99",
-    exchangeMethods: [
-      { type: "FINTECH", entity: "Mercado Pago" },
-      { type: "BANK", entity: "Revolut" },
-    ],
-    type: "SELL",
-    tokenCode: "USDK",
-    blockchain: "ARBITRUM_TESTNET",
-    amount: "1",
-    fiatCode: "ARS",
-  },
-  {
-    id: "4",
-    title: "Sell USDK instantly",
-    action: "Sell 1 USDK now",
-    fiatAmount: "$0.99",
-    exchangeMethods: [
-      { type: "FINTECH", entity: "Mercado Pago" },
-      { type: "BANK", entity: "Revolut" },
-    ],
-    type: "SELL",
-    tokenCode: "USDK",
-    blockchain: "ARBITRUM_TESTNET",
-    amount: "1",
-    fiatCode: "ARS",
-  },
-];
+import { p2pMarketAPIClient } from "@/lib/APIClients";
+import { OrderOffer } from "b5-api-client";
 
 interface OrdersBannerProps {
   onOfferClick?: BannerOfferClickHandler;
@@ -89,7 +27,9 @@ interface OrdersBannerProps {
 
 export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
   const [isMobile, setIsMobile] = useState(false);
-  const [validOffers, setValidOffers] = useState<BannerOffer[]>([]);
+  const [validOffers, setValidOffers] = useState<OrderOffer[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [shouldRender, setShouldRender] = useState(false);
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [carouselApi, setCarouselApi] = useState<any>(null);
@@ -110,11 +50,21 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
   }, []);
 
   useEffect(() => {
-    const fetchRatesAndValidateOffers = async () => {
+    const fetchOrderOffers = async () => {
       try {
+        setIsLoading(true);
+        const response = await p2pMarketAPIClient.getOrderOffers();
+
+        // Check if response or offers is empty
+        if (!response?.offers || response.offers.length === 0) {
+          console.log("No order offers available");
+          setShouldRender(false);
+          return;
+        }
+
         // Fetch rates for each offer
         const offersWithRates = await Promise.all(
-          cryptoOffers.map(async (offer) => {
+          response.offers.map(async (offer) => {
             try {
               const rate = await ExchangeRatesService.fetchRateWithRetry(
                 offer.tokenCode,
@@ -125,10 +75,9 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                 return null;
               }
 
-              const updatedOffer: BannerOffer = {
+              const updatedOffer: OrderOffer = {
                 ...offer,
-                price: rate.toString(),
-                crypto: offer.tokenCode,
+                fiatAmount: rate.toString(),
               };
 
               return updatedOffer;
@@ -139,8 +88,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
               );
               return {
                 ...offer,
-                price: "1",
-                crypto: offer.tokenCode,
+                fiatAmount: "1",
               };
             }
           })
@@ -148,16 +96,26 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
 
         // Filter out offers with no valid rates
         const validOffers = offersWithRates.filter(
-          (offer): offer is BannerOffer => offer !== null
+          (offer): offer is OrderOffer => offer !== null
         );
+
+        if (validOffers.length === 0) {
+          console.log("No valid offers after rate fetching");
+          setShouldRender(false);
+          return;
+        }
+
         setValidOffers(validOffers);
+        setShouldRender(true);
       } catch (error) {
-        console.error("Failed to fetch exchange rates:", error);
-        setValidOffers([]);
+        console.error("Failed to fetch order offers:", error);
+        setShouldRender(false);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchRatesAndValidateOffers();
+    fetchOrderOffers();
   }, []);
 
   useEffect(() => {
@@ -168,13 +126,14 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
     return () => carouselApi.off("select", onSelect);
   }, [carouselApi]);
 
-  const handleCardClick = (offer: BannerOffer) => {
+  const handleCardClick = (offer: OrderOffer) => {
     if (onOfferClick) {
       onOfferClick(offer);
     }
   };
 
-  if (validOffers.length === 0) {
+  // Don't render anything if we shouldn't render or if loading/no offers
+  if (!shouldRender || isLoading || validOffers.length === 0) {
     return null;
   }
 
@@ -205,8 +164,8 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                       {offer.type === "BUY" ? t("buy") : t("sell")}
                     </div>
                     <CryptoAmountIcon
-                      tokenCode={offer.crypto || offer.tokenCode}
-                      formattedAmount={offer.amount}
+                      tokenCode={offer.tokenCode}
+                      formattedAmount={offer.tokenAmount}
                       showAmount={true}
                       textSizeClass="text-[10px]"
                       amountTextClassName="text-gray-500 font-medium mr-1"
@@ -223,7 +182,10 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                       <div className="text-[10px] text-primary/80">
                         {t("for")}{" "}
                         <span className="font-medium text-gray-500 text-[10px]">
-                          {formatFiatAmount(offer.price || "0", offer.fiatCode)}
+                          {formatFiatAmount(
+                            offer.fiatAmount || "0",
+                            offer.fiatCode
+                          )}
                         </span>
                       </div>
                       <div className="text-[10px] text-primary/60 mt-0.5 sm:mt-1 mb-1">

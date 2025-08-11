@@ -1,4 +1,4 @@
-import { OrderType, PaymentMethod } from "b5-api-client";
+import { OrderType, PaymentMethod, OrderOffer } from "b5-api-client";
 
 export interface BannerOffer {
     readonly id: string;
@@ -19,5 +19,5 @@ export interface BannerOffer {
 }
 
 export interface BannerOfferClickHandler {
-    (offer: BannerOffer): void;
+    (offer: OrderOffer): void;
 } 
