@@ -29,6 +29,8 @@ export function useUser() {
 
 
     const login = async (userData: KioscoinUser, loginId: string) => {
+        setUser(userData);
+        setLoginId(loginId);
         const provider = await connectTo(WALLET_CONNECTORS.AUTH, {
             authConnectionId: "b5-kioscoin-dev",
             authConnection: AUTH_CONNECTION.CUSTOM,
@@ -38,8 +40,6 @@ export function useUser() {
             },
         })
         console.log("provider", provider);
-        setUser(userData);
-        setLoginId(loginId);
     };
 
     const logout = () => {

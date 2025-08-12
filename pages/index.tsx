@@ -16,6 +16,7 @@ import { TopBar } from "@/components/kioscoin/TopBar";
 import { LandingPage } from "@/components/kioscoin/landing/LandingPage";
 import { cn } from "@/lib/utils";
 import OrderCreationFlow from "@/components/kioscoin/orders/OrderCreationFlow";
+import KioscoinOperationFlow from "@/components/kioscoin/orders/KioscoinOperationFlow";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/create-orders/CreateOrderContainer";
 import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
 import { HelpDialog } from "@/components/kioscoin/HelpDialog";
@@ -101,7 +102,8 @@ export default function Home() {
             onClose={resetTransaction}
           />
           <div className="w-full max-w-md mx-auto py-6 sm:py-8 px-2 sm:px-4 flex flex-col">
-            <OrderCreationFlow activeComponent={activeComponent} />
+            <KioscoinOperationFlow />
+            {/* <OrderCreationFlow activeComponent={activeComponent} /> */}
             <div className="flex-1">{renderComponent()}</div>
           </div>
         </main>

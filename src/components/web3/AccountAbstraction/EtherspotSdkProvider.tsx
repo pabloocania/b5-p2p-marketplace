@@ -15,6 +15,7 @@ interface EtherspotSdkContextType {
   swAddress: string;
   eoaAddress: string;
   balances: TokenBalance[];
+  refreshBalances: () => Promise<void>;
 }
 
 const EtherspotSdkContext = createContext<EtherspotSdkContextType | undefined>(
@@ -40,7 +41,6 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
     provider,
     status,
   } = useWeb3Auth();
-  const { disconnect } = useWeb3AuthDisconnect();
 
   const createWalletProvider = () => ({
     ...walletClient,
@@ -60,6 +60,17 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
     // Use the Etherspot wrapper
     // return new Web3WalletProvider(web3authProvider);
     return await Web3WalletProvider.connect(web3authProvider);
+  };
+
+  const refreshBalances = async () => {
+    if (primeSdk && eoaAddress) {
+      const updatedBalances =
+        await EtherspotSdksManager.getInstance().getTokensBalances(
+          primeSdk,
+          eoaAddress
+        );
+      setBalances(updatedBalances ?? []);
+    }
   };
 
   useEffect(() => {
@@ -113,6 +124,7 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
         swAddress: smartWalletAddress,
         eoaAddress: eoaAddress,
         balances,
+        refreshBalances,
       }}
     >
       {children}

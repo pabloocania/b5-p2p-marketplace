@@ -6,11 +6,13 @@ import { PaymentMethod } from "b5-api-client";
 interface Props {
   selectedMethods: PaymentMethod[];
   onChange: (updatedMethods: PaymentMethod[]) => void;
+  methods?: PaymentMethod[];
 }
 
 export default function PaymentMethodSelector({
-  selectedMethods,
+  selectedMethods = [],
   onChange,
+  methods = [],
 }: Props) {
   const handleToggle = (method: PaymentMethod) => {
     const updated = selectedMethods.some((m) => m.entity === method.entity)
@@ -31,6 +33,7 @@ export default function PaymentMethodSelector({
   return (
     <>
       <CompactPaymentMethodSelector
+        methods={methods.map((m) => ({ ...m, display: "alias" } as any))}
         selectedMethods={selectedMethods}
         onToggle={handleToggle}
         onUpdateMethod={handleUpdateMethod}
