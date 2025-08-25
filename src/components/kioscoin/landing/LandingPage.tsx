@@ -29,37 +29,36 @@ export function LandingPage() {
     <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-500 to-yellow-500 flex flex-col">
       {/* Hero Section - Much more compressed */}
       <div className="text-center py-1 px-4 flex-1 flex flex-col justify-center">
-        <p className="text-lg sm:text-xl text-white/90 mb-1 max-w-2xl mx-auto">
-          The future of P2P crypto trading. Buy and sell stablecoins with real
-          people, using secure and decentralized escrow.
+        <p className="text-base sm:text-lg text-white/90 mb-1 max-w-2xl mx-auto">
+          {t("landing_hero_text")}
         </p>
 
         {/* Features - Much more compressed */}
-        <div className="flex flex-wrap justify-center gap-4 mb-1">
+        <div className="flex flex-wrap justify-center gap-3 mb-1">
           <div className="flex items-center text-white/90">
-            <span className="text-xl mr-2">🔒</span>
-            <span className="text-sm">Secure Escrow</span>
+            <span className="text-lg mr-1">🔒</span>
+            <span className="text-xs">{t("secure_escrow")}</span>
           </div>
           <div className="flex items-center text-white/90">
-            <span className="text-xl mr-2">⚡</span>
-            <span className="text-sm">Instant Trading</span>
+            <span className="text-lg mr-1">⚡</span>
+            <span className="text-xs">{t("instant_trading")}</span>
           </div>
           <div className="flex items-center text-white/90">
-            <span className="text-xl mr-2">💰</span>
-            <span className="text-sm">No Gas Fees</span>
+            <span className="text-lg mr-1">💰</span>
+            <span className="text-xs">{t("no_gas_fees")}</span>
           </div>
         </div>
       </div>
 
-      {/* Auth Section - Moved much higher */}
-      <div className="max-w-md mx-auto px-4 pb-64">
-        <div className="bg-white rounded-2xl shadow-2xl p-4">
-          {/* Toggle Buttons */}
-          <div className="flex bg-gray-100 rounded-lg p-1 mb-3">
+      {/* Auth Section - More compact */}
+      <div className="max-w-sm mx-auto px-4 pb-64">
+        <div className="bg-white rounded-xl shadow-lg p-3">
+          {/* Toggle Buttons - More compact */}
+          <div className="flex bg-gray-100 rounded-lg p-0.5 mb-2">
             <button
               onClick={() => setAuthMode("login")}
               className={cn(
-                "flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200",
+                "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200",
                 authMode === "login"
                   ? "bg-white text-purple-600 shadow-sm"
                   : "text-gray-600 hover:text-gray-900"
@@ -70,7 +69,7 @@ export function LandingPage() {
             <button
               onClick={() => setAuthMode("register")}
               className={cn(
-                "flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200",
+                "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200",
                 authMode === "register"
                   ? "bg-white text-purple-600 shadow-sm"
                   : "text-gray-600 hover:text-gray-900"
@@ -80,8 +79,8 @@ export function LandingPage() {
             </button>
           </div>
 
-          {/* Form */}
-          <div className="min-h-[200px]">
+          {/* Form - More compact */}
+          <div className="min-h-[150px]">
             {authMode === "login" ? (
               <EmailLoginForm
                 onLogin={handleLogin}
@@ -97,20 +96,20 @@ export function LandingPage() {
         </div>
       </div>
 
-      {/* Social Proof - Much more compressed */}
+      {/* Social Proof - More compact */}
       <div className="text-center py-1 px-4">
-        <div className="flex justify-center gap-8 text-white/80 text-sm">
+        <div className="flex justify-center gap-6 text-white/80 text-xs">
           <div className="text-center">
-            <div className="text-xl font-bold text-white">10,000+</div>
-            <div>Active Users</div>
+            <div className="text-lg font-bold text-white">10,000+</div>
+            <div>{t("active_users")}</div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-white">$2M+</div>
-            <div>Trading Volume</div>
+            <div className="text-lg font-bold text-white">$2M+</div>
+            <div>{t("trading_volume")}</div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-white">99.9%</div>
-            <div>Success Rate</div>
+            <div className="text-lg font-bold text-white">99.9%</div>
+            <div>{t("success_rate")}</div>
           </div>
         </div>
       </div>

@@ -92,7 +92,7 @@ export default function Home() {
     <div className="min-h-screen bg-white flex justify-center">
       <div className="w-full bg-backgroundMain flex flex-col relative h-screen">
         <TopBar activeComponent={activeComponent} />
-        <main className="flex-1 overflow-hidden pt-14 sm:pt-19 pb-20 sm:pb-24 md:pb-28 relative">
+        <main className="flex-1 overflow-y-auto pt-14 sm:pt-19 pb-20 sm:pb-24 md:pb-28 relative">
           <TransactionStatus
             status={transaction.status}
             message={transaction.message}
@@ -100,9 +100,9 @@ export default function Home() {
             order={transaction.order}
             onClose={resetTransaction}
           />
-          <div className="w-full max-w-md mx-auto py-0.5 sm:py-1 md:py-2 px-2 sm:px-4 h-full flex flex-col">
+          <div className="w-full max-w-md mx-auto py-0.5 sm:py-1 md:py-2 px-2 sm:px-4 flex flex-col">
             <OrderCreationFlow activeComponent={activeComponent} />
-            <div className="flex-1 min-h-0">{renderComponent()}</div>
+            <div className="flex-1">{renderComponent()}</div>
           </div>
         </main>
 

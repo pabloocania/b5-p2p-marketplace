@@ -2,7 +2,6 @@
 import { Bell, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import { KioscoinIcon } from "@/icons/KioscoinIcon";
 import { Button } from "@/components/ui/button";
 
 interface TopBarProps {
@@ -27,19 +26,28 @@ export function TopBar({ activeComponent }: TopBarProps) {
       case "OrderFeed":
         return (
           <>
-            {/* Logo como título */}
+            {/* Logo en el borde izquierdo */}
             <div className="flex items-center">
-              <KioscoinIcon className="h-6 w-6 sm:h-8 sm:w-8" />
-              <span className="text-primary text-lg sm:text-xl font-semibold ml-2">
+              <img
+                src="/icons/kioscoin-isotipo.png"
+                alt="Kioscoin"
+                className="h-16 w-16 sm:h-21 sm:w-21"
+              />
+            </div>
+
+            {/* Título centrado en la mitad de la pantalla */}
+            <div className="flex-1 flex justify-center">
+              <span className="text-primary text-xl sm:text-2xl font-bold font-primary">
                 Kioscoin
               </span>
             </div>
+
             {/* Botón campanita */}
             <Button
               variant="ghost"
               size="sm"
               onClick={handleNotificationClick}
-              className="p-2 hover:bg-gray-100"
+              className="p-2 hover:bg-gray-100 w-12 sm:w-14"
             >
               <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             </Button>
@@ -49,18 +57,28 @@ export function TopBar({ activeComponent }: TopBarProps) {
       case "MyOrders":
         return (
           <>
-            {/* Título centrado */}
-            <div className="flex-1 text-center">
-              <h1 className="text-lg sm:text-xl font-semibold text-primary">
-                {t("my_orders")}
-              </h1>
+            {/* Logo en el borde izquierdo */}
+            <div className="flex items-center">
+              <img
+                src="/icons/kioscoin-isotipo.png"
+                alt="Kioscoin"
+                className="h-16 w-16 sm:h-21 sm:w-21"
+              />
             </div>
+
+            {/* Título centrado en la mitad de la pantalla */}
+            <div className="flex-1 flex justify-center">
+              <span className="text-primary text-lg sm:text-xl font-semibold font-primary">
+                {t("my_orders")}
+              </span>
+            </div>
+
             {/* Botón campanita */}
             <Button
               variant="ghost"
               size="sm"
               onClick={handleNotificationClick}
-              className="p-2 hover:bg-gray-100"
+              className="p-2 hover:bg-gray-100 w-12 sm:w-14"
             >
               <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             </Button>
@@ -70,18 +88,28 @@ export function TopBar({ activeComponent }: TopBarProps) {
       case "UserMenu":
         return (
           <>
-            {/* Título centrado */}
-            <div className="flex-1 text-center">
-              <h1 className="text-lg sm:text-xl font-semibold text-primary">
-                {t("my_account")}
-              </h1>
+            {/* Logo en el borde izquierdo */}
+            <div className="flex items-center">
+              <img
+                src="/icons/kioscoin-isotipo.png"
+                alt="Kioscoin"
+                className="h-16 w-16 sm:h-21 sm:w-21"
+              />
             </div>
+
+            {/* Título centrado en la mitad de la pantalla */}
+            <div className="flex-1 flex justify-center">
+              <span className="text-primary text-lg sm:text-xl font-semibold font-primary">
+                {t("my_account")}
+              </span>
+            </div>
+
             {/* Botón hamburguesa */}
             <Button
               variant="ghost"
               size="sm"
               onClick={handleMenuClick}
-              className="p-2 hover:bg-gray-100"
+              className="p-2 hover:bg-gray-100 w-12 sm:w-14"
             >
               <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             </Button>

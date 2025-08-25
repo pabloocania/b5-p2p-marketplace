@@ -47,13 +47,13 @@ export function TransactionStatus({
       case "sent":
       case "waiting":
       case "sending":
-        return "bg-yellow-100";
+        return "bg-primary/5 border-primary/20";
       case "success":
-        return "bg-secondary bg-opacity-10";
+        return "bg-success/5 border-success/20";
       case "error":
-        return "bg-red-100 border-red-300 border-opacity-10";
+        return "bg-error/5 border-error/20";
       default:
-        return "bg-gray-100 border-opacity-10";
+        return "bg-muted border-border";
     }
   };
 
@@ -61,15 +61,15 @@ export function TransactionStatus({
     switch (status) {
       case "sent":
       case "waiting":
-        return <Loader2 className="h-4 w-4 animate-spin text-yellow-600" />;
+        return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
       case "sending":
-        return <Loader2 className="h-4 w-4 animate-spin text-terciary" />;
+        return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
       case "success":
-        return <CheckCircle2 className="h-4 w-4 text-green-600" />;
+        return <CheckCircle2 className="h-4 w-4 text-success" />;
       case "error":
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
+        return <AlertCircle className="h-4 w-4 text-error" />;
       default:
-        return <AlertCircle className="h-4 w-4 text-gray-600" />;
+        return <AlertCircle className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -109,14 +109,14 @@ export function TransactionStatus({
           {(status === "sent" || status === "waiting") && (
             <Progress
               value={animatedProgress}
-              className="my-4 border border-secondary"
+              className="my-4 border border-primary/20"
             />
           )}
           {status === "success" && (
             <>
               <Button
                 onClick={handleClose}
-                className="w-full mb-4 bg-secondary text-white"
+                className="w-full mb-4 bg-primary text-white hover:bg-primary/90"
               >
                 {t("close")}
               </Button>
@@ -125,7 +125,7 @@ export function TransactionStatus({
           {status === "error" && (
             <Button
               onClick={handleClose}
-              className="w-full mb-4 bg-secondary text-white"
+              className="w-full mb-4 bg-primary text-white hover:bg-primary/90"
             >
               {t("close")}
             </Button>

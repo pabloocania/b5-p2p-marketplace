@@ -198,6 +198,16 @@ i18n.use(initReactI18next).init({
         kioskoin_step_1_desc:
           "Kioscoin es una app para comprar y vender stablecoins con otras personas,\nusando un escrow seguro y descentralizado.",
 
+        // Landing Page translations
+        landing_hero_text:
+          "The future of P2P crypto trading. Buy and sell stablecoins with real people, using secure and decentralized escrow.",
+        secure_escrow: "Secure Escrow",
+        instant_trading: "Instant Trading",
+        no_gas_fees: "No Gas Fees",
+        active_users: "Active Users",
+        trading_volume: "Trading Volume",
+        success_rate: "Success Rate",
+
         kioskoin_step_2_title: "Connect your wallet",
         kioskoin_step_2_desc:
           "Use Metamask or your favorite wallet to get started.\nJust sign once — no gas required.",
@@ -430,6 +440,16 @@ i18n.use(initReactI18next).init({
         kioskoin_step_1_title: "Que es Kioscoin?",
         kioskoin_step_1_desc:
           "Kioscoin es una app para comprar y vender stablecoins con otras personas,\nusando un escrow seguro y descentralizado.",
+
+        // Landing Page translations
+        landing_hero_text:
+          "El futuro del trading P2P de cripto. Compra y vende stablecoins con personas reales, usando un escrow seguro y descentralizado.",
+        secure_escrow: "Escrow Seguro",
+        instant_trading: "Trading Instantáneo",
+        no_gas_fees: "Sin Gas Fees",
+        active_users: "Usuarios Activos",
+        trading_volume: "Volumen de Trading",
+        success_rate: "Tasa de Éxito",
 
         kioskoin_step_2_title: "Conecta tu wallet",
         kioskoin_step_2_desc:

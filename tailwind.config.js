@@ -7,6 +7,11 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Donatto Regular", "Montserrat", "system-ui", "sans-serif"],
+        display: ["Donatto Regular", "system-ui", "sans-serif"],
+        secondary: ["Montserrat", "system-ui", "sans-serif"],
+      },
       fontSize: {
         xxs: "0.625rem", // Add a new font size
       },
@@ -26,25 +31,35 @@ module.exports = {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
-        primary: "#2a386b",
-        secondary: "#58bf4b",
-        terciary: "#4B75E7",
-        backgroundMain: "#F4FDED",
+        // Branding Colors - Accessibility Optimized
+        primary: "#8b5fdc", // Púrpura vibrante - Color principal
+        secondary: "#efb810", // Amarillo mostaza - Color secundario
+        terciary: "#fcce4c", // Amarillo claro - Color terciario
+        accent: "#9e8cbe", // Púrpura grisáceo - Acentos
+        dark: "#3e2262", // Púrpura oscuro - Textos importantes
+
+        // Background Colors
+        backgroundMain: "#faf9ff", // Fondo principal muy suave (púrpura muy claro)
+        backgroundSecondary: "#f5f3ff", // Fondo secundario
+
+        // Semantic Colors
+        success: "#10b981", // Verde para éxito
+        warning: "#f59e0b", // Naranja para advertencias
+        error: "#ef4444", // Rojo para errores
+        info: "#3b82f6", // Azul para información
+
+        // Neutral Colors for Accessibility
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#f1f5f9",
+          foreground: "#64748b",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "#ef4444",
+          foreground: "#ffffff",
         },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+        border: "#e2e8f0",
+        input: "#f8fafc",
+        ring: "#8b5fdc",
         chart: {
           1: "hsl(var(--chart-1))",
           2: "hsl(var(--chart-2))",

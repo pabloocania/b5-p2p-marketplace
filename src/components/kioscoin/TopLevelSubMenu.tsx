@@ -27,8 +27,8 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
             <Button
               className={`flex-1 ${
                 activeSubFilter === Filter.PENDING
-                  ? "bg-secondary text-white"
-                  : "hover:bg-primary text-white bg-terciary"
+                  ? "bg-primary text-white shadow-lg"
+                  : "hover:bg-primary/90 text-primary bg-white border-2 border-primary/30"
               }`}
               onClick={() => setActiveSubFilter(Filter.PENDING)}
             >
@@ -37,8 +37,8 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
             <Button
               className={`flex-1 ${
                 activeSubFilter === Filter.WAITING_PAYMENT
-                  ? "bg-secondary text-white"
-                  : "hover:bg-primary text-white bg-terciary"
+                  ? "bg-primary text-white shadow-lg"
+                  : "hover:bg-primary/90 text-primary bg-white border-2 border-primary/30"
               }`}
               onClick={() => setActiveSubFilter(Filter.WAITING_PAYMENT)}
             >
@@ -47,8 +47,8 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
             <Button
               className={`flex-1 ${
                 activeSubFilter === Filter.CLOSED
-                  ? "bg-secondary text-white"
-                  : "hover:bg-primary text-white bg-terciary"
+                  ? "bg-primary text-white shadow-lg"
+                  : "hover:bg-primary/90 text-primary bg-white border-2 border-primary/30"
               }`}
               onClick={() => setActiveSubFilter(Filter.CLOSED)}
             >
@@ -58,7 +58,7 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
         </div>
       )}
 
-      <div className="flex-1 min-h-0">
+      <div className="flex-1">
         <OrdersFeed
           filter={activeSubFilter}
           refreshKey={refreshKey}
