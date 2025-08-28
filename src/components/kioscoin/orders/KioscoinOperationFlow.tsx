@@ -8,6 +8,7 @@ import { UserMenuSheet } from "../users/UserMenuSheet";
 import { CreateOrderContainer } from "./create-orders/CreateOrderContainer";
 import { useTranslation } from "react-i18next";
 import { BuyOperationForm } from "./operation/BuyOperationForm";
+import { SellOperationForm } from "./operation/SellOperationForm";
 
 export default function KioscoinOperationFlow() {
   const [isOperationOpen, setIsOperationOpen] = useState(false);
@@ -57,10 +58,11 @@ export default function KioscoinOperationFlow() {
           (selectedOffer.type === "BUY" ? (
             <BuyOperationForm offer={selectedOffer} onCancel={handleClose} />
           ) : (
-            <div className="p-4">
-              <h3 className="text-lg font-semibold mb-2">{t("sell")}</h3>
-              <p className="text-sm text-muted-foreground">Coming soon.</p>
-            </div>
+            <SellOperationForm
+              offer={selectedOffer}
+              onCancel={handleClose}
+              onLockFundsSuccess={handleClose}
+            />
           ))}
       </CreateOrderContainer>
     </>

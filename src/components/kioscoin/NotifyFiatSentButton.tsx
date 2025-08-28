@@ -12,8 +12,8 @@ interface NotifyFiatSentButtonProps {
   fiatSent: (order: Order) => Promise<void>;
 }
 
-const formatAlias = (alias: string): string => {
-  return alias.startsWith("@") ? alias : `@${alias}`;
+const formatAlias = (alias: string | undefined): string => {
+  return alias?.startsWith("@") ? alias : `${alias}`;
 };
 
 const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
@@ -54,7 +54,7 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
                 <EntityBadge
                   entity={method.entity!}
                   type={method.type!}
-                  alias={formatAlias(method.alias!)}
+                  alias={formatAlias(method.alias)}
                   size="lg"
                 />
               </div>

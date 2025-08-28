@@ -165,7 +165,11 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       if (wrongNetworkAlert) return wrongNetworkAlert;
 
       return isConnected || isConnectedWeb3Auth ? (
-        <LockFundsButton order={order} canLock={isSeller} />
+        <LockFundsButton
+          order={order}
+          canLock={isSeller}
+          onSuccess={() => {}}
+        />
       ) : (
         <ConnectToContinueButton />
       );

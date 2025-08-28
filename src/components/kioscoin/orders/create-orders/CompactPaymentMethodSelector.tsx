@@ -106,6 +106,10 @@ const CompactPaymentMethodSelector: React.FC<
 
     if (!methodToRender) return "";
 
+    if (readOnly) {
+      return methodToRender.entity;
+    }
+
     if (methodToRender.type === "FINTECH") {
       return methodToRender.alias || "";
     }

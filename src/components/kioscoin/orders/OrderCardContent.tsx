@@ -52,6 +52,7 @@ import { Button } from "../../ui/button";
 import { Rating } from "../Rating";
 import { formatFiatAmount, formatTokenAmount } from "@/lib/utils";
 import CompactPaymentMethodSelector from "./create-orders/CompactPaymentMethodSelector";
+import PaymentMethodSelector from "./create-orders/PaymentMethodSelector";
 
 interface OrderCardContentProps {
   order: Order;
@@ -95,6 +96,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
     PaymentMethod[]
   >([]);
+  const availableMethods = ConfigStore.getInstance().getPaymentMethods();
 
   useEffect(() => {
     setClipboardSupported("clipboard" in navigator);
@@ -147,13 +149,9 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
     onPaymentMethodsChange?.(newSelectedMethods);
   };
 
-  const handleUpdatePaymentMethod = (updatedMethod: PaymentMethod) => {
-    const newSelectedMethods = selectedPaymentMethods.map((method) =>
-      method.entity === updatedMethod.entity ? updatedMethod : method
-    );
-
-    setSelectedPaymentMethods(newSelectedMethods);
-    onPaymentMethodsChange?.(newSelectedMethods);
+  const handleUpdatePaymentMethod = (updatedMethods: PaymentMethod[]) => {
+    setSelectedPaymentMethods(updatedMethods);
+    onPaymentMethodsChange?.(updatedMethods);
   };
 
   return (
@@ -320,10 +318,11 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
         showDetails &&
         order.type === ("BUY" as OrderType) && (
           <div className="py-2">
-            <CompactPaymentMethodSelector
+            <PaymentMethodSelector
               selectedMethods={selectedPaymentMethods}
-              onToggle={handleTogglePaymentMethod}
-              onUpdateMethod={handleUpdatePaymentMethod}
+              onChange={handleUpdatePaymentMethod}
+              methods={availableMethods}
+              readOnly={true} // Set to readOnly mode
             />
           </div>
         )}

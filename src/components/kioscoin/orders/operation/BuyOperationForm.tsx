@@ -28,10 +28,7 @@ export function BuyOperationForm({ offer, onCancel }: BuyOperationFormProps) {
 
   const isValid = useMemo(() => {
     const hasValidMethod = selectedMethods.some(
-      (m) =>
-        ((m.alias?.trim()?.length ?? 0) > 0 ||
-          (m.cbu?.trim()?.length ?? 0) > 0) &&
-        (m.entity?.trim()?.length ?? 0) > 0
+      (m) => (m.entity?.trim()?.length ?? 0) > 0
     );
     return buyerAddress.trim().length > 0 && hasValidMethod;
   }, [buyerAddress, selectedMethods]);
@@ -57,7 +54,7 @@ export function BuyOperationForm({ offer, onCancel }: BuyOperationFormProps) {
         buyerAddress: buyerAddress,
       };
 
-      await p2pMarketAPIClient.pointOfSaleTransact(body, {
+      const response = await p2pMarketAPIClient.pointOfSaleTransact(body, {
         "Content-Type": "application/json",
         Authorization: `Bearer ${loginId}`,
       });
@@ -80,14 +77,33 @@ export function BuyOperationForm({ offer, onCancel }: BuyOperationFormProps) {
 
   return (
     <div className="p-4 space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold">Buy {offer.tokenCode}</h3>
-        <p className="text-sm text-muted-foreground">
-          You will pay {offer.fiatCode} {offer.fiatAmount} for{" "}
-          {offer.tokenAmount} {offer.tokenCode}
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div className="flex items-center space-x-2">
+          <span className="text-2xl font-semibold">
+            {offer.type === "SELL" ? "Sell" : "Buy"} {offer.tokenCode}
+          </span>
+        </div>
+      </div>
+
+      {/* Offer Details */}
+      <div className="rounded-lg space-y-2 px-4 py-3 bg-secondary bg-opacity-10">
+        <p className="text-sm text-primary">
+          You will pay{" "}
+          <strong>
+            {offer.fiatCode} {offer.fiatAmount}
+          </strong>{" "}
+          for{" "}
+          <strong>
+            {offer.tokenAmount} {offer.tokenCode}
+          </strong>
+        </p>
+        <p className="text-sm text-primary">
+          Blockchain: <strong>{offer.blockchain}</strong>
         </p>
       </div>
 
+      {/* Destination Address */}
       <div className="space-y-2">
         <Label htmlFor="buyerAddress">Destination address</Label>
         <Input
@@ -98,50 +114,15 @@ export function BuyOperationForm({ offer, onCancel }: BuyOperationFormProps) {
         />
       </div>
 
+      {/* Payment Method Selector */}
       <PaymentMethodSelector
         selectedMethods={selectedMethods}
         onChange={setSelectedMethods}
         methods={availableMethods}
+        readOnly={true} // Set to readOnly mode
       />
 
-      {/* <div className="grid grid-cols-1 gap-4">
-        <div className="space-y-2">
-          <Input
-            id="alias"
-            placeholder="your.alias"
-            value={alias}
-            onChange={(e) => setAlias(e.target.value)}
-          />
-        </div>
-        <div className="space-y-2">
-          <Input
-            id="cbu"
-            placeholder="XXXXXXXXXXXXXXX"
-            value={cbu}
-            onChange={(e) => setCbu(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Input
-          id="entity"
-          placeholder="Bank/Fintech name"
-          value={entity}
-          onChange={(e) => setEntity(e.target.value)}
-        />
-      </div> */}
-      {/* 
-      <div className="space-y-2">
-        <Label htmlFor="fullName">Full name (optional)</Label>
-        <Input
-          id="fullName"
-          placeholder="John Doe"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-        />
-      </div> */}
-
+      {/* Action Buttons */}
       <div className="flex gap-2 pt-2">
         <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel

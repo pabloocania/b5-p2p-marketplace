@@ -82,7 +82,6 @@ class TransferState {
 }
 import { parseUnits } from "viem";
 import { useWeb3Auth } from "@web3auth/modal/react";
-import { EtherspotSdksManager } from "@/components/web3/AccountAbstraction/EtherspotSdksManager";
 
 export default function UserWalletsComponent() {
   const { t } = useTranslation();
