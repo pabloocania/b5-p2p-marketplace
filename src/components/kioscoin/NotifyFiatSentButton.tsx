@@ -43,7 +43,7 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
           </p>
           <p className="text-md font-semibold text-primary">
             {t("send")}
-            <span className="ml-1 mr-1 text-xl font-bold text-terciary">
+            <span className="ml-1 mr-1 text-xl font-bold text-black">
               {formatFiatAmount(order.fiatAmount, order.fiatCode)}
             </span>
             {t("to_receive")}

@@ -8,9 +8,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Donatto Regular", "Montserrat", "system-ui", "sans-serif"],
-        display: ["Donatto Regular", "system-ui", "sans-serif"],
-        secondary: ["Montserrat", "system-ui", "sans-serif"],
+        sans: ["Inter", "Poppins", "system-ui", "sans-serif"],
+        display: ["Inter", "system-ui", "sans-serif"],
+        secondary: ["Poppins", "system-ui", "sans-serif"],
       },
       fontSize: {
         xxs: "0.625rem", // Add a new font size

@@ -156,10 +156,16 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
                 <SheetTrigger asChild>
                   <Button
                     onClick={handleChatIconClick}
-                    className="gap-1 p-2 items-center justify-center bg-white text-terciary border border-secondary border-opacity-50"
+                    className="gap-1 p-2 items-center justify-center bg-white text-terciary border border-secondary border-opacity-50 animate-chat-blink hover:animate-none hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden group"
                   >
-                    <MessageCircle size={20} />
-                    <span>Chat</span>
+                    {/* Efecto de brillo que se mueve */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+                    {/* Efecto de borde pulsante */}
+                    <div className="absolute inset-0 rounded border-2 border-primary/50 animate-ping"></div>
+
+                    <MessageCircle size={20} className="relative z-10" />
+                    <span className="relative z-10 font-semibold">Chat</span>
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="bottom" className="h-[90vh]" closeText="">
@@ -176,7 +182,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
             <div className="flex-1">
               <p className="text-left w-full text-primary">
                 {t("for")}{" "}
-                <span className="font-bold text-primary">
+                <span className="font-bold text-black">
                   {hasValidFiatData(order)
                     ? formatFiatAmount(order.fiatAmount, order.fiatCode)
                     : formatFiatAmount("0", "ARS")}

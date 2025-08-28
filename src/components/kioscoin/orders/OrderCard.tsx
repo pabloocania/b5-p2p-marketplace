@@ -83,10 +83,10 @@ export function OrderCard({
         paymentMethods={selectedPaymentMethods}
       />
       <Separator className="mb-1" />
-      <div className="pl-4 pb-1 pt-1 flex items-center gap-4 text-sm h-8">
+      <div className="pl-4 pb-1 pt-1 flex items-center gap-4 text-sm min-h-[32px]">
         {user && <OrderIdLink orderId={order.id} />}
         {user && canShowDisputeButton && (
-          <span className="mx-2 text-gray-400 select-none">•</span>
+          <span className="text-primary select-none">•</span>
         )}
         {canShowDisputeButton && <DisputeOrderButton order={order} />}
       </div>

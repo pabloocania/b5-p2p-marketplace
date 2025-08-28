@@ -100,7 +100,7 @@ export default function Home() {
             order={transaction.order}
             onClose={resetTransaction}
           />
-          <div className="w-full max-w-md mx-auto py-0.5 sm:py-1 md:py-2 px-2 sm:px-4 flex flex-col">
+          <div className="w-full max-w-md mx-auto py-6 sm:py-8 px-2 sm:px-4 flex flex-col">
             <OrderCreationFlow activeComponent={activeComponent} />
             <div className="flex-1">{renderComponent()}</div>
           </div>

@@ -178,7 +178,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
   }
 
   return (
-    <div className="relative w-full px-0 py-1 sm:px-2 sm:py-2 md:py-4 md:px-4 rounded-xl bg-secondary/40 shadow-lg mb-1 sm:mb-2 md:mb-4 mt-2 sm:mt-3">
+    <div className="relative w-full px-2 py-1 sm:px-4 sm:py-2 md:py-4 md:px-6 rounded-xl bg-secondary/40 shadow-lg mb-6 sm:mb-8 mt-6 sm:mt-8">
       <Carousel
         opts={{
           align: "start",
@@ -191,15 +191,15 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
           {validOffers.map((offer, idx) => (
             <CarouselItem
               key={offer.id}
-              className={`w-full max-w-[320px] sm:max-w-[380px] flex-shrink-0 flex-grow-0`}
+              className={`w-[80%] max-w-[256px] sm:max-w-[304px] flex-shrink-0 flex-grow-0 px-2 sm:px-3`}
             >
               <Card
-                className="h-full shadow rounded-lg border-0 cursor-pointer transition-transform hover:scale-[1.01] p-0 flex flex-col justify-between min-h-[100px] sm:min-h-[120px] md:min-h-[160px] max-w-[300px] sm:max-w-[360px]"
+                className="h-full shadow rounded-lg border-0 cursor-pointer transition-transform hover:scale-[1.01] p-0 flex flex-col justify-between min-h-[90px] sm:min-h-[110px] md:min-h-[140px] max-w-[240px] sm:max-w-[288px]"
                 onClick={() => handleCardClick(offer)}
               >
-                <div className="flex-1 p-2 sm:p-3 flex flex-col">
+                <div className="flex-1 p-1.5 sm:p-2 flex flex-col">
                   {/* Header with crypto icon and amount */}
-                  <div className="flex mb-1 sm:mb-2">
+                  <div className="flex mb-0.5 sm:mb-1">
                     <div className="flex items-end text-lg sm:text-xl text-primary font-bold mr-1">
                       {offer.type === "BUY" ? t("buy") : t("sell")}
                     </div>
@@ -215,12 +215,12 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                   </div>
 
                   {/* Two column layout */}
-                  <div className="flex flex-1 gap-2 sm:gap-4">
+                  <div className="flex flex-1 gap-1.5 sm:gap-3">
                     {/* Left column: order type, fiat, blockchain */}
                     <div className="flex-1">
                       <div className="text-sm sm:text-base">
                         {t("for")}{" "}
-                        <span className="font-bold text-primary">
+                        <span className="font-bold text-black">
                           {formatFiatAmount(offer.price || "0", offer.fiatCode)}
                         </span>
                       </div>

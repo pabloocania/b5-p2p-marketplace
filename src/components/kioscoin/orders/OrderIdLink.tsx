@@ -27,13 +27,13 @@ const OrderIdLink: React.FC<OrderIdLinkProps> = ({ orderId }) => {
   };
 
   return (
-    <div className="flex items-center justify-center gap-2 text-xs pb-2">
+    <div className="flex items-center justify-center gap-2 text-xs">
       <button
         onClick={(e) => {
           e.preventDefault();
           setIsIdSheetOpen(true);
         }}
-        className="flex items-center gap-1 text-terciary hover:text-primary hover:underline"
+        className="flex items-center gap-1 text-primary hover:text-primary/80 hover:underline"
       >
         <HistoryIcon className="w-3 h-3" />
         {t("view_history")}
@@ -42,7 +42,7 @@ const OrderIdLink: React.FC<OrderIdLinkProps> = ({ orderId }) => {
       <div className="relative">
         <button
           onClick={handleCopyId}
-          className="flex items-center gap-1 text-terciary hover:text-terciary hover:underline"
+          className="flex items-center gap-1 text-primary hover:text-primary/80 hover:underline"
         >
           <ClipboardIcon className="w-3 h-3" />
           {t("copy_id")}

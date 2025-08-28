@@ -100,12 +100,11 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
     return (
       <>
         <span
-          className="flex items-center gap-1 text-red-600 cursor-pointer select-none"
+          className="flex items-center gap-1 text-primary cursor-pointer select-none text-xs"
           onClick={() => setOpen(true)}
           role="button"
           tabIndex={0}
           title={t("order_disputed")}
-          style={{ lineHeight: "2" }}
         >
           <AlertCircle className="w-4 h-4" />
           {t("order_disputed")}
@@ -136,12 +135,11 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
   return (
     <>
       <span
-        className="flex items-center gap-1 text-red-600 cursor-pointer select-none"
+        className="flex items-center gap-1 text-primary cursor-pointer select-none text-xs"
         onClick={() => setOpen(true)}
         role="button"
         tabIndex={0}
         title={t("dispute_order")}
-        style={{ lineHeight: "2" }}
       >
         <AlertCircle className="w-4 h-4" />
         {t("dispute_order")}

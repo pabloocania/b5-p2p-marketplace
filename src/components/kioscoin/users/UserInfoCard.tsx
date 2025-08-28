@@ -8,8 +8,8 @@ interface UserInfoCardProps {
 
 export const UserInfoCard = ({ user, order }: UserInfoCardProps) => {
   return (
-    <div className="flex flex-row flex-wrap items-center gap-x-2 gap-y-1 bg-terciary/10 rounded-lg p-2 w-full">
-      <span className="font-bold text-[clamp(1.2rem,2vw,1.3rem)] text-terciary shrink-0">
+    <div className="flex flex-row flex-wrap items-center gap-x-2 gap-y-1 bg-primary/20 rounded-lg p-2 w-full">
+      <span className="font-bold text-[clamp(1.2rem,2vw,1.3rem)] text-primary shrink-0">
         {user?.username ||
           (order?.type === "SELL"
             ? "@" + order?.sellerUsername

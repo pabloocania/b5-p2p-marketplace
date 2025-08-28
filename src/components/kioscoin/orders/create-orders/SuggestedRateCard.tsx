@@ -19,7 +19,7 @@ export default function SuggestedRateCard({
   return (
     <div className="bg-secondary/10 p-2 rounded-md min-w-[160px]">
       <Label className="text-xs font-semibold">{t("suggested_rate")}</Label>
-      <div className="text-sm font-medium">
+      <div className="text-sm font-medium text-black">
         1 {tokenCode} = {fiatCode === "EUR" ? "€" : "$"}{" "}
         {suggestedRate !== null
           ? suggestedRate.toLocaleString("es-AR", {
