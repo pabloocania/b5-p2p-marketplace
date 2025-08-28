@@ -117,7 +117,7 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
         </SheetTrigger>
         <SheetContent
           side="bottom"
-          className="h-[90vh] bg-backgroundMain"
+          className="h-[75vh] bg-backgroundMain"
           closeText={t("close")}
         >
           <SheetTitle className="text-lg font-semibold mb-4"></SheetTitle>

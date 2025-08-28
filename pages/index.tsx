@@ -115,7 +115,7 @@ export default function Home() {
 
         <div className="fixed bottom-0 w-full pb-8 sm:pb-10 pt-6 sm:pt-8">
           <div className="relative px-2 sm:px-4">
-            <div className="absolute bottom-24 sm:bottom-28 left-2 sm:left-4">
+            <div className="absolute bottom-28 sm:bottom-32 left-2 sm:left-4">
               <Button
                 size="icon"
                 className="rounded-full w-10 h-10 sm:w-12 sm:h-12 shadow-lg text-white bg-primary hover:bg-terciary/90"
@@ -125,7 +125,7 @@ export default function Home() {
                 <span className="sr-only">Help & Tutorials</span>
               </Button>
             </div>
-            <div className="absolute bottom-12 sm:bottom-16 left-2 sm:left-4">
+            <div className="absolute bottom-16 sm:bottom-20 left-2 sm:left-4">
               <Button
                 size="icon"
                 className="bg-white border-2 border-secondary text-primary hover:bg-primary/90 hover:text-white rounded-full w-10 h-10 sm:w-12 sm:h-12 shadow-lg flex items-center justify-center"
@@ -141,7 +141,7 @@ export default function Home() {
               </Button>
             </div>
             {user && (
-              <div className="absolute bottom-12 sm:bottom-16 right-2 sm:right-4">
+              <div className="absolute bottom-16 sm:bottom-20 right-2 sm:right-4">
                 <CreateOrderContainer
                   open={isCreateOrderOpen}
                   onOpenChange={(open) => {

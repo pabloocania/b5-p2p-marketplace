@@ -143,7 +143,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
         )}
         <SheetContent
           side="bottom"
-          className="h-[90vh] bg-backgroundMain"
+          className="h-[75vh] bg-backgroundMain"
           closeText={t("close")}
         >
           <SheetTitle className="text-lg font-semibold mb-4"></SheetTitle>

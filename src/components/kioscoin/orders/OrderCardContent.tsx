@@ -168,7 +168,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
                     <span className="relative z-10 font-semibold">Chat</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="bottom" className="h-[90vh]" closeText="">
+                <SheetContent side="bottom" className="h-[75vh]" closeText="">
                   <SheetTitle></SheetTitle>
                   <ChatInterface order={order} userId={user?.id} />
                 </SheetContent>

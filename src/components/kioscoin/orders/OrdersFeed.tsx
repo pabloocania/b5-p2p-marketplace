@@ -294,7 +294,7 @@ export default function OrdersFeed({
               </SheetTrigger>
               <SheetContent
                 side="bottom"
-                className="h-[90vh]"
+                className="h-[75vh]"
                 closeText={t("close")}
               >
                 <UserMenuNew user={user} onLogin={login} onLogout={logout} />
