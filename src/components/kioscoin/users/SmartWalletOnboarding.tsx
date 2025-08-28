@@ -44,9 +44,9 @@ export default function KioscoinOnboarding({
       subtitle: t("kioskoin_step_3_subtitle"),
       icon: (
         <div className="relative flex items-center justify-center">
-          <div className="absolute h-14 w-14 rounded-full bg-yellow-300 opacity-30 animate-ping"></div>
-          <div className="z-10 bg-secondary bg-opacity-10 p-4 rounded-full shadow-lg animate-spin-slow">
-            <Zap className="h-8 w-8 text-yellow-500" />
+          <div className="absolute h-14 w-14 rounded-full bg-primary/30 animate-ping"></div>
+          <div className="z-10 bg-primary/10 p-4 rounded-full shadow-lg animate-spin-slow">
+            <Zap className="h-8 w-8 text-primary" />
           </div>
         </div>
       ),
@@ -153,7 +153,7 @@ export default function KioscoinOnboarding({
               <div
                 key={index}
                 className={`h-2 w-2 rounded-full ${
-                  index === step ? "bg-secondary" : "bg-gray-200"
+                  index === step ? "bg-primary" : "bg-gray-200"
                 }`}
               />
             ))}

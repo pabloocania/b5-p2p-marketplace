@@ -243,11 +243,11 @@ export default function OrdersFeed({
   };
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full flex flex-col">
       <ScrollableContainer>
         {filter === Filter.ALL || user ? (
           <>
-            <div className="mb-4">
+            <div className="mb-2 md:mb-4">
               <FilterBar
                 filters={filterState}
                 setFilters={setFilterState}
@@ -263,7 +263,7 @@ export default function OrdersFeed({
             ) : orders && orders.length > 0 ? (
               <div>
                 {orders.map((order) => (
-                  <div key={order.id} className="mb-7">
+                  <div key={order.id} className="mb-3 md:mb-7">
                     <OrderCard
                       orderDTO={order}
                       onSelect={handleOrderSelect}

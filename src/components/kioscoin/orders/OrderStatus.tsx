@@ -9,52 +9,52 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
     switch (stage) {
       case 1:
         return status === "PENDING"
-          ? "bg-secondary"
+          ? "bg-primary"
           : status !== "PENDING"
-          ? "bg-secondary"
-          : "bg-gray-400";
+          ? "bg-primary"
+          : "bg-gray-300";
       case 2:
         return status === "WAITING_PAYMENT"
-          ? "bg-yellow-500"
+          ? "bg-primary"
           : status === "ACTIVE" ||
             status === "FIAT_SENT" ||
             status === "COMPLETED" ||
             status === "COMPLETED_BY_ADMIN" ||
             status === "RELEASED"
-          ? "bg-secondary"
-          : "bg-gray-400";
+          ? "bg-primary"
+          : "bg-gray-300";
       case 3:
         return status === "ACTIVE"
-          ? "bg-yellow-500"
+          ? "bg-primary"
           : status === "FIAT_SENT" ||
             status === "COMPLETED" ||
             status === "COMPLETED_BY_ADMIN" ||
             status === "RELEASED"
-          ? "bg-secondary"
-          : "bg-gray-400";
+          ? "bg-primary"
+          : "bg-gray-300";
       case 4:
         return status === "FIAT_SENT"
-          ? "bg-yellow-500"
+          ? "bg-primary"
           : status === "COMPLETED" ||
             status === "COMPLETED_BY_ADMIN" ||
             status === "RELEASED"
-          ? "bg-secondary"
+          ? "bg-primary"
           : status === "CANCELLED"
-          ? "bg-red-500"
-          : "bg-gray-400";
+          ? "bg-error"
+          : "bg-gray-300";
       default:
-        return "bg-gray-400";
+        return "bg-gray-300";
     }
   };
 
   return (
-    <div className="flex w-full h-5 overflow-hidden rounded-t-md">
+    <div className="flex w-full h-6 overflow-hidden rounded-t-lg shadow-sm">
       {[1, 2, 3, 4].map((stage) => (
         <div
           key={stage}
           className={`flex-1 relative ${getStageClass(
             stage
-          )} border-r border-black-300 last:border-r-0`}
+          )} border-r border-white/20 last:border-r-0 transition-all duration-300`}
         >
           <span className="absolute inset-0 flex items-center justify-center text-xs text-white font-bold">
             {stage}

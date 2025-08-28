@@ -302,18 +302,17 @@ export default function FilterGroup({
     return (
       <Badge
         key={group.type}
-        className={`cursor-pointer capitalize min-w-[90px] flex items-center justify-center px-3 shrink-0 border border-secondary/50 ${
+        className={`cursor-pointer capitalize min-w-[70px] flex items-center justify-center px-2 py-1 shrink-0 border border-primary/30 text-xs ${
           orderTypeIsActive
             ? "bg-primary text-white" // Active style for BUY or SELL
             : "bg-white text-primary" // Inactive style
         }`}
         onClick={handleOrderTypeToggle} // <-- Use specific toggle handler
       >
-        <span className="flex items-center font-bold text-sm">
+        <span className="flex items-center font-medium text-xs">
           {badgeText}
           {activeCount > 0 && (
-            <span className="ml-2 bg-secondary text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
-              {/* Show tick mark or count? Count is consistent */}
+            <span className="ml-1 bg-primary text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
               {activeCount}
             </span>
           )}
@@ -326,15 +325,15 @@ export default function FilterGroup({
   return (
     <Badge
       key={group.type}
-      className={`cursor-pointer capitalize min-w-[100px] flex items-center justify-center px-3 shrink-0 border border-secondary/50 ${
+      className={`cursor-pointer capitalize min-w-[70px] flex items-center justify-center px-2 py-1 shrink-0 border border-primary/30 text-xs ${
         isActive ? "bg-primary text-white" : "bg-white text-primary"
       }`}
       onClick={() => toggleActiveGroup(group.type)}
     >
-      <span className="flex items-center font-bold text-sm">
+      <span className="flex items-center font-medium text-xs">
         {group.title}
         {activeCount > 0 && (
-          <span className="ml-2 bg-secondary text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
+          <span className="ml-1 bg-primary text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
             {activeCount}
           </span>
         )}

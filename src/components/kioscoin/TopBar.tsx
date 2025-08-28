@@ -1,73 +1,130 @@
 "use client";
-import { Wallet, User } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import { KioscoinIcon } from "@/icons/KioscoinIcon";
-import { MarketplaceIcon } from "@/icons/MarketplaceIcon";
+import { Button } from "@/components/ui/button";
 
 interface TopBarProps {
   activeComponent: string;
-  setActiveComponent: (component: string) => void;
 }
 
-export function TopBar({ activeComponent, setActiveComponent }: TopBarProps) {
+export function TopBar({ activeComponent }: TopBarProps) {
   const { t } = useTranslation();
 
-  const navItems = [
-    {
-      id: "OrderFeed",
-      label: t("p2p_market"),
-      icon: MarketplaceIcon,
-      active: activeComponent === "OrderFeed",
-    },
-    {
-      id: "MyOrders",
-      label: t("my_orders"),
-      icon: Wallet,
-      active: activeComponent === "MyOrders",
-    },
-    {
-      id: "UserMenu",
-      label: t("my_account"),
-      icon: User,
-      active: activeComponent === "UserMenu",
-    },
-  ];
+  const handleNotificationClick = () => {
+    // Placeholder - no action for now
+    console.log("Notification button clicked");
+  };
+
+  const handleMenuClick = () => {
+    // Placeholder - no action for now
+    console.log("Menu button clicked");
+  };
+
+  const renderContent = () => {
+    switch (activeComponent) {
+      case "OrderFeed":
+        return (
+          <>
+            {/* Logo en el borde izquierdo */}
+            <div className="flex items-center">
+              <img
+                src="/icons/kioscoin-isotipo.png"
+                alt="Kioscoin"
+                className="h-16 w-16 sm:h-21 sm:w-21"
+              />
+            </div>
+
+            {/* Título centrado en la mitad de la pantalla */}
+            <div className="flex-1 flex justify-center">
+              <span className="text-primary text-xl sm:text-2xl font-bold font-primary">
+                Kioscoin
+              </span>
+            </div>
+
+            {/* Botón campanita */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleNotificationClick}
+              className="p-2 hover:bg-gray-100 w-12 sm:w-14"
+            >
+              <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            </Button>
+          </>
+        );
+
+      case "MyOrders":
+        return (
+          <>
+            {/* Logo en el borde izquierdo */}
+            <div className="flex items-center">
+              <img
+                src="/icons/kioscoin-isotipo.png"
+                alt="Kioscoin"
+                className="h-16 w-16 sm:h-21 sm:w-21"
+              />
+            </div>
+
+            {/* Título centrado en la mitad de la pantalla */}
+            <div className="flex-1 flex justify-center">
+              <span className="text-primary text-lg sm:text-xl font-semibold font-primary">
+                {t("my_orders")}
+              </span>
+            </div>
+
+            {/* Botón campanita */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleNotificationClick}
+              className="p-2 hover:bg-gray-100 w-12 sm:w-14"
+            >
+              <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            </Button>
+          </>
+        );
+
+      case "UserMenu":
+        return (
+          <>
+            {/* Logo en el borde izquierdo */}
+            <div className="flex items-center">
+              <img
+                src="/icons/kioscoin-isotipo.png"
+                alt="Kioscoin"
+                className="h-16 w-16 sm:h-21 sm:w-21"
+              />
+            </div>
+
+            {/* Título centrado en la mitad de la pantalla */}
+            <div className="flex-1 flex justify-center">
+              <span className="text-primary text-lg sm:text-xl font-semibold font-primary">
+                {t("my_account")}
+              </span>
+            </div>
+
+            {/* Botón hamburguesa */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleMenuClick}
+              className="p-2 hover:bg-gray-100 w-12 sm:w-14"
+            >
+              <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            </Button>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="border-b-4 border-b-secondary py-2 sticky top-0 bg-white z-10 w-full">
-      <div className="flex h-20 items-center px-2 max-w-md mx-auto">
-        <button
-          onClick={() => setActiveComponent("OrderFeed")}
-          className="flex items-end"
-        >
-          <KioscoinIcon className="h-20 w-20" />
-          <span className="text-primary md:text-xl text-md font-semibold mr-2">
-            Kioscoin
-          </span>
-        </button>
-
-        <div className="h-20 w-px bg-primary mx-2"></div>
-
-        <nav className="pl-2 flex items-center gap-1 ml-auto">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveComponent(item.id)}
-              className={cn(
-                "flex flex-col items-center min-w-[60px] px-2 py-3 rounded-lg transition-colors h-20",
-                item.active
-                  ? "bg-secondary/20 text-primary"
-                  : "text-primary/80 hover:bg-white/10 border border-transparent"
-              )}
-            >
-              <item.icon className="h-6 w-6 text-primary" />
-              <span className="text-xs mt-1 font-medium text-primary">
-                {item.label}
-              </span>
-            </button>
-          ))}
-        </nav>
+    <div className="fixed top-0 bg-white z-50 w-full border-b border-gray-200 shadow-sm">
+      <div className="flex h-14 sm:h-19 items-center justify-between px-4 sm:px-6 max-w-md mx-auto">
+        {renderContent()}
       </div>
     </div>
   );

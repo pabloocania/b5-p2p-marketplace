@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap");
+
 @keyframes spin-slow {
   0% {
     transform: rotate(0deg);
@@ -13,4 +15,26 @@
   .animate-spin-slow {
     animation: spin 6s linear infinite;
   }
+}
+
+/* Global font application */
+* {
+  font-family: "Donatto Regular", "Montserrat", system-ui, sans-serif;
+}
+
+body {
+  font-family: "Donatto Regular", "Montserrat", system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Font utility classes */
+.font-primary {
+  font-family: "Donatto Regular", system-ui, sans-serif;
+}
+
+.font-secondary {
+  font-family: "Montserrat", system-ui, sans-serif;
 }

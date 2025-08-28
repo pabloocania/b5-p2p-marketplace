@@ -11,7 +11,11 @@ import { ConfigStore } from "@/lib/ConfigStore";
 import { CreateOrderContainer } from "./create-orders/CreateOrderContainer";
 import { UserMenuSheet } from "../users/UserMenuSheet";
 
-export default function OrderCreationFlow() {
+export default function OrderCreationFlow({
+  activeComponent,
+}: {
+  activeComponent: string;
+}) {
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<BannerOffer | null>(null);
@@ -80,7 +84,9 @@ export default function OrderCreationFlow() {
 
   return (
     <>
-      <OrdersBanner onOfferClick={handleOfferClick} />
+      {!(activeComponent === "UserMenu" && !user) && (
+        <OrdersBanner onOfferClick={handleOfferClick} />
+      )}
       <UserMenuSheet
         open={isLoginOpen}
         onOpenChange={setIsLoginOpen}

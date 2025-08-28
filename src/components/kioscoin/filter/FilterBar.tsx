@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronRight } from "lucide-react";
@@ -13,8 +14,6 @@ export default function FilterBar({
   className = "",
 }: FilterBarProps) {
   const [activeGroup, setActiveGroup] = useState<FilterGroupType | null>(null);
-  const [isMainFilterScrollable, setIsMainFilterScrollable] = useState(false);
-  const mainFilterRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
 
   // Default filter groups if none are provided
@@ -27,73 +26,35 @@ export default function FilterBar({
     { type: FilterGroupType.PAYMENT_METHODS, title: t("payment_methods") },
   ];
 
-  // Check if main filter bar is scrollable
-  useEffect(() => {
-    const checkScrollability = () => {
-      const element = mainFilterRef.current;
-      if (element) {
-        const hasOverflow = element.scrollWidth > element.clientWidth + 1;
-        setIsMainFilterScrollable(hasOverflow);
-      }
-    };
-
-    checkScrollability();
-    window.addEventListener("resize", checkScrollability);
-
-    const observer = new MutationObserver(checkScrollability);
-    if (mainFilterRef.current) {
-      observer.observe(mainFilterRef.current, { childList: true });
-    }
-
-    return () => {
-      window.removeEventListener("resize", checkScrollability);
-      observer.disconnect();
-    };
-  }, [defaultFilterGroups]);
-
   return (
     <div className={`${className}`}>
       <style jsx global>
         {scrollbarHideClass}
       </style>
-      <div className="mb-2">
-        <div className="flex items-center space-x-2 bg-secondary bg-opacity-40 px-2 py-2 rounded-md">
-          <div className="relative flex-grow min-w-0">
-            <div
-              ref={mainFilterRef}
-              className="flex overflow-x-auto gap-2 scrollbar-hide whitespace-nowrap"
-            >
-              {defaultFilterGroups.map((group) => (
-                <FilterGroup
-                  key={group.type}
-                  group={group}
-                  filters={filters}
-                  setFilters={setFilters}
-                  activeGroup={activeGroup}
-                  setActiveGroup={setActiveGroup}
-                  renderMode="badge"
-                />
-              ))}
-            </div>
-            {/* Fade effect (absolute inside relative parent) */}
-            <div
-              className={`absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-secondary/10 via-secondary/5 to-transparent pointer-events-none rounded-r-md transition-opacity duration-300 ${
-                isMainFilterScrollable ? "opacity-100" : "opacity-0"
-              }`}
-            ></div>
+
+      {/* Main Filter Bar - Responsive Grid */}
+      <div className="mb-1">
+        <div className="bg-backgroundSecondary px-1 py-1 rounded-md border border-primary/20">
+          {/* Responsive Grid Layout - More Compact */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1">
+            {defaultFilterGroups.map((group) => (
+              <FilterGroup
+                key={group.type}
+                group={group}
+                filters={filters}
+                setFilters={setFilters}
+                activeGroup={activeGroup}
+                setActiveGroup={setActiveGroup}
+                renderMode="badge"
+              />
+            ))}
           </div>
-          {/* Conditional Arrow (NOW outside relative wrapper, sibling in flex row) */}
-          {isMainFilterScrollable && (
-            <div className="flex-shrink-0">
-              <ChevronRight className="h-5 w-5 text-primary opacity-70" />
-            </div>
-          )}
         </div>
       </div>
 
       {/* Subgroup filters */}
       {activeGroup && activeGroup !== FilterGroupType.ORDER_TYPE && (
-        <div className="bg-secondary bg-opacity-20 rounded-md">
+        <div className="bg-backgroundSecondary rounded-md mt-2 border border-primary/20">
           <FilterGroup
             group={
               defaultFilterGroups.find((group) => group.type === activeGroup) ||
