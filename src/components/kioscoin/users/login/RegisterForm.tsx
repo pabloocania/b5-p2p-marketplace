@@ -92,7 +92,7 @@ export const RegisterForm = ({
   };
 
   return (
-    <form onSubmit={handleRegister} className="space-y-4">
+    <form onSubmit={handleRegister} className="space-y-3">
       <ErrorAlert error={error} />
 
       <EmailInputWithUsername
@@ -140,7 +140,7 @@ export const RegisterForm = ({
 
       <button
         type="button"
-        className="text-sm text-primary hover:underline w-full text-center"
+        className="text-xs text-primary hover:underline w-full text-center"
         onClick={onSwitchToEmailLogin}
         disabled={isLoading}
       >

@@ -80,7 +80,7 @@ function BadgeGroup<T>({
           return (
             <Badge
               key={getKey(item)}
-              className={`cursor-pointer text-xs capitalize flex items-center justify-center px-2 py-1 border border-primary/30 ${
+              className={`cursor-pointer text-xs capitalize flex items-center justify-center px-1.5 py-0.5 border border-primary/30 ${
                 isSelected ? "bg-primary text-white" : "bg-white text-primary"
               }`}
               onClick={() => onToggle(item)}
@@ -89,7 +89,7 @@ function BadgeGroup<T>({
                 {renderItemContent(item)}
                 {isSelected && (
                   <X
-                    className="ml-1 h-3 w-3"
+                    className="ml-1 h-2.5 w-2.5"
                     onClick={(e) => {
                       e.stopPropagation();
                       onToggle(item);

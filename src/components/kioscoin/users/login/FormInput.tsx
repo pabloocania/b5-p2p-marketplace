@@ -9,7 +9,7 @@ export const FormInput = ({
   required = false,
   disabled = false,
 }: FormInputProps) => (
-  <div className="space-y-2">
+  <div className="space-y-1.5">
     <Input
       type={type}
       placeholder={placeholder}
@@ -17,6 +17,7 @@ export const FormInput = ({
       onChange={(e) => onChange(e.target.value)}
       required={required}
       disabled={disabled}
+      className="h-8 text-xs px-2"
     />
   </div>
 );

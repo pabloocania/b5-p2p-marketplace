@@ -87,7 +87,7 @@ export const EmailLoginForm = ({
   };
 
   return (
-    <form onSubmit={handleEmailLogin} className="space-y-4">
+    <form onSubmit={handleEmailLogin} className="space-y-3">
       <ErrorAlert error={error} />
 
       <FormInput
@@ -115,10 +115,10 @@ export const EmailLoginForm = ({
         onClick={() => {}}
       />
 
-      <div className="flex justify-between items-center p-1">
+      <div className="flex justify-between items-center p-2 gap-4">
         <button
           type="button"
-          className="text-sm text-primary hover:underline"
+          className="text-xs text-primary hover:underline"
           onClick={handleForgotPassword}
           disabled={isLoading}
         >
@@ -128,7 +128,7 @@ export const EmailLoginForm = ({
         {onSwitchToRegister && (
           <button
             type="button"
-            className="text-sm text-primary hover:underline"
+            className="text-xs text-primary hover:underline"
             onClick={onSwitchToRegister}
           >
             {t("register")}

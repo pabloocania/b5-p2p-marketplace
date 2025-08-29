@@ -312,7 +312,7 @@ export default function FilterGroup({
         <span className="flex items-center font-medium text-xs">
           {badgeText}
           {activeCount > 0 && (
-            <span className="ml-1 bg-primary text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
+            <span className="ml-1 bg-primary text-white rounded-full w-3 h-3 text-xs flex items-center justify-center">
               {activeCount}
             </span>
           )}
@@ -333,7 +333,7 @@ export default function FilterGroup({
       <span className="flex items-center font-medium text-xs">
         {group.title}
         {activeCount > 0 && (
-          <span className="ml-1 bg-primary text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
+          <span className="ml-1 bg-primary text-white rounded-full w-3 h-3 text-xs flex items-center justify-center">
             {activeCount}
           </span>
         )}
