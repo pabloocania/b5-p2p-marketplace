@@ -33,7 +33,9 @@ export function CreateOrderContainer({
         {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
         <SheetContent
           side="bottom"
-          className={`h-[90vh] bg-backgroundMain ${className || ""}`}
+          className={`h-[70vh] bg-backgroundMain overflow-y-auto ${
+            className || ""
+          }`}
           closeText={t("close")}
         >
           {children}

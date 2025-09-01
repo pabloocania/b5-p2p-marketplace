@@ -247,7 +247,7 @@ export default function OrdersFeed({
       <ScrollableContainer>
         {filter === Filter.ALL || user ? (
           <>
-            <div className="mb-2 md:mb-4">
+            <div className="mb-6 sm:mb-8">
               <FilterBar
                 filters={filterState}
                 setFilters={setFilterState}
@@ -294,7 +294,7 @@ export default function OrdersFeed({
               </SheetTrigger>
               <SheetContent
                 side="bottom"
-                className="h-[90vh]"
+                className="h-[75vh]"
                 closeText={t("close")}
               >
                 <UserMenuNew user={user} onLogin={login} onLogout={logout} />

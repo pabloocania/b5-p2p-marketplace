@@ -182,7 +182,7 @@ export default function UserBalance({
         {/* Balance (Center) - Fixed width */}
         <div className="flex-1 flex justify-center">
           <div className="text-center min-w-[100px] sm:min-w-[120px] max-w-[180px] sm:max-w-[200px]">
-            <div className="text-xl sm:text-2xl font-bold text-primary">
+            <div className="text-xl sm:text-2xl font-bold text-black">
               {formattedBalance}
             </div>
             <div className="text-xs sm:text-sm text-gray-500">

@@ -8,9 +8,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Donatto Regular", "Montserrat", "system-ui", "sans-serif"],
-        display: ["Donatto Regular", "system-ui", "sans-serif"],
-        secondary: ["Montserrat", "system-ui", "sans-serif"],
+        sans: ["Donatto", "Inter", "Poppins", "system-ui", "sans-serif"],
+        display: ["Donatto", "Inter", "system-ui", "sans-serif"],
+        primary: ["Donatto", "system-ui", "sans-serif"],
+        secondary: ["Montserrat", "Inter", "system-ui", "sans-serif"],
       },
       fontSize: {
         xxs: "0.625rem", // Add a new font size
@@ -37,6 +38,7 @@ module.exports = {
         terciary: "#fcce4c", // Amarillo claro - Color terciario
         accent: "#9e8cbe", // Púrpura grisáceo - Acentos
         dark: "#3e2262", // Púrpura oscuro - Textos importantes
+        lightYellow: "#f5e6a3", // Amarillo muy suave - Para fondos claros
 
         // Background Colors
         backgroundMain: "#faf9ff", // Fondo principal muy suave (púrpura muy claro)

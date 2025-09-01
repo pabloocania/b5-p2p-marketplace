@@ -29,8 +29,8 @@ const paymentMethodIconMap: Readonly<Record<string, LucideIcon>> = {
 
 // Add size configuration mapping
 const sizeMap: Readonly<Record<string, { icon: string; text: string }>> = {
-  md: { icon: "w-3 h-3", text: "text-xs" },
-  lg: { icon: "w-4 h-4", text: "text-sm" },
+  md: { icon: "w-1.5 h-1.5", text: "text-[10px]" },
+  lg: { icon: "w-2 h-2", text: "text-[10px]" },
 } as const;
 
 interface EntityBadgeProps {
@@ -50,7 +50,7 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
   const sizeClass = sizeMap[size];
 
   return (
-    <div className="inline-flex items-center space-x-1 px-1 py-0.5 rounded-md bg-secondary/30 text-primary">
+    <div className="inline-flex items-center space-x-0.5 px-0.5 py-0.5 rounded-md bg-secondary/20 text-primary/80">
       <IconComponent
         className={`${sizeClass.icon} ${
           paymentMethodColorMap[type] ?? entityColorMap.default

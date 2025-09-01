@@ -173,12 +173,12 @@ export default function CreateOrder({
 
   return (
     <ScrollableContainer>
-      <div className="flex justify-center items-center pt-8">
+      <div className="flex justify-center items-center pt-2">
         {!isLoggedIn ? (
           <Sheet open>
             <SheetContent
               side="bottom"
-              className="h-[90vh]"
+              className="h-[75vh]"
               closeText={t("close")}
             >
               <UserMenuNew user={user} onLogin={login} onLogout={logout} />
@@ -186,15 +186,15 @@ export default function CreateOrder({
           </Sheet>
         ) : (
           <Card className="w-full max-w-md border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
-            <CardHeader className="flex justify-center items-center pb-2">
+            <CardHeader className="flex justify-center items-center pb-1 pt-2">
               <CardTitle className="text-center text-primary text-2xl font-bold">
                 {t("create_order")}
               </CardTitle>
             </CardHeader>
             <Separator className="mb-2" />
             <form onSubmit={handleSubmit}>
-              <CardContent className="text-primary px-0 py-2 space-y-2">
-                <div className="space-y-2 px-4">
+              <CardContent className="text-primary px-0 py-1 space-y-1">
+                <div className="space-y-1 px-4">
                   <OrderTypeSelector
                     orderType={orderType}
                     onChange={setOrderType}

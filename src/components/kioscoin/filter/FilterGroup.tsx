@@ -302,17 +302,17 @@ export default function FilterGroup({
     return (
       <Badge
         key={group.type}
-        className={`cursor-pointer capitalize min-w-[70px] flex items-center justify-center px-2 py-1 shrink-0 border border-primary/30 text-xs ${
+        className={`cursor-pointer capitalize min-w-[70px] flex items-center justify-center px-2 py-1 shrink-0 border border-primary/20 text-xs ${
           orderTypeIsActive
             ? "bg-primary text-white" // Active style for BUY or SELL
-            : "bg-white text-primary" // Inactive style
+            : "bg-white text-primary/70" // Inactive style (soft)
         }`}
         onClick={handleOrderTypeToggle} // <-- Use specific toggle handler
       >
-        <span className="flex items-center font-medium text-xs">
+        <span className="flex items-center font-normal text-[11px] antialiased tracking-tight">
           {badgeText}
           {activeCount > 0 && (
-            <span className="ml-1 bg-primary text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
+            <span className="ml-1 bg-primary text-white rounded-full w-3 h-3 text-xs flex items-center justify-center">
               {activeCount}
             </span>
           )}
@@ -325,15 +325,15 @@ export default function FilterGroup({
   return (
     <Badge
       key={group.type}
-      className={`cursor-pointer capitalize min-w-[70px] flex items-center justify-center px-2 py-1 shrink-0 border border-primary/30 text-xs ${
-        isActive ? "bg-primary text-white" : "bg-white text-primary"
+      className={`cursor-pointer capitalize min-w-[70px] flex items-center justify-center px-2 py-1 shrink-0 border border-primary/20 text-xs ${
+        isActive ? "bg-primary text-white" : "bg-white text-primary/70"
       }`}
       onClick={() => toggleActiveGroup(group.type)}
     >
-      <span className="flex items-center font-medium text-xs">
+      <span className="flex items-center font-normal text-[11px] antialiased tracking-tight">
         {group.title}
         {activeCount > 0 && (
-          <span className="ml-1 bg-primary text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
+          <span className="ml-1 bg-primary text-white rounded-full w-3 h-3 text-xs flex items-center justify-center">
             {activeCount}
           </span>
         )}

@@ -27,32 +27,43 @@ const OrderIdLink: React.FC<OrderIdLinkProps> = ({ orderId }) => {
   };
 
   return (
-    <div className="flex items-center justify-center gap-2 text-xs pb-2">
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          setIsIdSheetOpen(true);
-        }}
-        className="flex items-center gap-1 text-terciary hover:text-primary hover:underline"
-      >
-        <HistoryIcon className="w-3 h-3" />
-        {t("view_history")}
-      </button>
-      <span className="text-primary">•</span>
-      <div className="relative">
+    <>
+      {/* Card Ver Historial */}
+      <div className="flex flex-col items-center gap-2">
         <button
-          onClick={handleCopyId}
-          className="flex items-center gap-1 text-terciary hover:text-terciary hover:underline"
+          onClick={(e) => {
+            e.preventDefault();
+            setIsIdSheetOpen(true);
+          }}
+          className="flex flex-col items-center gap-2 w-full"
         >
-          <ClipboardIcon className="w-3 h-3" />
-          {t("copy_id")}
-        </button>
-        {showCopied && (
-          <span className="absolute top-full mt-1 left-1/2 -translate-x-1/2 text-xs text-green-600 bg-white px-2 py-1 rounded-md shadow-sm">
-            {t("copied")}
+          <HistoryIcon className="w-5 h-5 text-primary" />
+          <span className="text-xs font-medium text-primary text-center">
+            {t("view_history")}
           </span>
-        )}
+        </button>
       </div>
+
+      {/* Card Copiar ID */}
+      <div className="flex flex-col items-center gap-2">
+        <div className="relative">
+          <button
+            onClick={handleCopyId}
+            className="flex flex-col items-center gap-2 w-full"
+          >
+            <ClipboardIcon className="w-5 h-5 text-primary" />
+            <span className="text-xs font-medium text-primary text-center">
+              {t("copy_id")}
+            </span>
+          </button>
+          {showCopied && (
+            <span className="absolute top-full mt-1 left-1/2 -translate-x-1/2 text-xs text-green-600 bg-white px-2 py-1 rounded-md shadow-sm">
+              {t("copied")}
+            </span>
+          )}
+        </div>
+      </div>
+
       <Sheet open={isIdSheetOpen} onOpenChange={setIsIdSheetOpen}>
         <SheetContent
           side="bottom"
@@ -75,7 +86,7 @@ const OrderIdLink: React.FC<OrderIdLinkProps> = ({ orderId }) => {
           </SheetFooter>
         </SheetContent>
       </Sheet>
-    </div>
+    </>
   );
 };
 

@@ -3,26 +3,25 @@ import { LucideIcon } from "lucide-react"; // Adjust the import path as necessar
 
 interface UserStatBadgeProps {
   value: string;
-  Icon: LucideIcon;
+  Icon: React.ComponentType<any>;
   color?: string;
-  bgColor?: string;
-  width?: string;
   height?: string;
 }
 
 const UserStatBadge: React.FC<UserStatBadgeProps> = ({
   value,
   Icon,
-  color = "text-yellow-500",
-  bgColor = "bg-primary bg-opacity-5",
+  color,
 }) => {
   return (
-    <div
-      className={`flex items-center space-x-1 ${color} text-m rounded-lg px-1 py-1 border border-terciary border-opacity-40 bg-white`}
+    <span
+      className={`inline-flex items-center space-x-1.5 bg-white rounded-md px-1.5 py-0.5 border border-primary/20 text-[11px] ${
+        color ?? "text-primary"
+      }`}
     >
-      <span className="text-xs font-semibold">{value}</span>
-      <Icon className="w-3 h-3" />
-    </div>
+      <Icon className="w-3.5 h-3.5" />
+      <span className="font-medium leading-none">{value}</span>
+    </span>
   );
 };
 

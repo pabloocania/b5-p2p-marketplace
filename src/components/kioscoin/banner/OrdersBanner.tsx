@@ -178,7 +178,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
   }
 
   return (
-    <div className="relative w-full px-0 py-1 sm:px-2 sm:py-2 md:py-4 md:px-4 rounded-xl bg-secondary/40 shadow-lg mb-1 sm:mb-2 md:mb-4 mt-2 sm:mt-3">
+    <div className="relative w-full px-2 py-1 sm:px-4 sm:py-2 md:py-4 md:px-6 rounded-xl bg-secondary/40 shadow-lg mb-6 sm:mb-8 mt-6 sm:mt-8">
       <Carousel
         opts={{
           align: "start",
@@ -191,49 +191,50 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
           {validOffers.map((offer, idx) => (
             <CarouselItem
               key={offer.id}
-              className={`w-full max-w-[320px] sm:max-w-[380px] flex-shrink-0 flex-grow-0`}
+              className={`w-[85%] max-w-[320px] sm:max-w-[380px] flex-shrink-0 flex-grow-0 px-2 sm:px-3`}
             >
               <Card
-                className="h-full shadow rounded-lg border-0 cursor-pointer transition-transform hover:scale-[1.01] p-0 flex flex-col justify-between min-h-[100px] sm:min-h-[120px] md:min-h-[160px] max-w-[300px] sm:max-w-[360px]"
+                className="h-full shadow rounded-lg border-0 cursor-pointer transition-transform hover:scale-[1.01] p-0 flex flex-col justify-between min-h-[80px] sm:min-h-[90px] md:min-h-[100px] max-w-[300px] sm:max-w-[360px]"
                 onClick={() => handleCardClick(offer)}
               >
-                <div className="flex-1 p-2 sm:p-3 flex flex-col">
+                <div className="flex-1 p-1.5 sm:p-2 flex flex-col">
                   {/* Header with crypto icon and amount */}
-                  <div className="flex mb-1 sm:mb-2">
-                    <div className="flex items-end text-lg sm:text-xl text-primary font-bold mr-1">
+                  <div className="flex mb-2 sm:mb-2.5 ml-3 mt-1">
+                    <div className="flex items-center text-[10px] text-primary/80 font-bold mr-1">
                       {offer.type === "BUY" ? t("buy") : t("sell")}
                     </div>
                     <CryptoAmountIcon
                       tokenCode={offer.crypto || offer.tokenCode}
                       formattedAmount={offer.amount}
                       showAmount={true}
-                      textSizeClass="text-xl sm:text-2xl"
+                      textSizeClass="text-[10px]"
+                      amountTextClassName="text-gray-500 font-medium mr-1"
                     />
-                    <div className="flex items-end text-lg sm:text-xl text-primary font-bold ml-1">
+                    <div className="flex items-center text-[10px] text-primary/80 font-bold ml-1">
                       {t("instantly")}
                     </div>
                   </div>
 
                   {/* Two column layout */}
-                  <div className="flex flex-1 gap-2 sm:gap-4">
+                  <div className="flex flex-1 gap-1.5 sm:gap-3">
                     {/* Left column: order type, fiat, blockchain */}
-                    <div className="flex-1">
-                      <div className="text-sm sm:text-base">
+                    <div className="flex-1 flex flex-col items-start ml-3 justify-end -mt-2 sm:-mt-1.5">
+                      <div className="text-[10px] text-primary/80">
                         {t("for")}{" "}
-                        <span className="font-bold text-primary">
+                        <span className="font-medium text-gray-500 text-[10px]">
                           {formatFiatAmount(offer.price || "0", offer.fiatCode)}
                         </span>
                       </div>
-                      <div className="text-xs text-primary mt-0.5 sm:mt-1">
+                      <div className="text-[10px] text-primary/60 mt-0.5 sm:mt-1 mb-1">
                         {t("on")}{" "}
-                        <span className="font-bold">
+                        <span className="font-bold text-[10px]">
                           {getBlockchainDisplayName(offer.blockchain)}
                         </span>
                       </div>
                     </div>
 
                     {/* Right column: payment methods stacked vertically */}
-                    <div className="flex flex-col">
+                    <div className="flex flex-col items-start justify-end">
                       {offer.exchangeMethods.map((method, idx) => (
                         <PaymentMethodDisplay key={idx} method={method} />
                       ))}
@@ -241,7 +242,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                   </div>
                 </div>
                 <CardFooter className="p-0">
-                  <Button className="w-full rounded-b-lg rounded-t-none text-xs sm:text-sm font-semibold shadow-none border-t border-secondary transition-colors bg-secondary text-white hover:bg-white/10 hover:text-secondary py-1 sm:py-2">
+                  <Button className="w-full rounded-b-lg rounded-t-none text-[10px] font-semibold shadow-none border-t border-secondary/80 transition-colors bg-secondary/90 text-white hover:bg-secondary/80 hover:text-white py-0.5 sm:py-1">
                     {offer.type === "BUY" ? t("buy") : t("sell")}
                   </Button>
                 </CardFooter>

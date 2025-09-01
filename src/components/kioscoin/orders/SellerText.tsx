@@ -17,10 +17,18 @@ export const SellerText: React.FC<SellerTextProps> = ({ order, userId }) => {
       : order.sellerId;
 
   return (
-    <div className="text-right w-full">
-      <p className="text-left w-full text-xs text-primary">
+    <div className="text-right w-full font-secondary">
+      <p
+        className="text-left w-full text-xs text-primary"
+        style={{ fontFamily: "Montserrat, sans-serif" }}
+      >
         {t("seller")}:{" "}
-        <span className="text-xs text-primary font-bold">{username}</span>
+        <span
+          className="text-xs text-primary font-bold"
+          style={{ fontFamily: "Montserrat, sans-serif" }}
+        >
+          {username}
+        </span>
       </p>
     </div>
   );
