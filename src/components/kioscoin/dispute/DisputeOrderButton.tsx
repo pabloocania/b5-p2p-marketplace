@@ -99,16 +99,17 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
   if (alreadyDisputed) {
     return (
       <>
-        <span
-          className="flex items-center gap-1 text-primary cursor-pointer select-none text-xs"
-          onClick={() => setOpen(true)}
-          role="button"
-          tabIndex={0}
-          title={t("order_disputed")}
-        >
-          <AlertCircle className="w-4 h-4" />
-          {t("order_disputed")}
-        </span>
+        <div className="flex flex-col items-center gap-2">
+          <button
+            onClick={() => setOpen(true)}
+            className="flex flex-col items-center gap-2 w-full"
+          >
+            <AlertCircle className="w-5 h-5 text-red-500" />
+            <span className="text-xs font-medium text-red-600 text-center">
+              {t("order_disputed")}
+            </span>
+          </button>
+        </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent>
             <DialogHeader>
@@ -134,16 +135,17 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
 
   return (
     <>
-      <span
-        className="flex items-center gap-1 text-primary cursor-pointer select-none text-xs"
-        onClick={() => setOpen(true)}
-        role="button"
-        tabIndex={0}
-        title={t("dispute_order")}
-      >
-        <AlertCircle className="w-4 h-4" />
-        {t("dispute_order")}
-      </span>
+      <div className="flex flex-col items-center gap-2">
+        <button
+          onClick={() => setOpen(true)}
+          className="flex flex-col items-center gap-2 w-full"
+        >
+          <AlertCircle className="w-5 h-5 text-red-500" />
+          <span className="text-xs font-medium text-red-600 text-center">
+            {t("dispute_order")}
+          </span>
+        </button>
+      </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>

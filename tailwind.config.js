@@ -11,7 +11,7 @@ module.exports = {
         sans: ["Donatto", "Inter", "Poppins", "system-ui", "sans-serif"],
         display: ["Donatto", "Inter", "system-ui", "sans-serif"],
         primary: ["Donatto", "system-ui", "sans-serif"],
-        secondary: ["Inter", "system-ui", "sans-serif"],
+        secondary: ["Montserrat", "Inter", "system-ui", "sans-serif"],
       },
       fontSize: {
         xxs: "0.625rem", // Add a new font size

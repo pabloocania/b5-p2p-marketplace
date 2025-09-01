@@ -22,7 +22,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
       case "ACTIVE":
         return "bg-yellow-500 text-white";
       case "FIAT_SENT":
-        return "bg-yellow-500 text-white";
+        return "text-white" + " " + `bg-[#fcce4c]`;
       case "SUCCESS":
       case "COMPLETED_BY_ADMIN":
       case "RELEASED":
@@ -62,9 +62,13 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
         </div>
 
         {/* Right Side */}
-        <div className="flex flex-col items-end h-full">
-          <div className="text-right ml-2 h-full">
-            <Badge className={`text-xs ${mapOrderVariant(order)} h-full`}>
+        <div className="flex flex-col items-end justify-center h-full">
+          <div className="text-right ml-2 h-full flex items-center">
+            <Badge
+              className={`text-xs ${mapOrderVariant(
+                order
+              )} h-full flex items-center px-3`}
+            >
               {mapOrderStatus(order.status ?? "Unknown")}
             </Badge>
           </div>

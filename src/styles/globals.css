@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 /* Donatto Font */
 @font-face {
@@ -128,13 +129,46 @@ a {
 
 /* Font utility classes */
 .font-primary {
-  font-family: "Donatto", system-ui, sans-serif;
+  font-family: "Donatto", system-ui, sans-serif !important;
 }
 
 .font-secondary {
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: "Montserrat", "Inter", system-ui, sans-serif !important;
 }
 
 .font-donatto {
-  font-family: "Donatto", system-ui, sans-serif;
+  font-family: "Donatto", system-ui, sans-serif !important;
+}
+
+/* Force Montserrat on font-secondary elements and all their children - SUPER SPECIFIC */
+.font-secondary,
+.font-secondary *,
+.font-secondary p,
+.font-secondary span,
+.font-secondary div,
+.font-secondary h1,
+.font-secondary h2,
+.font-secondary h3,
+.font-secondary h4,
+.font-secondary h5,
+.font-secondary h6,
+div.font-secondary p,
+div.font-secondary span,
+div.font-secondary div,
+.font-secondary p span,
+.font-secondary div p,
+.font-secondary div span,
+.font-secondary .flex p,
+.font-secondary .flex span,
+.font-secondary .flex div {
+  font-family: "Montserrat", "Inter", system-ui, sans-serif !important;
+}
+
+/* Extra specific rules for order card content */
+.font-secondary p.text-primary,
+.font-secondary p.text-primary span,
+.font-secondary span.font-medium,
+.font-secondary span.text-gray-500,
+.font-secondary span.text-primary {
+  font-family: "Montserrat", "Inter", system-ui, sans-serif !important;
 }

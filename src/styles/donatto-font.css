@@ -15,10 +15,10 @@
   font-display: swap;
 }
 
-/* Force Donatto everywhere */
-* {
+/* Force Donatto everywhere - COMMENTED OUT TO ALLOW font-secondary */
+/* * {
   font-family: "Donatto", system-ui, sans-serif !important;
-}
+} */
 
 html,
 body {

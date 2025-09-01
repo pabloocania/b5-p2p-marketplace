@@ -9,7 +9,8 @@ import { useTranslation } from "react-i18next";
 import OrderCardHeader from "./OrderCardHeader";
 import OrderCardContent from "./OrderCardContent";
 import OrderCardFooter from "./OrderCardFooter";
-import OrderIdLink from "./OrderIdLink";
+import ViewHistoryButton from "./ViewHistoryButton";
+import CopyIdButton from "./CopyIdButton";
 import DisputeOrderButton from "../dispute/DisputeOrderButton";
 
 interface OrderCardProps {
@@ -83,12 +84,74 @@ export function OrderCard({
         paymentMethods={selectedPaymentMethods}
       />
       <Separator className="mb-1" />
-      <div className="pl-4 pb-1 pt-1 flex items-center gap-4 text-sm min-h-[32px]">
-        {user && <OrderIdLink orderId={order.id} />}
-        {user && canShowDisputeButton && (
-          <span className="text-primary select-none">•</span>
-        )}
-        {canShowDisputeButton && <DisputeOrderButton order={order} />}
+      <div className="px-4 py-3">
+        <div className="grid grid-cols-3 gap-3">
+          {/* Card Ver Historial */}
+          {user && (
+            <div
+              className="relative rounded-lg p-3 cursor-pointer overflow-hidden group transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+              style={{
+                background:
+                  "linear-gradient(135deg, #f8fafc, #e2e8f0, #cbd5e1)",
+                border: "1px solid rgba(139, 95, 220, 0.2)",
+                boxShadow:
+                  "0 4px 15px rgba(139, 95, 220, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
+              }}
+            >
+              {/* Efecto de reflejo */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+              {/* Brillo móvil */}
+              <div className="absolute top-0 -left-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 group-hover:left-full transition-all duration-700 ease-out" />
+              <div className="relative z-10">
+                <ViewHistoryButton orderId={order.id} />
+              </div>
+            </div>
+          )}
+
+          {/* Card Copiar ID */}
+          {user && (
+            <div
+              className="relative rounded-lg p-3 cursor-pointer overflow-hidden group transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+              style={{
+                background:
+                  "linear-gradient(135deg, #fefce8, #fef3c7, #fed7aa)",
+                border: "1px solid rgba(252, 206, 76, 0.3)",
+                boxShadow:
+                  "0 4px 15px rgba(252, 206, 76, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
+              }}
+            >
+              {/* Efecto de reflejo */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+              {/* Brillo móvil */}
+              <div className="absolute top-0 -left-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 group-hover:left-full transition-all duration-700 ease-out" />
+              <div className="relative z-10">
+                <CopyIdButton orderId={order.id} />
+              </div>
+            </div>
+          )}
+
+          {/* Card Orden en Disputa */}
+          {canShowDisputeButton && (
+            <div
+              className="relative rounded-lg p-3 cursor-pointer overflow-hidden group transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+              style={{
+                background:
+                  "linear-gradient(135deg, #fef2f2, #fecaca, #fca5a5)",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                boxShadow:
+                  "0 4px 15px rgba(239, 68, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
+              }}
+            >
+              {/* Efecto de reflejo */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+              {/* Brillo móvil */}
+              <div className="absolute top-0 -left-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 group-hover:left-full transition-all duration-700 ease-out" />
+              <div className="relative z-10">
+                <DisputeOrderButton order={order} />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </Card>
   );
