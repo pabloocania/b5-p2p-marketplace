@@ -10,7 +10,11 @@ import { useTranslation } from "react-i18next";
 import { BuyOperationForm } from "./operation/BuyOperationForm";
 import { SellOperationForm } from "./operation/SellOperationForm";
 
-export default function KioscoinOperationFlow() {
+export default function KioscoinOperationFlow({
+  activeComponent,
+}: {
+  activeComponent: string;
+}) {
   const [isOperationOpen, setIsOperationOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<OrderOffer | null>(null);
@@ -41,7 +45,9 @@ export default function KioscoinOperationFlow() {
 
   return (
     <>
-      <OrdersBanner onOfferClick={handleOfferClick} />
+      {!(activeComponent === "UserMenu" && !user) && (
+        <OrdersBanner onOfferClick={handleOfferClick} />
+      )}
       <UserMenuSheet
         open={isLoginOpen}
         onOpenChange={setIsLoginOpen}

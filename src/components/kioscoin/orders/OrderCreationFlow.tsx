@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { BannerOffer } from "../banner/types";
 import { transformBannerOfferToOrderRequest } from "../banner/utils";
-import OrdersBanner from "../banner/OrdersBanner";
 import CreateOrder from "./create-orders/CreateOrder";
 import { useUserContext } from "../users/UserContext";
 import { useTranslation } from "react-i18next";
@@ -84,9 +83,9 @@ export default function OrderCreationFlow({
 
   return (
     <>
-      {!(activeComponent === "UserMenu" && !user) && (
+      {/* {!(activeComponent === "UserMenu" && !user) && (
         <OrdersBanner onOfferClick={handleOfferClick} />
-      )}
+      )} */}
       <UserMenuSheet
         open={isLoginOpen}
         onOpenChange={setIsLoginOpen}
