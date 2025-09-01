@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import { useEffect, useState, useRef } from "react";
 import { BannerOffer, BannerOfferClickHandler } from "./types";
+
 import PaymentMethodDisplay from "../PaymentMethodDisplay";
 import { CryptoAmountIcon } from "../CryptoIcon";
 import { useTranslation } from "react-i18next";

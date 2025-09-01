@@ -157,6 +157,7 @@ i18n.use(initReactI18next).init({
         smart_wallet_benefits:
           "Send funds to your Smart Wallet and you can buy and sell crypto without paying gas fees.",
         learn_about_smart_wallet: "Learn about your wallets",
+        read_about_kioscoin: "Read about Kioscoin",
         rate_must_be_positive: "Exchange rate must be greater than 0",
         loading_rate: "Loading rate...",
         unsupported_token: "You must enter a rate for this token",
@@ -397,6 +398,7 @@ i18n.use(initReactI18next).init({
         smart_wallet_benefits:
           "Envía fondos a tu Smart Wallet y podrás comprar y vender cripto sin pagar tarifas de gas.",
         learn_about_smart_wallet: "Aprende sobre tus wallets",
+        read_about_kioscoin: "Lee sobre Kioscoin",
         rate_must_be_positive: "El tipo de cambio debe ser mayor a 0",
         loading_rate: "Cargando tipo de cambio...",
         unsupported_token: "Debes ingresar un tipo de cambio para este token",

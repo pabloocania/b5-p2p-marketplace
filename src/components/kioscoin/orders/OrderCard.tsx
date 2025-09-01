@@ -89,7 +89,7 @@ export function OrderCard({
           {/* Card Ver Historial */}
           {user && (
             <div
-              className="relative rounded-lg p-3 cursor-pointer overflow-hidden group transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+              className="relative rounded-lg p-1.5 cursor-pointer overflow-hidden"
               style={{
                 background:
                   "linear-gradient(135deg, #f8fafc, #e2e8f0, #cbd5e1)",
@@ -98,10 +98,6 @@ export function OrderCard({
                   "0 4px 15px rgba(139, 95, 220, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
               }}
             >
-              {/* Efecto de reflejo */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
-              {/* Brillo móvil */}
-              <div className="absolute top-0 -left-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 group-hover:left-full transition-all duration-700 ease-out" />
               <div className="relative z-10">
                 <ViewHistoryButton orderId={order.id} />
               </div>
@@ -111,7 +107,7 @@ export function OrderCard({
           {/* Card Copiar ID */}
           {user && (
             <div
-              className="relative rounded-lg p-3 cursor-pointer overflow-hidden group transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+              className="relative rounded-lg p-1.5 cursor-pointer overflow-hidden"
               style={{
                 background:
                   "linear-gradient(135deg, #fefce8, #fef3c7, #fed7aa)",
@@ -120,10 +116,6 @@ export function OrderCard({
                   "0 4px 15px rgba(252, 206, 76, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
               }}
             >
-              {/* Efecto de reflejo */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
-              {/* Brillo móvil */}
-              <div className="absolute top-0 -left-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 group-hover:left-full transition-all duration-700 ease-out" />
               <div className="relative z-10">
                 <CopyIdButton orderId={order.id} />
               </div>
@@ -133,7 +125,7 @@ export function OrderCard({
           {/* Card Orden en Disputa */}
           {canShowDisputeButton && (
             <div
-              className="relative rounded-lg p-3 cursor-pointer overflow-hidden group transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+              className="relative rounded-lg p-1.5 cursor-pointer overflow-hidden"
               style={{
                 background:
                   "linear-gradient(135deg, #fef2f2, #fecaca, #fca5a5)",
@@ -142,10 +134,6 @@ export function OrderCard({
                   "0 4px 15px rgba(239, 68, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
               }}
             >
-              {/* Efecto de reflejo */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
-              {/* Brillo móvil */}
-              <div className="absolute top-0 -left-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 group-hover:left-full transition-all duration-700 ease-out" />
               <div className="relative z-10">
                 <DisputeOrderButton order={order} />
               </div>

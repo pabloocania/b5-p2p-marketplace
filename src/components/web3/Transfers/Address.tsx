@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Clipboard, RefreshCw } from "lucide-react";
+import { Clipboard, RefreshCw, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 
@@ -10,6 +10,7 @@ interface AddressProps {
 const Address: React.FC<AddressProps> = ({ address }) => {
   const { t } = useTranslation();
   const [isCopied, setIsCopied] = useState(false);
+
   const handleCopy = () => {
     navigator.clipboard.writeText(address).then(() => {
       setIsCopied(true);
@@ -17,26 +18,45 @@ const Address: React.FC<AddressProps> = ({ address }) => {
     });
   };
 
+  const handleSend = () => {
+    // TODO: Implementar funcionalidad de envío
+    console.log("Send clicked for address:", address);
+  };
+
   return (
-    <div className="w-full">
-      <p className="font-bold text-primary text-xs mb-1">{t("address")}</p>
-      <div className="flex items-center w-full">
-        <p className="text-terciary text-xs flex-grow">
+    <div className="w-full space-y-1">
+      {/* Primera línea: Título "Dirección" + Botón Send */}
+      <div className="flex items-center justify-between">
+        <p className="font-secondary text-primary text-sm font-bold">
+          {t("address")}
+        </p>
+        <Button
+          className="p-0.5 border-secondary/50 bg-white h-6 w-6"
+          variant="outline"
+          size="sm"
+          onClick={handleSend}
+        >
+          <Send className="h-3 w-3" />
+        </Button>
+      </div>
+
+      {/* Segunda línea: Address + Botón Copy */}
+      <div className="flex items-center justify-between">
+        <p className="font-secondary text-gray-700 text-sm flex-grow">
           {address.slice(0, 30)}...{address.slice(-4)}
         </p>
-        <div className="relative">
+        <div className="relative ml-2">
           <Button
-            className="p-1 border-secondary/50 bg-white bo ml-1"
+            className="p-0.5 border-secondary/50 bg-white h-6 w-6"
             variant="outline"
-            size="link"
+            size="sm"
             onClick={handleCopy}
           >
-            {/* <RefreshCw className="h-4 w-4" /> */}
-            <Clipboard className="h-4 w-4" />
+            <Clipboard className="h-3 w-3" />
           </Button>
-          {/* Feedback visual simple y localizado */}
+          {/* Feedback visual */}
           {isCopied && (
-            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded shadow-lg z-10">
+            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs px-1 py-0.5 rounded shadow-lg z-10">
               ¡Copiado!
             </div>
           )}

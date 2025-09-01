@@ -105,7 +105,7 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
             className="flex flex-col items-center gap-2 w-full"
           >
             <AlertCircle className="w-5 h-5 text-red-500" />
-            <span className="text-xs font-medium text-red-600 text-center">
+            <span className="text-xs font-medium text-red-600 text-center font-secondary">
               {t("order_disputed")}
             </span>
           </button>
@@ -141,7 +141,7 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
           className="flex flex-col items-center gap-2 w-full"
         >
           <AlertCircle className="w-5 h-5 text-red-500" />
-          <span className="text-xs font-medium text-red-600 text-center">
+          <span className="text-xs font-medium text-gray-500 text-center font-secondary">
             {t("dispute_order")}
           </span>
         </button>

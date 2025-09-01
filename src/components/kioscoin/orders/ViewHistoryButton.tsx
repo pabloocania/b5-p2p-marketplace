@@ -28,10 +28,7 @@ const ViewHistoryButton: React.FC<ViewHistoryButtonProps> = ({ orderId }) => {
           className="flex flex-col items-center gap-2 w-full"
         >
           <HistoryIcon className="w-5 h-5" style={{ color: "#9e8cbe" }} />
-          <span
-            className="text-xs font-medium text-center"
-            style={{ color: "#9e8cbe" }}
-          >
+          <span className="text-xs font-medium text-center font-secondary text-gray-500">
             {t("view_history")}
           </span>
         </button>
