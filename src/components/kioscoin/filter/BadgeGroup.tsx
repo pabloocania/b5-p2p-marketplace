@@ -80,12 +80,14 @@ function BadgeGroup<T>({
           return (
             <Badge
               key={getKey(item)}
-              className={`cursor-pointer text-xs capitalize flex items-center justify-center px-1.5 py-0.5 border border-primary/30 ${
-                isSelected ? "bg-primary text-white" : "bg-white text-primary"
+              className={`cursor-pointer text-[11px] antialiased tracking-tight capitalize flex items-center justify-center px-2 py-1 border border-primary/20 ${
+                isSelected
+                  ? "bg-primary text-white"
+                  : "bg-white text-primary/70"
               }`}
               onClick={() => onToggle(item)}
             >
-              <span className="flex items-center">
+              <span className="flex items-center font-normal">
                 {renderItemContent(item)}
                 {isSelected && (
                   <X

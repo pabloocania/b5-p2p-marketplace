@@ -6,6 +6,14 @@ import { RegisterForm } from "@/components/kioscoin/users/login/RegisterForm";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUserContext } from "@/components/kioscoin/users/UserContext";
+import {
+  Users,
+  TrendingUp,
+  CheckCircle2,
+  Shield,
+  Zap,
+  DollarSign,
+} from "lucide-react";
 
 export function LandingPage() {
   const { t } = useTranslation();
@@ -39,52 +47,52 @@ export function LandingPage() {
 
         {/* Features - Compact */}
         <div className="flex flex-wrap justify-center gap-3 mb-3">
-          <div className="flex items-center text-dark">
-            <span className="text-base mr-1">🔒</span>
-            <span className="text-xs">{t("secure_escrow")}</span>
+          <div className="flex items-center text-gray-700">
+            <Shield className="h-4 w-4 mr-1 text-primary/80" />
+            <span className="text-xs font-medium">{t("secure_escrow")}</span>
           </div>
-          <div className="flex items-center text-dark">
-            <span className="text-base mr-1">⚡</span>
-            <span className="text-xs">{t("instant_trading")}</span>
+          <div className="flex items-center text-gray-700">
+            <Zap className="h-4 w-4 mr-1 text-secondary" />
+            <span className="text-xs font-medium">{t("instant_trading")}</span>
           </div>
-          <div className="flex items-center text-dark">
-            <span className="text-base mr-1">💰</span>
-            <span className="text-xs">{t("no_gas_fees")}</span>
+          <div className="flex items-center text-gray-700">
+            <DollarSign className="h-4 w-4 mr-1 text-green-500" />
+            <span className="text-xs font-medium">{t("no_gas_fees")}</span>
           </div>
         </div>
 
         {/* Social Proof - Modern Cards */}
         <div className="flex justify-center gap-3 sm:gap-4 mb-4">
-          <div className="border-2 border-dashed border-purple-300 bg-purple-50/80 rounded-lg p-1 sm:p-1.5 text-center min-w-[100px] sm:min-w-[120px] hover:bg-purple-100/80 transition-colors">
-            <div className="text-purple-600 text-sm sm:text-base mb-0.5">
-              👥
+          <div className="border border-purple-200 bg-white/80 rounded-xl p-2 sm:p-3 text-center min-w-[110px] sm:min-w-[130px] shadow-sm hover:shadow-md transition-all">
+            <div className="flex justify-center mb-1">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary/80" />
             </div>
-            <div className="text-gray-800 text-xs sm:text-sm font-bold">
+            <div className="text-gray-500 text-sm sm:text-base font-bold leading-tight">
               10,000+
             </div>
-            <div className="text-gray-600 text-[10px]">{t("active_users")}</div>
+            <div className="text-gray-600 text-[10px] sm:text-xs">Usuarios</div>
           </div>
 
-          <div className="border-2 border-dashed border-purple-300 bg-purple-50/80 rounded-lg p-1 sm:p-1.5 text-center min-w-[100px] sm:min-w-[120px] hover:bg-purple-100/80 transition-colors">
-            <div className="text-purple-600 text-sm sm:text-base mb-0.5">
-              📊
+          <div className="border border-purple-200 bg-white/80 rounded-xl p-2 sm:p-3 text-center min-w-[110px] sm:min-w-[130px] shadow-sm hover:shadow-md transition-all">
+            <div className="flex justify-center mb-1">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
             </div>
-            <div className="text-gray-800 text-xs sm:text-sm font-bold">
+            <div className="text-gray-500 text-sm sm:text-base font-bold leading-tight">
               $2M+
             </div>
-            <div className="text-gray-600 text-[10px]">
-              {t("trading_volume")}
-            </div>
+            <div className="text-gray-600 text-[10px] sm:text-xs">Volumen</div>
           </div>
 
-          <div className="border-2 border-dashed border-purple-300 bg-purple-50/80 rounded-lg p-1 sm:p-1.5 text-center min-w-[100px] sm:min-w-[120px] hover:bg-purple-100/80 transition-colors">
-            <div className="text-purple-600 text-sm sm:text-base mb-0.5">
-              ✅
+          <div className="border border-purple-200 bg-white/80 rounded-xl p-2 sm:p-3 text-center min-w-[110px] sm:min-w-[130px] shadow-sm hover:shadow-md transition-all">
+            <div className="flex justify-center mb-1">
+              <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
             </div>
-            <div className="text-gray-800 text-xs sm:text-sm font-bold">
+            <div className="text-gray-500 text-sm sm:text-base font-bold leading-tight">
               99.9%
             </div>
-            <div className="text-gray-600 text-[10px]">{t("success_rate")}</div>
+            <div className="text-gray-600 text-[10px] sm:text-xs">
+              Tasa de Éxito
+            </div>
           </div>
         </div>
       </div>

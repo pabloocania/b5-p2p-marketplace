@@ -6,6 +6,7 @@ interface CryptoAmountIconProps {
   showAmount?: boolean; // Flag to control if amount is displayed
   textSizeClass?: string; // Class for text size
   decimals?: number;
+  amountTextClassName?: string; // Optional class to style amount + token text
 }
 
 export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
@@ -13,6 +14,7 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
   formattedAmount,
   showAmount = true,
   textSizeClass = "text-2xl",
+  amountTextClassName,
 }) => {
   const tokenCodeLower = tokenCode.toLowerCase();
   const isGenericIcon = tokenCodeLower === "pdoc" || tokenCodeLower === "usdk";
@@ -50,12 +52,14 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
   const [imgError, setImgError] = React.useState(false);
   const fallbackSrc = "/criptoicon/asset-placeholder.svg";
 
+  const amountTextClasses = amountTextClassName
+    ? `${amountFontSize} ${amountTextClassName}`
+    : `${amountFontSize} font-bold text-black`;
+
   return (
     <div className="inline-flex items-center justify-center">
       {showAmount && formattedAmount && (
-        <span
-          className={`font-medium ${amountFontSize} font-bold text-black mr-1`}
-        >
+        <span className={amountTextClasses}>
           {formattedAmount} {tokenCode.toUpperCase()}
         </span>
       )}

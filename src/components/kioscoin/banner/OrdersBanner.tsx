@@ -208,6 +208,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                       formattedAmount={offer.amount}
                       showAmount={true}
                       textSizeClass="text-[10px]"
+                      amountTextClassName="text-gray-500 font-medium mr-1"
                     />
                     <div className="flex items-center text-[10px] text-primary/80 font-bold ml-1">
                       {t("instantly")}
@@ -217,14 +218,14 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                   {/* Two column layout */}
                   <div className="flex flex-1 gap-1.5 sm:gap-3">
                     {/* Left column: order type, fiat, blockchain */}
-                    <div className="flex-1 flex flex-col items-start ml-3 justify-end -mt-2 sm:-mt-2">
-                      <div className="text-[10px]">
+                    <div className="flex-1 flex flex-col items-start ml-3 justify-end -mt-2 sm:-mt-1.5">
+                      <div className="text-[10px] text-primary/80">
                         {t("for")}{" "}
-                        <span className="font-bold text-gray-600 text-[10px]">
+                        <span className="font-medium text-gray-500 text-[10px]">
                           {formatFiatAmount(offer.price || "0", offer.fiatCode)}
                         </span>
                       </div>
-                      <div className="text-[10px] text-primary/60 mt-0.5 sm:mt-1">
+                      <div className="text-[10px] text-primary/60 mt-0.5 sm:mt-1 mb-1">
                         {t("on")}{" "}
                         <span className="font-bold text-[10px]">
                           {getBlockchainDisplayName(offer.blockchain)}
@@ -233,7 +234,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                     </div>
 
                     {/* Right column: payment methods stacked vertically */}
-                    <div className="flex flex-col items-end justify-end">
+                    <div className="flex flex-col items-start justify-end">
                       {offer.exchangeMethods.map((method, idx) => (
                         <PaymentMethodDisplay key={idx} method={method} />
                       ))}
