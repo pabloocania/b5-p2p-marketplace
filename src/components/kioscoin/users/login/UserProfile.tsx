@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { LogOut, Loader2, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { UserInfoCard } from "../UserInfoCard";
+import { ProfileHeader } from "../ProfileHeader";
 import PushNotificationsToggle from "../../PushNotificationsToggle";
 import UserWalletsComponent from "../UserWalletsComponent";
 import KioscoinConnectButton from "../KioscoinConnectButton";
@@ -63,7 +63,7 @@ export const UserProfile = ({
     <Card className="w-full mb-2 sm:mb-4" variant="shadow">
       <CardHeader className="pb-2 sm:pb-4">
         <CardTitle className="flex justify-center items-center align-center mt-1 sm:mt-2 w-full">
-          <UserInfoCard user={user} order={undefined} />
+          <ProfileHeader user={user} />
         </CardTitle>
       </CardHeader>
       <Separator className="mt-1 sm:mt-2 mb-2 sm:mb-4" />
