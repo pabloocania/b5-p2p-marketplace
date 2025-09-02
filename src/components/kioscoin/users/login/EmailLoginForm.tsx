@@ -24,7 +24,7 @@ export const EmailLoginForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
-  const { connectLoading } = useWeb3AuthConnect();
+  const { loading: connectLoading } = useWeb3AuthConnect();
   const {
     disconnect,
     loading: disconnectLoading,
