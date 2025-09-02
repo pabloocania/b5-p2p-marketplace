@@ -23,6 +23,7 @@ import { TokenBalance } from "@/components/web3/types";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import { useWeb3Auth } from "@web3auth/modal/react";
 import { Info } from "lucide-react";
+import UserSettings from "../UserSettings";
 // Usando isotipo PNG en lugar del componente SVG
 
 interface UserProfileProps {
