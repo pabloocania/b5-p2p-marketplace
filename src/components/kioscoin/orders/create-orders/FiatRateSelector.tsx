@@ -34,7 +34,7 @@ export default function FiatRateSelector({
   const { t } = useTranslation();
 
   return (
-    <div className="flex justify-between items-start gap-4">
+    <div className="flex justify-between items-start gap-4 font-secondary">
       {/* Selector + input en columna */}
       <div className="flex flex-col gap-2 flex-1">
         {/* Selector de moneda fiat */}

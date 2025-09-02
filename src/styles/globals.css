@@ -70,6 +70,19 @@
   }
 }
 
+/* Animación de brillo amarillo para el input */
+@keyframes typing-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(252, 206, 76, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(252, 206, 76, 0.5);
+    transform: scale(1.01);
+  }
+}
+
 .animate-spin-slow {
   animation: spin-slow 3s linear infinite;
 }
@@ -84,6 +97,10 @@
 
 .animate-chat-bounce {
   animation: chatBounce 1.5s ease-in-out infinite;
+}
+
+.animate-typing-glow {
+  animation: typing-glow 2.5s ease-in-out infinite;
 }
 
 @layer utilities {
@@ -171,4 +188,17 @@ div.font-secondary div,
 .font-secondary span.text-gray-500,
 .font-secondary span.text-primary {
   font-family: "Montserrat", "Inter", system-ui, sans-serif !important;
+}
+
+/* ULTRA MEGA SPECIFIC - Force Montserrat on Create Order button - MUST BE LAST */
+button.font-secondary,
+.font-secondary button,
+button[class*="font-secondary"],
+button[class*="text-xs"][class*="font-secondary"],
+button[class*="text-sm"][class*="font-secondary"],
+button[type="submit"].font-secondary,
+form button.font-secondary,
+div button.font-secondary {
+  font-family: "Montserrat", "Inter", system-ui, sans-serif !important;
+  font-size: 12px !important;
 }

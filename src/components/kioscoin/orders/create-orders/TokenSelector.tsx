@@ -97,13 +97,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
       : [];
 
     return (
-      <div className="flex flex-col gap-3 w-full">
-        {/* Título del selector */}
-        <label className="text-base font-bold text-primary">
-          {t("choose_token")} {/* Traducción, si estás usando i18n */}
-          {/* O directamente: "Elige la moneda a utilizar" */}
-        </label>
-
+      <div className="flex flex-col gap-3 w-full font-secondary">
         {/* Stablecoin as buttons */}
         <div className="flex flex-wrap gap-2 justify-start">
           {tokens.map((token) => (

@@ -153,7 +153,7 @@ export default function PaymentMethodSelector({
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full font-secondary">
       <CardContent className="p-3">
         <div className="flex items-center mb-2">
           <h3 className="text-base font-semibold text-primary">
