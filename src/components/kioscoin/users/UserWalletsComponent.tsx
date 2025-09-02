@@ -12,7 +12,7 @@ import { useTransaction } from "@/components/web3/Transactions/TransactionContex
 import { useTransactionStatusChecker } from "@/components/web3/Transactions/useTransactionStatusChecker";
 import { useTransactionHandler } from "@/components/web3/Transfers/useTransactionsHandler";
 import Address from "@/components/web3/Transfers/Address";
-import SmartWalletOnboarding from "./SmartWalletOnboarding";
+// SmartWalletOnboarding movido a UserProfile
 import { Button } from "@/components/ui/button";
 import UserBalance from "./UserBalance";
 
@@ -210,14 +210,7 @@ export default function UserWalletsComponent() {
     setState(state.withSelectedToken(token));
   };
 
-  const handleOnboardingComplete = () => {
-    setState(state.withShowOnboarding(false));
-    localStorage.setItem("hasSeenSmartWalletOnboarding", "true");
-  };
-
-  const handleShowOnboarding = () => {
-    setState(state.withShowOnboarding(true));
-  };
+  // Handlers de onboarding movidos a UserProfile
 
   // Handlers for UserBalance component
   const handleTokenChange = (token: string) => {
@@ -236,22 +229,10 @@ export default function UserWalletsComponent() {
 
   return (
     <>
-      {state.showOnboarding && (
-        <SmartWalletOnboarding onComplete={handleOnboardingComplete} />
-      )}
+      {/* SmartWalletOnboarding movido a UserProfile */}
 
       <div className="flex flex-col items-center w-full rounded-lg bg-white space-y-2 sm:space-y-3 py-1">
-        <div className="w-full">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleShowOnboarding}
-            className="flex items-center w-full border-secondary/50 font-bold text-secondary text-xs sm:text-sm py-2 px-2"
-          >
-            <Info className="h-3 w-3 mr-1" />
-            <span className="text-xs">{t("learn_about_smart_wallet")}</span>
-          </Button>
-        </div>
+        {/* Botón "Aprende sobre tus wallets" movido a UserProfile */}
 
         <div className="w-full px-2 bg-secondary bg-opacity-10 rounded-lg py-2 space-y-1.5 sm:space-y-2">
           {swAddress && (
@@ -272,13 +253,7 @@ export default function UserWalletsComponent() {
             </Button>
           </div> */}
 
-          <UserBalance
-            balances={balances}
-            selectedToken={selectedToken}
-            selectedBlockchain={selectedBlockchain}
-            onTokenChange={handleTokenChange}
-            onBlockchainChange={handleBlockchainChange}
-          />
+          {/* UserBalance movido a UserProfile - debajo del ProfileHeader */}
         </div>
       </div>
     </>

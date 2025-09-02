@@ -26,10 +26,7 @@ const CopyIdButton: React.FC<CopyIdButtonProps> = ({ orderId }) => {
           className="flex flex-col items-center gap-2 w-full"
         >
           <ClipboardIcon className="w-5 h-5" style={{ color: "#fcce4c" }} />
-          <span
-            className="text-xs font-medium text-center"
-            style={{ color: "#fcce4c" }}
-          >
+          <span className="text-xs font-medium text-center font-secondary text-gray-500">
             {t("copy_id")}
           </span>
         </button>
