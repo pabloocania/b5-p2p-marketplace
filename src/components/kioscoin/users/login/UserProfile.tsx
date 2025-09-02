@@ -210,6 +210,9 @@ export const UserProfile = ({
         <div className="w-full">
           <PushNotificationsToggle userId={user.id!}></PushNotificationsToggle>
         </div>
+        <div className="w-full">
+          <UserSettings />
+        </div>
         {/* 
           // Botón para reiniciar el estado del onboarding
           // Permite al usuario volver a ver el tutorial de Smart Wallet
