@@ -36,6 +36,7 @@ interface TokenBalanceCardListProps {
   balanceType: "eoa" | "sw";
   onTokenSelect: (token: TokenBalance | null) => void;
   handleTransfer: (transferAmount: string) => void;
+  hideEmptyBalances?: boolean; // New flag to hide zero balances
 }
 
 export default function TokenBalanceCardList({
@@ -43,8 +44,19 @@ export default function TokenBalanceCardList({
   balanceType,
   onTokenSelect,
   handleTransfer,
+  hideEmptyBalances = false, // Default to false
 }: TokenBalanceCardListProps) {
   const [state, setState] = useState<TokenCardState>(TokenCardState.create());
+
+  // Filter out zero balances if hideEmptyBalances is true
+  const filteredBalances = hideEmptyBalances
+    ? balances.filter(
+        (token) =>
+          parseFloat(
+            balanceType === "eoa" ? token.eoaBalance : token.smartWalletBalance
+          ) > 0
+      )
+    : balances;
 
   const handleSelectToken = (token: TokenBalance) => {
     const isCurrentlySelected = state.isSelected(token.name);
@@ -57,7 +69,7 @@ export default function TokenBalanceCardList({
   };
 
   // For empty state
-  if (balances.length === 0) {
+  if (filteredBalances.length === 0) {
     return (
       <div className="p-8 flex flex-col items-center justify-center space-y-3">
         <WalletIcon className="h-12 w-12 text-muted-foreground opacity-50" />
@@ -68,10 +80,10 @@ export default function TokenBalanceCardList({
 
   // Find the selected token
   const selectedToken =
-    balances.find((token) => state.isSelected(token.name)) || null;
+    filteredBalances.find((token) => state.isSelected(token.name)) || null;
 
   // Sort balances to show tokens with balance first
-  const sortedBalances = [...balances].sort((a, b) => {
+  const sortedBalances = [...filteredBalances].sort((a, b) => {
     const balanceA = parseFloat(
       balanceType === "eoa" ? a.eoaBalance : a.smartWalletBalance
     );
@@ -99,7 +111,11 @@ export default function TokenBalanceCardList({
                 key={index}
                 className={`
                   overflow-hidden transition-all duration-200 ease-in-out shadow
-                  ${isSelected ? "ring-2 ring-primary" : "hover:shadow-lg"}
+                  ${
+                    isSelected && !hideEmptyBalances
+                      ? "ring-2 ring-primary"
+                      : "hover:shadow-lg"
+                  }
                 `}
               >
                 <div
@@ -117,8 +133,9 @@ export default function TokenBalanceCardList({
                         {balanceType === "eoa" ? "EOA Wallet" : "Smart Wallet"}
                       </Badge>
 
-                      <button
-                        className={`
+                      {!hideEmptyBalances && (
+                        <button
+                          className={`
                           rounded-full w-8 h-8 flex items-center justify-center transition-colors
                           ${
                             isSelected
@@ -126,14 +143,15 @@ export default function TokenBalanceCardList({
                               : "bg-primary/10 text-primary hover:bg-primary/20"
                           }
                         `}
-                        aria-label="Transfer token"
-                      >
-                        {isSelected ? (
-                          <ChevronRightIcon className="h-5 w-5" />
-                        ) : (
-                          <ArrowLeftRightIcon className="h-5 w-5" />
-                        )}
-                      </button>
+                          aria-label="Transfer token"
+                        >
+                          {isSelected ? (
+                            <ChevronRightIcon className="h-5 w-5" />
+                          ) : (
+                            <ArrowLeftRightIcon className="h-5 w-5" />
+                          )}
+                        </button>
+                      )}
                     </div>
 
                     {/* Token amount and icon */}
@@ -151,7 +169,7 @@ export default function TokenBalanceCardList({
                     </div>
 
                     {/* Transfer component */}
-                    {isSelected && (
+                    {isSelected && !hideEmptyBalances && (
                       <div
                         className="mt-4 pt-3 border-t"
                         onClick={(e) => e.stopPropagation()}

@@ -1,4 +1,4 @@
-import { ConfigResponse } from "b5-api-client/dist/types";
+import { ConfigResponse, PaymentMethod } from "b5-api-client/dist/types";
 import { p2pMarketAPIClient } from "./APIClients";
 import { Stablecoin, StablecoinConfig } from "../components/web3/types";
 import { arbitrumSepolia, baseSepolia, rootstock, rootstockTestnet, base, arbitrum, type Chain, bsc, polygon } from "wagmi/chains";
@@ -262,6 +262,14 @@ export class ConfigStore {
         return blockchains
             .map(blockchain => this.getChainIdFromBlockchain(blockchain))
             .filter(chainId => chainId !== 0); // Filter out invalid chain IDs
+    }
+
+    public getPaymentMethods(): PaymentMethod[] {
+        const list = (this.config as any)?.config?.paymentMethods ?? [];
+        return list.map((pm: any) => ({
+            type: String(pm.type || '').toUpperCase() || 'FINTECH',
+            entity: pm.entity || '',
+        }));
     }
 }
 

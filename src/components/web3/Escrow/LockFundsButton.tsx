@@ -17,9 +17,13 @@ import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 interface LockFundsButtonProps {
   order: Order;
   canLock: boolean;
+  onSuccess: () => void;
 }
 
-const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
+const LockFundsButton: React.FC<LockFundsButtonProps> = ({
+  order,
+  onSuccess,
+}) => {
   const { t } = useTranslation();
   const { batchApproveAndEscrow, getUserOperationReceipt } = useEtherspotFlow();
   const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +51,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({ order }) => {
   const handleLockFunds = async () => {
     if (!isTransacting) {
       setIsLoading(true);
+      onSuccess();
       try {
         if (!hasSufficientBalance) {
           return;

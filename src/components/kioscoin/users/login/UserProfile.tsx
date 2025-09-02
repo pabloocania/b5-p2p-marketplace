@@ -23,6 +23,7 @@ import { TokenBalance } from "@/components/web3/types";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import { useWeb3Auth } from "@web3auth/modal/react";
 import { Info } from "lucide-react";
+import UserSettings from "../UserSettings";
 // Usando isotipo PNG en lugar del componente SVG
 
 interface UserProfileProps {
@@ -209,6 +210,9 @@ export const UserProfile = ({
 
         <div className="w-full">
           <PushNotificationsToggle userId={user.id!}></PushNotificationsToggle>
+        </div>
+        <div className="w-full">
+          <UserSettings />
         </div>
         {/* 
           // Botón para reiniciar el estado del onboarding

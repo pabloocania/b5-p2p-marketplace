@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TokenBalance, TokenTransfer } from "@/components/web3/types";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
-import { useAccount } from "wagmi";
 import TokenBalanceSelector from "@/components/kioscoin/TokenBalanceSelector";
 import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
 import { useTransactionStatusChecker } from "@/components/web3/Transactions/useTransactionStatusChecker";
@@ -81,15 +80,17 @@ class TransferState {
     });
   }
 }
-import { ConfigStore } from "../../../lib/ConfigStore";
 import { parseUnits } from "viem";
 import { useWeb3Auth } from "@web3auth/modal/react";
-import { EtherspotSdksManager } from "@/components/web3/AccountAbstraction/EtherspotSdksManager";
 
 export default function UserWalletsComponent() {
   const { t } = useTranslation();
   const { setTransaction } = useTransaction();
-  const { balances, swAddress, primeSdk, eoaAddress } = useEtherspotSdk();
+  const { balances, swAddress, primeSdk, eoaAddress, refreshBalances } =
+    useEtherspotSdk();
+  const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>(
+    balances ?? []
+  );
   // const { isConnected, address } = useAccount();
   const { isConnected } = useWeb3Auth();
   const [state, setState] = useState<TransferState>(
@@ -196,15 +197,12 @@ export default function UserWalletsComponent() {
   };
 
   const handleRefresh = async () => {
-    if (primeSdk) {
-      await EtherspotSdksManager.getInstance().getTokensBalances(
-        primeSdk,
-        eoaAddress
-      );
-    } else {
-      console.error("PrimeSdk is not initialized.");
-    }
+    await refreshBalances();
   };
+
+  useEffect(() => {
+    setTokenBalances(balances ?? []);
+  }, [balances]);
 
   const handleTokenSelect = (token: TokenBalance | null) => {
     setState(state.withSelectedToken(token));
@@ -223,7 +221,7 @@ export default function UserWalletsComponent() {
     console.log("Blockchain changed to:", blockchain);
   };
 
-  if (!balances) {
+  if (!tokenBalances) {
     return <div>{t("no_stablecoins_available")}</div>;
   }
 
