@@ -34,7 +34,7 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col -mt-14 pt-14">
+    <div className="min-h-screen flex flex-col -mt-14 pt-1">
       {/* Full-viewport background layer */}
       <div className="fixed inset-0 bg-terciary -z-10"></div>
       {/* Hero Section - Compact */}
@@ -43,7 +43,7 @@ export function LandingPage() {
           <img
             src="/icons/kioscoin-logotipo-lila.png"
             alt="Kioscoin"
-            className="h-32 sm:h-40 md:h-48 w-auto object-contain"
+            className="w-auto object-contain"
           />
         </div>
 

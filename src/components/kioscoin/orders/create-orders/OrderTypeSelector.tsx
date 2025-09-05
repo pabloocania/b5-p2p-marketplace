@@ -17,6 +17,7 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
 
   return (
     <div className="w-full space-y-2 font-secondary">
+      <h3 className="text-black/75 text-xs">{t("i_want_to")}</h3>
       {/* Botonera horizontal */}
       <div className="flex gap-2">
         {[

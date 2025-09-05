@@ -1,38 +1,28 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  CreateOrderRequest,
   OrderType,
   Order,
   generateSecretAndHash,
   PaymentMethod,
   OrderStatus,
 } from "b5-api-client";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { p2pMarketAPIClient as client } from "../../../../lib/APIClients";
 import { useUserContext } from "../../users/UserContext";
 import { useTranslation } from "react-i18next";
 import TokenSelector from "@/components/kioscoin/orders/create-orders/TokenSelector";
 import BlockchainSelector from "@/components/kioscoin/orders/create-orders/BlockchainSelector";
-import FiatRateSelector from "@/components/kioscoin/orders/create-orders/FiatRateSelector";
 import OrderTypeSelector from "@/components/kioscoin/orders/create-orders/OrderTypeSelector";
-import PaymentMethodSelector from "@/components/kioscoin/orders/create-orders/PaymentMethodSelector";
 import { ExchangeRatesService } from "@/components/web3/ExchangeRatesService";
 import { ScrollableContainer } from "../../ScrollabelContainer";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import UserMenuNew from "../../users/UserMenuNew";
 import { ConfigStore } from "@/lib/ConfigStore";
-import SuggestedRateCard from "@/components/kioscoin/orders/create-orders/SuggestedRateCard";
+import PaymentMethodsComponent from "./PaymentMethodsComponent";
 
 export default function CreateOrder({
   onClose,
@@ -64,9 +54,7 @@ export default function CreateOrder({
   const [walletAddress, setWalletAddress] = useState("");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const [blockchain, setBlockchain] = useState(preFilledData?.blockchain || "");
-  const [selectedMethods, setSelectedMethods] = useState(
-    preFilledData?.paymentMethods || []
-  );
+
   const [suggestedRate, setSuggestedRate] = useState<number | null>(null);
   const [customRate, setCustomRate] = useState<number | null>(null);
   const [fiatCode, setFiatCode] = useState<"ARS" | "EUR">(
@@ -76,6 +64,13 @@ export default function CreateOrder({
   const [isLoadingRate, setIsLoadingRate] = useState(false);
   const { user, isLoggedIn, loginId, login, logout } = useUserContext();
   const { t } = useTranslation();
+  const availableMethods = useMemo(
+    () => ConfigStore.getInstance().getPaymentMethods(),
+    []
+  );
+  const [selectedMethods, setSelectedMethods] = useState(
+    user?.settings?.paymentMethods || availableMethods || []
+  );
 
   const stablecoinConfig = ConfigStore.getInstance().getBackendStablecoins();
 
@@ -187,13 +182,13 @@ export default function CreateOrder({
         ) : (
           <div className="w-full max-w-6xl mx-auto px-4">
             {/* Card 0: Título principal */}
-            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
+            {/* <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
               <CardHeader className="flex justify-center items-center pb-1 pt-2">
                 <CardTitle className="text-center text-primary text-xl font-bold font-primary">
                   Create Order
                 </CardTitle>
               </CardHeader>
-            </Card>
+            </Card> */}
 
             {/* Tarjeta 1: Compra/Venta */}
             <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
@@ -220,8 +215,11 @@ export default function CreateOrder({
 
             {/* Tarjeta 2: Token y Blockchain */}
             <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
-              <CardContent className="text-primary px-4 py-3 space-y-3 font-secondary">
+              <CardContent className="text-primary px-4 py-3 space-y-3 font-secondary w-full">
                 {/* Token selector */}
+                <h3 className="text-black/75 text-xs">
+                  {t("select_token_and_blockchain")}
+                </h3>
                 <TokenSelector
                   onBlockchainChange={setBlockchain}
                   onTokenChange={setTokenCode}
@@ -288,7 +286,7 @@ export default function CreateOrder({
                     />
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Suggested: {fiatCode === "EUR" ? "€" : "$"}
+                    {t("suggested")}: {fiatCode === "EUR" ? "€" : "$"}
                     {suggestedRate?.toLocaleString("es-AR", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -298,7 +296,9 @@ export default function CreateOrder({
 
                 {/* Monto a recibir */}
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">You will receive:</span>
+                  <span className="text-sm font-medium">
+                    {t("you_will_receive")}:
+                  </span>
                   <span className="text-lg font-bold">
                     {fiatCode === "EUR" ? "€" : "$"}
                     {calculateFiatEquivalent().toLocaleString("es-AR", {
@@ -313,36 +313,34 @@ export default function CreateOrder({
             {/* Tarjeta 4: Resto del formulario */}
             <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
               <form onSubmit={handleSubmit}>
-                <CardContent className="text-primary px-0 py-1 space-y-1 font-secondary">
-                  <div className="space-y-1 px-4">
-                    <PaymentMethodSelector
-                      selectedMethods={selectedMethods}
-                      onChange={setSelectedMethods}
-                    />
-
-                    {orderType === "BUY" && (
-                      <div>
-                        <Label
-                          className="font-bold text-sm font-secondary"
-                          htmlFor="wallet-address"
-                        >
-                          {t("address")}
-                        </Label>
-                        <Input
-                          id="wallet-address"
-                          placeholder={t("insert_wallet_address")}
-                          value={walletAddress}
-                          onChange={(e) => setWalletAddress(e.target.value)}
-                          className="focus:ring-primary focus:border-primary font-secondary"
-                        />
-                      </div>
-                    )}
-                  </div>
+                <CardContent className="text-primary space-y-1 font-secondary px-4 py-3">
+                  <PaymentMethodsComponent
+                    selectedMethods={selectedMethods}
+                    onChange={setSelectedMethods}
+                    methods={availableMethods}
+                  />
+                  {orderType === "BUY" && (
+                    <div>
+                      <Label
+                        className="font-bold text-sm font-secondary"
+                        htmlFor="wallet-address"
+                      >
+                        {t("address")}
+                      </Label>
+                      <Input
+                        id="wallet-address"
+                        placeholder={t("insert_wallet_address")}
+                        value={walletAddress}
+                        onChange={(e) => setWalletAddress(e.target.value)}
+                        className="focus:ring-primary focus:border-primary font-secondary"
+                      />
+                    </div>
+                  )}
                 </CardContent>
                 {!createdOrder && (
                   <CardFooter className="p-0">
                     <Button
-                      className="w-full rounded-b-xl text-xs font-semibold shadow-none transition-colors bg-primary text-white hover:bg-primary/90 font-secondary"
+                      className="w-full rounded-b-lg text-xs font-semibold shadow-none transition-colors bg-primary text-white hover:bg-primary/90 font-secondary"
                       style={{
                         fontFamily:
                           '"Montserrat", "Inter", system-ui, sans-serif',

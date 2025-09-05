@@ -39,7 +39,6 @@ export function useUser() {
                 isUserIdCaseSensitive: true,
             },
         })
-        console.log("provider", provider);
     };
 
     const logout = () => {

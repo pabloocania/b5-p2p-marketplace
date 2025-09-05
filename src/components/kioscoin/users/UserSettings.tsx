@@ -13,6 +13,9 @@ import type {
 import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { useUserContext } from "./UserContext";
+import { useTranslation } from "react-i18next";
+import PushNotificationsToggle from "../PushNotificationsToggle";
+import PaymentMethodsComponent from "../orders/create-orders/PaymentMethodsComponent";
 
 interface UserSettingsProps {
   readonly className?: string;
@@ -23,6 +26,7 @@ export default function UserSettings({ className }: UserSettingsProps) {
   const { toast } = useToast();
   const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const { t } = useTranslation();
 
   const availableMethods = useMemo(
     () => ConfigStore.getInstance().getPaymentMethods(),
@@ -31,6 +35,7 @@ export default function UserSettings({ className }: UserSettingsProps) {
 
   useEffect(() => {
     const saved: PaymentMethod[] | undefined = user?.settings?.paymentMethods;
+    console.log("saved", saved);
     if (saved && Array.isArray(saved) && saved.length > 0) {
       setSelectedMethods(saved);
     }
@@ -78,21 +83,28 @@ export default function UserSettings({ className }: UserSettingsProps) {
     <Card className={className}>
       <CardContent className="p-3 space-y-3">
         <div className="flex items-center mb-1">
-          <h3 className="text-base font-semibold text-primary">
-            User settings
+          <h3 className="text-base font-semibold text-primary text-sm">
+            {t("preferences")}
           </h3>
         </div>
 
-        <PaymentMethodSelector
+        <PaymentMethodsComponent
           selectedMethods={selectedMethods}
           onChange={setSelectedMethods}
           methods={availableMethods}
           readOnly={false}
         />
+        <div className="flex w-full">
+          <PushNotificationsToggle userId={user!.id!}></PushNotificationsToggle>
+        </div>
 
-        <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={!isValid || isSaving}>
-            {isSaving ? "Saving..." : "Save"}
+        <div className="flex w-full">
+          <Button
+            className="flex w-full text-white bg-secondary border border-secondary"
+            onClick={handleSave}
+            disabled={!isValid || isSaving}
+          >
+            {isSaving ? t("saving") : t("save")}
           </Button>
         </div>
       </CardContent>

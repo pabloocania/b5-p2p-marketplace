@@ -14,8 +14,6 @@ import { useTranslation } from "react-i18next";
 import { NavBar } from "@/components/kioscoin/NavBar";
 import { TopBar } from "@/components/kioscoin/TopBar";
 import { LandingPage } from "@/components/kioscoin/landing/LandingPage";
-import { cn } from "@/lib/utils";
-import OrderCreationFlow from "@/components/kioscoin/orders/OrderCreationFlow";
 import KioscoinOperationFlow from "@/components/kioscoin/orders/KioscoinOperationFlow";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/create-orders/CreateOrderContainer";
 import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
@@ -27,7 +25,6 @@ export default function Home() {
   const [activeSubFilter, setActiveSubFilter] = useState(Filter.PENDING);
   const { user, login, logout } = useUserContext();
 
-  console.log("Estado del usuario:", user ? "Logueado" : "No logueado");
   const [refreshKey, setRefreshKey] = useState(0);
   const { disconnect } = useDisconnect();
   const { transaction, resetTransaction } = useTransaction();

@@ -237,6 +237,13 @@ i18n.use(initReactI18next).init({
         dispute_already_message:
           "This order is already in dispute. Please contact support via TELEGRAM.",
         dispute_button_close: "Close",
+        preferences: "Preferences",
+        saving: "Saving...",
+        save: "Save",
+        no_payment_methods_available: "No payment methods available.",
+        you_will_receive: "You will receive",
+        you_must_pay: "Suggested rate",
+        select_token_and_blockchain: "Select token and blockchain",
       },
     },
     es: {
@@ -481,6 +488,14 @@ i18n.use(initReactI18next).init({
         dispute_already_message:
           "Esta orden ya está en disputa. Por favor, contacta al equipo de soporte vía TELEGRAM.",
         dispute_button_close: "Cerrar",
+        preferences: "Preferencias",
+        saving: "Guardando...",
+        save: "Guardar",
+        no_payment_methods_available: "No hay métodos de pago disponibles.",
+        you_will_receive: "Recibirás",
+        you_must_pay: "Debes pagar",
+        suggested: "Cambio sugerido",
+        select_token_and_blockchain: "Selecciona la moneda y la blockchain",
       },
     },
   },

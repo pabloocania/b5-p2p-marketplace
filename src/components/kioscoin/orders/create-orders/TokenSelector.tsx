@@ -90,21 +90,15 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
       onTokenChange(value);
     };
 
-    const availableBlockchains = stablecoinConfig
-      ? stablecoinConfig.supportedStablecoins
-          .filter((stablecoin) => stablecoin.name === selectedToken)
-          .flatMap((v) => v.addresses)
-      : [];
-
     return (
       <div className="flex flex-col gap-3 w-full font-secondary">
         {/* Stablecoin as buttons */}
-        <div className="flex flex-wrap gap-2 justify-start">
+        <div className="flex flex-wrap gap-2 justify-center">
           {tokens.map((token) => (
             <button
               key={token}
               onClick={(e) => handleTokenChange(e, token)}
-              className={`rounded-full border p-2 w-12 h-12 flex items-center justify-center transition
+              className={`rounded-full border p-2 min-w-12 h-12 px-3 flex items-center justify-center transition
                   ${
                     selectedToken === token
                       ? "bg-primary/10 border-primary"
@@ -112,7 +106,12 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
                   }`}
               aria-label={token}
             >
-              <CryptoAmountIcon tokenCode={token} showAmount={false} />
+              <CryptoAmountIcon
+                tokenCode={token}
+                showAmount={false}
+                showTokenCode={true}
+                textSizeClass="text-sm"
+              />
             </button>
           ))}
         </div>
