@@ -1,6 +1,5 @@
 import Head from "next/head";
 import "../styles/globals.css";
-import "../src/styles/donatto-font.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { AppProps } from "next/app";
 import { UserProvider } from "../src/components/kioscoin/users/UserContext";

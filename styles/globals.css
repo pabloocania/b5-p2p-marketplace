@@ -2,12 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fuentes personalizadas */
+@font-face {
+  font-family: "Donatto";
+  src: url("/donatto-logo-font/donatto-regular.otf") format("opentype"),
+    url("/donatto-logo-font/donatto-regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Donatto";
+  src: url("/donatto-logo-font/donatto-italic.otf") format("opentype"),
+    url("/donatto-logo-font/donatto-italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Estilos base globales */
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: "Lato", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: "Donatto", "Inter", "Poppins", system-ui, sans-serif;
 }
 
 a {
@@ -19,6 +38,7 @@ a {
   box-sizing: border-box;
 }
 
+/* Tokens de diseño y variables CSS */
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -47,6 +67,7 @@ a {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 20 14.3% 4.1%;
     --foreground: 60 9.1% 97.8%;
@@ -81,5 +102,103 @@ a {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Utilidades de tipografía */
+.font-primary {
+  font-family: "Donatto", system-ui, sans-serif;
+}
+
+.font-secondary {
+  font-family: "Montserrat", "Inter", system-ui, sans-serif;
+}
+
+/* Animaciones personalizadas */
+@keyframes spin-slow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes chatBlink {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.3);
+    transform: scale(1);
+  }
+  25% {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+    transform: scale(1.02);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+    transform: scale(1.05);
+  }
+  75% {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes chatGlow {
+  0%,
+  100% {
+    background: linear-gradient(45deg, #ffffff, #f3f4f6);
+  }
+  50% {
+    background: linear-gradient(45deg, #fef3c7, #ffffff);
+  }
+}
+
+@keyframes chatBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes typing-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(252, 206, 76, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(252, 206, 76, 0.5);
+    transform: scale(1.01);
+  }
+}
+
+/* Clases de animación */
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+.animate-chat-blink {
+  animation: chatBlink 2s ease-in-out infinite;
+}
+
+.animate-chat-glow {
+  animation: chatGlow 3s ease-in-out infinite;
+}
+
+.animate-chat-bounce {
+  animation: chatBounce 1.5s ease-in-out infinite;
+}
+
+.animate-typing-glow {
+  animation: typing-glow 2.5s ease-in-out infinite;
+}
+
+@layer utilities {
+  .animate-spin-slow {
+    animation: spin 6s linear infinite;
   }
 }

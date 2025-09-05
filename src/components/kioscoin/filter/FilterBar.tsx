@@ -33,8 +33,8 @@ export default function FilterBar({
       </style>
 
       {/* Main Filter Bar - Responsive Grid */}
-      <div className="mb-1">
-        <div className="bg-backgroundSecondary px-1 py-1 rounded-md border border-primary/20">
+      <div className="mb-1 font-secondary">
+        <div className="bg-backgroundSecondary px-1 py-1 rounded-md border border-primary/20 font-secondary">
           {/* Responsive Grid Layout - More Compact */}
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1">
             {defaultFilterGroups.map((group) => (
