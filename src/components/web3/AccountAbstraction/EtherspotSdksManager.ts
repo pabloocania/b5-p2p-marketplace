@@ -76,7 +76,6 @@ export class EtherspotSdksManager {
             const stablecoinsByBlockchain =
                 configStore.getStablecoinsByBlockchain(currentBlockchain);
             const chainId = configStore.getChainIdFromBlockchain(currentBlockchain);
-            console.log("stablecoinsByBlockchain", stablecoinsByBlockchain);
             // Use Promise.all to fetch balances concurrently for better performance
             await Promise.all(
                 stablecoinsByBlockchain.map(async (stablecoin) => {
@@ -85,8 +84,6 @@ export class EtherspotSdksManager {
                     );
                     for (const { address: tokenAddress } of relevantAddresses) {
                         try {
-                            console.log("smartWalletAddress", smartWalletAddress);
-                            console.log("eoaAddress", eoaAddress);
                             const [swTokenBalance, eoaTokenBalance] = await Promise.all([
                                 this.getStablecoinBalance(tokenAddress, smartWalletAddress, chainId),
                                 this.getStablecoinBalance(tokenAddress, eoaAddress, chainId),
@@ -129,7 +126,6 @@ export class EtherspotSdksManager {
             functionName: "balanceOf",
             args: [walletAddress],
         });
-        console.log("balance", balance);
         if (balance !== undefined && balance !== null) {
             const formattedBalance = BigInt(balance.toString());
             return formattedBalance;

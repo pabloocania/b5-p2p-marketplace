@@ -13,13 +13,11 @@ import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import KioscoinConnectButton from "../KioscoinConnectButton";
 import UserWalletsComponent from "../UserWalletsComponent";
-import PushNotificationsToggle from "../../PushNotificationsToggle";
 import { ProfileHeader } from "../ProfileHeader";
 import UserBalance from "../UserBalance";
 import SmartWalletOnboarding from "../SmartWalletOnboarding";
 import { KioscoinUser } from "b5-api-client";
 import { useState, useEffect } from "react";
-import { TokenBalance } from "@/components/web3/types";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import { useWeb3Auth } from "@web3auth/modal/react";
 import { Info } from "lucide-react";
@@ -207,10 +205,6 @@ export const UserProfile = ({
         {showOnboarding && (
           <SmartWalletOnboarding onComplete={handleOnboardingComplete} />
         )}
-
-        <div className="w-full">
-          <PushNotificationsToggle userId={user.id!}></PushNotificationsToggle>
-        </div>
         <div className="w-full">
           <UserSettings />
         </div>

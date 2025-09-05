@@ -14,12 +14,12 @@ import { PaymentMethod } from "b5-api-client";
 import { useTranslation } from "react-i18next";
 
 interface ExtendedPaymentMethod extends PaymentMethod {
-  display: "alias" | "IBAN";
+  display: string;
 }
 
 const defaultPaymentMethod: ExtendedPaymentMethod = {
-  type: "BANK",
-  entity: "",
+  type: "FINTECH",
+  entity: "Mercado Pago",
   display: "alias",
   alias: "",
   cbu: "",
@@ -40,6 +40,8 @@ export default function PaymentMethodSelector({
 }: PaymentMethodSelectorProps) {
   const [editingMethod, setEditingMethod] =
     useState<ExtendedPaymentMethod | null>(null);
+  const [aliasValues, setAliasValues] = useState<Record<string, string>>({});
+  const savedMethods = selectedMethods.map((m) => ({ ...m }));
 
   const { t } = useTranslation();
 
@@ -74,6 +76,10 @@ export default function PaymentMethodSelector({
         [e.target.name]: e.target.value,
       };
       setEditingMethod(updatedMethod);
+      setAliasValues((prev) => ({
+        ...prev,
+        [editingMethod.entity ?? ""]: e.target.value,
+      }));
     }
   };
 
@@ -90,37 +96,25 @@ export default function PaymentMethodSelector({
     }
   };
 
-  const renderMethodValue = (method: ExtendedPaymentMethod) => {
-    const selectedMethod = selectedMethods.find(
-      (m) => m.entity === method.entity
-    );
-    const methodToRender = selectedMethod || method;
-
-    if (!methodToRender) return "";
-
-    if (readOnly) {
-      return methodToRender.entity;
-    }
-
-    if (methodToRender.type === "FINTECH") {
-      return methodToRender.alias || "";
-    }
-    return methodToRender.cbu || methodToRender.alias || "";
-  };
-
   const renderInputField = (method: ExtendedPaymentMethod) => {
     const isFintech = method.type === "FINTECH";
     const isIBAN = method.display === "IBAN";
     const fieldName = isFintech ? "alias" : isIBAN ? "cbu" : "alias";
-    const placeholder = isFintech ? "alias" : isIBAN ? "IBAN" : "alias";
+    const placeholder =
+      aliasValues[method.entity ?? ""] ||
+      (isFintech
+        ? editingMethod?.display || "alias"
+        : isIBAN
+        ? "IBAN"
+        : "alias");
     const value = editingMethod
       ? isFintech
         ? editingMethod.alias
         : isIBAN
         ? editingMethod.cbu
         : editingMethod.alias
-      : "";
-
+      : aliasValues[method.entity ?? ""] || "";
+    console.log("placeholder", placeholder);
     return (
       <Input
         type="text"
@@ -137,28 +131,45 @@ export default function PaymentMethodSelector({
     e: React.MouseEvent,
     method: ExtendedPaymentMethod
   ) => {
+    console.log("method", method);
     e.preventDefault();
+    const isSelected = selectedMethods.some((m) => m.entity === method.entity);
     onChange(
-      selectedMethods.some((m) => m.entity === method.entity)
+      isSelected
         ? selectedMethods.filter((m) => m.entity !== method.entity)
         : [...selectedMethods, method]
     );
     if (!readOnly) {
-      if (selectedMethods.some((m) => m.entity === method.entity)) {
+      if (isSelected) {
+        console.log("isSelected", isSelected);
         setEditingMethod(null);
       } else {
-        setEditingMethod(method);
+        console.log("method", method);
+        const existingMethod = methods.find((m) => m.entity === method.entity);
+        console.log("existingMethod", existingMethod);
+        setEditingMethod(
+          existingMethod
+            ? { ...existingMethod, display: method.display }
+            : method
+        );
       }
     }
   };
 
+  const getAlias = (method: PaymentMethod) => {
+    console.log("method*", method);
+    console.log("selectedMethods*", selectedMethods);
+    const existingMethod = selectedMethods.find(
+      (m) => m.entity === method.entity
+    );
+    return existingMethod?.alias || "alias";
+  };
+
   return (
-    <Card className="w-full font-secondary">
-      <CardContent className="p-3">
+    <Card className="w-full">
+      <CardContent className="py-3">
         <div className="flex items-center mb-2">
-          <h3 className="text-base font-semibold text-primary">
-            {t("payment_method")}
-          </h3>
+          <h3 className="text-black/75 text-xs">{t("payment_methods")}</h3>
         </div>
         <div>
           {methods.length > 0 ? (
@@ -174,31 +185,37 @@ export default function PaymentMethodSelector({
                       ${
                         selectedMethods.some((m) => m.entity === method.entity)
                           ? "border-2 border-terciary"
-                          : ""
+                          : "border border-gray-300"
                       }
                       transition-all duration-200
-                      hover:opacity-90
                     `}
                     onClick={(e) =>
-                      handleMethodClick(e, { ...method, display: "alias" })
+                      handleMethodClick(e, {
+                        ...method,
+                        display: method.alias || "alias",
+                      })
                     }
                   >
                     {getIcon(method.type)}
-                    <span className="font-medium text-sm text-primary">
+                    <span className="font-medium text-xs text-secondary">
                       {method.entity}
                     </span>
-                    {!readOnly &&
+                    <span className="ml-auto text-xs text-primary text-opacity-70">
+                      {getAlias(method)}
+                    </span>
+                    {/* {!readOnly &&
+                      selectedMethods.some((m) => m.entity === method.entity) &&
                       renderMethodValue({ ...method, display: "alias" }) && (
                         <span className="ml-auto text-xs text-primary text-opacity-70">
                           {renderMethodValue({ ...method, display: "alias" })}
                         </span>
-                      )}
+                      )} */}
                   </button>
                   {!readOnly && editingMethod?.entity === method.entity && (
                     <div className="flex gap-2 px-1 w-full">
                       <div
                         style={{
-                          borderLeft: "2px solid #ccc",
+                          borderLeft: "2px",
                           paddingLeft: "1rem",
                         }}
                         className="w-full"
@@ -207,7 +224,7 @@ export default function PaymentMethodSelector({
                       </div>
                       <Button
                         size="sm"
-                        className="h-8 w-8 p-0 bg-secondary text-white hover:bg-secondary/90"
+                        className="h-8 w-8 p-0 bg-secondary text-white"
                         onClick={handleSave}
                       >
                         <Check className="h-4 w-4" />
@@ -219,7 +236,7 @@ export default function PaymentMethodSelector({
             </div>
           ) : (
             <p className="text-xs text-primary text-opacity-70">
-              No payment methods available.
+              {t("no_payment_methods_available")}
             </p>
           )}
         </div>

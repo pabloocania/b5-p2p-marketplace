@@ -80,10 +80,6 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
         setPrimeSdk(null);
       }
       if (isConnectedWeb3Auth && !primeSdk) {
-        console.log("isConnectedWeb3Auth", isConnectedWeb3Auth);
-        console.log("web3Auth", web3Auth);
-        console.log("provider", provider);
-        console.log("status", status);
         const walletProvider = await createWeb3AuthWalletProvider(provider);
         if (!walletProvider.address) {
           throw new Error("Wallet provider address is undefined");
@@ -109,8 +105,7 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
           setBalances(balances ?? []);
         }
       } else {
-        console.log("isConnected", isConnected);
-        console.log("primeSdk", primeSdk);
+        console.log("chau!");
       }
     };
 

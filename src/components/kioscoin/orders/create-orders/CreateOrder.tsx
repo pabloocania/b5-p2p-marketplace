@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CreateOrderRequest,
   OrderType,
@@ -18,7 +18,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { p2pMarketAPIClient as client } from "../../../../lib/APIClients";
 import { useUserContext } from "../../users/UserContext";
 import { useTranslation } from "react-i18next";
@@ -78,6 +77,11 @@ export default function CreateOrder({
   const { t } = useTranslation();
 
   const stablecoinConfig = ConfigStore.getInstance().getBackendStablecoins();
+  const userMethods = user?.settings?.paymentMethods;
+  const availableMethods = useMemo(
+    () => ConfigStore.getInstance().getPaymentMethods(),
+    []
+  );
 
   useEffect(() => {
     const fetchRate = async () => {
@@ -214,6 +218,97 @@ export default function CreateOrder({
                     }
                     className="focus:ring-primary focus:border-primary text-lg font-secondary border-2 border-[#fcce4c]"
                   />
+
+                  {/* Token selector con rate sugerido al lado */}
+                  <div className="flex justify-between items-end gap-2">
+                    <TokenSelector
+                      onBlockchainChange={setBlockchain}
+                      onTokenChange={setTokenCode}
+                      preSelectedBlockchain={blockchain}
+                      preSelectedToken={tokenCode}
+                    />
+                    <SuggestedRateCard
+                      tokenCode={tokenCode}
+                      fiatCode={fiatCode}
+                      suggestedRate={suggestedRate}
+                    />
+                  </div>
+
+                  {/* BlockchainSelector alineado sin Card extra */}
+                  <BlockchainSelector
+                    selectedToken={tokenCode}
+                    selectedBlockchain={blockchain}
+                    availableBlockchains={
+                      stablecoinConfig?.supportedStablecoins
+                        ?.filter((sc) => sc.name === tokenCode)
+                        ?.flatMap((v) => v.addresses) || []
+                    }
+                    onBlockchainChange={setBlockchain}
+                  />
+
+                  <FiatRateSelector
+                    fiatCode={fiatCode}
+                    setFiatCode={setFiatCode}
+                    suggestedRate={suggestedRate}
+                    customRate={customRate}
+                    isLoadingRate={isLoadingRate}
+                    rateError={rateError}
+                    onCustomRateChange={setCustomRate}
+                    tokenCode={tokenCode}
+                  />
+
+                  <div className="flex items-center justify-end space-x-1">
+                    <Label className="text-md font-semibold">
+                      {t("receive_in")}
+                    </Label>
+                    <div className="text-md font-semibold">
+                      {calculateFiatEquivalent().toLocaleString("es-AR", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      {fiatCode === "EUR" ? "€" : "$"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Monto a recibir */}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">You will receive:</span>
+                  <span className="text-lg font-bold">
+                    {fiatCode === "EUR" ? "€" : "$"}
+                    {calculateFiatEquivalent().toLocaleString("es-AR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Tarjeta 4: Resto del formulario */}
+            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
+              <CardContent className="text-primary px-0 py-1 space-y-1 font-secondary">
+                <div className="space-y-1 px-4">
+                  <PaymentMethodSelector
+                    selectedMethods={userMethods ?? []}
+                    onChange={setSelectedMethods}
+                    methods={availableMethods}
+                  />
+
+                  {orderType === "BUY" && (
+                    <div>
+                      <Label className="font-bold" htmlFor="wallet-address">
+                        {t("address")}
+                      </Label>
+                      <Input
+                        id="wallet-address"
+                        placeholder={t("insert_wallet_address")}
+                        value={walletAddress}
+                        onChange={(e) => setWalletAddress(e.target.value)}
+                        className="focus:ring-primary focus:border-primary"
+                      />
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
