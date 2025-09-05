@@ -185,22 +185,26 @@ export default function CreateOrder({
             </SheetContent>
           </Sheet>
         ) : (
-          <Card className="w-full max-w-md border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
-            <CardHeader className="flex justify-center items-center pb-1 pt-2">
-              <CardTitle className="text-center text-primary text-2xl font-bold">
-                {t("create_order")}
-              </CardTitle>
-            </CardHeader>
-            <Separator className="mb-2" />
-            <form onSubmit={handleSubmit}>
-              <CardContent className="text-primary px-0 py-1 space-y-1">
-                <div className="space-y-1 px-4">
-                  <OrderTypeSelector
-                    orderType={orderType}
-                    onChange={setOrderType}
-                  />
+          <div className="w-full max-w-6xl mx-auto px-4">
+            {/* Card 0: Título principal */}
+            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
+              <CardHeader className="flex justify-center items-center pb-1 pt-2">
+                <CardTitle className="text-center text-primary text-xl font-bold font-primary">
+                  Create Order
+                </CardTitle>
+              </CardHeader>
+            </Card>
 
-                  {/* Input de cantidad debajo de los botones de tipo de orden */}
+            {/* Tarjeta 1: Compra/Venta */}
+            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
+              <CardContent className="text-primary px-4 py-3 space-y-3 font-secondary">
+                <OrderTypeSelector
+                  orderType={orderType}
+                  onChange={setOrderType}
+                />
+
+                {/* Input de cantidad */}
+                <div className="space-y-2">
                   <Input
                     type="number"
                     placeholder={t("enter_amount")}
@@ -208,99 +212,160 @@ export default function CreateOrder({
                     onChange={(e) =>
                       setTokenAmount(parseFloat(e.target.value) || 0)
                     }
-                    className="focus:ring-primary focus:border-primary"
+                    className="focus:ring-primary focus:border-primary text-lg font-secondary border-2 border-[#fcce4c]"
                   />
-
-                  {/* Token selector con rate sugerido al lado */}
-                  <div className="flex justify-between items-end gap-2">
-                    <TokenSelector
-                      onBlockchainChange={setBlockchain}
-                      onTokenChange={setTokenCode}
-                      preSelectedBlockchain={blockchain}
-                      preSelectedToken={tokenCode}
-                    />
-                    <SuggestedRateCard
-                      tokenCode={tokenCode}
-                      fiatCode={fiatCode}
-                      suggestedRate={suggestedRate}
-                    />
-                  </div>
-
-                  {/* BlockchainSelector alineado sin Card extra */}
-                  <BlockchainSelector
-                    selectedToken={tokenCode}
-                    selectedBlockchain={blockchain}
-                    availableBlockchains={
-                      stablecoinConfig?.supportedStablecoins
-                        ?.filter((sc) => sc.name === tokenCode)
-                        ?.flatMap((v) => v.addresses) || []
-                    }
-                    onBlockchainChange={setBlockchain}
-                  />
-
-                  <FiatRateSelector
-                    fiatCode={fiatCode}
-                    setFiatCode={setFiatCode}
-                    suggestedRate={suggestedRate}
-                    customRate={customRate}
-                    isLoadingRate={isLoadingRate}
-                    rateError={rateError}
-                    onCustomRateChange={setCustomRate}
-                    tokenCode={tokenCode}
-                  />
-
-                  <div className="flex items-center justify-end space-x-1">
-                    <Label className="text-md font-semibold">
-                      {t("receive_in")}
-                    </Label>
-                    <div className="text-md font-semibold">
-                      {calculateFiatEquivalent().toLocaleString("es-AR", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}{" "}
-                      {fiatCode === "EUR" ? "€" : "$"}
-                    </div>
-                  </div>
-
-                  <PaymentMethodSelector
-                    selectedMethods={selectedMethods}
-                    onChange={setSelectedMethods}
-                  />
-
-                  {orderType === "BUY" && (
-                    <div>
-                      <Label className="font-bold" htmlFor="wallet-address">
-                        {t("address")}
-                      </Label>
-                      <Input
-                        id="wallet-address"
-                        placeholder={t("insert_wallet_address")}
-                        value={walletAddress}
-                        onChange={(e) => setWalletAddress(e.target.value)}
-                        className="focus:ring-primary focus:border-primary"
-                      />
-                    </div>
-                  )}
                 </div>
               </CardContent>
-              {!createdOrder && (
-                <CardFooter className="p-0">
-                  <Button
-                    className="w-full rounded-b-xl text-lg font-semibold shadow-none transition-colors bg-primary text-white hover:bg-primary/90"
-                    type="submit"
-                    disabled={!isFormComplete()}
-                  >
-                    {orderType === "BUY"
-                      ? t("buy_now", { amount: tokenAmount, crypto: tokenCode })
-                      : t("sell_now", {
-                          amount: tokenAmount,
-                          crypto: tokenCode,
-                        })}
-                  </Button>
-                </CardFooter>
-              )}
-            </form>
-          </Card>
+            </Card>
+
+            {/* Tarjeta 2: Token y Blockchain */}
+            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
+              <CardContent className="text-primary px-4 py-3 space-y-3 font-secondary">
+                {/* Token selector */}
+                <TokenSelector
+                  onBlockchainChange={setBlockchain}
+                  onTokenChange={setTokenCode}
+                  preSelectedBlockchain={blockchain}
+                  preSelectedToken={tokenCode}
+                />
+
+                {/* BlockchainSelector */}
+                <BlockchainSelector
+                  selectedToken={tokenCode}
+                  selectedBlockchain={blockchain}
+                  availableBlockchains={
+                    stablecoinConfig?.supportedStablecoins
+                      ?.filter((sc) => sc.name === tokenCode)
+                      ?.flatMap((v) => v.addresses) || []
+                  }
+                  onBlockchainChange={setBlockchain}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Tarjeta 3: Tasa de Cambio */}
+            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
+              <CardContent className="text-primary px-4 py-3 space-y-3 font-secondary">
+                {/* Botones de moneda fiat */}
+                <div className="flex gap-2">
+                  {(["ARS", "EUR"] as const).map((code) => (
+                    <button
+                      key={code}
+                      type="button"
+                      onClick={() => setFiatCode(code)}
+                      className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition ${
+                        fiatCode === code
+                          ? "bg-primary/10 border-primary text-primary"
+                          : "border-gray-300 text-muted-foreground"
+                      }`}
+                    >
+                      {code}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Input de tasa de cambio con sugerencia - ancho limitado */}
+                <div className="flex gap-2 items-end">
+                  <div className="w-1/2">
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={customRate ?? ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === "") {
+                          setCustomRate(null);
+                          return;
+                        }
+                        const numValue = parseFloat(value);
+                        if (!isNaN(numValue)) {
+                          setCustomRate(numValue);
+                        }
+                      }}
+                      placeholder="Enter exchange rate"
+                      className="focus:ring-primary focus:border-primary border-2 border-[#fcce4c]"
+                    />
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Suggested: {fiatCode === "EUR" ? "€" : "$"}
+                    {suggestedRate?.toLocaleString("es-AR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }) || "..."}
+                  </div>
+                </div>
+
+                {/* Monto a recibir */}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">You will receive:</span>
+                  <span className="text-lg font-bold">
+                    {fiatCode === "EUR" ? "€" : "$"}
+                    {calculateFiatEquivalent().toLocaleString("es-AR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Tarjeta 4: Resto del formulario */}
+            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
+              <form onSubmit={handleSubmit}>
+                <CardContent className="text-primary px-0 py-1 space-y-1 font-secondary">
+                  <div className="space-y-1 px-4">
+                    <PaymentMethodSelector
+                      selectedMethods={selectedMethods}
+                      onChange={setSelectedMethods}
+                    />
+
+                    {orderType === "BUY" && (
+                      <div>
+                        <Label
+                          className="font-bold text-sm font-secondary"
+                          htmlFor="wallet-address"
+                        >
+                          {t("address")}
+                        </Label>
+                        <Input
+                          id="wallet-address"
+                          placeholder={t("insert_wallet_address")}
+                          value={walletAddress}
+                          onChange={(e) => setWalletAddress(e.target.value)}
+                          className="focus:ring-primary focus:border-primary font-secondary"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+                {!createdOrder && (
+                  <CardFooter className="p-0">
+                    <Button
+                      className="w-full rounded-b-xl text-xs font-semibold shadow-none transition-colors bg-primary text-white hover:bg-primary/90 font-secondary"
+                      style={{
+                        fontFamily:
+                          '"Montserrat", "Inter", system-ui, sans-serif',
+                        fontSize: "12px",
+                      }}
+                      type="submit"
+                      disabled={!isFormComplete()}
+                    >
+                      {orderType === "BUY"
+                        ? t("buy_now", {
+                            amount: tokenAmount,
+                            crypto: tokenCode,
+                          })
+                        : t("sell_now", {
+                            amount: tokenAmount,
+                            crypto: tokenCode,
+                          })}
+                    </Button>
+                  </CardFooter>
+                )}
+              </form>
+            </Card>
+          </div>
         )}
       </div>
     </ScrollableContainer>

@@ -47,11 +47,7 @@ export default function BlockchainSelector({
   if (!selectedToken) return null;
 
   return (
-    <div className="w-full space-y-2">
-      <Label className="text-base font-bold text-primary">
-        {t("choose_network") || "Elegí la red"}
-      </Label>
-
+    <div className="w-full space-y-2 font-secondary">
       <div className="flex flex-wrap gap-2 justify-start">
         {availableBlockchains.map(({ blockchain }) => {
           const normalized = blockchain.toLowerCase();

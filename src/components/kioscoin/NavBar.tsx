@@ -48,7 +48,7 @@ export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
             )}
           >
             <item.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-            <span className="text-xs mt-0.5 font-medium text-primary">
+            <span className="text-xs mt-0.5 font-medium text-primary font-secondary">
               {item.label}
             </span>
           </button>

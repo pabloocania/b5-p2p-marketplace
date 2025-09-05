@@ -34,7 +34,9 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-lightYellow/30 flex flex-col -mt-14 pt-14">
+    <div className="min-h-screen flex flex-col -mt-14 pt-14">
+      {/* Full-viewport background layer */}
+      <div className="fixed inset-0 bg-terciary -z-10"></div>
       {/* Hero Section - Compact */}
       <div className="text-center py-4 px-4">
         <div className="flex justify-center mb-6">
@@ -46,7 +48,10 @@ export function LandingPage() {
         </div>
 
         {/* Features - Compact */}
-        <div className="flex flex-wrap justify-center gap-3 mb-3">
+        <div
+          className="flex flex-wrap justify-center gap-3 mb-8 font-primary"
+          style={{ marginTop: "-1cm" }}
+        >
           <div className="flex items-center text-gray-700">
             <Shield className="h-4 w-4 mr-1 text-primary/80" />
             <span className="text-xs font-medium">{t("secure_escrow")}</span>
@@ -62,7 +67,10 @@ export function LandingPage() {
         </div>
 
         {/* Social Proof - Modern Cards */}
-        <div className="flex justify-center gap-3 sm:gap-4 mb-4">
+        <div
+          className="flex justify-center gap-3 sm:gap-4 mb-5 font-primary"
+          style={{ marginTop: "1cm" }}
+        >
           <div className="border border-purple-200 bg-white/80 rounded-xl p-2 sm:p-3 text-center min-w-[110px] sm:min-w-[130px] shadow-sm hover:shadow-md transition-all">
             <div className="flex justify-center mb-1">
               <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary/80" />
@@ -98,14 +106,19 @@ export function LandingPage() {
       </div>
 
       {/* Auth Section - Compact size */}
-      <div className="flex-1 max-w-md mx-auto px-4 pb-6">
-        <div className="bg-white rounded-xl shadow-lg p-4">
+      <div className="flex-1 max-w-lg mx-auto px-4 pb-6">
+        <div
+          className={cn(
+            "bg-white rounded-xl shadow-lg p-4 font-secondary transform transition-transform duration-200 origin-top",
+            authMode === "login" ? "scale-[1.15]" : "scale-100"
+          )}
+        >
           {/* Toggle Buttons - Compact */}
           <div className="flex bg-gray-100 rounded-lg p-1 mb-3">
             <button
               onClick={() => setAuthMode("login")}
               className={cn(
-                "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 font-donatto",
+                "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 font-secondary",
                 authMode === "login"
                   ? "bg-white text-purple-600 shadow-sm"
                   : "text-gray-600 hover:text-gray-900"
@@ -116,7 +129,7 @@ export function LandingPage() {
             <button
               onClick={() => setAuthMode("register")}
               className={cn(
-                "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 font-donatto",
+                "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 font-secondary",
                 authMode === "register"
                   ? "bg-white text-purple-600 shadow-sm"
                   : "text-gray-600 hover:text-gray-900"
@@ -126,7 +139,7 @@ export function LandingPage() {
             </button>
           </div>
 
-          {/* Form - Compact size */}
+          {/* Form - compact height */}
           <div className="min-h-[180px]">
             {authMode === "login" ? (
               <EmailLoginForm

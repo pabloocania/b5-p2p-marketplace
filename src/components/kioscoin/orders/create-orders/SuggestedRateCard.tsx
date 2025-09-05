@@ -17,7 +17,7 @@ export default function SuggestedRateCard({
   const { t } = useTranslation();
 
   return (
-    <div className="bg-secondary/10 p-2 rounded-md min-w-[160px]">
+    <div className="bg-secondary/10 p-2 rounded-md min-w-[160px] font-secondary">
       <Label className="text-xs font-semibold">{t("suggested_rate")}</Label>
       <div className="text-sm font-medium text-black">
         1 {tokenCode} = {fiatCode === "EUR" ? "€" : "$"}{" "}

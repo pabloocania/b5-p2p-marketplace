@@ -18,7 +18,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import UserMenuNew from "../users/UserMenuNew";
+// import UserMenuNew from "../users/UserMenuNew"; // Replaced by inline auth sheet
+import { EmailLoginForm } from "@/components/kioscoin/users/login/EmailLoginForm";
+import { RegisterForm } from "@/components/kioscoin/users/login/RegisterForm";
 import { useTranslation } from "react-i18next";
 import {
   FilterBar,
@@ -70,6 +72,7 @@ export default function OrdersFeed({
   );
   const { t } = useTranslation();
   const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
 
   // Initialize filter state
   const [filterState, setFilterState] = useState<FilterState>({
@@ -274,7 +277,7 @@ export default function OrdersFeed({
               </div>
             ) : (
               <div className="flex flex-col items-center h-full">
-                <div className="mb-5 text-primary font-bold">
+                <div className="mb-5 text-primary font-bold font-secondary">
                   {t("no_orders_available")}
                 </div>
               </div>
@@ -284,7 +287,7 @@ export default function OrdersFeed({
           <div className="flex flex-col items-center h-full">
             <Button
               onClick={() => setIsLoginSheetOpen(true)}
-              className="w-full bg-primary text-white"
+              className="w-full bg-primary text-white font-secondary"
             >
               {t("login_to_view")}
             </Button>
@@ -294,10 +297,49 @@ export default function OrdersFeed({
               </SheetTrigger>
               <SheetContent
                 side="bottom"
-                className="h-[75vh]"
+                className="h-[75vh] font-secondary"
                 closeText={t("close")}
               >
-                <UserMenuNew user={user} onLogin={login} onLogout={logout} />
+                <div className="w-full h-full overflow-y-auto">
+                  <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-4">
+                    <div className="flex bg-gray-100 rounded-lg p-1 mb-3">
+                      <button
+                        onClick={() => setAuthMode("login")}
+                        className={`flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 ${
+                          authMode === "login"
+                            ? "bg-white text-purple-600 shadow-sm"
+                            : "text-gray-600 hover:text-gray-900"
+                        }`}
+                      >
+                        {t("login")}
+                      </button>
+                      <button
+                        onClick={() => setAuthMode("register")}
+                        className={`flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 ${
+                          authMode === "register"
+                            ? "bg-white text-purple-600 shadow-sm"
+                            : "text-gray-600 hover:text-gray-900"
+                        }`}
+                      >
+                        {t("register")}
+                      </button>
+                    </div>
+
+                    <div className="min-h-[220px]">
+                      {authMode === "login" ? (
+                        <EmailLoginForm
+                          onLogin={login}
+                          onSwitchToRegister={() => setAuthMode("register")}
+                        />
+                      ) : (
+                        <RegisterForm
+                          onLogin={login}
+                          onSwitchToEmailLogin={() => setAuthMode("login")}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
               </SheetContent>
             </Sheet>
           </div>

@@ -16,12 +16,7 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className="w-full space-y-2">
-      {/* Título arriba */}
-      <label className="text-base font-bold text-primary block">
-        {t("i_want_to")}
-      </label>
-
+    <div className="w-full space-y-2 font-secondary">
       {/* Botonera horizontal */}
       <div className="flex gap-2">
         {[
@@ -46,7 +41,7 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
 
               ${
                 action.isSelected
-                  ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white"
+                  ? "bg-[#8b5fdc] text-white"
                   : "bg-gray-100 hover:bg-gray-200 text-gray-700"
               }
             `}
