@@ -48,7 +48,7 @@ export default function BlockchainSelector({
 
   return (
     <div className="w-full space-y-2 font-secondary">
-      <div className="flex flex-wrap gap-2 justify-start">
+      <div className="flex flex-wrap gap-2 justify-center">
         {availableBlockchains.map(({ blockchain }) => {
           const normalized = blockchain.toLowerCase();
           const matchedKey = Object.keys(blockchainIconMap).find((key) =>

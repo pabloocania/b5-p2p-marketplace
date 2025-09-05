@@ -62,7 +62,7 @@ export function OrderCard({
   }
 
   return (
-    <Card className="w-full mb-4 border-none" variant="shadow">
+    <Card className="w-full mb-4 px-3 py-2" variant="shadow">
       <OrderStatusBar status={order.status ?? "Unknown"} />
       <OrderCardHeader order={order} />
       <OrderCardContent

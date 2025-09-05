@@ -82,8 +82,8 @@ export default function PaymentMethodsComponent({
   };
 
   return (
-    <Card className="w-full">
-      <CardContent className="py-3">
+    <Card className="w-full font-secondary border-none">
+      <CardContent className="p-0">
         <div className="flex items-center mb-2">
           <h3 className="text-black/75 text-xs">{t("payment_methods")}</h3>
         </div>

@@ -4,6 +4,7 @@ interface CryptoAmountIconProps {
   tokenCode: string; // Código del token (por ejemplo, "btc", "eth", "usdt")
   formattedAmount?: string; // Monto de la criptomoneda
   showAmount?: boolean; // Flag to control if amount is displayed
+  showTokenCode?: boolean; // Flag to control if token code is displayed next to image
   textSizeClass?: string; // Class for text size
   decimals?: number;
   amountTextClassName?: string; // Optional class to style amount + token text
@@ -13,6 +14,7 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
   tokenCode,
   formattedAmount,
   showAmount = true,
+  showTokenCode = false,
   textSizeClass = "text-2xl",
   amountTextClassName,
 }) => {
@@ -69,6 +71,11 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
         className={imageSize}
         onError={() => setImgError(true)}
       />
+      {showTokenCode && (
+        <span className={`${textSizeClass} font-secondary text-gray-700 ml-1`}>
+          {tokenCode.toUpperCase()}
+        </span>
+      )}
     </div>
   );
 };
