@@ -50,8 +50,7 @@ import {
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { Button } from "../../ui/button";
 import { Rating } from "../Rating";
-import { formatFiatAmount, formatTokenAmount } from "@/lib/utils";
-import CompactPaymentMethodSelector from "./create-orders/CompactPaymentMethodSelector";
+import { formatFiatAmount } from "@/lib/utils";
 import PaymentMethodSelector from "./create-orders/PaymentMethodSelector";
 
 interface OrderCardContentProps {
@@ -138,44 +137,33 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
     return completedStatuses.includes(status);
   }
 
-  const handleTogglePaymentMethod = (method: PaymentMethod) => {
-    const newSelectedMethods = selectedPaymentMethods.some(
-      (m) => m.entity === method.entity
-    )
-      ? selectedPaymentMethods.filter((m) => m.entity !== method.entity)
-      : [...selectedPaymentMethods, method];
-
-    setSelectedPaymentMethods(newSelectedMethods);
-    onPaymentMethodsChange?.(newSelectedMethods);
-  };
-
   const handleUpdatePaymentMethod = (updatedMethods: PaymentMethod[]) => {
     setSelectedPaymentMethods(updatedMethods);
     onPaymentMethodsChange?.(updatedMethods);
   };
 
   return (
-    <CardContent className="pb-3 mt-2">
+    <CardContent className="pb-3 mt-2 font-secondary">
       <div className="rounded-lg space-y-1 px-2 bg-secondary bg-opacity-10 space-y-1 pt-1">
         {/* Order header */}
-        <div className="flex justify-between items-center w-full">
+        <div className="flex justify-between items-center w-full text-xl font-bold">
           {/* Order type and amount */}
           <div className="flex space-x-1 items-baseline">
-            <span className="text-base text-primary">
+            <span className="text-base text-primary text-lg">
               {order.type === "SELL" ? t("sells") : t("buys")}
             </span>
             <span className="flex">
               <CryptoAmountIcon
                 formattedAmount={order.amount!!}
                 tokenCode={order.tokenCode?.toLowerCase()!!}
-                textSizeClass="text-sm"
-                amountTextClassName="text-gray-500 font-medium mr-1"
+                textSizeClass="text-lg text-dark"
+                amountTextClassName="mr-1"
               />
             </span>
           </div>
           {/* Chat icon */}
           {order.chatId && !isOrderCompleted(order.status!!) && (
-            <div className="flex">
+            <div className="flex items-center">
               <Sheet
                 open={isChatOpen}
                 onOpenChange={(open) => {
@@ -186,7 +174,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
                 <SheetTrigger asChild>
                   <Button
                     onClick={handleChatIconClick}
-                    className="relative p-3 rounded-xl overflow-hidden mb-2"
+                    className="relative p-3 rounded-xl overflow-hidden"
                     style={{
                       background: "#8b5fdc",
                       border: "2px solid #fcce4c",
@@ -235,15 +223,9 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
         <div className="flex justify-between w-full pb-1 space-y-2 pt-1 font-secondary">
           <div className="w-1/2 min-w-[60%] flex flex-col space-y-0.5">
             <div className="flex-1">
-              <p
-                className="text-left w-full text-primary whitespace-nowrap overflow-hidden text-ellipsis text-sm"
-                style={{ fontFamily: "Montserrat, sans-serif" }}
-              >
-                {t("for")} {" $ "}
-                <span
-                  className="font-medium text-gray-500 text-sm"
-                  style={{ fontFamily: "Montserrat, sans-serif" }}
-                >
+              <p className="text-left w-full text-primary whitespace-nowrap overflow-hidden text-ellipsis text-sm">
+                {t("for")}{" "}
+                <span className="text-dark text-sm">
                   {hasValidFiatData(order)
                     ? formatFiatAmount(order.fiatAmount, order.fiatCode)
                     : formatFiatAmount("0", "ARS")}
@@ -251,15 +233,9 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
               </p>
             </div>
             <div className="flex-1">
-              <p
-                className="text-left w-full text-xs text-primary"
-                style={{ fontFamily: "Montserrat, sans-serif" }}
-              >
+              <p className="text-left w-full text-xs text-primary">
                 {t("on")}{" "}
-                <span
-                  className="font-medium text-primary/80 text-xs"
-                  style={{ fontFamily: "Montserrat, sans-serif" }}
-                >
+                <span className="font-medium text-dark text-xs">
                   {getBlockchainDisplayName(order.blockchain as BlockchainName)}
                 </span>
               </p>
@@ -322,7 +298,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
               selectedMethods={selectedPaymentMethods}
               onChange={handleUpdatePaymentMethod}
               methods={availableMethods}
-              readOnly={true} // Set to readOnly mode
+              readOnly={true}
             />
           </div>
         )}
