@@ -95,11 +95,11 @@ const InternalTransferAmountInput: React.FC<
           {t("transfer_direction")}
         </p> */}
         <div className="flex items-center bg-secondary bg-opacity-5 rounded-lg px-3 py-1">
-          <span className="text-xs font-medium text-primary">
+          <span className="text-xs font-secondary text-primary">
             {isEOA ? "EOA Wallet" : "Smart Wallet"}
           </span>
           <ArrowRight className="mx-2 h-3 w-3 text-secondary" />
-          <span className="text-xs font-medium text-primary">
+          <span className="text-xs font-secondary text-primary">
             {isEOA ? "Smart Wallet" : "EOA Wallet"}
           </span>
         </div>
@@ -107,7 +107,7 @@ const InternalTransferAmountInput: React.FC<
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-primary">
+          <span className="text-xs text-primary font-secondary">
             {t("available")}:{" "}
             {formatTokenAmount(
               isEOA
@@ -134,7 +134,7 @@ const InternalTransferAmountInput: React.FC<
         </div>
 
         {gasEstimate && isEOA && (
-          <div className="flex items-center justify-between text-xs text-primary">
+          <div className="flex items-center justify-between text-xs text-primary font-secondary">
             <span className="flex items-center">
               {t("estimated_gas_fee")}
               <TooltipProvider>
@@ -163,7 +163,7 @@ const InternalTransferAmountInput: React.FC<
       </Button>
 
       {isEOA && (
-        <div className="text-xs text-center text-primary font-bold">
+        <div className="text-xs text-center text-primary font-secondary">
           {t("smart_wallet_benefits")}
         </div>
       )}

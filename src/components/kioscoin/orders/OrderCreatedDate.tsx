@@ -33,7 +33,7 @@ const OrderCreatedDate: React.FC<OrderCreatedDateProps> = ({
   });
 
   return (
-    <div className="flex justify-end items-center text-xxs w-full text-gray-500 pb-1">
+    <div className="flex justify-end items-center text-xxs w-full text-gray-500 pb-1 font-secondary">
       <Calendar className="w-3 h-2 mr-1" />
       {finalStates.includes(status as (typeof finalStates)[number]) ? (
         <span>

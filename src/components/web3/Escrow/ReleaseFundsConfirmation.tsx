@@ -10,15 +10,12 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { Order } from "b5-api-client/dist/types";
 import { OPSReceipt } from "@/components/web3/types";
 import { Separator } from "../../../components/ui/separator";
 import { useTranslation } from "react-i18next";
-
-type WalletType = "eoa" | "smart";
 
 interface ReleaseFundsConfirmationProps {
   order: Order;
@@ -33,16 +30,11 @@ export default function ReleaseFundsConfirmation({
   handleReleaseFunds,
   onClose,
 }: ReleaseFundsConfirmationProps) {
-  const [walletType, setWalletType] = useState<WalletType>("smart");
+  const walletType = "smart";
   const { t } = useTranslation();
 
   const fees = {
-    eoa: {
-      gas: 2,
-    },
-    smart: {
-      gas: 0,
-    },
+    gas: 0,
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -58,19 +50,17 @@ export default function ReleaseFundsConfirmation({
     return (
       <div className="space-y-3 text-sm bg-secondary bg-opacity-10 p-2 rounded-md">
         <p>
-          <span className="font-semibold text-primary font-semibold">
+          <span className="font-secondary text-primary">
             {t("network_gas_fee")}
           </span>
-          <span className="font-semibold text-terciary">
-            {fees[walletType].gas + " tRBTC"}
+          <span className="font-semibold text-dark">
+            {fees.gas + " " + order.tokenCode}
           </span>
-          {walletType === "smart" && (
-            <span className="ml-1 text-green-600 font-semibold">
-              <span className="ml-2 bg-secondary font-semibold text-white px-2 py-0.5 text-xs rounded-full">
-                {t("gasless")}
-              </span>
+          <span className="ml-1 text-green-600 font-semibold">
+            <span className="ml-2 bg-primary font-semibold text-white px-2 py-0.5 text-xs rounded-full">
+              {t("gasless")}
             </span>
-          )}
+          </span>
         </p>
       </div>
     );
@@ -91,33 +81,14 @@ export default function ReleaseFundsConfirmation({
             <AlertTitle className="text-primary font-bold">
               {t("warning")}
             </AlertTitle>
-            <AlertDescription className="text-terciary">
+            <AlertDescription className="text-primary font-secondary">
               {t("warning_release_text")}
             </AlertDescription>
           </Alert>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <Label
-                  htmlFor="wallet-type"
-                  className="text-base text-primary font-bold"
-                >
-                  {walletType === "smart"
-                    ? "Use Smart Wallet"
-                    : "Use EOA Wallet"}
-                </Label>
-                <Switch
-                  id="wallet-type"
-                  checked={walletType === "smart"}
-                  onCheckedChange={(checked) =>
-                    setWalletType(checked ? "smart" : "eoa")
-                  }
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                {walletType === "smart"
-                  ? "Gasless transactions, only pay service fee."
-                  : "Pay both transaction and gas fees."}
+              <p className="text-xs text-gray-500 mt-1 font-secondary text-center">
+                {t("sw_fee_details")}
               </p>
             </div>
             <div className="space-y-2 text-sm">{renderGasFee()}</div>

@@ -1,12 +1,9 @@
-import React, { useState } from "react";
+"use client";
+
+import { useState } from "react";
+import { Sheet, SheetContent, SheetFooter } from "@/components/ui/sheet";
 import { HistoryIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetFooter,
-} from "@/components/ui/sheet";
 import OrderHistory from "./OrderHistory";
 
 interface ViewHistoryButtonProps {
@@ -41,9 +38,9 @@ const ViewHistoryButton: React.FC<ViewHistoryButtonProps> = ({ orderId }) => {
           closeText={""}
         >
           <div className="p-4 flex-1 overflow-y-auto">
-            <SheetTitle className="text-lg font-semibold mb-4">
+            <h2 className="text-lg font-bold mb-4 text-dark">
               ⏰ {t("order_history")}
-            </SheetTitle>
+            </h2>
             <OrderHistory orderId={orderId} />
           </div>
           <SheetFooter className="p-4 border-t bg-gray-100 rounded-md">

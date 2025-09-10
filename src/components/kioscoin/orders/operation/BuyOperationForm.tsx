@@ -88,7 +88,7 @@ export function BuyOperationForm({ offer, onCancel }: BuyOperationFormProps) {
 
       {/* Offer Details */}
       <div className="rounded-lg space-y-2 px-4 py-3 bg-secondary bg-opacity-10">
-        <p className="text-sm text-primary">
+        <p className="text-sm text-primary font-secondary">
           You will pay{" "}
           <strong>
             {offer.fiatCode} {offer.fiatAmount}
@@ -98,19 +98,22 @@ export function BuyOperationForm({ offer, onCancel }: BuyOperationFormProps) {
             {offer.tokenAmount} {offer.tokenCode}
           </strong>
         </p>
-        <p className="text-sm text-primary">
+        <p className="text-sm text-primary font-secondary">
           Blockchain: <strong>{offer.blockchain}</strong>
         </p>
       </div>
 
       {/* Destination Address */}
       <div className="space-y-2">
-        <Label htmlFor="buyerAddress">Destination address</Label>
+        <Label htmlFor="buyerAddress" className="font-secondary">
+          Destination address
+        </Label>
         <Input
           id="buyerAddress"
           placeholder="0x..."
           value={buyerAddress}
           onChange={(e) => setBuyerAddress(e.target.value)}
+          className="font-secondary [&::placeholder]:font-secondary"
         />
       </div>
 

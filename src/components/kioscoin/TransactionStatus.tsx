@@ -102,7 +102,7 @@ export function TransactionStatus({
               {getStatusIcon(status)}
               {getStatusText(status)}
             </AlertTitle>
-            <AlertDescription className="text-primary pt-2">
+            <AlertDescription className="text-dark pt-2 font-secondary">
               {message}
             </AlertDescription>
           </Alert>
@@ -135,7 +135,7 @@ export function TransactionStatus({
           <>
             <Separator className="mb-2" />
             <div className="block text-center pb-1">
-              <p className="text-xs text-gray-600 block">
+              <p className="text-xs text-dark block font-secondary">
                 {t("not_close_app")}
               </p>
             </div>

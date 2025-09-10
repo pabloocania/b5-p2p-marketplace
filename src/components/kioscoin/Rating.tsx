@@ -42,7 +42,7 @@ export function Rating({ orderId, ratedId, ratedUsername }: RatingProps) {
 
   return isSubmitted ? (
     <div className="flex justify-center items-center space-x-1 border border-secondary border-opacity-10 w-full bg-terciary bg-opacity-10 rounded-md mt-2">
-      <span className="text-xs font-bold pr-1 text-terciary">
+      <span className="text-xs font-secondary pr-1 text-dark">
         {t("thanks")}
       </span>
     </div>
@@ -50,7 +50,8 @@ export function Rating({ orderId, ratedId, ratedUsername }: RatingProps) {
     <div className="flex justify-center items-center space-x-0.5 w-full rounded-md mt-2">
       <div className="flex items-center">
         <span className="text-sm text-primary pr-2">
-          {t("rate_user") + " " + ratedUsername + ": "}
+          <span className="font-secondary">{t("rate_user")}</span>{" "}
+          {ratedUsername}:
         </span>
       </div>
       <div className="flex items-center space-x-1 rounded-md bg-white p-0.5 border border-terciary border-opacity-20">
