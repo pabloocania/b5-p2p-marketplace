@@ -34,7 +34,7 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col -mt-14 pt-1">
+    <div className="min-h-screen flex flex-col -mt-14 pt-12">
       {/* Full-viewport background layer */}
       <div className="fixed inset-0 bg-terciary -z-10"></div>
       {/* Hero Section - Compact */}
