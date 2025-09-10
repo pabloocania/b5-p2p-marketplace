@@ -34,19 +34,19 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
   return (
     <div className="space-y-1 bg-white bg-yellow-100/50 rounded-lg">
       <div className="px-2 py-2 rounded-lg">
-        <div className="text-left mb-3 space-y-2">
-          <p className="text-md font-semibold text-primary">
-            <span className="mr-1 font-bold text-terciary">
+        <div className="text-left mb-3 space-y-1">
+          <p className="text-md font-semibold text-primary leading-tight">
+            <span className="mr-1 font-bold text-dark">
               @{order.sellerUsername}
             </span>
-            {t("seller_has_locked")}
+            <span className="font-secondary">{t("seller_has_locked")}</span>
           </p>
-          <p className="text-md font-semibold text-primary">
-            {t("send")}
-            <span className="ml-1 mr-1 text-xl font-bold text-black">
+          <p className="text-md font-semibold text-primary leading-tight">
+            <span className="font-secondary">{t("send")}</span>
+            <span className="ml-1 mr-1 text-sm font-bold text-dark">
               {formatFiatAmount(order.fiatAmount, order.fiatCode)}
             </span>
-            {t("to_receive")}
+            <span className="font-secondary">{t("to_receive")}</span>
           </p>
           <div className="space-y-2 my-1">
             {order.paymentMethods?.map((method, index) => (
@@ -62,7 +62,7 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
           </div>
         </div>
         <div className="text-primary text-center text-xs text-left bg-secondary/10 py-2 px-2 mb-2 rounded-md">
-          <p>{t("please_verify_payment_details")}</p>
+          <p className="font-secondary">{t("please_verify_payment_details")}</p>
         </div>
         <Button
           className="w-full text-white bg-yellow-500"

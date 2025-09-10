@@ -10,14 +10,11 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Order } from "b5-api-client/dist/types";
 import { OPSReceipt } from "@/components/web3/types";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import { ArrowRight } from "lucide-react";
-
-type WalletType = "eoa" | "smart";
 
 interface LockFundsConfirmationProps {
   order: Order;
@@ -33,23 +30,16 @@ export default function LockFundsConfirmation({
   onClose,
 }: LockFundsConfirmationProps) {
   const { t } = useTranslation();
-  const [walletType, setWalletType] = useState<WalletType>("smart");
+  const walletType = "smart";
   const orderAmount = parseFloat(order.amount ?? "0");
   const orderFee = parseFloat(order.fee ?? "0");
 
   const fees = {
-    eoa: {
-      transaction: orderFee,
-      gas: 2,
-    },
-    smart: {
-      transaction: orderFee,
-      gas: 0,
-    },
+    transaction: orderFee,
+    gas: 0,
   };
 
-  const totalAmount =
-    orderAmount + fees[walletType].transaction + fees[walletType].gas;
+  const totalAmount = orderAmount + fees.transaction + fees.gas;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,32 +53,30 @@ export default function LockFundsConfirmation({
   const renderOrderDetails = () => {
     return (
       <div className="space-y-3 text-sm bg-secondary bg-opacity-10 p-2 rounded-md">
-        <p className="text-primary font-semibold">
+        <p className="text-primary font-secondary">
           {t("amount_to_deposit")}:{" "}
-          <span className="font-semibold text-terciary">
+          <span className="font-semibold text-dark">
             {orderAmount + " " + order.tokenCode}
           </span>
         </p>
-        <p className="text-primary font-semibold">
+        <p className="text-primary font-secondary">
           {t("transaction_fee")}:{" "}
-          <span className="font-semibold text-terciary">
-            {fees[walletType].transaction + " " + order.tokenCode}
+          <span className="font-semibold text-dark">
+            {fees.transaction + " " + order.tokenCode}
           </span>
         </p>
-        <p className="text-primary font-semibold">
+        <p className="text-primary font-secondary">
           {t("network_gas_fee")}
-          <span className="font-semibold text-terciary">
-            {fees[walletType].gas + " tRBTC"}
+          <span className="font-semibold text-dark">
+            {fees.gas + " " + order.tokenCode}
           </span>
-          {walletType === "smart" && (
-            <span className="ml-2 bg-secondary font-semibold text-white px-2 py-0.5 text-xs rounded-full">
-              {t("gasless")}
-            </span>
-          )}
+          <span className="ml-2 bg-primary font-secondary text-white px-2 py-0.5 text-xs rounded-full">
+            {t("gasless")}
+          </span>
         </p>
-        <p className="text-base mt-2 text-primary">
+        <p className="text-base mt-2 text-primary font-secondary">
           <span className="font-semibold text-primary text-xl">Total: </span>
-          <span className="font-semibold text-terciary text-xl">
+          <span className="font-semibold text-dark text-xl">
             {totalAmount + " " + order.tokenCode}
           </span>
         </p>
@@ -108,25 +96,8 @@ export default function LockFundsConfirmation({
         <CardContent className="py-4 px-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <Label
-                  htmlFor="wallet-type"
-                  className="text-base text-primary font-bold"
-                >
-                  {walletType === "smart" ? t("use_sw") : t("use_eoa")}
-                </Label>
-                <Switch
-                  id="wallet-type"
-                  checked={walletType === "smart"}
-                  onCheckedChange={(checked) =>
-                    setWalletType(checked ? "smart" : "eoa")
-                  }
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                {walletType === "smart"
-                  ? t("sw_fee_details")
-                  : t("eoa_fee_details")}
+              <p className="text-xs text-gray-500 mt-1 font-secondary text-center">
+                {t("sw_fee_details")}
               </p>
             </div>
             {renderOrderDetails()}

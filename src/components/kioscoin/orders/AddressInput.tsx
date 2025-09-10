@@ -33,7 +33,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
 
   return (
     <div className="space-y-1">
-      <span className="text-xs block font-semibold text-primary text-left">
+      <span className="text-xs block font-secondary text-primary text-left">
         {t("take_order_information")}
       </span>
       <div className="flex space-x-2">
@@ -42,7 +42,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
           value={walletAddress}
           onChange={(e: any) => setWalletAddress(e.target.value)}
           placeholder={t("insert_wallet_address")}
-          className="flex-grow border border-terciary border-opacity-50 text-primary text-xs [&::placeholder]:text-primary [&::placeholder]:text-xs"
+          className="flex-grow border border-terciary border-opacity-50 text-primary text-xs font-secondary [&::placeholder]:text-primary [&::placeholder]:text-xs [&::placeholder]:font-secondary"
           disabled={orderStatus !== "PENDING"}
         />
         {clipboardSupported && (

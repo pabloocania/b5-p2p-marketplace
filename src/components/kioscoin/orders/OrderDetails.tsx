@@ -35,7 +35,9 @@ export default function OrderDetails({ order }: { order: Order | undefined }) {
     return (
       <Card className="w-full max-w-lg mx-auto">
         <CardContent>
-          <p className="text-center py-4">{t("no_order_details")}</p>
+          <p className="text-center py-4 font-secondary">
+            {t("no_order_details")}
+          </p>
         </CardContent>
       </Card>
     );
@@ -57,28 +59,28 @@ export default function OrderDetails({ order }: { order: Order | undefined }) {
       <CardContent className="pb-2">
         <div className="space-y-1">
           <div>
-            <span className="text-sm font-semibold block">
+            <span className="text-sm font-secondary block">
               {t("in_exchange_of")}: ${order.fiatAmount}
             </span>
           </div>
           <div>
-            <span className="text-sm font-semibold block">
+            <span className="text-sm font-secondary block">
               {t("in_exchange_of")}: {order.status}
             </span>
           </div>
           <div>
-            <span className="text-sm font-semibold block">
+            <span className="text-sm font-secondary block">
               {t("payment_method")}:{" "}
               {order.paymentMethods?.map((method) => method.type).join(", ")}
             </span>
           </div>
           <div>
-            <span className="text-xs text-gray-400 block">
+            <span className="text-xs text-gray-400 block font-secondary">
               {t("user")}: {order.creatorId}
             </span>
           </div>
           <div>
-            <span className="text-xs text-gray-400 block">
+            <span className="text-xs text-gray-400 block font-secondary">
               {t("order_id")}: {order.id}
             </span>
           </div>
@@ -93,7 +95,7 @@ export default function OrderDetails({ order }: { order: Order | undefined }) {
                   value={walletAddress}
                   onChange={(e) => setWalletAddress(e.target.value)}
                   placeholder={t("insert_wallet_address")}
-                  className="flex-grow"
+                  className="flex-grow font-secondary [&::placeholder]:font-secondary"
                 />
                 {clipboardSupported && (
                   <Button

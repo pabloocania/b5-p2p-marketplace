@@ -46,10 +46,15 @@ export function OrderCard({
   const isBuyer = user?.id === order?.buyerId;
   const isSeller = user?.id === order?.sellerId;
 
-  // 3️⃣ Definir la lógica de visibilidad del botón
+  // 3️⃣ Definir la lógica de visibilidad del botón (sincronizada con DisputeOrderButton)
+  const canBuyerDispute = isBuyer && order?.buyerCanDispute;
+  const canSellerDispute = isSeller && order?.sellerCanDispute;
+  const buyerDisputed = isBuyer && order?.buyerDisputed;
+  const sellerDisputed = isSeller && order?.sellerDisputed;
+  const alreadyDisputed = buyerDisputed || sellerDisputed;
+
   const canShowDisputeButton =
-    (isBuyer && order?.status === "FIAT_SENT") ||
-    (isSeller && order?.status === "ACTIVE");
+    (canBuyerDispute || canSellerDispute) && !alreadyDisputed;
 
   if (!order) {
     return (
@@ -88,16 +93,7 @@ export function OrderCard({
         <div className="grid grid-cols-3 gap-3">
           {/* Card Ver Historial */}
           {user && (
-            <div
-              className="relative rounded-lg p-1.5 cursor-pointer overflow-hidden"
-              style={{
-                background:
-                  "linear-gradient(135deg, #f8fafc, #e2e8f0, #cbd5e1)",
-                border: "1px solid rgba(139, 95, 220, 0.2)",
-                boxShadow:
-                  "0 4px 15px rgba(139, 95, 220, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
-              }}
-            >
+            <div className="relative rounded-lg p-1.5 cursor-pointer overflow-hidden bg-primary/30 border border-primary/40 shadow-sm">
               <div className="relative z-10">
                 <ViewHistoryButton orderId={order.id} />
               </div>
@@ -106,16 +102,7 @@ export function OrderCard({
 
           {/* Card Copiar ID */}
           {user && (
-            <div
-              className="relative rounded-lg p-1.5 cursor-pointer overflow-hidden"
-              style={{
-                background:
-                  "linear-gradient(135deg, #fefce8, #fef3c7, #fed7aa)",
-                border: "1px solid rgba(252, 206, 76, 0.3)",
-                boxShadow:
-                  "0 4px 15px rgba(252, 206, 76, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
-              }}
-            >
+            <div className="relative rounded-lg p-1.5 cursor-pointer overflow-hidden bg-secondary/30 border border-secondary/40 shadow-sm">
               <div className="relative z-10">
                 <CopyIdButton orderId={order.id} />
               </div>

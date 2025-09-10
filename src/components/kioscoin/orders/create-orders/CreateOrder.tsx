@@ -332,7 +332,7 @@ export default function CreateOrder({
                         placeholder={t("insert_wallet_address")}
                         value={walletAddress}
                         onChange={(e) => setWalletAddress(e.target.value)}
-                        className="focus:ring-primary focus:border-primary font-secondary"
+                        className="focus:ring-primary focus:border-primary font-secondary [&::placeholder]:font-secondary"
                       />
                     </div>
                   )}

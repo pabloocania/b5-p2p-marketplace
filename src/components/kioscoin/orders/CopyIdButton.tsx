@@ -31,9 +31,9 @@ const CopyIdButton: React.FC<CopyIdButtonProps> = ({ orderId }) => {
           </span>
         </button>
         {showCopied && (
-          <span className="absolute top-full mt-1 left-1/2 -translate-x-1/2 text-xs text-green-600 bg-white px-2 py-1 rounded-md shadow-sm">
+          <div className="absolute -top-2 -right-2 z-50 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-lg animate-pulse">
             {t("copied")}
-          </span>
+          </div>
         )}
       </div>
     </div>
