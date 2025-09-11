@@ -50,18 +50,52 @@ export default function OrderHistory({ orderId }: OrderHistoryProps) {
     return <p className="font-secondary">{t("no_events_registered")}</p>;
 
   return (
-    <div>
+    <div className="space-y-3">
       {events.map((event, index) => (
-        <div key={index} className="flex items-center justify-between mb-4">
-          <span className="flex items-center space-x-2 font-secondary text-dark/80">
-            {event.eventType === "TAKEN" && `${t("order_taken_event")} 🛒`}
-            {event.eventType === "LOCKED" && `${t("order_locked")} 🔒`}
-            {event.eventType === "FIAT_SENT" && `${t("fiat_transferred")} 💸`}
-            {event.eventType === "RELEASED" && `${t("order_released")} ✅`}
-          </span>
-          <span className="text-sm text-dark/80 text-right w-36 whitespace-nowrap font-secondary">
-            {new Date(event.timestamp).toLocaleString()}
-          </span>
+        <div key={index} className="bg-terciary/20 rounded-lg p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 text-center">
+                {event.eventType === "TAKEN" && "🛒"}
+                {event.eventType === "LOCKED" && "🔒"}
+                {event.eventType === "FIAT_SENT" && "💸"}
+                {event.eventType === "RELEASED" && "✅"}
+              </div>
+              <span className="font-secondary text-dark/80">
+                {event.eventType === "TAKEN" && (
+                  <>
+                    {t("order_taken_event").split(" ")[0]}
+                    <br />
+                    {t("order_taken_event").split(" ")[1]}
+                  </>
+                )}
+                {event.eventType === "LOCKED" && (
+                  <>
+                    {t("order_locked").split(" ")[0]}
+                    <br />
+                    {t("order_locked").split(" ")[1]}
+                  </>
+                )}
+                {event.eventType === "FIAT_SENT" && (
+                  <>
+                    {t("fiat_transferred").split(" ")[0]}
+                    <br />
+                    {t("fiat_transferred").split(" ")[1]}
+                  </>
+                )}
+                {event.eventType === "RELEASED" && (
+                  <>
+                    {t("order_released").split(" ")[0]}
+                    <br />
+                    {t("order_released").split(" ")[1]}
+                  </>
+                )}
+              </span>
+            </div>
+            <span className="text-sm text-dark/80 text-right w-36 whitespace-nowrap font-secondary">
+              {new Date(event.timestamp).toLocaleString()}
+            </span>
+          </div>
         </div>
       ))}
     </div>

@@ -114,6 +114,10 @@ a {
   font-family: "Montserrat", "Inter", system-ui, sans-serif;
 }
 
+.font-montserrat-force {
+  font-family: "Montserrat", "Inter", system-ui, sans-serif !important;
+}
+
 /* Animaciones personalizadas */
 @keyframes spin-slow {
   0% {

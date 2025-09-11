@@ -11,6 +11,8 @@ import { useUserContext } from "../../users/UserContext";
 import PaymentMethodSelector from "../create-orders/PaymentMethodSelector";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { Wallet, CreditCard } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface BuyOperationFormProps {
   offer: OrderOffer;
@@ -18,6 +20,7 @@ interface BuyOperationFormProps {
 }
 
 export function BuyOperationForm({ offer, onCancel }: BuyOperationFormProps) {
+  const { t } = useTranslation();
   const { user, loginId } = useUserContext();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,14 +63,14 @@ export function BuyOperationForm({ offer, onCancel }: BuyOperationFormProps) {
       });
 
       toast({
-        title: "Request sent",
-        description: "We'll match your offer shortly",
+        title: t("request_sent"),
+        description: t("offer_match_shortly"),
       });
       onCancel();
     } catch (e: any) {
       toast({
-        title: "Failed to send request",
-        description: e?.message ?? "Unexpected error",
+        title: t("request_failed"),
+        description: e?.message ?? t("unexpected_error"),
         variant: "destructive",
       });
     } finally {
@@ -76,44 +79,52 @@ export function BuyOperationForm({ offer, onCancel }: BuyOperationFormProps) {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <span className="text-2xl font-semibold">
-            {offer.type === "SELL" ? "Sell" : "Buy"} {offer.tokenCode}
+          <span
+            className="text-2xl font-semibold"
+            style={{ color: "#6b7280 !important" }}
+          >
+            {offer.type === "SELL" ? t("sell") : t("buy")} {offer.tokenCode}
           </span>
         </div>
       </div>
 
       {/* Offer Details */}
-      <div className="rounded-lg space-y-2 px-4 py-3 bg-secondary bg-opacity-10">
+      <div className="rounded-lg space-y-3 px-5 py-4 bg-secondary bg-opacity-10">
         <p className="text-sm text-primary font-secondary">
-          You will pay{" "}
-          <strong>
+          {t("you_will_pay")}{" "}
+          <strong className="!text-gray-800">
             {offer.fiatCode} {offer.fiatAmount}
           </strong>{" "}
-          for{" "}
-          <strong>
+          {t("for")}{" "}
+          <strong className="!text-gray-800">
             {offer.tokenAmount} {offer.tokenCode}
           </strong>
         </p>
         <p className="text-sm text-primary font-secondary">
-          Blockchain: <strong>{offer.blockchain}</strong>
+          {t("blockchain")}:{" "}
+          <strong className="!text-gray-800">{offer.blockchain}</strong>
         </p>
       </div>
 
       {/* Destination Address */}
-      <div className="space-y-2">
-        <Label htmlFor="buyerAddress" className="font-secondary">
-          Destination address
+      <div className="space-y-3">
+        <Label
+          htmlFor="buyerAddress"
+          className="font-secondary !text-gray-800 flex items-center gap-2"
+        >
+          <Wallet className="h-4 w-4" />
+          {t("destination_address")}
         </Label>
         <Input
           id="buyerAddress"
           placeholder="0x..."
           value={buyerAddress}
           onChange={(e) => setBuyerAddress(e.target.value)}
-          className="font-secondary [&::placeholder]:font-secondary"
+          className="font-secondary [&::placeholder]:font-secondary !text-gray-500"
         />
       </div>
 
@@ -126,12 +137,21 @@ export function BuyOperationForm({ offer, onCancel }: BuyOperationFormProps) {
       />
 
       {/* Action Buttons */}
-      <div className="flex gap-2 pt-2">
-        <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
-          Cancel
+      <div className="flex gap-3 pt-4">
+        <Button
+          variant="outline"
+          onClick={onCancel}
+          disabled={isSubmitting}
+          className="font-secondary !text-gray-500"
+        >
+          {t("cancel")}
         </Button>
-        <Button onClick={handleSubmit} disabled={!isValid || isSubmitting}>
-          {isSubmitting ? "Sending..." : "Continue"}
+        <Button
+          onClick={handleSubmit}
+          disabled={!isValid || isSubmitting}
+          className="bg-primary text-white font-secondary hover:bg-primary/80"
+        >
+          {isSubmitting ? t("sending") : t("continue")}
         </Button>
       </div>
     </div>

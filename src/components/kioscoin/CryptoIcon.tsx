@@ -54,14 +54,20 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
   const [imgError, setImgError] = React.useState(false);
   const fallbackSrc = "/criptoicon/asset-placeholder.svg";
 
+  // Si se proporciona amountTextClassName, usarlo; si no, usar el color gris por defecto
   const amountTextClasses = amountTextClassName
     ? `${amountFontSize} ${amountTextClassName}`
-    : `${amountFontSize} font-bold text-black`;
+    : `${amountFontSize} font-bold`;
+
+  // Solo aplicar el estilo inline si NO se proporciona amountTextClassName
+  const inlineStyle = amountTextClassName
+    ? {}
+    : { color: "#1f2937 !important" };
 
   return (
     <div className="inline-flex items-center justify-center">
       {showAmount && formattedAmount && (
-        <span className={amountTextClasses}>
+        <span className={amountTextClasses} style={inlineStyle}>
           {formattedAmount} {tokenCode.toUpperCase()}
         </span>
       )}
