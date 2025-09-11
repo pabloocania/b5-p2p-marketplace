@@ -9,9 +9,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { useUserContext } from "../../users/UserContext";
 import PaymentMethodSelector from "../create-orders/PaymentMethodSelector";
-import { ConfigStore } from "@/lib/ConfigStore";
+import { ConfigStore, getBlockchainDisplayName } from "@/lib/ConfigStore";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
-import { Wallet, CreditCard } from "lucide-react";
+import { Wallet, CreditCard, FileText } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface BuyOperationFormProps {
@@ -92,22 +92,36 @@ export function BuyOperationForm({ offer, onCancel }: BuyOperationFormProps) {
         </div>
       </div>
 
-      {/* Offer Details */}
-      <div className="rounded-lg space-y-3 px-5 py-4 bg-secondary bg-opacity-10">
-        <p className="text-sm text-primary font-secondary">
-          {t("you_will_pay")}{" "}
-          <strong className="!text-gray-800">
-            {offer.fiatCode} {offer.fiatAmount}
-          </strong>{" "}
-          {t("for")}{" "}
-          <strong className="!text-gray-800">
-            {offer.tokenAmount} {offer.tokenCode}
-          </strong>
-        </p>
-        <p className="text-sm text-primary font-secondary">
-          {t("blockchain")}:{" "}
-          <strong className="!text-gray-800">{offer.blockchain}</strong>
-        </p>
+      {/* Order Details */}
+      <div className="space-y-3">
+        <Label
+          htmlFor="orderDetails"
+          className="font-secondary !text-gray-800 flex items-center gap-2"
+        >
+          <FileText className="h-4 w-4" />
+          {t("order_details")}
+        </Label>
+        <div className="rounded-lg px-5 py-4 bg-white border border-gray-200">
+          <div className="rounded-lg space-y-3 px-4 py-3 bg-yellow-50 border border-yellow-200">
+            <div className="space-y-1">
+              <p className="text-sm text-primary font-secondary">
+                {t("you_will_pay")}{" "}
+                <strong className="!text-gray-800">
+                  {offer.fiatCode} {offer.fiatAmount}
+                </strong>
+              </p>
+              <p className="text-sm text-primary font-secondary">
+                {t("for")}{" "}
+                <strong className="!text-gray-800">
+                  {offer.tokenAmount} {offer.tokenCode}
+                </strong>
+              </p>
+            </div>
+            <p className="text-xs text-gray-400 font-secondary">
+              {t("blockchain")}: {getBlockchainDisplayName(offer.blockchain)}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Destination Address */}

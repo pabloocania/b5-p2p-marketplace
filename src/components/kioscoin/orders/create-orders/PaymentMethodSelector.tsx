@@ -123,7 +123,8 @@ export default function PaymentMethodSelector({
         placeholder={placeholder}
         value={value}
         onChange={handleInputChange}
-        className="text-sm h-8"
+        className="text-sm h-8 font-montserrat-force"
+        style={{ fontFamily: "Montserrat, sans-serif !important" }}
       />
     );
   };
@@ -170,7 +171,10 @@ export default function PaymentMethodSelector({
     <Card className="w-full">
       <CardContent className="py-3">
         <div className="flex items-center mb-2">
-          <h3 className="text-xs font-secondary !text-gray-800 flex items-center gap-2">
+          <h3
+            className="text-xs font-secondary !text-gray-800 flex items-center gap-2"
+            style={{ fontFamily: "Montserrat, sans-serif !important" }}
+          >
             <CreditCard className="h-4 w-4" />
             {t("payment_methods")}
           </h3>
@@ -201,10 +205,20 @@ export default function PaymentMethodSelector({
                     }
                   >
                     {getIcon(method.type)}
-                    <span className="font-medium text-xs text-primary font-montserrat-force">
+                    <span
+                      className="font-medium text-xs text-primary font-montserrat-force"
+                      style={{
+                        fontFamily: "Montserrat, sans-serif !important",
+                      }}
+                    >
                       {method.entity}
                     </span>
-                    <span className="ml-auto text-xs !text-gray-600 font-medium font-montserrat-force">
+                    <span
+                      className="ml-auto text-xs !text-gray-600 font-medium font-montserrat-force"
+                      style={{
+                        fontFamily: "Montserrat, sans-serif !important",
+                      }}
+                    >
                       {getAlias(method)}
                     </span>
                     {/* {!readOnly &&
