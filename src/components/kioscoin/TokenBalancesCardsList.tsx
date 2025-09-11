@@ -127,10 +127,12 @@ export default function TokenBalanceCardList({
                     <div className="flex justify-between items-center">
                       <Badge
                         variant="outline"
-                        className="py-1 px-2 flex items-center gap-1 text-xs font-medium bg-green-50 text-green-700 border-green-200"
+                        className="py-1 px-2 flex items-center gap-1 text-xs font-medium bg-primary/10 text-primary border-primary/20"
                       >
                         <WalletIcon className="h-3 w-3" />
-                        {balanceType === "eoa" ? "EOA Wallet" : "Smart Wallet"}
+                        {balanceType === "eoa"
+                          ? "EOA Wallet"
+                          : "Kioscoin wallet"}
                       </Badge>
 
                       {!hideEmptyBalances && (

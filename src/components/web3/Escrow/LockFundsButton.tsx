@@ -130,9 +130,9 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button
-            className={`w-full ${
+            className={`w-full font-secondary ${
               hasSufficientBalance
-                ? "text-white bg-yellow-500"
+                ? "text-white bg-primary"
                 : "text-white bg-red-500 border-red-500"
             }`}
             onClick={() =>

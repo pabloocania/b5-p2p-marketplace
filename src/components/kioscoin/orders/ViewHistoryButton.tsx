@@ -45,7 +45,7 @@ const ViewHistoryButton: React.FC<ViewHistoryButtonProps> = ({ orderId }) => {
           </div>
           <SheetFooter className="p-4 border-t bg-gray-100 rounded-md">
             <button
-              className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+              className="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/80 transition font-secondary"
               onClick={() => setIsIdSheetOpen(false)}
             >
               {t("close")}

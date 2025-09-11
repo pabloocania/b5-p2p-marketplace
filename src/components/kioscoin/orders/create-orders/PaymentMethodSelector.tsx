@@ -6,6 +6,7 @@ import {
   ChevronDown,
   ChevronUp,
   Check,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -59,11 +60,11 @@ export default function PaymentMethodSelector({
   const getColor = (type: string) => {
     switch (type) {
       case "BANK":
-        return "bg-primary bg-opacity-5";
+        return "bg-primary/10";
       case "FINTECH":
-        return "bg-secondary bg-opacity-5";
+        return "bg-primary/10";
       default:
-        return "bg-muted";
+        return "bg-primary/10";
     }
   };
 
@@ -122,7 +123,8 @@ export default function PaymentMethodSelector({
         placeholder={placeholder}
         value={value}
         onChange={handleInputChange}
-        className="text-sm h-8"
+        className="text-sm h-8 font-montserrat-force"
+        style={{ fontFamily: "Montserrat, sans-serif !important" }}
       />
     );
   };
@@ -169,7 +171,13 @@ export default function PaymentMethodSelector({
     <Card className="w-full">
       <CardContent className="py-3">
         <div className="flex items-center mb-2">
-          <h3 className="text-black/75 text-xs">{t("payment_methods")}</h3>
+          <h3
+            className="text-xs font-secondary !text-gray-800 flex items-center gap-2"
+            style={{ fontFamily: "Montserrat, sans-serif !important" }}
+          >
+            <CreditCard className="h-4 w-4" />
+            {t("payment_methods")}
+          </h3>
         </div>
         <div>
           {methods.length > 0 ? (
@@ -197,10 +205,20 @@ export default function PaymentMethodSelector({
                     }
                   >
                     {getIcon(method.type)}
-                    <span className="font-medium text-xs text-secondary">
+                    <span
+                      className="font-medium text-xs text-primary font-montserrat-force"
+                      style={{
+                        fontFamily: "Montserrat, sans-serif !important",
+                      }}
+                    >
                       {method.entity}
                     </span>
-                    <span className="ml-auto text-xs text-primary text-opacity-70">
+                    <span
+                      className="ml-auto text-xs !text-gray-600 font-medium font-montserrat-force"
+                      style={{
+                        fontFamily: "Montserrat, sans-serif !important",
+                      }}
+                    >
                       {getAlias(method)}
                     </span>
                     {/* {!readOnly &&
@@ -224,7 +242,7 @@ export default function PaymentMethodSelector({
                       </div>
                       <Button
                         size="sm"
-                        className="h-8 w-8 p-0 bg-secondary text-white"
+                        className="h-8 w-8 p-0 bg-primary text-white font-secondary"
                         onClick={handleSave}
                       >
                         <Check className="h-4 w-4" />
@@ -235,7 +253,7 @@ export default function PaymentMethodSelector({
               ))}
             </div>
           ) : (
-            <p className="text-xs text-primary text-opacity-70">
+            <p className="text-xs text-primary text-opacity-70 font-secondary">
               {t("no_payment_methods_available")}
             </p>
           )}
