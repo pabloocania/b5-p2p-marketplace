@@ -250,7 +250,7 @@ export default function FilterGroup({
             <SelectTrigger className="w-[90px] h-8">
               <SelectValue placeholder="Select Currency" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="text-dark text-sm font-secondary">
               {/* Map over codes including 'ALL' */}
               {fiatCodesWithAll.map((code: string) => (
                 <SelectItem key={code} value={code}>
@@ -302,14 +302,14 @@ export default function FilterGroup({
     return (
       <Badge
         key={group.type}
-        className={`cursor-pointer capitalize min-w-[70px] flex items-center justify-center px-2 py-1 shrink-0 border border-primary/20 text-xs ${
+        className={`cursor-pointer capitalize flex items-center justify-center border text-xs border border-primary/50 ${
           orderTypeIsActive
             ? "bg-primary text-white" // Active style for BUY or SELL
             : "bg-white text-primary/70" // Inactive style (soft)
         }`}
         onClick={handleOrderTypeToggle} // <-- Use specific toggle handler
       >
-        <span className="flex items-center font-normal text-[11px] antialiased tracking-tight">
+        <span className="flex items-center font-bold text-sm antialiased tracking-tight">
           {badgeText}
           {activeCount > 0 && (
             <span className="ml-1 bg-primary text-white rounded-full w-3 h-3 text-xs flex items-center justify-center">
@@ -325,12 +325,12 @@ export default function FilterGroup({
   return (
     <Badge
       key={group.type}
-      className={`cursor-pointer capitalize min-w-[70px] flex items-center justify-center px-2 py-1 shrink-0 border border-primary/20 text-xs ${
+      className={`cursor-pointer capitalize flex items-center justify-center px-1 py-1 border border-primary/50 text-xs ${
         isActive ? "bg-primary text-white" : "bg-white text-primary/70"
       }`}
       onClick={() => toggleActiveGroup(group.type)}
     >
-      <span className="flex items-center font-normal text-[11px] antialiased tracking-tight">
+      <span className="flex items-center text-sm antialiased tracking-tight">
         {group.title}
         {activeCount > 0 && (
           <span className="ml-1 bg-primary text-white rounded-full w-3 h-3 text-xs flex items-center justify-center">

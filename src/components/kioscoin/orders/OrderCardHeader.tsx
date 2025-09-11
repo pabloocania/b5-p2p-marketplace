@@ -14,26 +14,28 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
   const { t } = useTranslation();
 
   function mapOrderVariant(order: Order): string {
+    const baseClass =
+      "text-secondary font-bold font-secondary border-primary bg-secondary bg-opacity-10";
     switch (order.status) {
       case "PENDING":
-        return "bg-secondary text-white";
+        return baseClass;
       case "WAITING_PAYMENT":
-        return "bg-yellow-500 text-white";
+        return baseClass;
       case "ACTIVE":
-        return "bg-yellow-500 text-white";
+        return baseClass;
       case "FIAT_SENT":
-        return "text-white" + " " + `bg-[#fcce4c]`;
+        return baseClass;
       case "SUCCESS":
       case "COMPLETED_BY_ADMIN":
       case "RELEASED":
-        return "bg-secondary text-white";
+        return baseClass;
       case "CANCELED":
       case "CANCELED_BY_ADMIN":
-        return "bg-gray-300 text-black";
+        return baseClass;
       case "DISPUTE":
-        return "bg-red-500 text-white";
+        return baseClass;
       default:
-        return "bg-gray-300 text-black";
+        return baseClass;
     }
   }
 
@@ -54,7 +56,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
   }
 
   return (
-    <CardHeader>
+    <CardHeader className="pb-3">
       <CardTitle className="flex w-full items-center">
         {/* Left Side */}
         <div className="flex space-x-2 w-full h-full">

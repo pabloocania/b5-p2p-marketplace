@@ -34,7 +34,7 @@ export default function FilterBar({
 
       {/* Main Filter Bar - Responsive Grid */}
       <div className="mb-1 font-secondary">
-        <div className="bg-backgroundSecondary px-1 py-1 rounded-md border border-primary/20 font-secondary">
+        <div className="bg-primary/10 font-secondary px-1 py-1 rounded-lg font-primary border border-primary/50">
           {/* Responsive Grid Layout - More Compact */}
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1">
             {defaultFilterGroups.map((group) => (
@@ -54,7 +54,7 @@ export default function FilterBar({
 
       {/* Subgroup filters */}
       {activeGroup && activeGroup !== FilterGroupType.ORDER_TYPE && (
-        <div className="bg-backgroundSecondary rounded-md mt-2 border border-primary/20">
+        <div className="bg-primary/10 font-secondary px-1 py-1 rounded-lg font-primary border border-primary/50">
           <FilterGroup
             group={
               defaultFilterGroups.find((group) => group.type === activeGroup) ||
