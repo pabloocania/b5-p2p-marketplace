@@ -32,32 +32,30 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
   };
 
   return (
-    <div className="space-y-1 bg-white bg-yellow-100/50 rounded-lg">
+    <div className="space-y-1 bg-white bg-yellow-100/50 rounded-lg font-secondary">
       <div className="px-2 py-2 rounded-lg">
-        <div className="text-left mb-3 space-y-1">
-          <p className="text-md font-semibold text-primary leading-tight">
-            <span className="mr-1 font-bold text-dark">
+        <div className="text-left mb-3 space-y-2">
+          <p className="text-md font-semibold text-dark">
+            {/* <span className="mr-1 font-bold text-terciary">
               @{order.sellerUsername}
-            </span>
-            <span className="font-secondary">{t("seller_has_locked")}</span>
+            </span> */}
+            {t("seller_has_locked")}
           </p>
-          <p className="text-md font-semibold text-primary leading-tight">
-            <span className="font-secondary">{t("send")}</span>
-            <span className="ml-1 mr-1 text-sm font-bold text-dark">
+          <p className="text-md font-semibold text-dark">
+            {t("send")}
+            <span className="ml-1 mr-1 text-xl font-bold text-primary">
               {formatFiatAmount(order.fiatAmount, order.fiatCode)}
             </span>
             <span className="font-secondary">{t("to_receive")}</span>
           </p>
-          <div className="space-y-2 my-1">
+          <div className="space-y-2 py-1 text-center">
             {order.paymentMethods?.map((method, index) => (
-              <div key={index} className="flex items-center">
-                <EntityBadge
-                  entity={method.entity!}
-                  type={method.type!}
-                  alias={formatAlias(method.alias)}
-                  size="lg"
-                />
-              </div>
+              <EntityBadge
+                entity={method.entity!}
+                type={method.type!}
+                alias={formatAlias(method.alias)}
+                size="lg"
+              />
             ))}
           </div>
         </div>
