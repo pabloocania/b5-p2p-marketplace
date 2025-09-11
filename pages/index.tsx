@@ -98,9 +98,8 @@ export default function Home() {
             order={transaction.order}
             onClose={resetTransaction}
           />
-          <div className="w-full max-w-md mx-auto sm:py-8 px-2 sm:px-4 flex flex-col">
+          <div className="w-full max-w-md mx-auto px-2 sm:px-4 flex flex-col">
             <KioscoinOperationFlow activeComponent={activeComponent} />
-            {/* <OrderCreationFlow activeComponent={activeComponent} /> */}
             <div className="flex-1">{renderComponent()}</div>
           </div>
         </main>
@@ -127,7 +126,7 @@ export default function Home() {
             <div className="absolute bottom-16 sm:bottom-20 left-2 sm:left-4">
               <Button
                 size="icon"
-                className="bg-white border-2 border-secondary text-primary hover:bg-primary/90 hover:text-white rounded-full w-10 h-10 sm:w-12 sm:h-12 shadow-lg flex items-center justify-center"
+                className="bg-white border-2 border-secondary text-primary hover:bg-primary/90 hover:text-white rounded-full w-10 h-10 sm:w-12 sm:h-12 shadow-lg flex items-center justify-center font-secondary"
                 onClick={() =>
                   changeLanguage(i18n.language === "en" ? "es" : "en")
                 }

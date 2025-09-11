@@ -29,6 +29,7 @@ const paymentMethodIconMap: Readonly<Record<string, LucideIcon>> = {
 
 // Add size configuration mapping
 const sizeMap: Readonly<Record<string, { icon: string; text: string }>> = {
+  xs: { icon: "w-1 h-1", text: "text-xs" },
   md: { icon: "w-2 h-2", text: "text-md" },
   lg: { icon: "w-4 h-4", text: "text-lg" },
 } as const;
@@ -99,7 +100,7 @@ const PaymentMethodDisplay: React.FC<PaymentMethodDisplayProps> = ({
     : [methodDescription]; // Si no hay entidad, usa el tipo de método
 
   return (
-    <div className="flex flex-wrap my-1">
+    <div className="flex flex-wrap my-1 text-xs font-secondary">
       {allEntities.map((description, index) => (
         <EntityBadge key={index} entity={description} type={method.type} />
       ))}

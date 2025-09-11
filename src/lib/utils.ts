@@ -13,6 +13,7 @@ export const formatFiatAmount = (
 
   const numAmount = parseFloat(amount);
   const currencySymbol = fiatCode === "EUR" ? "€" : "$";
+  const currencyCode = fiatCode === "ARS" ? "ARS" : "";
 
   const formattedNumber = new Intl.NumberFormat("es-AR", {
     minimumFractionDigits: 2,
@@ -20,7 +21,7 @@ export const formatFiatAmount = (
   }).format(numAmount);
 
   // Agregar el símbolo de moneda al inicio
-  return `${currencySymbol} ${formattedNumber}`;
+  return `${currencySymbol}${currencyCode} ${formattedNumber}`;
 };
 
 // Format balances for display with smart number formatting
