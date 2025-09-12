@@ -174,7 +174,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
                 <SheetTrigger asChild>
                   <Button
                     onClick={handleChatIconClick}
-                    className="relative p-3 rounded-xl overflow-hidden"
+                    className="relative p-3 rounded-xl overflow-hidden z-5"
                     style={{
                       background: "#8b5fdc",
                       border: "2px solid #fcce4c",
@@ -184,11 +184,11 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
                         0 0 45px rgba(158, 140, 190, 0.2),
                         inset 0 0 15px rgba(252, 206, 76, 0.1)
                       `,
-                      animation: "chatGlow 2s ease-in-out infinite",
+                      // animation: "chatGlow 2s ease-in-out infinite",
                     }}
                   >
                     {/* Contenido del botón */}
-                    <div className="relative z-10 flex items-center gap-2">
+                    <div className="relative z-5 flex items-center gap-2">
                       <MessageCircle
                         size={20}
                         className="text-white drop-shadow-lg"

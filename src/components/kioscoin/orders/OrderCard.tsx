@@ -89,42 +89,72 @@ export function OrderCard({
         paymentMethods={selectedPaymentMethods}
       />
       <Separator className="mb-1" />
-      <div className="px-4 py-3">
-        <div className="grid grid-cols-3 gap-3">
-          {/* Card Ver Historial */}
-          {user && (
-            <div className="relative rounded-lg p-1.5 cursor-pointer overflow-hidden bg-primary/30 border border-primary/40 shadow-sm">
-              <div className="relative z-10">
-                <ViewHistoryButton orderId={order.id} />
-              </div>
-            </div>
-          )}
+      <div className="px-4 py-0">
+        <div
+          className={`${
+            canShowDisputeButton
+              ? "grid grid-cols-3 gap-1"
+              : "flex justify-center gap-2"
+          }`}
+        >
+          {/* Cuando hay disputa - Grid de 3 columnas */}
+          {canShowDisputeButton ? (
+            <>
+              {/* Ver Historial */}
+              {user && (
+                <div className="relative rounded-lg p-1 cursor-pointer overflow-hidden bg-primary/30 border border-primary/40 shadow-sm z-5">
+                  <div className="relative z-5">
+                    <ViewHistoryButton orderId={order.id} />
+                  </div>
+                </div>
+              )}
 
-          {/* Card Copiar ID */}
-          {user && (
-            <div className="relative rounded-lg p-1.5 cursor-pointer overflow-hidden bg-secondary/30 border border-secondary/40 shadow-sm">
-              <div className="relative z-10">
-                <CopyIdButton orderId={order.id} />
-              </div>
-            </div>
-          )}
+              {/* Copiar ID */}
+              {user && (
+                <div className="relative rounded-lg p-1 cursor-pointer overflow-hidden bg-secondary/30 border border-secondary/40 shadow-sm z-5">
+                  <div className="relative z-5">
+                    <CopyIdButton orderId={order.id} />
+                  </div>
+                </div>
+              )}
 
-          {/* Card Orden en Disputa */}
-          {canShowDisputeButton && (
-            <div
-              className="relative rounded-lg p-1.5 cursor-pointer overflow-hidden"
-              style={{
-                background:
-                  "linear-gradient(135deg, #fef2f2, #fecaca, #fca5a5)",
-                border: "1px solid rgba(239, 68, 68, 0.3)",
-                boxShadow:
-                  "0 4px 15px rgba(239, 68, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
-              }}
-            >
-              <div className="relative z-10">
-                <DisputeOrderButton order={order} />
+              {/* Disputar orden */}
+              <div
+                className="relative rounded-lg p-1 cursor-pointer overflow-hidden z-5"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #fef2f2, #fecaca, #fca5a5)",
+                  border: "1px solid rgba(239, 68, 68, 0.3)",
+                  boxShadow:
+                    "0 4px 15px rgba(239, 68, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
+                }}
+              >
+                <div className="relative z-5">
+                  <DisputeOrderButton order={order} />
+                </div>
               </div>
-            </div>
+            </>
+          ) : (
+            /* Cuando no hay disputa - Flex centrado con 2 botones */
+            <>
+              {/* Ver Historial */}
+              {user && (
+                <div className="relative rounded-lg p-1 cursor-pointer overflow-hidden bg-primary/30 border border-primary/40 shadow-sm z-5 w-24">
+                  <div className="relative z-5">
+                    <ViewHistoryButton orderId={order.id} />
+                  </div>
+                </div>
+              )}
+
+              {/* Copiar ID */}
+              {user && (
+                <div className="relative rounded-lg p-1 cursor-pointer overflow-hidden bg-secondary/30 border border-secondary/40 shadow-sm z-5 w-24">
+                  <div className="relative z-5">
+                    <CopyIdButton orderId={order.id} />
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

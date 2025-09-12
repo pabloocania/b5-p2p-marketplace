@@ -99,7 +99,7 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
   if (alreadyDisputed) {
     return (
       <>
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-0.5">
           <button
             onClick={() => setOpen(true)}
             className="flex flex-col items-center gap-2 w-full"
@@ -135,7 +135,7 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
 
   return (
     <>
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-0.5">
         <button
           onClick={() => setOpen(true)}
           className="flex flex-col items-center gap-2 w-full"

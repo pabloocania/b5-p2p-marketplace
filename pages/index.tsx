@@ -139,7 +139,7 @@ export default function Home() {
               </Button>
             </div>
             {user && (
-              <div className="absolute bottom-16 sm:bottom-20 right-2 sm:right-4">
+              <div className="absolute bottom-16 sm:bottom-20 right-2 sm:right-4 z-[100]">
                 <CreateOrderContainer
                   open={isCreateOrderOpen}
                   onOpenChange={(open) => {

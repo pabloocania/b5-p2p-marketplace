@@ -92,7 +92,7 @@ export function TransactionStatus({
   };
 
   return (
-    <div className="font-secondary fixed inset-0 flex items-center justify-center p-5 bg-black/50 z-50">
+    <div className="font-secondary fixed inset-0 flex items-center justify-center p-5 bg-black/50 z-[60]">
       {" "}
       {/* Added z-index */}
       <Card className="w-full max-w-sm mb-12">

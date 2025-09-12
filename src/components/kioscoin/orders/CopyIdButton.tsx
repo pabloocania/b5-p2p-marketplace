@@ -19,7 +19,7 @@ const CopyIdButton: React.FC<CopyIdButtonProps> = ({ orderId }) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center gap-0.5">
       <div className="relative">
         <button
           onClick={handleCopyId}
