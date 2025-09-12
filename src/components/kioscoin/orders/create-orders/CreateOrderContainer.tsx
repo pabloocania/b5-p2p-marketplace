@@ -15,6 +15,7 @@ interface CreateOrderContainerProps {
   trigger?: ReactNode;
   variant?: "sheet" | "dialog";
   className?: string;
+  closeButtonPosition?: string;
 }
 
 export function CreateOrderContainer({
@@ -24,6 +25,7 @@ export function CreateOrderContainer({
   trigger,
   variant = "sheet",
   className,
+  closeButtonPosition,
 }: CreateOrderContainerProps) {
   const { t } = useTranslation();
 
@@ -37,6 +39,7 @@ export function CreateOrderContainer({
             className || ""
           }`}
           closeText={t("close")}
+          closeButtonPosition={closeButtonPosition}
         >
           {children}
         </SheetContent>

@@ -106,6 +106,7 @@ export default function KioscoinOperationFlow({
         open={isOperationOpen}
         onOpenChange={setIsOperationOpen}
         variant="sheet"
+        closeButtonPosition="right-5 top-12"
       >
         {selectedOffer &&
           (selectedOffer.type === "BUY" ? (
