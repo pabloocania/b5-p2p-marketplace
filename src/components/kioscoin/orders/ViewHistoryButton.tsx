@@ -16,7 +16,7 @@ const ViewHistoryButton: React.FC<ViewHistoryButtonProps> = ({ orderId }) => {
 
   return (
     <>
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-0.5">
         <button
           onClick={(e) => {
             e.preventDefault();

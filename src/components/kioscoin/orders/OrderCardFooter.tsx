@@ -210,19 +210,19 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     ) && isUserInvolved;
 
   return isWaitingAction ? (
-    <CardFooter className="pb-3">
+    <CardFooter className="pb-0">
       <div className="text-center w-full text-white">
         {renderActionButton()}
       </div>
     </CardFooter>
   ) : orderTaken ? (
-    <CardFooter className="pb-3">
+    <CardFooter className="pb-0">
       <div className="text-secondary block text-center font-semibold">
         {t("order_taken")}
       </div>
     </CardFooter>
   ) : shouldShowSelectButton && !showDetails && canSelectOrder ? (
-    <CardFooter className="pb-3">
+    <CardFooter className="pb-0">
       <Button
         className="w-full bg-secondary text-white font-semibold"
         onClick={() => onSelect && onSelect(order)}
@@ -231,7 +231,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       </Button>
     </CardFooter>
   ) : showDetails && (walletAddress || order.type === "BUY") ? (
-    <CardFooter className="pb-3">
+    <CardFooter className="pb-0">
       <Button
         className="w-full bg-secondary text-white font-semibold"
         onClick={() => !orderTaken && takeOrder(order)}

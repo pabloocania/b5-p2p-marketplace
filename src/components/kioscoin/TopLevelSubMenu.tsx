@@ -22,7 +22,7 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
   return (
     <div className="flex flex-col w-full">
       {user && (
-        <div className="sticky w-full top-0 z-10 bg-backgroundMain">
+        <div className="sticky w-full top-0 z-50 bg-backgroundMain">
           <div className="flex justify-center space-x-2 py-2 pb-4 w-full">
             <Button
               className={`flex-1 ${
