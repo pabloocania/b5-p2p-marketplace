@@ -93,7 +93,7 @@ function BadgeGroup<T>({
                 }`}
               >
                 {renderItemContent(item)}
-                {isSelected && (
+                {/* {isSelected && (
                   <X
                     className="ml-1 h-2.5 w-2.5 text-secondary"
                     onClick={(e) => {
@@ -101,7 +101,7 @@ function BadgeGroup<T>({
                       onToggle(item);
                     }}
                   />
-                )}
+                )} */}
               </span>
             </Badge>
           );

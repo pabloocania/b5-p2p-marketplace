@@ -204,6 +204,11 @@ i18n.use(initReactI18next).init({
         // Landing Page translations
         landing_hero_text:
           "The future of P2P crypto trading. Buy and sell stablecoins with real people, using secure and decentralized escrow.",
+        buy_rioplatense: "Buy",
+        sell_rioplatense: "Sell",
+        slogan_template:
+          "{{verb}} crypto dollars using your local currency",
+        slogan_suffix: " crypto dollars using your local currency",
         secure_escrow: "Secure Escrow",
         instant_trading: "Instant Trading",
         no_gas_fees: "No Gas Fees",
@@ -255,6 +260,8 @@ i18n.use(initReactI18next).init({
         select_token_and_blockchain: "Select token and blockchain",
         notifications: "Notifications",
         order_refunded: "Order refunded",
+        filters: "Filters",
+        all: "All",
       },
     },
     es: {
@@ -467,7 +474,12 @@ i18n.use(initReactI18next).init({
         // Landing Page translations
         landing_hero_text:
           "El futuro del trading P2P de cripto. Compra y vende stablecoins con personas reales, usando un escrow seguro y descentralizado.",
-        secure_escrow: "Escrow Seguro",
+        buy_rioplatense: "Comprá",
+        sell_rioplatense: "Vendé",
+        slogan_template:
+          "{{verb}} dolar cripto usando tu moneda local!",
+        slogan_suffix: " dolar cripto usando tu moneda local!",
+        secure_escrow: "Transacciones Seguras",
         instant_trading: "Trading Instantáneo",
         no_gas_fees: "Sin Gas Fees",
         active_users: "Usuarios Activos",
@@ -518,6 +530,8 @@ i18n.use(initReactI18next).init({
         suggested: "Cambio sugerido",
         select_token_and_blockchain: "Selecciona la moneda y la blockchain",
         notifications: "Notificaciones",
+        filters: "Filtros",
+        all: "Todos",
       },
     },
   },

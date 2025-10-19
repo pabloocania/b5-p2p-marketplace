@@ -12,6 +12,18 @@ interface NavBarProps {
 export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
   const { t } = useTranslation();
 
+  // Centralized styling for nav buttons
+  const commonButtonClasses =
+    "flex flex-col items-center justify-center min-w-[80px] px-1 py-1 rounded-lg transition-colors h-14";
+  const activeButtonClasses = "bg-primary/10 text-secondary";
+  const inactiveButtonClasses =
+    "text-primary/80 hover:bg-primary/5 border border-transparent";
+  const getButtonClasses = (isActive: boolean) =>
+    cn(
+      commonButtonClasses,
+      isActive ? activeButtonClasses : inactiveButtonClasses
+    );
+
   const navItems = [
     {
       id: "OrderFeed",
@@ -34,21 +46,16 @@ export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
   ];
 
   return (
-    <div className="border-b-4 border-b-primary py-1.5 fixed bottom-0 bg-white z-50 w-full">
-      <div className="flex h-14 sm:h-19 items-center justify-between px-4 sm:px-6 max-w-md mx-auto">
+    <div className="border-t border-t-primary/50 py-2 px-1 fixed bottom-0 bg-white z-50 w-full shadow-top shadow-md">
+      <div className="flex h-18 items-center justify-between px-6 max-w-md mx-auto">
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setActiveComponent(item.id)}
-            className={cn(
-              "flex flex-col items-center justify-center min-w-[80px] sm:min-w-[100px] px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors h-14 sm:h-19",
-              item.active
-                ? "bg-primary/10 text-primary"
-                : "text-primary/80 hover:bg-primary/5 border border-transparent"
-            )}
+            className={getButtonClasses(item.active)}
           >
             <item.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-            <span className="text-xs mt-0.5 font-medium text-primary font-secondary">
+            <span className="text-xs mt-0.5 font-medium text-dark font-secondary">
               {item.label}
             </span>
           </button>

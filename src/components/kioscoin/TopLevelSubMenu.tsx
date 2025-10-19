@@ -19,37 +19,43 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  // Centralized styling for sub-filter buttons
+  const commonButtonClasses = "flex-1";
+  const activeButtonClasses = "bg-primary text-white shadow-lg";
+  const inactiveBaseClasses =
+    "hover:bg-primary/90 text-dark text-muted-foreground bg-secondary/10 border-2 border-primary/10";
+  const inactiveVariantClasses: Record<Filter, string> = {
+    [Filter.ALL]: "bg-secondary/10",
+    [Filter.PENDING]: "bg-secondary/10",
+    [Filter.WAITING_PAYMENT]: "bg-secondary/10",
+    [Filter.CLOSED]: "bg-secondary/10",
+  };
+  const getButtonClasses = (filter: Filter) =>
+    `${commonButtonClasses} ${
+      activeSubFilter === filter
+        ? activeButtonClasses
+        : `${inactiveBaseClasses} ${inactiveVariantClasses[filter]}`
+    }`;
+
   return (
     <div className="flex flex-col w-full">
       {user && (
-        <div className="sticky w-full top-0 z-50 bg-backgroundMain">
-          <div className="flex justify-center space-x-2 py-2 pb-4 w-full">
+        <div className="sticky w-full top-0 z-50">
+          <div className="flex justify-center font-secondary space-x-2 py-2 pb-4 w-full">
             <Button
-              className={`flex-1 ${
-                activeSubFilter === Filter.PENDING
-                  ? "bg-primary text-white shadow-lg"
-                  : "hover:bg-primary/90 text-primary bg-white border-2 border-primary/30"
-              }`}
+              className={getButtonClasses(Filter.PENDING)}
               onClick={() => setActiveSubFilter(Filter.PENDING)}
             >
               {t("pending")}
             </Button>
             <Button
-              className={`flex-1 ${
-                activeSubFilter === Filter.WAITING_PAYMENT
-                  ? "bg-primary text-white shadow-lg"
-                  : "hover:bg-primary/90 text-primary bg-white border-2 border-primary/30"
-              }`}
+              className={getButtonClasses(Filter.WAITING_PAYMENT)}
               onClick={() => setActiveSubFilter(Filter.WAITING_PAYMENT)}
             >
               {t("ongoing")}
             </Button>
             <Button
-              className={`flex-1 ${
-                activeSubFilter === Filter.CLOSED
-                  ? "bg-primary text-white shadow-lg"
-                  : "hover:bg-primary/90 text-primary bg-white border-2 border-primary/30"
-              }`}
+              className={getButtonClasses(Filter.CLOSED)}
               onClick={() => setActiveSubFilter(Filter.CLOSED)}
             >
               {t("closed")}

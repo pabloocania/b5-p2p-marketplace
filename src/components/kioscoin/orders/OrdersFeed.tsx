@@ -245,7 +245,7 @@ export default function OrdersFeed({
       <ScrollableContainer>
         {filter === Filter.ALL || user ? (
           <>
-            <div className="mb-6 sm:mb-8">
+            <div className="mb-6">
               <FilterBar
                 filters={filterState}
                 setFilters={setFilterState}
@@ -272,7 +272,7 @@ export default function OrdersFeed({
               </div>
             ) : (
               <div className="flex flex-col items-center h-full">
-                <div className="mb-5 text-primary font-bold font-secondary">
+                <div className="mb-5 text-dark font-bold font-secondary">
                   {t("no_orders_available")}
                 </div>
               </div>
