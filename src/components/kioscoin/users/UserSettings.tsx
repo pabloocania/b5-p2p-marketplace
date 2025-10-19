@@ -14,7 +14,7 @@ import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { useUserContext } from "./UserContext";
 import { useTranslation } from "react-i18next";
-import PushNotificationsToggle from "../PushNotificationsToggle";
+import PushNotificationsToggle from "@/components/kioscoin/notifications/PushNotificationsToggle";
 import PaymentMethodsComponent from "../orders/create-orders/PaymentMethodsComponent";
 
 interface UserSettingsProps {

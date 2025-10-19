@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { firebaseService } from "../../lib/FirebaseUnifiedService";
-import { p2pMarketAPIClient as client } from "../../lib/APIClients";
+import { p2pMarketAPIClient as client } from "@/lib/APIClients";
 import { useTranslation } from "react-i18next";
-import { useUserContext } from "./users/UserContext";
+import { useUserContext } from "@/components/kioscoin/users/UserContext";
+import { firebaseService } from "@/lib/FirebaseUnifiedService";
 
 interface PushNotificationsToggleProps {
   userId: string;
