@@ -3,6 +3,10 @@ import { Bell, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { useState, useCallback, useMemo } from "react";
+import { NotificationsPanel } from "./notifications/NotificationsPanel";
+import { useNotifications } from "@/hooks/useNotifications";
+import { useUserContext } from "./users/UserContext";
 
 interface TopBarProps {
   activeComponent: string;
@@ -10,39 +14,47 @@ interface TopBarProps {
 
 export function TopBar({ activeComponent }: TopBarProps) {
   const { t } = useTranslation();
+  const [isNotificationsPanelOpen, setIsNotificationsPanelOpen] =
+    useState(false);
+  const { user } = useUserContext();
 
-  const handleNotificationClick = () => {
-    // Placeholder - no action for now
-    console.log("Notification button clicked");
-  };
+  const apiBaseUrl = useMemo(
+    () =>
+      process.env.NEXT_PUBLIC_KIOSCOIN_API_BASE ??
+      "https://bolsillo-argento-586dfd80364d.herokuapp.com",
+    []
+  );
 
-  const handleMenuClick = () => {
-    // Placeholder - no action for now
-    console.log("Menu button clicked");
-  };
+  // Use notifications hook
+  const { notifications, unreadCount, isLoading, error, markAsRead } =
+    useNotifications(apiBaseUrl);
+
+  const handleNotificationClick = useCallback(() => {
+    setIsNotificationsPanelOpen(true);
+  }, []);
 
   const renderContent = () => {
-    switch (activeComponent) {
-      case "OrderFeed":
-        return (
-          <>
-            {/* Logo en el borde izquierdo */}
-            <div className="flex items-center">
-              <img
-                src="/icons/kioscoin-isotipo.png"
-                alt="Kioscoin"
-                className="h-16 w-16 sm:h-21 sm:w-21"
-              />
-            </div>
+    return (
+      <>
+        {/* Logo en el borde izquierdo */}
+        <div className="flex items-center">
+          <img
+            src="/icons/kioscoin-isotipo.png"
+            alt="Kioscoin"
+            className="h-16 w-16 sm:h-21 sm:w-21"
+          />
+        </div>
 
-            {/* Título centrado en la mitad de la pantalla */}
-            <div className="flex-1 flex justify-center">
-              <span className="text-primary text-xl sm:text-2xl font-bold font-primary">
-                Kioscoin
-              </span>
-            </div>
+        {/* Título centrado en la mitad de la pantalla */}
+        <div className="flex-1 flex justify-center">
+          <span className="text-primary text-xl sm:text-2xl font-bold font-primary">
+            Kioscoin
+          </span>
+        </div>
 
-            {/* Botón campanita */}
+        {/* Botón campanita con badge */}
+        {user && (
+          <div className="relative">
             <Button
               variant="ghost"
               size="sm"
@@ -51,81 +63,32 @@ export function TopBar({ activeComponent }: TopBarProps) {
             >
               <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             </Button>
-          </>
-        );
-
-      case "MyOrders":
-        return (
-          <>
-            {/* Logo en el borde izquierdo */}
-            <div className="flex items-center">
-              <img
-                src="/icons/kioscoin-isotipo.png"
-                alt="Kioscoin"
-                className="h-16 w-16 sm:h-21 sm:w-21"
-              />
-            </div>
-
-            {/* Título centrado en la mitad de la pantalla */}
-            <div className="flex-1 flex justify-center">
-              <span className="text-primary text-lg sm:text-xl font-semibold font-primary">
-                {t("my_orders")}
-              </span>
-            </div>
-
-            {/* Botón campanita */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleNotificationClick}
-              className="p-2 hover:bg-gray-100 w-12 sm:w-14"
-            >
-              <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            </Button>
-          </>
-        );
-
-      case "UserMenu":
-        return (
-          <>
-            {/* Logo en el borde izquierdo */}
-            <div className="flex items-center">
-              <img
-                src="/icons/kioscoin-isotipo.png"
-                alt="Kioscoin"
-                className="h-16 w-16 sm:h-21 sm:w-21"
-              />
-            </div>
-
-            {/* Título centrado en la mitad de la pantalla */}
-            <div className="flex-1 flex justify-center">
-              <span className="text-primary text-lg sm:text-xl font-semibold font-primary">
-                {t("my_account")}
-              </span>
-            </div>
-
-            {/* Botón hamburguesa */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleMenuClick}
-              className="p-2 hover:bg-gray-100 w-12 sm:w-14"
-            >
-              <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            </Button>
-          </>
-        );
-
-      default:
-        return null;
-    }
+            {unreadCount > 0 && (
+              <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </div>
+            )}
+          </div>
+        )}
+      </>
+    );
   };
-
   return (
-    <div className="fixed top-0 bg-white z-50 w-full border-b border-gray-200 shadow-sm">
-      <div className="flex h-14 sm:h-19 items-center justify-between px-4 sm:px-6 max-w-md mx-auto">
-        {renderContent()}
+    <>
+      <div className="fixed top-0 bg-white z-50 w-full border-b border-gray-200 shadow-sm">
+        <div className="flex items-center justify-between max-w-md mx-auto px-2">
+          {renderContent()}
+        </div>
       </div>
-    </div>
+
+      {/* Notifications Panel */}
+      <NotificationsPanel
+        notifications={notifications}
+        isOpen={isNotificationsPanelOpen}
+        onClose={() => setIsNotificationsPanelOpen(false)}
+        onMarkAsRead={markAsRead}
+        isLoading={isLoading}
+      />
+    </>
   );
 }

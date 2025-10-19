@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { useTranslation } from "react-i18next";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -115,5 +116,23 @@ export const parseAmountToBigInt = (amount: string, decimals: number): bigint =>
   } catch (error) {
     console.warn("Invalid amount format:", amount);
     return BigInt(0);
+  }
+};
+
+export const formatEventType = (eventType: string) => {
+  const { t } = useTranslation();
+  switch (eventType) {
+    case "LOCKED":
+      return t("order_locked");
+    case "RELEASED":
+      return t("order_released");
+    case "FIAT_SENT":
+      return t("fiat_transferred");
+    case "TAKEN":
+      return t("order_taken_event");
+    case "REFUNDED":
+      return t("order_refunded");
+    default:
+      return eventType;
   }
 };

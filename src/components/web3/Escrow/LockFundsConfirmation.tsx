@@ -88,7 +88,7 @@ export default function LockFundsConfirmation({
     <div className="flex justify-center items-center pt-6">
       <Card className="w-full max-w-md">
         <CardHeader className="flex justify-center items-center pt-4">
-          <CardTitle className="text-center text-primary">
+          <CardTitle className="text-center text-secondary">
             {t("transaction_details")}
           </CardTitle>
         </CardHeader>
