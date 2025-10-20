@@ -29,7 +29,6 @@ import {
   FilterGroupConfig,
 } from "../filter";
 import { initializeFilterConstants } from "../filter/constants";
-import { ConfigStore } from "@/lib/ConfigStore";
 
 export enum Filter {
   ALL = "ALL",
@@ -37,8 +36,6 @@ export enum Filter {
   WAITING_PAYMENT = "WAITING_PAYMENT",
   CLOSED = "CLOSED",
 }
-
-const params: GetOrdersParams = {};
 
 interface OrderFeedProps {
   orderId?: string | undefined;
@@ -54,8 +51,6 @@ interface OrderFeedProps {
 }
 
 export default function OrdersFeed({
-  orderId,
-  status,
   creatorId,
   buyerId,
   filter = Filter.ALL,
@@ -65,7 +60,7 @@ export default function OrdersFeed({
   onBack,
   filterGroups,
 }: OrderFeedProps) {
-  const { user, login, logout, loginId } = useUserContext();
+  const { user, login, loginId } = useUserContext();
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
     undefined
@@ -250,13 +245,6 @@ export default function OrdersFeed({
       <ScrollableContainer>
         {filter === Filter.ALL || user ? (
           <>
-            <div className="mb-6 sm:mb-8">
-              <FilterBar
-                filters={filterState}
-                setFilters={setFilterState}
-                filterGroups={filterGroups || defaultFilterGroups}
-              />
-            </div>
             {selectedOrder ? (
               <OrderCard
                 orderDTO={selectedOrder}
@@ -264,20 +252,29 @@ export default function OrdersFeed({
                 onRefresh={refreshOrders}
               />
             ) : orders && orders.length > 0 ? (
-              <div>
-                {orders.map((order) => (
-                  <div key={order.id} className="mb-3 md:mb-7">
-                    <OrderCard
-                      orderDTO={order}
-                      onSelect={handleOrderSelect}
-                      onRefresh={refreshOrders}
-                    />
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="mb-2">
+                  <FilterBar
+                    filters={filterState}
+                    setFilters={setFilterState}
+                    filterGroups={filterGroups || defaultFilterGroups}
+                  />
+                </div>
+                <div className="space-y-2 p-3 bg-white rounded-lg border border-secondary/20 shadow-md">
+                  {orders.map((order) => (
+                    <div key={order.id}>
+                      <OrderCard
+                        orderDTO={order}
+                        onSelect={handleOrderSelect}
+                        onRefresh={refreshOrders}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="flex flex-col items-center h-full">
-                <div className="mb-5 text-primary font-bold font-secondary">
+                <div className="mb-5 text-dark font-bold font-secondary">
                   {t("no_orders_available")}
                 </div>
               </div>

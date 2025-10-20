@@ -42,11 +42,9 @@ export function OrderCard({
     setSelectedPaymentMethods(methods);
   };
 
-  // 2️⃣ Determinar si el usuario es comprador o vendedor
   const isBuyer = user?.id === order?.buyerId;
   const isSeller = user?.id === order?.sellerId;
 
-  // 3️⃣ Definir la lógica de visibilidad del botón (sincronizada con DisputeOrderButton)
   const canBuyerDispute = isBuyer && order?.buyerCanDispute;
   const canSellerDispute = isSeller && order?.sellerCanDispute;
   const buyerDisputed = isBuyer && order?.buyerDisputed;
@@ -55,6 +53,26 @@ export function OrderCard({
 
   const canShowDisputeButton =
     (canBuyerDispute || canSellerDispute) && !alreadyDisputed;
+
+  const renderHistoryButton = () =>
+    user ? (
+      <div className="flex font-secondary w-full shadow-md">
+        <ViewHistoryButton orderId={order?.id} />
+      </div>
+    ) : null;
+
+  const renderCopyIdButton = () =>
+    user ? (
+      <div className="flex font-secondary w-full shadow-md">
+        <CopyIdButton orderId={order?.id} />
+      </div>
+    ) : null;
+
+  const renderDisputeButton = () => (
+    <div className="flex font-secondary w-full shadow-md">
+      <DisputeOrderButton order={order ?? ({} as Order)} />
+    </div>
+  );
 
   if (!order) {
     return (
@@ -67,7 +85,7 @@ export function OrderCard({
   }
 
   return (
-    <Card className="w-full mb-4 px-3 py-2" variant="shadow">
+    <Card className="w-full border border-secondary/50" variant="shadow">
       <OrderStatusBar status={order.status ?? "Unknown"} />
       <OrderCardHeader order={order} />
       <OrderCardContent
@@ -88,75 +106,15 @@ export function OrderCard({
         setOrder={setOrder}
         paymentMethods={selectedPaymentMethods}
       />
-      <Separator className="mb-1" />
-      <div className="px-4 py-0">
-        <div
-          className={`${
-            canShowDisputeButton
-              ? "grid grid-cols-3 gap-1"
-              : "flex justify-center gap-2"
-          }`}
-        >
-          {/* Cuando hay disputa - Grid de 3 columnas */}
-          {canShowDisputeButton ? (
-            <>
-              {/* Ver Historial */}
-              {user && (
-                <div className="relative rounded-lg p-1 cursor-pointer overflow-hidden bg-primary/30 border border-primary/40 shadow-sm z-5">
-                  <div className="relative z-5">
-                    <ViewHistoryButton orderId={order.id} />
-                  </div>
-                </div>
-              )}
-
-              {/* Copiar ID */}
-              {user && (
-                <div className="relative rounded-lg p-1 cursor-pointer overflow-hidden bg-secondary/30 border border-secondary/40 shadow-sm z-5">
-                  <div className="relative z-5">
-                    <CopyIdButton orderId={order.id} />
-                  </div>
-                </div>
-              )}
-
-              {/* Disputar orden */}
-              <div
-                className="relative rounded-lg p-1 cursor-pointer overflow-hidden z-5"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #fef2f2, #fecaca, #fca5a5)",
-                  border: "1px solid rgba(239, 68, 68, 0.3)",
-                  boxShadow:
-                    "0 4px 15px rgba(239, 68, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
-                }}
-              >
-                <div className="relative z-5">
-                  <DisputeOrderButton order={order} />
-                </div>
-              </div>
-            </>
-          ) : (
-            /* Cuando no hay disputa - Flex centrado con 2 botones */
-            <>
-              {/* Ver Historial */}
-              {user && (
-                <div className="relative rounded-lg p-1 cursor-pointer overflow-hidden bg-primary/30 border border-primary/40 shadow-sm z-5 w-24">
-                  <div className="relative z-5">
-                    <ViewHistoryButton orderId={order.id} />
-                  </div>
-                </div>
-              )}
-
-              {/* Copiar ID */}
-              {user && (
-                <div className="relative rounded-lg p-1 cursor-pointer overflow-hidden bg-secondary/30 border border-secondary/40 shadow-sm z-5 w-24">
-                  <div className="relative z-5">
-                    <CopyIdButton orderId={order.id} />
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+      {/* <Separator className="mb-1" /> */}
+      <div
+        className={`px-3 py-2 grid ${
+          canShowDisputeButton ? "grid-cols-3" : "grid-cols-2"
+        } gap-2`}
+      >
+        {renderHistoryButton()}
+        {renderCopyIdButton()}
+        {canShowDisputeButton && renderDisputeButton()}
       </div>
     </Card>
   );

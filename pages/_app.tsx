@@ -17,6 +17,7 @@ import { ConfigStore } from "@/lib/ConfigStore";
 import { Web3AuthProvider } from "@web3auth/modal/react";
 import { useTranslation } from "react-i18next";
 import web3AuthContextConfig from "../src/components/web3/web3auth";
+import { Toaster } from "@/components/ui/toaster";
 
 const queryClient = new QueryClient();
 
@@ -109,6 +110,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                 <EtherspotSdkProvider>
                   <TransactionProvider>
                     <Component {...pageProps} />
+                    <Toaster />
                   </TransactionProvider>
                 </EtherspotSdkProvider>
               </RainbowKitProvider>

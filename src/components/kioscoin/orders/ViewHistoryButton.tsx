@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetFooter } from "@/components/ui/sheet";
 import { HistoryIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import OrderHistory from "./OrderHistory";
+import { IconButton } from "@/components/ui/IconButton";
 
 interface ViewHistoryButtonProps {
   orderId?: string;
@@ -16,19 +17,18 @@ const ViewHistoryButton: React.FC<ViewHistoryButtonProps> = ({ orderId }) => {
 
   return (
     <>
-      <div className="flex flex-col items-center gap-0.5">
-        <button
+      <div className="flex flex-col items-center w-full">
+        <IconButton
+          icon={HistoryIcon}
+          className="font-secondary border-primary/50 bg-white text-primary hover:bg-secondary/20 w-full justify-center"
+          label={t("view_history")}
+          variant="outline"
+          size="sm"
           onClick={(e) => {
             e.preventDefault();
             setIsIdSheetOpen(true);
           }}
-          className="flex flex-col items-center gap-2 w-full"
-        >
-          <HistoryIcon className="w-5 h-5" style={{ color: "#9e8cbe" }} />
-          <span className="text-xs font-medium text-center font-secondary text-gray-500">
-            {t("view_history")}
-          </span>
-        </button>
+        />
       </div>
 
       <Sheet open={isIdSheetOpen} onOpenChange={setIsIdSheetOpen}>

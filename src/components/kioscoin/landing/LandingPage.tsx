@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmailLoginForm } from "@/components/kioscoin/users/login/EmailLoginForm";
 import { RegisterForm } from "@/components/kioscoin/users/login/RegisterForm";
@@ -20,6 +20,27 @@ export function LandingPage() {
   const { login } = useUserContext();
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
 
+  const [verbIndex, setVerbIndex] = useState(0);
+  const [isFading, setIsFading] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setIsFading(true);
+      timeoutRef.current = setTimeout(() => {
+        setVerbIndex((v) => (v === 0 ? 1 : 0));
+        setIsFading(false);
+      }, 200);
+    }, 3000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+  const currentVerb = t(
+    verbIndex === 0 ? "buy_rioplatense" : "sell_rioplatense"
+  );
+
   const handleLogin = (user: any, token: string) => {
     // Use the real login function from UserContext
     login(user, token);
@@ -34,124 +55,111 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col -mt-14 pt-12">
-      {/* Full-viewport background layer */}
-      <div className="fixed inset-0 bg-terciary -z-10"></div>
-      {/* Hero Section - Compact */}
-      <div className="text-center py-4 px-4">
-        <div className="flex justify-center mb-6">
+    <div className="min-h-screen flex flex-col">
+      <div className="flex flex-col gap-5 text-center py-1 px-1">
+        <div className="flex justify-center">
           <img
-            src="/icons/kioscoin-logotipo-lila.png"
+            height={250}
+            width={250}
+            src="/icons/kioscoin-imagotipo.png"
             alt="Kioscoin"
-            className="w-auto object-contain"
           />
+          {/* <div className="flex">
+            <p className="text-5xl font-bold font-primary text-primary">
+              Kioscoin
+            </p>
+          </div> */}
         </div>
-
-        {/* Features - Compact */}
-        <div
-          className="flex flex-wrap justify-center gap-3 mb-8 font-primary"
-          style={{ marginTop: "-1cm" }}
-        >
-          <div className="flex items-center text-gray-700">
-            <Shield className="h-4 w-4 mr-1 text-primary/80" />
-            <span className="text-xs font-medium">{t("secure_escrow")}</span>
-          </div>
-          <div className="flex items-center text-gray-700">
-            <Zap className="h-4 w-4 mr-1 text-secondary" />
-            <span className="text-xs font-medium">{t("instant_trading")}</span>
-          </div>
-          <div className="flex items-center text-gray-700">
-            <DollarSign className="h-4 w-4 mr-1 text-green-500" />
-            <span className="text-xs font-medium">{t("no_gas_fees")}</span>
-          </div>
+        <div className="">
+          <p className="text-center font-secondary sm:text-lg text-primary">
+            <span
+              className={cn(
+                "inline-block transition-opacity duration-300 font-bold",
+                isFading ? "opacity-0" : "opacity-100"
+              )}
+            >
+              {currentVerb}
+            </span>
+            {t("slogan_suffix")}
+          </p>
         </div>
-
-        {/* Social Proof - Modern Cards */}
-        <div
-          className="flex justify-center gap-3 sm:gap-4 mb-5 font-primary"
-          style={{ marginTop: "1cm" }}
-        >
+        <div className="flex justify-center gap-3 font-primary w-full max-w-md mx-auto">
           <div className="border border-purple-200 bg-white/80 rounded-xl p-2 sm:p-3 text-center min-w-[110px] sm:min-w-[130px] shadow-sm hover:shadow-md transition-all">
             <div className="flex justify-center mb-1">
-              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary/80" />
+              <Users className="h-6 w-6 text-secondary" />
             </div>
-            <div className="text-gray-500 text-sm sm:text-base font-bold leading-tight">
-              10,000+
+            <div className="font-secondary font-semibold text-primary text-xs">
+              {t("p2p_market")}
             </div>
-            <div className="text-gray-600 text-[10px] sm:text-xs">Usuarios</div>
           </div>
 
           <div className="border border-purple-200 bg-white/80 rounded-xl p-2 sm:p-3 text-center min-w-[110px] sm:min-w-[130px] shadow-sm hover:shadow-md transition-all">
             <div className="flex justify-center mb-1">
-              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
+              <Shield className="h-6 w-6 text-secondary" />
             </div>
-            <div className="text-gray-500 text-sm sm:text-base font-bold leading-tight">
+            {/* <div className="text-gray-500 text-sm sm:text-base font-bold leading-tight">
               $2M+
+            </div> */}
+            <div className="font-secondary font-semibold text-primary text-xs">
+              {t("safe_operations")}
             </div>
-            <div className="text-gray-600 text-[10px] sm:text-xs">Volumen</div>
           </div>
 
           <div className="border border-purple-200 bg-white/80 rounded-xl p-2 sm:p-3 text-center min-w-[110px] sm:min-w-[130px] shadow-sm hover:shadow-md transition-all">
             <div className="flex justify-center mb-1">
-              <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+              <CheckCircle2 className="h-6 w-6 text-secondary" />
             </div>
-            <div className="text-gray-500 text-sm sm:text-base font-bold leading-tight">
+            {/* <div className="text-gray-500 text-sm sm:text-base font-bold leading-tight">
               99.9%
-            </div>
-            <div className="text-gray-600 text-[10px] sm:text-xs">
-              Tasa de Éxito
+            </div> */}
+            <div className="font-secondary font-semibold text-primary text-xs">
+              {t("best_rate")}
             </div>
           </div>
         </div>
-      </div>
+        {/* Auth Section - Compact size */}
+        <div className="w-full max-w-md mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-4 font-secondary transform transition-transform duration-200">
+            {/* Toggle Buttons - Compact */}
+            <div className="flex bg-gray-100 rounded-lg p-1 mb-3">
+              <button
+                onClick={() => setAuthMode("login")}
+                className={cn(
+                  "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 font-secondary",
+                  authMode === "login"
+                    ? "bg-white text-purple-600 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
+                )}
+              >
+                {t("login")}
+              </button>
+              <button
+                onClick={() => setAuthMode("register")}
+                className={cn(
+                  "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 font-secondary",
+                  authMode === "register"
+                    ? "bg-white text-purple-600 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
+                )}
+              >
+                {t("register")}
+              </button>
+            </div>
 
-      {/* Auth Section - Compact size */}
-      <div className="flex-1 max-w-lg mx-auto px-4 pb-6">
-        <div
-          className={cn(
-            "bg-white rounded-xl shadow-lg p-4 font-secondary transform transition-transform duration-200 origin-top",
-            authMode === "login" ? "scale-[1.15]" : "scale-100"
-          )}
-        >
-          {/* Toggle Buttons - Compact */}
-          <div className="flex bg-gray-100 rounded-lg p-1 mb-3">
-            <button
-              onClick={() => setAuthMode("login")}
-              className={cn(
-                "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 font-secondary",
-                authMode === "login"
-                  ? "bg-white text-purple-600 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
+            {/* Form - compact height */}
+            <div>
+              {authMode === "login" ? (
+                <EmailLoginForm
+                  onLogin={handleLogin}
+                  onSwitchToRegister={handleSwitchToRegister}
+                />
+              ) : (
+                <RegisterForm
+                  onLogin={handleLogin}
+                  onSwitchToEmailLogin={handleSwitchToLogin}
+                />
               )}
-            >
-              {t("login")}
-            </button>
-            <button
-              onClick={() => setAuthMode("register")}
-              className={cn(
-                "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 font-secondary",
-                authMode === "register"
-                  ? "bg-white text-purple-600 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
-              )}
-            >
-              {t("register")}
-            </button>
-          </div>
-
-          {/* Form - compact height */}
-          <div className="min-h-[180px]">
-            {authMode === "login" ? (
-              <EmailLoginForm
-                onLogin={handleLogin}
-                onSwitchToRegister={handleSwitchToRegister}
-              />
-            ) : (
-              <RegisterForm
-                onLogin={handleLogin}
-                onSwitchToEmailLogin={handleSwitchToLogin}
-              />
-            )}
+            </div>
           </div>
         </div>
       </div>

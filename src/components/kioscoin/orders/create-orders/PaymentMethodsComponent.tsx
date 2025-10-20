@@ -29,7 +29,8 @@ export default function PaymentMethodsComponent({
     selectedMethods.forEach((m) => {
       if (m.entity) next[m.entity] = m.alias ?? "";
     });
-    setEntityToAlias((prev) => ({ ...prev, ...next }));
+    // Replace map to drop stale entries for unselected methods
+    setEntityToAlias(next);
   }, [selectedMethods]);
 
   const isSelected = (method: PaymentMethod) =>
@@ -85,11 +86,11 @@ export default function PaymentMethodsComponent({
     <Card className="w-full font-secondary border-none">
       <CardContent className="p-0">
         <div className="flex items-center mb-2">
-          <h3 className="text-black/75 text-xs">{t("payment_methods")}</h3>
+          <h3 className="text-dark text-xs">{t("payment_methods")}</h3>
         </div>
 
         {methods.length === 0 ? (
-          <p className="text-xs text-primary text-opacity-70">
+          <p className="text-xs text-dark">
             {t("no_payment_methods_available")}
           </p>
         ) : (
@@ -106,25 +107,24 @@ export default function PaymentMethodsComponent({
                 >
                   <button
                     type="button"
-                    className={`w-full px-3 py-2 flex items-center gap-2 rounded-lg text-left border transition-all duration-200 ${
-                      selected ? "border-2 border-terciary" : "border-gray-300"
+                    className={`w-full text-primary px-3 py-2 hover:bg-secondary/20 flex items-center gap-2 rounded-lg text-left border transition-all duration-200 ${
+                      selected
+                        ? "border border-secondary bg-secondary/10"
+                        : "border-primary/80"
                     }`}
                     onClick={() => toggleMethod(method)}
                   >
-                    <span className="font-medium text-xs text-secondary">
-                      {method.entity}
-                    </span>
-                    <span className="ml-auto text-xs text-primary text-opacity-70">
-                      {selected ? selectedData?.alias || "alias" : ""}
+                    <span className="font-medium text-xs">{method.entity}</span>
+                    <span className="ml-auto text-xs text-dark">
+                      {entityToAlias[method.entity ?? ""] ??
+                        selectedData?.alias ??
+                        ""}
                     </span>
                   </button>
 
                   {!readOnly && selected && (
                     <div className="flex gap-2 px-1 w-full">
-                      <div
-                        style={{ borderLeft: "2px", paddingLeft: "1rem" }}
-                        className="w-full"
-                      >
+                      <div className="w-full pl-2 border-l-2 border-secondary/40 rounded-xs">
                         <Input
                           type="text"
                           name="alias"
@@ -136,7 +136,7 @@ export default function PaymentMethodsComponent({
                           placeholder={
                             (entityToAlias[method.entity ?? ""] ?? "").trim() ||
                             selectedData?.alias ||
-                            "alias"
+                            ""
                           }
                           onChange={(e) =>
                             handleAliasChange(
@@ -145,7 +145,7 @@ export default function PaymentMethodsComponent({
                             )
                           }
                           onBlur={() => handleAliasBlur(method.entity ?? "")}
-                          className="text-sm h-8"
+                          className="text-sm h-8 border border-primary/40"
                         />
                       </div>
                     </div>

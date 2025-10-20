@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Clipboard, RefreshCw, Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/IconButton";
 import { useTranslation } from "react-i18next";
 
 interface AddressProps {
@@ -10,6 +10,18 @@ interface AddressProps {
 const Address: React.FC<AddressProps> = ({ address }) => {
   const { t } = useTranslation();
   const [isCopied, setIsCopied] = useState(false);
+  const [leftSliceLength, setLeftSliceLength] = useState(30);
+
+  // Adjust how much of the address is shown on small screens so it fits
+  useEffect(() => {
+    const updateSlice = () => {
+      // Tailwind sm breakpoint is 640px
+      setLeftSliceLength(window.innerWidth < 640 ? 18 : 30);
+    };
+    updateSlice();
+    window.addEventListener("resize", updateSlice);
+    return () => window.removeEventListener("resize", updateSlice);
+  }, []);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(address).then(() => {
@@ -24,40 +36,42 @@ const Address: React.FC<AddressProps> = ({ address }) => {
   };
 
   return (
-    <div className="w-full space-y-1">
+    <div className="w-full space-y-2">
       {/* Primera línea: Título "Dirección" + Botón Send */}
-      <div className="flex items-center justify-between">
-        <p className="font-secondary text-primary text-sm font-bold">
-          {t("address")}
+      <div className="flex items-baseline justify-between">
+        <p className="font-primary text-dark text-xs flex-grow">
+          {t("your_address")}
         </p>
-        <Button
-          className="p-0.5 border-secondary/50 bg-white h-6 w-6"
+        <IconButton
+          className="p-2 font-secondary border-primary/50 bg-white h-6 text-primary hover:bg-secondary/20"
           variant="outline"
           size="sm"
           onClick={handleSend}
-        >
-          <Send className="h-3 w-3" />
-        </Button>
+          icon={Send}
+          aria-label="send"
+          label={t("send_button")}
+        />
       </div>
 
       {/* Segunda línea: Address + Botón Copy */}
-      <div className="flex items-center justify-between">
-        <p className="font-secondary text-gray-700 text-sm flex-grow">
-          {address.slice(0, 30)}...{address.slice(-4)}
+      <div className="flex items-baseline justify-between">
+        <p className="font-secondary text-dark text-xs flex-grow">
+          {address.slice(0, leftSliceLength)}...{address.slice(-4)}
         </p>
-        <div className="relative ml-2">
-          <Button
-            className="p-0.5 border-secondary/50 bg-white h-6 w-6"
+        <div className="relative">
+          <IconButton
+            className="p-2 font-secondary border-primary/50 bg-white h-6 text-primary hover:bg-secondary/20"
             variant="outline"
             size="sm"
             onClick={handleCopy}
-          >
-            <Clipboard className="h-3 w-3" />
-          </Button>
+            icon={Clipboard}
+            aria-label="copy"
+            label={t("copy")}
+          />
           {/* Feedback visual */}
           {isCopied && (
-            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs px-1 py-0.5 rounded shadow-lg z-10">
-              ¡Copiado!
+            <div className="absolute font-secondary -top-6 left-1/2 transform -translate-x-1/2 bg-secondary text-white text-xs px-1 py-0.5 rounded shadow-lg z-10">
+              {t("copied")}
             </div>
           )}
         </div>

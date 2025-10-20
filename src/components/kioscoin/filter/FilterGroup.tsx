@@ -135,7 +135,7 @@ export default function FilterGroup({
     setFilters((prev) => ({
       ...prev,
       // If 'ALL' is selected, clear the filter, otherwise set the selected code
-      fiatCode: fiatCode === "ALL" ? [] : [fiatCode],
+      fiatCode: fiatCode === t("all") ? [] : [fiatCode],
     }));
   };
 
@@ -234,12 +234,12 @@ export default function FilterGroup({
             : [];
 
         // Add 'ALL' option to fiat codes
-        const fiatCodesWithAll = ["ALL", ...currentFiatCodes];
+        const fiatCodesWithAll = [t("all"), ...currentFiatCodes];
 
         // Determine the value for the Select component
         // If a specific code is selected, use it. Otherwise, show 'ALL'.
         const selectValue =
-          filters.fiatCode.length > 0 ? filters.fiatCode[0] : "ALL";
+          filters.fiatCode.length > 0 ? filters.fiatCode[0] : t("all");
 
         // Define the Select component node
         const selectNode = (

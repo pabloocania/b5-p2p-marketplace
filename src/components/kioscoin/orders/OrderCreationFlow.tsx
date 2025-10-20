@@ -21,15 +21,6 @@ export default function OrderCreationFlow({
   const { user, login, logout } = useUserContext();
   const { t } = useTranslation();
 
-  const handleOfferClick = (offer: BannerOffer) => {
-    setSelectedOffer(offer);
-    if (!user) {
-      setIsLoginOpen(true);
-    } else {
-      setIsCreateOrderOpen(true);
-    }
-  };
-
   const handleClose = () => {
     setIsCreateOrderOpen(false);
     setSelectedOffer(null);

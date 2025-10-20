@@ -2,12 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronDown, Wallet, Network } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { CompactSelector } from "./CompactSelector";
 import { useTranslation } from "react-i18next";
 import { TokenBalance } from "@/components/web3/types";
 import { ConfigStore } from "@/lib/ConfigStore";
@@ -28,8 +23,6 @@ export default function UserBalance({
   onBlockchainChange,
 }: UserBalanceProps) {
   const { t } = useTranslation();
-  const [isTokenOpen, setIsTokenOpen] = useState(false);
-  const [isBlockchainOpen, setIsBlockchainOpen] = useState(false);
   const [availableTokens, setAvailableTokens] = useState<
     Array<{ code: string; name: string; icon: string }>
   >([]);
@@ -123,69 +116,28 @@ export default function UserBalance({
     };
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-lg border border-secondary/20 p-2 sm:p-4 shadow-sm">
+    <div className="w-full bg-white rounded-lg border border-secondary/20 p-4 shadow-md">
+      {/* <span className="text-xs text-primary font-primary">Balances</span> */}
       {/* Main Balance Section */}
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex items-center justify-center gap-10">
         {/* Blockchain Selector (Left) - Compact */}
         <div className="flex justify-start">
-          <Popover open={isBlockchainOpen} onOpenChange={setIsBlockchainOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 bg-secondary/10 border-secondary/30 hover:bg-secondary/20 px-2 py-1"
-              >
-                {currentBlockchain.icon.startsWith("/") ||
-                currentBlockchain.icon.startsWith("http") ? (
-                  <img
-                    src={currentBlockchain.icon}
-                    alt={currentBlockchain.code}
-                    className="w-4 h-4"
-                  />
-                ) : (
-                  <span className="text-sm">{currentBlockchain.icon}</span>
-                )}
-                <ChevronDown className="h-3 w-3 text-primary" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-48">
-              {availableBlockchains.length > 0 ? (
-                availableBlockchains.map((blockchain) => (
-                  <button
-                    key={blockchain.code}
-                    onClick={() => {
-                      onBlockchainChange(blockchain.code);
-                      setIsBlockchainOpen(false);
-                    }}
-                    className="flex items-center gap-2 w-full p-2 hover:bg-gray-100 rounded-md"
-                  >
-                    {blockchain.icon.startsWith("/") ||
-                    blockchain.icon.startsWith("http") ? (
-                      <img
-                        src={blockchain.icon}
-                        alt={blockchain.code}
-                        className="w-5 h-5"
-                      />
-                    ) : (
-                      <span className="text-lg">{blockchain.icon}</span>
-                    )}
-                    <span className="font-medium">{blockchain.name}</span>
-                  </button>
-                ))
-              ) : (
-                <div className="p-2 text-gray-500">Loading blockchains...</div>
-              )}
-            </PopoverContent>
-          </Popover>
+          <CompactSelector
+            items={availableBlockchains}
+            selectedCode={currentBlockchain.code}
+            onChange={onBlockchainChange}
+            align="start"
+            loadingLabel="Loading blockchains..."
+            contentClassName="font-primary text-xs p-2"
+            buttonAriaLabel="Select blockchain"
+          />
         </div>
 
         {/* Balance (Center) - Fixed width */}
         <div className="flex justify-center">
-          <div className="text-center min-w-[80px] sm:min-w-[100px] max-w-[120px] sm:max-w-[140px] font-secondary">
-            <div className="text-xl sm:text-2xl font-bold text-gray-700">
-              {formattedBalance}
-            </div>
-            <div className="text-xs sm:text-sm text-gray-300">
+          <div className="text-center min-w-[80px] sm:min-w-[100px] max-w-[120px] sm:max-w-[140px] font-primary text-dark space-y-1">
+            <div className="text-xl sm:text-xl">{formattedBalance}</div>
+            <div className="text-xs sm:text-sm text-primary/80">
               {currentToken.code}
             </div>
           </div>
@@ -193,55 +145,15 @@ export default function UserBalance({
 
         {/* Token Selector (Right) - Compact */}
         <div className="flex justify-end">
-          <Popover open={isTokenOpen} onOpenChange={setIsTokenOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 bg-secondary/10 border-secondary/30 hover:bg-secondary/20 px-2 py-1"
-              >
-                {currentToken.icon.startsWith("/") ||
-                currentToken.icon.startsWith("http") ? (
-                  <img
-                    src={currentToken.icon}
-                    alt={currentToken.code}
-                    className="w-4 h-4"
-                  />
-                ) : (
-                  <span className="text-sm">{currentToken.icon}</span>
-                )}
-                <ChevronDown className="h-3 w-3 text-primary" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-48">
-              {availableTokens.length > 0 ? (
-                availableTokens.map((token) => (
-                  <button
-                    key={token.code}
-                    onClick={() => {
-                      onTokenChange(token.code);
-                      setIsTokenOpen(false);
-                    }}
-                    className="flex items-center gap-2 w-full p-2 hover:bg-gray-100 rounded-md"
-                  >
-                    {token.icon.startsWith("/") ||
-                    token.icon.startsWith("http") ? (
-                      <img
-                        src={token.icon}
-                        alt={token.code}
-                        className="w-5 h-5"
-                      />
-                    ) : (
-                      <span className="text-lg">{token.icon}</span>
-                    )}
-                    <span className="font-medium">{token.name}</span>
-                  </button>
-                ))
-              ) : (
-                <div className="p-2 text-gray-500">Loading tokens...</div>
-              )}
-            </PopoverContent>
-          </Popover>
+          <CompactSelector
+            items={availableTokens}
+            selectedCode={currentToken.code}
+            onChange={onTokenChange}
+            align="end"
+            loadingLabel="Loading tokens..."
+            buttonAriaLabel="Select token"
+            contentClassName="font-primary text-xs p-2"
+          />
         </div>
       </div>
     </div>

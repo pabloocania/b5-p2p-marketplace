@@ -87,10 +87,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex justify-center">
-      <div className="w-full bg-backgroundMain flex flex-col relative h-screen">
-        <TopBar activeComponent={activeComponent} />
+    <div className="min-h-screen flex justify-center">
+      <div className="w-full flex flex-col bg-secondary/10 relative h-screen">
         <main className="flex-1 overflow-y-auto pt-14 sm:pt-19 pb-20 sm:pb-24 md:pb-28 relative">
+          <TopBar activeComponent={activeComponent} />
           <TransactionStatus
             status={transaction.status}
             message={transaction.message}
@@ -98,7 +98,7 @@ export default function Home() {
             order={transaction.order}
             onClose={resetTransaction}
           />
-          <div className="w-full max-w-md mx-auto px-2 sm:px-4 flex flex-col">
+          <div className="w-full max-w-md mx-auto px-2 flex flex-col">
             <KioscoinOperationFlow activeComponent={activeComponent} />
             <div className="flex-1">{renderComponent()}</div>
           </div>
@@ -112,7 +112,7 @@ export default function Home() {
         </div>
 
         <div className="fixed bottom-0 w-full pb-8 sm:pb-10 pt-6 sm:pt-8">
-          <div className="relative px-2 sm:px-4">
+          <div className="relative px-2">
             <div className="absolute bottom-28 sm:bottom-32 left-2 sm:left-4">
               <Button
                 size="icon"
@@ -152,7 +152,7 @@ export default function Home() {
                       className="rounded-full px-3 sm:px-4 text-sm sm:text-base font-bold w-22 h-10 sm:w-28 sm:h-12 shadow-lg hover:bg-terciary/90 bg-white border-2 border-secondary text-primary"
                     >
                       <Plus className="h-4 w-4 sm:h-5 sm:w-5 pr-0.5 sm:pr-1" />
-                      <span className="transition-opacity duration-500 text-xs sm:text-sm">
+                      <span className="transition-opacity duration-500 text-xs font-secondary">
                         {t("create_order")}
                       </span>
                     </Button>

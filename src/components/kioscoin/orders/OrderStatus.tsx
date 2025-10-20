@@ -12,7 +12,7 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
           ? "bg-primary"
           : status !== "PENDING"
           ? "bg-primary"
-          : "bg-gray-300";
+          : "bg-white";
       case 2:
         return status === "WAITING_PAYMENT"
           ? "bg-primary"
@@ -22,7 +22,7 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
             status === "COMPLETED_BY_ADMIN" ||
             status === "RELEASED"
           ? "bg-primary"
-          : "bg-gray-300";
+          : "bg-lightYellow text-muted";
       case 3:
         return status === "ACTIVE"
           ? "bg-primary"
@@ -31,7 +31,7 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
             status === "COMPLETED_BY_ADMIN" ||
             status === "RELEASED"
           ? "bg-primary"
-          : "bg-gray-300";
+          : "bg-lightYellow  text-muted";
       case 4:
         return status === "FIAT_SENT"
           ? "bg-primary"
@@ -41,22 +41,22 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
           ? "bg-primary"
           : status === "CANCELLED"
           ? "bg-error"
-          : "bg-gray-300";
+          : "bg-lightYellow  text-muted";
       default:
-        return "bg-gray-300";
+        return "bg-lightYellow  text-muted";
     }
   };
 
   return (
-    <div className="flex w-full h-6 overflow-hidden rounded-t-lg shadow-sm">
+    <div className="flex w-full h-6 overflow-hidden rounded-t-lg shadow-sm font-secondary text-md">
       {[1, 2, 3, 4].map((stage) => (
         <div
           key={stage}
           className={`flex-1 relative ${getStageClass(
             stage
-          )} border-r border-white/20 last:border-r-0 transition-all duration-300`}
+          )} border-r border-secondary/20 last:border-r-0 transition-all duration-300`}
         >
-          <span className="absolute inset-0 flex items-center justify-center text-xs text-white font-bold">
+          <span className="absolute inset-0 flex items-center justify-center font-bold text-md text-secondary">
             {stage}
           </span>
         </div>

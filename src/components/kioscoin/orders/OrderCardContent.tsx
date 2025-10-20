@@ -143,7 +143,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   };
 
   return (
-    <CardContent className="pb-3 mt-2 font-secondary">
+    <CardContent className="pb-2 mt-2 font-secondary">
       <div className="rounded-lg space-y-1 px-2 bg-secondary bg-opacity-10 space-y-1 pt-1">
         {/* Order header */}
         <div className="flex justify-between items-center w-full text-xl font-bold">

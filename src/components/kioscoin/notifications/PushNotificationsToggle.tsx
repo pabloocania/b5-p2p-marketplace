@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { firebaseService } from "../../lib/FirebaseUnifiedService";
-import { p2pMarketAPIClient as client } from "../../lib/APIClients";
+import { p2pMarketAPIClient as client } from "@/lib/APIClients";
 import { useTranslation } from "react-i18next";
-import { useUserContext } from "./users/UserContext";
+import { useUserContext } from "@/components/kioscoin/users/UserContext";
+import { firebaseService } from "@/lib/FirebaseUnifiedService";
 
 interface PushNotificationsToggleProps {
   userId: string;
@@ -35,6 +35,7 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
         toast({
           title: "Notifications disabled",
           description: "You will no longer receive push notifications.",
+          className: "font-secondary",
         });
         return;
       }
@@ -44,6 +45,7 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
         toast({
           title: "Permission Denied",
           description: "Push notifications are disabled.",
+          className: "font-secondary",
         });
         return;
       }
@@ -59,13 +61,14 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
       toast({
         title: "Notifications enabled",
         description: "You will now receive push notifications.",
+        className: "font-secondary",
       });
     } catch (error) {
       console.error("Error handling push notifications:", error);
       toast({
         title: "Error",
         description: "Failed to enable push notifications. Please try again.",
-        variant: "destructive",
+        className: "font-secondary",
       });
       setIsSubscribed(false);
     }
@@ -122,11 +125,11 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
         id="push-notifications"
         checked={isSubscribed}
         onCheckedChange={handleToggle}
-        className="scale-90 sm:scale-100"
+        className="scale-90"
       />
       <Label
         htmlFor="push-notifications"
-        className="text-xs sm:text-sm font-secondary text-gray-700"
+        className="text-xs font-secondary text-dark"
       >
         {t("enable_push_notifications")}
       </Label>

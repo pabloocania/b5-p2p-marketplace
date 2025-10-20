@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { useTranslation } from "react-i18next";
-// import { cn } from "@/lib/utils";
+import { formatEventType } from "@/lib/utils";
 
 interface ChatInterfaceProps {
   userId: string | undefined;
@@ -82,19 +82,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const formatTimestamp = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
-  const formatEventType = (eventType: string) => {
-    switch (eventType) {
-      case "LOCKED":
-        return t("order_locked");
-      case "RELEASED":
-        return t("order_released");
-      case "FIAT_SENT":
-        return t("fiat_transferred");
-      default:
-        return eventType;
-    }
   };
 
   const hasOrderReleasedOrRefunded = useMemo(() => {

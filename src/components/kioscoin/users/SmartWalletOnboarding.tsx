@@ -81,9 +81,9 @@ export default function KioscoinOnboarding({
 
   return (
     <Dialog open onOpenChange={handleSkip}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto px-6 py-4">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto px-6 py-4 font-secondary">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-center text-primary">
+          <DialogTitle className="text-xl text-center text-primary font-primary">
             {t("kioskoin_onboarding_title")}
           </DialogTitle>
           <DialogDescription className="text-center text-sm">

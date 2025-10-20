@@ -14,7 +14,7 @@ import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { useUserContext } from "./UserContext";
 import { useTranslation } from "react-i18next";
-import PushNotificationsToggle from "../PushNotificationsToggle";
+import PushNotificationsToggle from "@/components/kioscoin/notifications/PushNotificationsToggle";
 import PaymentMethodsComponent from "../orders/create-orders/PaymentMethodsComponent";
 
 interface UserSettingsProps {
@@ -35,11 +35,12 @@ export default function UserSettings({ className }: UserSettingsProps) {
 
   useEffect(() => {
     const saved: PaymentMethod[] | undefined = user?.settings?.paymentMethods;
-    console.log("saved", saved);
-    if (saved && Array.isArray(saved) && saved.length > 0) {
+    if (Array.isArray(saved)) {
       setSelectedMethods(saved);
+    } else {
+      setSelectedMethods([]);
     }
-  }, [user?.id]);
+  }, [user?.id, user?.settings?.paymentMethods]);
 
   const isValid = useMemo(() => {
     return (
@@ -65,14 +66,16 @@ export default function UserSettings({ className }: UserSettingsProps) {
       });
 
       toast({
-        title: "Settings saved",
-        description: "Your payment method preferences were updated.",
+        title: t("settings_saved"),
+        className: "font-secondary",
       });
     } catch (e: any) {
+      // Ensure we never rethrow; always surface as toast
+      const status = e?.response?.status;
+      const message = t("settings_save_error");
       toast({
-        title: "Failed to save settings",
-        description: e?.message ?? "Unexpected error",
-        variant: "destructive",
+        title: message,
+        className: "font-secondary",
       });
     } finally {
       setIsSaving(false);
@@ -80,12 +83,12 @@ export default function UserSettings({ className }: UserSettingsProps) {
   };
 
   return (
-    <Card className={className}>
-      <CardContent className="p-3 space-y-3">
+    <Card className={`border-0 ${className}`}>
+      <CardContent className="p-4 space-y-3">
         <div className="flex items-center mb-1">
-          <h3 className="text-base font-semibold text-primary text-sm">
+          <p className="font-primary text-dark text-xs flex-grow">
             {t("preferences")}
-          </h3>
+          </p>
         </div>
 
         <PaymentMethodsComponent
@@ -100,9 +103,13 @@ export default function UserSettings({ className }: UserSettingsProps) {
 
         <div className="flex w-full">
           <Button
-            className="flex w-full text-white bg-secondary border border-secondary"
-            onClick={handleSave}
+            className="flex items-center w-full font-secondary font-bold border-secondary text-secondary text-sm sm:text-base py-2 px-2 hover:text-white hover:bg-secondary"
+            onClick={() => {
+              // Guard against any unhandled rejections in dev
+              handleSave().catch(() => {});
+            }}
             disabled={!isValid || isSaving}
+            variant="outline"
           >
             {isSaving ? t("saving") : t("save")}
           </Button>

@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import KioscoinConnectButton from "../KioscoinConnectButton";
 import UserWalletsComponent from "../UserWalletsComponent";
@@ -20,7 +19,6 @@ import { KioscoinUser } from "b5-api-client";
 import { useState, useEffect } from "react";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import { useWeb3Auth } from "@web3auth/modal/react";
-import { Info } from "lucide-react";
 import UserSettings from "../UserSettings";
 // Usando isotipo PNG en lugar del componente SVG
 
@@ -142,8 +140,8 @@ export const UserProfile = ({
   }
 
   return (
-    <Card className="w-full mb-2 sm:mb-4" variant="shadow">
-      <CardHeader className="pb-2 sm:pb-4">
+    <Card className="w-full">
+      <CardHeader className="pb-2">
         <CardTitle className="flex justify-center items-center align-center mt-1 sm:mt-2 w-full">
           <ProfileHeader user={user} />
         </CardTitle>
@@ -151,7 +149,7 @@ export const UserProfile = ({
 
       {/* UserBalance independiente debajo del ProfileHeader */}
       {isConnected && balances && (
-        <div className="px-4 pb-2">
+        <div className="flex space-y-1.5 p-3 pb-2 pt-2">
           <UserBalance
             balances={balances}
             selectedToken={selectedToken}
@@ -162,11 +160,9 @@ export const UserProfile = ({
         </div>
       )}
 
-      <Separator className="mt-1 sm:mt-2 mb-2 sm:mb-4" />
-      <CardContent className="space-y-2 sm:space-y-4">
-        <div className="w-full">{ConnectWalletButton()}</div>
+      <CardContent className="space-y-4 sm:space-y-4">
         {isConnecting && (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex space-y-1.5 p-3 pb-2 pt-2">
             <div className="flex items-center space-x-2">
               <Loader2 className="h-4 w-4 animate-spin text-yellow-600" />
               <span className="text-sm block">{t("loading_wallet")}</span>
@@ -175,19 +171,18 @@ export const UserProfile = ({
         )}
 
         {isConnected && (
-          <div className="w-full">
+          <div className="w-full flex space-y-1.5 pt-2">
             <UserWalletsComponent />
           </div>
         )}
 
-        {/* Botón "Read about Kioscoin" independiente - DEBAJO de UserWalletsComponent */}
         {isConnected && (
-          <div className="w-full">
+          <div className="w-full flex">
             <Button
               variant="outline"
               size="sm"
               onClick={handleShowOnboarding}
-              className="flex items-center w-full border-yellow-300 font-bold text-yellow-400 text-sm sm:text-base py-2 px-2 hover:bg-yellow-50"
+              className="flex items-center w-full border-secondary font-bold text-secondary text-sm sm:text-base hover:text-white hover:bg-secondary shadow-md rounded-lg"
             >
               <span className="text-sm sm:text-base font-secondary">
                 {t("read_about_kioscoin")}
@@ -195,7 +190,7 @@ export const UserProfile = ({
               <img
                 src="/icons/kioscoin-isotipo.png"
                 alt="Kioscoin"
-                className="h-8 w-8 ml-2"
+                className="h-8 w-8"
               />
             </Button>
           </div>
@@ -205,7 +200,7 @@ export const UserProfile = ({
         {showOnboarding && (
           <SmartWalletOnboarding onComplete={handleOnboardingComplete} />
         )}
-        <div className="w-full">
+        <div className="shadow-md border border-secondary/20 rounded-lg">
           <UserSettings />
         </div>
         {/* 
@@ -228,11 +223,11 @@ export const UserProfile = ({
         </div>
         */}
       </CardContent>
-      <CardFooter className="py-1 sm:py-2">
+      <CardFooter className="py-2">
         <Button
           onClick={onLogout}
           variant="default"
-          className="w-full text-white bg-primary text-sm sm:text-base py-2 sm:py-3"
+          className="w-full text-white font-secondary bg-primary text-sm sm:text-base py-2 sm:py-3"
         >
           <LogOut className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
           Log Out
