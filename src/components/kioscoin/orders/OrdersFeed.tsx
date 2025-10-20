@@ -245,13 +245,6 @@ export default function OrdersFeed({
       <ScrollableContainer>
         {filter === Filter.ALL || user ? (
           <>
-            <div className="mb-6">
-              <FilterBar
-                filters={filterState}
-                setFilters={setFilterState}
-                filterGroups={filterGroups || defaultFilterGroups}
-              />
-            </div>
             {selectedOrder ? (
               <OrderCard
                 orderDTO={selectedOrder}
@@ -259,17 +252,26 @@ export default function OrdersFeed({
                 onRefresh={refreshOrders}
               />
             ) : orders && orders.length > 0 ? (
-              <div>
-                {orders.map((order) => (
-                  <div key={order.id} className="mb-3 md:mb-7">
-                    <OrderCard
-                      orderDTO={order}
-                      onSelect={handleOrderSelect}
-                      onRefresh={refreshOrders}
-                    />
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="mb-2">
+                  <FilterBar
+                    filters={filterState}
+                    setFilters={setFilterState}
+                    filterGroups={filterGroups || defaultFilterGroups}
+                  />
+                </div>
+                <div className="space-y-2 p-3 bg-white rounded-lg border border-secondary/20 shadow-md">
+                  {orders.map((order) => (
+                    <div key={order.id}>
+                      <OrderCard
+                        orderDTO={order}
+                        onSelect={handleOrderSelect}
+                        onRefresh={refreshOrders}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="flex flex-col items-center h-full">
                 <div className="mb-5 text-dark font-bold font-secondary">

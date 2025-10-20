@@ -76,11 +76,7 @@ export const UserStats: React.FC<UserStatsProps> = ({
         <UserStatBadge value={rating} Icon={Star} color="text-yellow-500" />
       )}
       {timeMetrics && (
-        <UserStatBadge
-          value={timeMetrics}
-          Icon={Timer}
-          color="text-primary/80"
-        />
+        <UserStatBadge value={timeMetrics} Icon={Timer} color="text-primary" />
       )}
     </div>
   );

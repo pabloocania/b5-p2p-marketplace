@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { ClipboardIcon } from "lucide-react";
+import { Clipboard } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { IconButton } from "@/components/ui/IconButton";
 
 interface CopyIdButtonProps {
   orderId?: string;
@@ -19,23 +20,29 @@ const CopyIdButton: React.FC<CopyIdButtonProps> = ({ orderId }) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-0.5">
-      <div className="relative">
-        <button
-          onClick={handleCopyId}
-          className="flex flex-col items-center gap-2 w-full"
-        >
-          <ClipboardIcon className="w-5 h-5" style={{ color: "#fcce4c" }} />
-          <span className="text-xs font-medium text-center font-secondary text-gray-500">
-            {t("copy_id")}
-          </span>
-        </button>
-        {showCopied && (
-          <div className="absolute -top-2 -right-2 z-50 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-lg animate-pulse">
-            {t("copied")}
-          </div>
-        )}
-      </div>
+    <div className="flex flex-col items-center relative w-full">
+      {/* <IconButton
+        icon={ClipboardIcon}
+        className="font-secondary border-primary/50 bg-white text-primary hover:bg-secondary/20 w-full justify-center"
+        label={t("copy_id")}
+        size="sm"
+        variant="outline"
+        onClick={handleCopyId}
+      /> */}
+      <IconButton
+        className="p-2 font-secondary border-primary/50 bg-white text-primary hover:bg-secondary/20 w-full justify-center"
+        variant="outline"
+        size="sm"
+        onClick={handleCopyId}
+        icon={Clipboard}
+        aria-label="copy"
+        label={t("copy_id")}
+      />
+      {showCopied && (
+        <div className="absolute font-secondary -top-6 left-1/2 transform -translate-x-1/2 bg-secondary text-white text-xs px-1 py-0.5 rounded shadow-lg z-10">
+          {t("copied")}
+        </div>
+      )}
     </div>
   );
 };

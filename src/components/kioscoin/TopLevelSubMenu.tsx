@@ -23,7 +23,7 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
   const commonButtonClasses = "flex-1";
   const activeButtonClasses = "bg-primary text-white shadow-lg";
   const inactiveBaseClasses =
-    "hover:bg-primary/90 text-dark text-muted-foreground bg-secondary/10 border-2 border-primary/10";
+    "hover:bg-primary/80 hover:text-lightYellow text-dark text-muted-foreground bg-secondary/10 border-2 border-primary/10";
   const inactiveVariantClasses: Record<Filter, string> = {
     [Filter.ALL]: "bg-secondary/10",
     [Filter.PENDING]: "bg-secondary/10",
@@ -38,10 +38,10 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
     }`;
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full space-y-2">
       {user && (
-        <div className="sticky w-full top-0 z-50">
-          <div className="flex justify-center font-secondary space-x-2 py-2 pb-4 w-full">
+        <div className="sticky w-full top-0 z-50 flex bg-white rounded-lg p-3 w-full gap-4 shadow-md border border-secondary/20">
+          <div className="flex justify-center font-secondary space-x-2 py-2 pb-2 w-full">
             <Button
               className={getButtonClasses(Filter.PENDING)}
               onClick={() => setActiveSubFilter(Filter.PENDING)}

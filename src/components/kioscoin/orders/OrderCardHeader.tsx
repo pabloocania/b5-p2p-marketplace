@@ -56,7 +56,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
   }
 
   return (
-    <CardHeader className="pb-3">
+    <CardHeader className="">
       <CardTitle className="flex w-full items-center">
         {/* Left Side */}
         <div className="flex space-x-2 w-full h-full">

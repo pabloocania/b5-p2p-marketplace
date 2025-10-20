@@ -83,13 +83,13 @@ export function LandingPage() {
             {t("slogan_suffix")}
           </p>
         </div>
-        <div className="flex justify-center gap-3 font-primary">
+        <div className="flex justify-center gap-3 font-primary w-full max-w-md mx-auto">
           <div className="border border-purple-200 bg-white/80 rounded-xl p-2 sm:p-3 text-center min-w-[110px] sm:min-w-[130px] shadow-sm hover:shadow-md transition-all">
             <div className="flex justify-center mb-1">
               <Users className="h-6 w-6 text-secondary" />
             </div>
             <div className="font-secondary font-semibold text-primary text-xs">
-              Mercado P2P
+              {t("p2p_market")}
             </div>
           </div>
 
@@ -101,7 +101,7 @@ export function LandingPage() {
               $2M+
             </div> */}
             <div className="font-secondary font-semibold text-primary text-xs">
-              Operaciones seguras
+              {t("safe_operations")}
             </div>
           </div>
 
@@ -113,13 +113,13 @@ export function LandingPage() {
               99.9%
             </div> */}
             <div className="font-secondary font-semibold text-primary text-xs">
-              La mejor cotización
+              {t("best_rate")}
             </div>
           </div>
         </div>
         {/* Auth Section - Compact size */}
-        <div className="flex-1 max-w-lg mx-auto px-4">
-          <div className="bg-white rounded-xl shadow-lg p-4 font-secondary transform transition-transform duration-200 mb-10">
+        <div className="w-full max-w-md mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-4 font-secondary transform transition-transform duration-200">
             {/* Toggle Buttons - Compact */}
             <div className="flex bg-gray-100 rounded-lg p-1 mb-3">
               <button

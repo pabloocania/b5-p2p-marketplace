@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { IconButton } from "@/components/ui/IconButton";
 
 import { Order } from "b5-api-client";
 import { p2pMarketAPIClient as client } from "@/lib/APIClients";
@@ -99,23 +100,25 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
   if (alreadyDisputed) {
     return (
       <>
-        <div className="flex flex-col items-center gap-0.5">
-          <button
+        <div className="flex flex-col items-center w-full">
+          <IconButton
+            icon={AlertCircle}
+            iconClassName="font-secondary border-primary/50 bg-white text-primary hover:bg-secondary/20"
+            label={t("order_disputed")}
+            variant="outline"
+            className="w-full justify-center"
+            size="sm"
             onClick={() => setOpen(true)}
-            className="flex flex-col items-center gap-2 w-full"
-          >
-            <AlertCircle className="w-5 h-5 text-red-500" />
-            <span className="text-xs font-medium text-red-600 text-center font-secondary">
-              {t("order_disputed")}
-            </span>
-          </button>
+          />
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent>
+          <DialogContent className="font-secondary">
             <DialogHeader>
-              <DialogTitle>{t("dispute_already_title")}</DialogTitle>
+              <DialogTitle className="font-secondary">
+                {t("dispute_already_title")}
+              </DialogTitle>
             </DialogHeader>
-            <div className="text-red-600 text-center py-4">
+            <div className="text-red-600 text-center py-4 font-secondary">
               {t("dispute_already_message")}
             </div>
             <DialogFooter className="flex justify-end gap-2 mt-4">
@@ -135,20 +138,19 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
 
   return (
     <>
-      <div className="flex flex-col items-center gap-0.5">
-        <button
+      <div className="flex flex-col items-center w-full">
+        <IconButton
+          icon={AlertCircle}
+          className="font-secondary border-primary/50 bg-white text-primary hover:bg-secondary/20 w-full justify-center"
+          label={t("dispute_order")}
+          variant="outline"
+          size="sm"
           onClick={() => setOpen(true)}
-          className="flex flex-col items-center gap-2 w-full"
-        >
-          <AlertCircle className="w-5 h-5 text-red-500" />
-          <span className="text-xs font-medium text-gray-500 text-center font-secondary">
-            {t("dispute_order")}
-          </span>
-        </button>
+        />
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="font-secondary">
           <DialogHeader>
             <DialogTitle>
               {apiResult
@@ -161,7 +163,7 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
 
           {loading && (
             <div className="flex flex-col items-center justify-center py-6">
-              <Loader2 className="animate-spin w-8 h-8 mb-2 text-red-600" />
+              <Loader2 className="animate-spin w-8 h-8 mb-2 text-primary" />
               <span>{t("sending")}</span>
             </div>
           )}
@@ -204,16 +206,18 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
             ) : (
               <>
                 <Button
-                  variant="default"
+                  variant="outline"
                   onClick={handleClose}
                   disabled={loading}
+                  className="font-secondary border-primary/50 bg-white text-primary hover:bg-secondary/20"
                 >
                   {t("dispute_button_no")}
                 </Button>
                 <Button
-                  variant="destructive"
+                  variant="outline"
                   onClick={onConfirmDispute}
                   disabled={loading}
+                  className="font-secondary border-primary/50 bg-white text-primary hover:bg-secondary/20"
                 >
                   {loading ? t("sending") : t("dispute_button_yes")}
                 </Button>

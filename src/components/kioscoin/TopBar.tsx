@@ -49,7 +49,7 @@ export function TopBar({ activeComponent }: TopBarProps) {
 
             {/* Título centrado respecto a todo el contenedor */}
             <div className="absolute left-1/2 -translate-x-1/2">
-              <span className="text-dark text-xl sm:text-2xl font-bold font-primary">
+              <span className="text-dark text-xl sm:text-2xl text-secondary">
                 Kioscoin
               </span>
             </div>
@@ -59,9 +59,9 @@ export function TopBar({ activeComponent }: TopBarProps) {
                   variant="ghost"
                   size="sm"
                   onClick={handleNotificationClick}
-                  className="p-2 hover:bg-gray-100 w-12 sm:w-14"
+                  className="p-2 text-secondary hover:text-primary w-12 sm:w-14"
                 >
-                  <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                  <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-secondary" />
                 </Button>
                 {unreadCount > 0 && (
                   <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
@@ -77,7 +77,7 @@ export function TopBar({ activeComponent }: TopBarProps) {
   };
   return (
     <>
-      <div className="fixed top-0 z-50 w-full bg-secondary/10 shadow-md">
+      <div className="fixed top-0 z-50 w-full bg-dark shadow-lg">
         <div className="relative flex items-center justify-between max-w-md mx-auto px-2">
           {renderContent()}
         </div>
