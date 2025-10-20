@@ -159,7 +159,7 @@ i18n.use(initReactI18next).init({
         smart_wallet_benefits:
           "Send funds to your Smart Wallet and you can buy and sell crypto without paying gas fees.",
         learn_about_smart_wallet: "Learn about your wallets",
-        read_about_kioscoin: "Read about Kioscoin",
+        read_about_kioscoin: "Learn to use Kioscoin",
         rate_must_be_positive: "Exchange rate must be greater than 0",
         loading_rate: "Loading rate...",
         unsupported_token: "You must enter a rate for this token",
@@ -262,13 +262,21 @@ i18n.use(initReactI18next).init({
         order_refunded: "Order refunded",
         filters: "Filters",
         all: "All",
+        your_address: "Your wallet address",
+        copy: "Copy",
+        send_button: "Send",
+        failed_to_save_settings: "Failed to save settings",
+        settings_saved: "Settings saved",
+        settings_save_error: "Failed to save settings",
+        safe_operations: "Safe operations",
+        best_rate: "The best rate"
       },
     },
     es: {
       translation: {
         welcome: "Bienvenido",
         title: "Beefive - Mercado stablecoins descentralizado",
-        p2p_market: "Mercado",
+        p2p_market: "Mercado P2P",
         my_orders: "Mis órdenes",
         my_account: "Mi cuenta",
         pending: "Abiertas",
@@ -390,7 +398,7 @@ i18n.use(initReactI18next).init({
         sending: "Enviando transacción",
         sending_tx_blockchain:
           "Tu transacción está siendo enviada a la blockchain. Espera su confirmación",
-        view_history: "Ver historial",
+        view_history: "Historial",
         copy_id: "Copiar ID",
         copied: "¡Copiado!",
         suggested_rate: "Tipo de cambio sugerido",
@@ -426,7 +434,7 @@ i18n.use(initReactI18next).init({
         smart_wallet_benefits:
           "Envía fondos a tu Smart Wallet y podrás comprar y vender cripto sin pagar tarifas de gas.",
         learn_about_smart_wallet: "Aprende sobre tus wallets",
-        read_about_kioscoin: "Lee sobre Kioscoin",
+        read_about_kioscoin: "Aprende a usar Kioscoin",
         rate_must_be_positive: "El tipo de cambio debe ser mayor a 0",
         loading_rate: "Cargando tipo de cambio...",
         unsupported_token: "Debes ingresar un tipo de cambio para este token",
@@ -479,7 +487,7 @@ i18n.use(initReactI18next).init({
         slogan_template:
           "{{verb}} dolar cripto usando tu moneda local!",
         slogan_suffix: " dolar cripto usando tu moneda local!",
-        secure_escrow: "Transacciones Seguras",
+        secure_escrow: "Intercambio seguro",
         instant_trading: "Trading Instantáneo",
         no_gas_fees: "Sin Gas Fees",
         active_users: "Usuarios Activos",
@@ -500,7 +508,7 @@ i18n.use(initReactI18next).init({
         choose_token: "Elige la moneda a utilizar",
         choose_network: "Elije la red",
         custom_rate: "Tasa de intercambio",
-        dispute_order: "Disputar orden",
+        dispute_order: "Disputar",
         order_disputed: "Orden en disputa",
         dispute_confirm_title: "¿Estás seguro?",
         dispute_confirm_message:
@@ -532,6 +540,13 @@ i18n.use(initReactI18next).init({
         notifications: "Notificaciones",
         filters: "Filtros",
         all: "Todos",
+        your_address: "Dirección de tu wallet",
+        copy: "Copiar",
+        send_button: "Enviar",
+        settings_saved: "Configuración guardada",
+        settings_save_error: "Se produjo un error al guardar la configuración",
+        safe_operations: "Operaciones seguras",
+        best_rate: "La mejor cotización"
       },
     },
   },

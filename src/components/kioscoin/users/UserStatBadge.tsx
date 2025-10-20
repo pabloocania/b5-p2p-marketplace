@@ -15,12 +15,12 @@ const UserStatBadge: React.FC<UserStatBadgeProps> = ({
 }) => {
   return (
     <span
-      className={`inline-flex items-center space-x-1.5 bg-white rounded-md px-1.5 py-0.5 border border-primary/20 text-[11px] ${
+      className={`inline-flex items-center space-x-1 bg-white rounded-md px-2 py-1 border border-primary text-xs ${
         color ?? "text-primary"
       }`}
     >
       <Icon className="w-3.5 h-3.5" />
-      <span className="font-medium leading-none">{value}</span>
+      <span className="font-bold leading-none">{value}</span>
     </span>
   );
 };

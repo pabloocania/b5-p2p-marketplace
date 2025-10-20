@@ -1,19 +1,13 @@
 "use client";
 
-import { RefreshCw, ChevronRight, Info, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TokenBalance, TokenTransfer } from "@/components/web3/types";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
-import TokenBalanceSelector from "@/components/kioscoin/TokenBalanceSelector";
 import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
 import { useTransactionStatusChecker } from "@/components/web3/Transactions/useTransactionStatusChecker";
 import { useTransactionHandler } from "@/components/web3/Transfers/useTransactionsHandler";
 import Address from "@/components/web3/Transfers/Address";
-// SmartWalletOnboarding movido a UserProfile
-import { Button } from "@/components/ui/button";
-import UserBalance from "./UserBalance";
 
 /**
  * Immutable class representing the state of the transfers component
@@ -227,14 +221,10 @@ export default function UserWalletsComponent() {
 
   return (
     <>
-      {/* SmartWalletOnboarding movido a UserProfile */}
-
-      <div className="flex flex-col items-center w-full rounded-lg bg-white space-y-2 sm:space-y-3 py-1">
-        {/* Botón "Aprende sobre tus wallets" movido a UserProfile */}
-
-        <div className="w-full px-2 bg-secondary bg-opacity-10 rounded-lg py-2 space-y-1.5 sm:space-y-2">
+      <div className="flex flex-col items-center w-full rounded-lg bg-white space-y-2 shadow-md border border-secondary/20 p-4">
+        <div className="w-full">
           {swAddress && (
-            <div className="space-y-1">
+            <div>
               {/* <p className="font-bold text-primary text-sm">{t("address")}</p> */}
               <Address address={swAddress} />
             </div>

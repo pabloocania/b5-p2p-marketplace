@@ -11,24 +11,23 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
   const [selectedAvatar, setSelectedAvatar] = useState("M");
 
   return (
-    <div className="flex items-start bg-primary/10 rounded-lg p-4 w-full gap-4">
-      {/* Avatar cuadrado que ocupa toda la altura */}
-      <AvatarSelector 
-        selectedAvatar={selectedAvatar} 
-        onAvatarChange={setSelectedAvatar} 
+    <div className="flex items-start bg-primary/10 rounded-lg p-3 w-full gap-4 shadow-md border border-primary/10">
+      <AvatarSelector
+        selectedAvatar={selectedAvatar}
+        onAvatarChange={setSelectedAvatar}
       />
 
       {/* Contenido vertical con altura controlada */}
       <div className="flex-grow flex flex-col justify-between h-16">
         {/* Username arriba - alineado con margen superior del avatar */}
         <div className="flex items-start">
-          <span className="text-lg font-medium text-primary leading-tight">
+          <span className="text-xl text-dark font-primary">
             {user.username}
           </span>
         </div>
 
         {/* Stats abajo - alineados con línea inferior del avatar */}
-        <div className="flex items-end">
+        <div className="flex items-end font-secondary">
           <UserStats
             rating={user.totalRating ?? "0"}
             transactionCount={Number(user.tradesCompleted ?? "0")}

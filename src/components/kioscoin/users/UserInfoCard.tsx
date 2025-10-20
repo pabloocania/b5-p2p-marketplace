@@ -8,14 +8,14 @@ interface UserInfoCardProps {
 
 export const UserInfoCard = ({ user, order }: UserInfoCardProps) => {
   return (
-    <div className="flex flex-row flex-wrap items-center gap-x-1.5 gap-y-0.5 bg-primary/10 rounded-md p-1 w-full">
-      <span className="font-medium text-sm text-primary shrink-0">
+    <div className="flex flex-row flex-wrap items-center bg-primary/10 rounded-md space-y-3 p-3">
+      <span className="text-lg text-dark font-primary">
         {user?.username ||
           (order?.type === "SELL"
             ? "@" + order?.sellerUsername
             : "@" + order?.buyerUsername)}
       </span>
-      <div className="flex-grow">
+      <div className="flex-grow items-end font-secondary">
         {(user && (
           <UserStats
             rating={user.totalRating ?? "0"}

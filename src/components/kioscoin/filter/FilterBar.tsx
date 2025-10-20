@@ -36,12 +36,13 @@ export default function FilterBar({
   // Centralized classes for styling (collapsed and expanded)
   const classes = {
     section: "mb-1 font-secondary",
-    panel: "bg-secondary/20 shadow-sm font-secondary px-1 py-2 rounded-lg",
+    panel:
+      "bg-secondary/20 shadow-sm font-secondary px-1 py-2 rounded-lg bg-white border border-secondary/20 shadow-md",
     grid: "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1",
     collapsed: {
       row: "flex items-center gap-1",
       iconBox:
-        "flex items-center justify-center w-8 h-8 rounded-md bg-white text-primary",
+        "w-8 h-8 flex items-center justify-center rounded-md bg-white text-primary cursor-pointer",
       badgesRow: "flex items-center gap-1 overflow-x-auto scrollbar-hide",
       label: "text-sm font-medium text-dark ml-1",
     },
@@ -50,7 +51,7 @@ export default function FilterBar({
       headerLeft: "flex items-center ml-2 gap-2 text-primary",
       closeBtn:
         "w-8 h-8 flex items-center justify-center rounded-md bg-white text-primary",
-      grid: "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1 mt-1",
+      grid: "grid sm:grid-cols-4 md:grid-cols-5 gap-1 mt-1",
     },
   } as const;
 

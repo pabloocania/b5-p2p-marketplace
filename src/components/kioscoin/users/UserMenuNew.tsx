@@ -24,40 +24,6 @@ const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
   const { connectModalOpen } = useConnectModal();
   const [activeTab, setActiveTab] = useState("email");
 
-  // useEffect(() => {
-  //   async function fetchUsers() {
-  //     try {
-  //       const host =
-  //         process.env.NEXT_PUBLIC_KIOSCOIN_API_URL ??
-  //         "https://bolsillo-argento-586dfd80364d.herokuapp.com";
-  //       const response = await fetch(host + "/api/users");
-  //       const data = await response.json();
-  //       const users = data.users.map(
-  //         (user: KioscoinUser): KioscoinUser => ({
-  //           id: user.id,
-  //           username: user.username,
-  //           lastRating: user.lastRating ?? "0",
-  //           totalRating: user.totalRating ?? "0",
-  //           tradesCompleted: user.tradesCompleted ?? 0,
-  //           totalReviews: user.totalReviews ?? 0,
-  //           volumeTraded: user.volumeTraded ?? 0,
-  //           admin: user.admin ?? false,
-  //           banned: user.banned ?? false,
-  //           showUsername: user.showUsername ?? true,
-  //           showVolumeTraded: user.showVolumeTraded ?? true,
-  //           disputes: user.disputes ?? 0,
-  //           reviews: user.reviews ?? [],
-  //         })
-  //       );
-  //       setMockUsers(users);
-  //     } catch (error) {
-  //       console.error("Failed to fetch users:", error);
-  //     }
-  //   }
-
-  //   fetchUsers();
-  // }, []);
-
   useEffect(() => {
     if (isConnected) {
       setIsConnecting(false);
