@@ -44,14 +44,14 @@ export default function FilterBar({
       iconBox:
         "w-8 h-8 flex items-center justify-center rounded-md bg-white text-primary cursor-pointer",
       badgesRow: "flex items-center gap-1 overflow-x-auto scrollbar-hide",
-      label: "text-sm font-medium text-dark ml-1",
+      label: "text-xs text-primary",
     },
     expanded: {
       header: "flex items-center justify-between",
       headerLeft: "flex items-center ml-2 gap-2 text-primary",
       closeBtn:
         "w-8 h-8 flex items-center justify-center rounded-md bg-white text-primary",
-      grid: "grid sm:grid-cols-4 md:grid-cols-5 gap-1 mt-1",
+      grid: "grid sm:grid-cols-4 md:grid-cols-5 gap-1",
     },
   } as const;
 

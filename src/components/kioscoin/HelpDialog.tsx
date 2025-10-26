@@ -19,7 +19,7 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-6 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-md p-6 max-h-[90vh] overflow-y-auto font-secondary">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-primary mb-1">
             {t("help_and_tutorials")}

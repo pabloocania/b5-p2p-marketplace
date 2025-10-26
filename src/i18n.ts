@@ -269,7 +269,14 @@ i18n.use(initReactI18next).init({
         settings_saved: "Settings saved",
         settings_save_error: "Failed to save settings",
         safe_operations: "Safe operations",
-        best_rate: "The best rate"
+        best_rate: "The best rate",
+        notifications_disabled: "Notifications disabled",
+        notifications_disabled_description: "You will no longer receive push notifications.",
+        permission_denied: "Permission denied",
+        push_notifications_disabled_description: "Push notifications are disabled.",
+        notifications_enabled: "Notifications enabled",
+        notifications_enabled_description: "You will now receive push notifications.",
+        failed_to_enable_push_notifications_description: "Failed to enable push notifications. Please try again."
       },
     },
     es: {
@@ -457,12 +464,12 @@ i18n.use(initReactI18next).init({
         sell_now: "Vender ahora",
         on: "en",
         pay: "Debes pagar",
-        help_and_tutorials: "Cómo funciona Kioscoin",
+        help_and_tutorials: "Cómo funciona",
         help_description:
-          "Aprendé cómo usar Kioscoin para comprar y vender cripto con personas reales de forma segura.",
+          "Aprendé cómo usar Kioscoin para comprar y vender dolar digital con personas reales de forma segura.",
         getting_started: "Primeros pasos",
         getting_started_description:
-          "1. Creá tu cuenta y verificá tu wallet.\n2. Elegí tu moneda local y tu stablecoin preferida.\n3. Empezá a comprar o vender usando la lista de órdenes o publicando una propia.",
+          "1. Creá tu cuenta y verificala.\n2. Enviá fondos a tu wallet o compra dolar digital desde el mercado, creando una orden, o a traves del banner superior.\n3. Seguí las instrucciones para realizar una operación segura y en pocos minutos",
         how_to_trade: "Cómo hacer una operación",
         how_to_trade_description:
           "1. Elegí una oferta o creá la tuya.\n2. Acordá los detalles de pago con la otra persona.\n3. Hacé el pago o esperá recibirlo.\n4. Confirmá y liberá los fondos (o esperá recibirlos si estás comprando).",
@@ -538,7 +545,7 @@ i18n.use(initReactI18next).init({
         suggested: "Cambio sugerido",
         select_token_and_blockchain: "Selecciona la moneda y la blockchain",
         notifications: "Notificaciones",
-        filters: "Filtros",
+        filters: "Más filtros",
         all: "Todos",
         your_address: "Dirección de tu wallet",
         copy: "Copiar",
@@ -546,7 +553,14 @@ i18n.use(initReactI18next).init({
         settings_saved: "Configuración guardada",
         settings_save_error: "Se produjo un error al guardar la configuración",
         safe_operations: "Operaciones seguras",
-        best_rate: "La mejor cotización"
+        best_rate: "La mejor cotización",
+        notifications_disabled: "Notificaciones desactivadas",
+        notifications_disabled_description: "No recibirás más notificaciones.",
+        permission_denied: "Permiso denegado",
+        push_notifications_disabled_description: "Las notificaciones push están desactivadas.",
+        notifications_enabled: "Notificaciones activadas",
+        notifications_enabled_description: "Ahora recibirás notificaciones.",
+        failed_to_enable_push_notifications_description: "Se produjo un error al activar las notificaciones. Por favor, intente nuevamente."
       },
     },
   },

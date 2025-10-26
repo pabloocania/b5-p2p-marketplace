@@ -46,8 +46,11 @@ const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[80vh]">
-      <Card className="w-full max-w-md border-secondary/50" variant="border">
+    <div className="flex items-center justify-center min-h-[80vh] border border-secondary/10">
+      <Card
+        className="w-full max-w-md border border-secondary/50"
+        variant="border"
+      >
         <CardHeader></CardHeader>
         <CardContent className="py-2">
           <Tabs

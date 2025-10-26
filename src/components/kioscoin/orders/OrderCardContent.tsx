@@ -2,25 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { CardContent } from "@/components/ui/card";
 
-// Estilos para la animación de titileo del botón Chat
-const chatGlowStyles = `
-  @keyframes chatGlow {
-    0%, 100% {
-      box-shadow: 
-        0 0 15px rgba(252, 206, 76, 0.4),
-        0 0 30px rgba(139, 95, 220, 0.3),
-        0 0 45px rgba(158, 140, 190, 0.2),
-        inset 0 0 15px rgba(252, 206, 76, 0.1);
-    }
-    50% {
-      box-shadow: 
-        0 0 25px rgba(252, 206, 76, 0.8),
-        0 0 50px rgba(139, 95, 220, 0.6),
-        0 0 75px rgba(158, 140, 190, 0.4),
-        inset 0 0 25px rgba(252, 206, 76, 0.3);
-    }
-  }
-`;
+// Minimal chat button – removed glow/animations
 import {
   KioscoinUser,
   Order,
@@ -80,16 +62,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   setWalletAddress,
   onPaymentMethodsChange,
 }) => {
-  // Agregar estilos de animación al head
-  useEffect(() => {
-    const styleElement = document.createElement("style");
-    styleElement.textContent = chatGlowStyles;
-    document.head.appendChild(styleElement);
-
-    return () => {
-      document.head.removeChild(styleElement);
-    };
-  }, []);
+  // No animated styles for chat button
   const { t } = useTranslation();
   const [clipboardSupported, setClipboardSupported] = useState(false);
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
@@ -102,9 +75,11 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   }, []);
 
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [hasUnreadMessage, setHasUnreadMessage] = useState(false);
 
   const handleChatIconClick = () => {
     setIsChatOpen(true);
+    setHasUnreadMessage(false);
   };
 
   // Cleanup function to handle WebSocket disconnection
@@ -168,52 +143,33 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
                 open={isChatOpen}
                 onOpenChange={(open) => {
                   setIsChatOpen(open);
-                  if (!open) handleChatClose(); // Call cleanup when sheet is closed
+                  if (!open) handleChatClose();
                 }}
               >
                 <SheetTrigger asChild>
                   <Button
                     onClick={handleChatIconClick}
-                    className="relative p-3 rounded-xl overflow-hidden z-5"
-                    style={{
-                      background: "#8b5fdc",
-                      border: "2px solid #fcce4c",
-                      boxShadow: `
-                        0 0 15px rgba(252, 206, 76, 0.4),
-                        0 0 30px rgba(139, 95, 220, 0.3),
-                        0 0 45px rgba(158, 140, 190, 0.2),
-                        inset 0 0 15px rgba(252, 206, 76, 0.1)
-                      `,
-                      // animation: "chatGlow 2s ease-in-out infinite",
-                    }}
+                    className={`p-2 rounded-md bg-white text-primary border ${
+                      hasUnreadMessage
+                        ? "border-primary ring-2 ring-primary animate-pulse"
+                        : "border-primary"
+                    }`}
                   >
-                    {/* Contenido del botón */}
-                    <div className="relative z-5 flex items-center gap-2">
-                      <MessageCircle
-                        size={20}
-                        className="text-white drop-shadow-lg"
-                        style={{
-                          filter: "drop-shadow(0 0 6px #fcce4c)",
-                          animation:
-                            "brandIconGlow 3s ease-in-out infinite alternate",
-                        }}
-                      />
-                      <span
-                        className="font-semibold text-white tracking-wide text-sm"
-                        style={{
-                          textShadow: "0 0 8px #fcce4c, 0 0 16px #efb810",
-                          animation:
-                            "brandTextGlow 3s ease-in-out infinite alternate",
-                        }}
-                      >
-                        Chat
-                      </span>
+                    <div className="flex items-center gap-2">
+                      <MessageCircle size={18} />
+                      <span className="text-sm">Chat</span>
                     </div>
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="bottom" className="h-[75vh]" closeText="">
                   <SheetTitle></SheetTitle>
-                  <ChatInterface order={order} userId={user?.id} />
+                  <ChatInterface
+                    order={order}
+                    userId={user?.id}
+                    onIncomingMessage={() => {
+                      if (!isChatOpen) setHasUnreadMessage(true);
+                    }}
+                  />
                 </SheetContent>
               </Sheet>
             </div>

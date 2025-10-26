@@ -15,11 +15,13 @@ import { formatEventType } from "@/lib/utils";
 interface ChatInterfaceProps {
   userId: string | undefined;
   order: Order; // Add Order to props
+  onIncomingMessage?: (message: ChatMessage) => void;
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   userId,
   order,
+  onIncomingMessage,
 }) => {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -43,6 +45,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         userId,
         (message) => {
           setMessages((prevMessages) => [...prevMessages, message]);
+          if (message.sender !== userId) {
+            onIncomingMessage?.(message);
+          }
         }
       );
 
@@ -54,7 +59,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         setMessages([]); // Clear messages when the chat is closed
       };
     }
-  }, [order.chatId, userId]);
+  }, [order.chatId, userId, onIncomingMessage]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,11 +187,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder={t("write_message")}
-          className="flex-1 border border-terciary"
+          className="flex-1 border border-terciary font-secondary"
           disabled={hasOrderReleasedOrRefunded}
         />
         <Button
-          className="border-opacity-100 bg-white text-terciary border border-terciary"
+          className="border-opacity-100 bg-white text-secondary border border-secondary"
           type="submit"
           size="icon"
           disabled={!newMessage.trim() || hasOrderReleasedOrRefunded}

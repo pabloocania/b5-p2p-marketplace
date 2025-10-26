@@ -23,6 +23,9 @@ export default function PaymentMethodsComponent({
   const [entityToAlias, setEntityToAlias] = useState<Record<string, string>>(
     {}
   );
+  const [expandedEntities, setExpandedEntities] = useState<
+    Record<string, boolean>
+  >({});
 
   useEffect(() => {
     const next: Record<string, string> = {};
@@ -36,11 +39,10 @@ export default function PaymentMethodsComponent({
   const isSelected = (method: PaymentMethod) =>
     selectedMethods.some((m) => m.entity === method.entity);
 
-  const toggleMethod = (method: PaymentMethod) => {
-    if (isSelected(method)) {
-      onChange(selectedMethods.filter((m) => m.entity !== method.entity));
-    } else {
-      const alias = entityToAlias[method.entity ?? ""] ?? "";
+  const handleRowClick = (method: PaymentMethod) => {
+    const entity = method.entity ?? "";
+    if (!isSelected(method)) {
+      const alias = entityToAlias[entity] ?? "";
       onChange([
         ...selectedMethods,
         {
@@ -49,7 +51,11 @@ export default function PaymentMethodsComponent({
           alias,
         } as PaymentMethod,
       ]);
+      setExpandedEntities((prev) => ({ ...prev, [entity]: true }));
+      return;
     }
+    // Already selected: just toggle expansion
+    setExpandedEntities((prev) => ({ ...prev, [entity]: !prev[entity] }));
   };
 
   const handleAliasChange = (entity: string, alias: string) => {
@@ -112,7 +118,7 @@ export default function PaymentMethodsComponent({
                         ? "border border-secondary bg-secondary/10"
                         : "border-primary/80"
                     }`}
-                    onClick={() => toggleMethod(method)}
+                    onClick={() => handleRowClick(method)}
                   >
                     <span className="font-medium text-xs">{method.entity}</span>
                     <span className="ml-auto text-xs text-dark">
@@ -122,34 +128,38 @@ export default function PaymentMethodsComponent({
                     </span>
                   </button>
 
-                  {!readOnly && selected && (
-                    <div className="flex gap-2 px-1 w-full">
-                      <div className="w-full pl-2 border-l-2 border-secondary/40 rounded-xs">
-                        <Input
-                          type="text"
-                          name="alias"
-                          value={
-                            entityToAlias[method.entity ?? ""] ??
-                            selectedData?.alias ??
-                            ""
-                          }
-                          placeholder={
-                            (entityToAlias[method.entity ?? ""] ?? "").trim() ||
-                            selectedData?.alias ||
-                            ""
-                          }
-                          onChange={(e) =>
-                            handleAliasChange(
-                              method.entity ?? "",
-                              e.target.value
-                            )
-                          }
-                          onBlur={() => handleAliasBlur(method.entity ?? "")}
-                          className="text-sm h-8 border border-primary/40"
-                        />
+                  {!readOnly &&
+                    selected &&
+                    expandedEntities[method.entity ?? ""] && (
+                      <div className="flex gap-2 px-1 w-full">
+                        <div className="w-full pl-2 border-l-2 border-secondary/40 rounded-xs">
+                          <Input
+                            type="text"
+                            name="alias"
+                            value={
+                              entityToAlias[method.entity ?? ""] ??
+                              selectedData?.alias ??
+                              ""
+                            }
+                            placeholder={
+                              (
+                                entityToAlias[method.entity ?? ""] ?? ""
+                              ).trim() ||
+                              selectedData?.alias ||
+                              ""
+                            }
+                            onChange={(e) =>
+                              handleAliasChange(
+                                method.entity ?? "",
+                                e.target.value
+                              )
+                            }
+                            onBlur={() => handleAliasBlur(method.entity ?? "")}
+                            className="text-sm h-8 border border-primary/40"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               );
             })}

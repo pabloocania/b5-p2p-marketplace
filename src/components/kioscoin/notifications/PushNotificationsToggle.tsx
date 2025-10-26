@@ -33,8 +33,8 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
         // Unsubscribe logic (if needed)
         setIsSubscribed(false);
         toast({
-          title: "Notifications disabled",
-          description: "You will no longer receive push notifications.",
+          title: t("notifications_disabled"),
+          description: t("notifications_disabled_description"),
           className: "font-secondary",
         });
         return;
@@ -43,8 +43,8 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
         toast({
-          title: "Permission Denied",
-          description: "Push notifications are disabled.",
+          title: t("permission_denied"),
+          description: t("push_notifications_disabled_description"),
           className: "font-secondary",
         });
         return;
@@ -59,15 +59,15 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
 
       await registerToken(userId, token);
       toast({
-        title: "Notifications enabled",
-        description: "You will now receive push notifications.",
+        title: t("notifications_enabled"),
+        description: t("notifications_enabled_description"),
         className: "font-secondary",
       });
     } catch (error) {
       console.error("Error handling push notifications:", error);
       toast({
-        title: "Error",
-        description: "Failed to enable push notifications. Please try again.",
+        title: t("error"),
+        description: t("failed_to_enable_push_notifications_description"),
         className: "font-secondary",
       });
       setIsSubscribed(false);
