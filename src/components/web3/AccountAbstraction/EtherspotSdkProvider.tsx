@@ -16,6 +16,10 @@ interface EtherspotSdkContextType {
   eoaAddress: string;
   balances: TokenBalance[];
   refreshBalances: () => Promise<void>;
+  // True while we are initializing SDK and fetching initial balances
+  isLoading: boolean;
+  // True after the first successful initialization + balances fetch
+  isReady: boolean;
 }
 
 const EtherspotSdkContext = createContext<EtherspotSdkContextType | undefined>(
@@ -32,6 +36,8 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
   const [smartWalletAddress, setSwAddress] = useState<string>("");
   const [eoaAddress, setEoaAddress] = useState<string>("");
   const [balances, setBalances] = useState<TokenBalance[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isReady, setIsReady] = useState<boolean>(false);
   const { data: walletClient } = useWalletClient();
   const account = useAccount();
   const chainId = useChainId();
@@ -75,11 +81,24 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const connectToSdk = async () => {
-      if (!isConnectedWeb3Auth && primeSdk) {
-        primeSdk.destroy();
+      // Handle disconnect
+      if (!isConnectedWeb3Auth) {
+        if (primeSdk) {
+          primeSdk.destroy();
+        }
         setPrimeSdk(null);
+        setSwAddress("");
+        setEoaAddress("");
+        setBalances([]);
+        setIsLoading(false);
+        setIsReady(false);
+        return;
       }
+
+      // Initialize on first connect
       if (isConnectedWeb3Auth && !primeSdk) {
+        setIsLoading(true);
+        setIsReady(false);
         const walletProvider = await createWeb3AuthWalletProvider(provider);
         if (!walletProvider.address) {
           throw new Error("Wallet provider address is undefined");
@@ -103,14 +122,17 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
               walletProvider.address
             );
           setBalances(balances ?? []);
+          setIsLoading(false);
+          setIsReady(true);
+        } else {
+          setIsLoading(false);
+          setIsReady(false);
         }
-      } else {
-        console.log("chau!");
       }
     };
 
     connectToSdk();
-  }, [isConnectedWeb3Auth, chainId]);
+  }, [isConnectedWeb3Auth, chainId, provider]);
 
   return (
     <EtherspotSdkContext.Provider
@@ -120,6 +142,8 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
         eoaAddress: eoaAddress,
         balances,
         refreshBalances,
+        isLoading,
+        isReady,
       }}
     >
       {children}

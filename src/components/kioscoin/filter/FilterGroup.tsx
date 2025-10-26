@@ -309,7 +309,7 @@ export default function FilterGroup({
         }`}
         onClick={handleOrderTypeToggle} // <-- Use specific toggle handler
       >
-        <span className="flex items-center font-bold text-sm antialiased tracking-tight">
+        <span className="flex items-center text-sm antialiased tracking-tight">
           {badgeText}
           {activeCount > 0 && (
             <span className="ml-1 bg-primary text-white rounded-full w-3 h-3 text-xs flex items-center justify-center">

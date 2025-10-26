@@ -16,6 +16,7 @@ import { useUserContext } from "./UserContext";
 import { useTranslation } from "react-i18next";
 import PushNotificationsToggle from "@/components/kioscoin/notifications/PushNotificationsToggle";
 import PaymentMethodsComponent from "../orders/create-orders/PaymentMethodsComponent";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserSettingsProps {
   readonly className?: string;
@@ -91,15 +92,36 @@ export default function UserSettings({ className }: UserSettingsProps) {
           </p>
         </div>
 
-        <PaymentMethodsComponent
-          selectedMethods={selectedMethods}
-          onChange={setSelectedMethods}
-          methods={availableMethods}
-          readOnly={false}
-        />
-        <div className="flex w-full">
-          <PushNotificationsToggle userId={user!.id!}></PushNotificationsToggle>
-        </div>
+        <Tabs defaultValue="payments" className="w-full">
+          <TabsList className="grid grid-cols-2 mb-3 bg-secondary/10">
+            <TabsTrigger value="payments" className="text-dark font-secondary">
+              {t("payment_methods")}
+            </TabsTrigger>
+            <TabsTrigger
+              value="notifications"
+              className="text-dark font-secondary"
+            >
+              {t("notifications")}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="payments" className="space-y-3">
+            <PaymentMethodsComponent
+              selectedMethods={selectedMethods}
+              onChange={setSelectedMethods}
+              methods={availableMethods}
+              readOnly={false}
+            />
+          </TabsContent>
+
+          <TabsContent value="notifications" className="space-y-3">
+            <div className="flex w-full">
+              <PushNotificationsToggle
+                userId={user!.id!}
+              ></PushNotificationsToggle>
+            </div>
+          </TabsContent>
+        </Tabs>
 
         <div className="flex w-full">
           <Button

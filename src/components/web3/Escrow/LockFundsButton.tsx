@@ -132,7 +132,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
           <Button
             className={`w-full font-secondary ${
               hasSufficientBalance
-                ? "text-white bg-primary"
+                ? "text-white bg-secondary font-secondary shadow-sm"
                 : "text-white bg-red-500 border-red-500"
             }`}
             onClick={() =>

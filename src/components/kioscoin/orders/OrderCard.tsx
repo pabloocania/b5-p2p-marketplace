@@ -56,20 +56,20 @@ export function OrderCard({
 
   const renderHistoryButton = () =>
     user ? (
-      <div className="flex font-secondary w-full shadow-md">
+      <div className="flex font-secondary w-full shadow-xs">
         <ViewHistoryButton orderId={order?.id} />
       </div>
     ) : null;
 
   const renderCopyIdButton = () =>
     user ? (
-      <div className="flex font-secondary w-full shadow-md">
+      <div className="flex font-secondary w-full shadow-xs">
         <CopyIdButton orderId={order?.id} />
       </div>
     ) : null;
 
   const renderDisputeButton = () => (
-    <div className="flex font-secondary w-full shadow-md">
+    <div className="flex font-secondary w-full shadow-xs">
       <DisputeOrderButton order={order ?? ({} as Order)} />
     </div>
   );
@@ -85,7 +85,7 @@ export function OrderCard({
   }
 
   return (
-    <Card className="w-full border border-secondary/50" variant="shadow">
+    <Card className="w-full border border-secondary/20" variant="shadow">
       <OrderStatusBar status={order.status ?? "Unknown"} />
       <OrderCardHeader order={order} />
       <OrderCardContent
@@ -116,6 +116,9 @@ export function OrderCard({
         {renderCopyIdButton()}
         {canShowDisputeButton && renderDisputeButton()}
       </div>
+      <p className="text-[10px] font-secondary text-dark pb-1 text-right pr-4">
+        ID: {order.id}
+      </p>
     </Card>
   );
 }

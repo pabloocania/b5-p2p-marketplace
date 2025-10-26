@@ -119,7 +119,7 @@ export function LandingPage() {
         </div>
         {/* Auth Section - Compact size */}
         <div className="w-full max-w-md mx-auto">
-          <div className="bg-white rounded-xl shadow-lg p-4 font-secondary transform transition-transform duration-200">
+          <div className="bg-white rounded-xl shadow-lg p-4 font-secondary transform transition-transform duration-200 border border-secondary/10">
             {/* Toggle Buttons - Compact */}
             <div className="flex bg-gray-100 rounded-lg p-1 mb-3">
               <button

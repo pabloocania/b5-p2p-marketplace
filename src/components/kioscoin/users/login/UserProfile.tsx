@@ -38,8 +38,9 @@ export const UserProfile = ({
   onConnectingChange,
 }: UserProfileProps) => {
   const { t } = useTranslation();
-  const { balances } = useEtherspotSdk();
-  const { isConnected: web3AuthConnected } = useWeb3Auth();
+  const { balances, isLoading, isReady } = useEtherspotSdk();
+  const { isConnected: web3AuthConnected, status: web3authStatus } =
+    useWeb3Auth();
 
   // Estado para UserBalance
   const [selectedToken, setSelectedToken] = useState("USDK");
@@ -139,8 +140,14 @@ export const UserProfile = ({
     );
   }
 
+  // Derived UI flags
+  const walletInitializing =
+    web3authStatus === "connecting" ||
+    (web3AuthConnected && (isLoading || !isReady));
+  const canShowWallet = isReady;
+
   return (
-    <Card className="w-full">
+    <Card className="w-full border border-secondary/20">
       <CardHeader className="pb-2">
         <CardTitle className="flex justify-center items-center align-center mt-1 sm:mt-2 w-full">
           <ProfileHeader user={user} />
@@ -148,7 +155,7 @@ export const UserProfile = ({
       </CardHeader>
 
       {/* UserBalance independiente debajo del ProfileHeader */}
-      {isConnected && balances && (
+      {canShowWallet && balances && (
         <div className="flex space-y-1.5 p-3 pb-2 pt-2">
           <UserBalance
             balances={balances}
@@ -161,8 +168,8 @@ export const UserProfile = ({
       )}
 
       <CardContent className="space-y-4 sm:space-y-4">
-        {isConnecting && (
-          <div className="flex space-y-1.5 p-3 pb-2 pt-2">
+        {(isConnecting || walletInitializing) && (
+          <div className="w-full flex justify-center items-center py-4 font-secondary text-dark">
             <div className="flex items-center space-x-2">
               <Loader2 className="h-4 w-4 animate-spin text-yellow-600" />
               <span className="text-sm block">{t("loading_wallet")}</span>
@@ -170,13 +177,13 @@ export const UserProfile = ({
           </div>
         )}
 
-        {isConnected && (
+        {canShowWallet && (
           <div className="w-full flex space-y-1.5 pt-2">
             <UserWalletsComponent />
           </div>
         )}
 
-        {isConnected && (
+        {canShowWallet && (
           <div className="w-full flex">
             <Button
               variant="outline"

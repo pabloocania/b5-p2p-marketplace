@@ -111,12 +111,12 @@ export default function Home() {
           />
         </div>
 
-        <div className="fixed bottom-0 w-full pb-8 sm:pb-10 pt-6 sm:pt-8">
+        <div className="fixed bottom-0 w-full pb-4 pt-6">
           <div className="relative px-2">
-            <div className="absolute bottom-28 sm:bottom-32 left-2 sm:left-4">
+            <div className="absolute bottom-28 left-2 sm:left-4">
               <Button
                 size="icon"
-                className="rounded-full w-10 h-10 sm:w-12 sm:h-12 shadow-lg text-white bg-primary hover:bg-terciary/90"
+                className="rounded-md w-10 h-10 sm:w-12 sm:h-12 shadow-lg text-white bg-primary/70 hover:bg-secondary hover:text-white"
                 onClick={() => setIsHelpOpen(true)}
               >
                 <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -126,7 +126,7 @@ export default function Home() {
             <div className="absolute bottom-16 sm:bottom-20 left-2 sm:left-4">
               <Button
                 size="icon"
-                className="bg-white border-2 border-secondary text-primary hover:bg-primary/90 hover:text-white rounded-full w-10 h-10 sm:w-12 sm:h-12 shadow-lg flex items-center justify-center font-secondary"
+                className="text-white bg-primary/80 hover:bg-secondary hover:text-white rounded-md w-10 h-10 shadow-lg flex items-center justify-center font-secondary"
                 onClick={() =>
                   changeLanguage(i18n.language === "en" ? "es" : "en")
                 }
@@ -149,10 +149,10 @@ export default function Home() {
                   trigger={
                     <Button
                       size="icon"
-                      className="rounded-full px-3 sm:px-4 text-sm sm:text-base font-bold w-22 h-10 sm:w-28 sm:h-12 shadow-lg hover:bg-terciary/90 bg-white border-2 border-secondary text-primary"
+                      className="rounded-md px-2 text-sm font-bold w-22 h-10 shadow-lg hover:bg-secondary hover:text-white bg-white border-primary text-primary"
                     >
                       <Plus className="h-4 w-4 sm:h-5 sm:w-5 pr-0.5 sm:pr-1" />
-                      <span className="transition-opacity duration-500 text-xs font-secondary">
+                      <span className="transition-opacity duration-500 text-md font-secondary">
                         {t("create_order")}
                       </span>
                     </Button>

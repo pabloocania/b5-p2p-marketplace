@@ -142,7 +142,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
   }
 
   return (
-    <div className="relative w-full px-4 py-2 rounded-xl bg-lightYellow shadow-lg mb-4 mt-6">
+    <div className="relative w-full border border-secondary/20 px-4 py-2 rounded-xl bg-white shadow-lg mb-4 mt-6">
       <Carousel
         opts={{
           align: "start",
@@ -153,15 +153,12 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
       >
         <CarouselContent className="flex-nowrap font-secondary">
           {validOffers.map((offer, idx) => (
-            <CarouselItem
-              key={offer.id}
-              className={`flex-shrink-0 flex-grow-0`}
-            >
+            <CarouselItem key={offer.id} className="flex-shrink-0 flex-grow-0">
               <Card
-                className="h-full shadow rounded-lg border-0 cursor-pointer text-white transition-transform hover:scale-[1.01]  flex flex-col justify-between min-h-[80px] sm:min-h-[90px] md:min-h-[100px]"
+                className="h-full bg-secondary/10 shadow rounded-lg border-0 cursor-pointer text-white transition-transform hover:scale-[1.01] flex flex-col justify-between min-h-[80px] sm:min-h-[90px] md:min-h-[100px] border border-secondary/10"
                 onClick={() => handleCardClick(offer)}
               >
-                <div className="flex-1 p-1.5 sm:p-2 flex flex-col">
+                <div className="flex-1 p-2 flex flex-col">
                   {/* Header with crypto icon and amount */}
                   <div className="flex flex space-x-1 items-baseline font-bold">
                     <span className="text-base text-primary text-lg">
@@ -176,7 +173,6 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                         amountTextClassName="mr-1"
                       />
                     </span>
-                    <span className="flex">{t("instantly")}</span>
                   </div>
 
                   {/* Two column layout */}
@@ -209,8 +205,9 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                   </div>
                 </div>
                 <CardFooter className="p-0">
-                  <Button className="w-full rounded-b-lg rounded-t-none py-0.5 sm:py-1">
-                    {offer.type === "BUY" ? t("buy") : t("sell")}
+                  <Button className="w-full bg-secondary text-white font-secondary rounded-b-lg rounded-t-none py-0.5">
+                    {offer.type === "BUY" ? t("buy") : t("sell")}{" "}
+                    {offer.tokenCode} {t("instantly")}
                   </Button>
                 </CardFooter>
               </Card>
@@ -218,10 +215,10 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
           ))}
         </CarouselContent>
         {currentIndex > 0 && (
-          <CarouselPrevious className="pointer-events-auto absolute left-0 -ml-2 sm:-ml-6 top-1/2 -translate-y-1/2 z-20 text-primary bg-secondary text-white border-primary" />
+          <CarouselPrevious className="pointer-events-auto absolute left-0 -ml-4 top-1/2 -translate-y-1/2 z-20 text-primary bg-secondary/80 text-white" />
         )}
         {currentIndex < validOffers.length - 1 && (
-          <CarouselNext className="pointer-events-auto absolute right-0 -mr-2 sm:-mr-6 top-1/2 -translate-y-1/2 z-20 text-primary bg-secondary text-white border-primary" />
+          <CarouselNext className="pointer-events-auto absolute right-0 -mr-4 top-1/2 -translate-y-1/2 z-20 text-primary bg-secondary/80 text-white" />
         )}
       </Carousel>
     </div>
