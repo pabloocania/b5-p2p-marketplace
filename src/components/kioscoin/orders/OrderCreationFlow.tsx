@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { CreateOrderContainer } from "./create-orders/CreateOrderContainer";
 import { UserMenuSheet } from "../users/UserMenuSheet";
+import KioscoinBrand from "../branding/KioscoinBrand";
 
 export default function OrderCreationFlow({
   activeComponent,
@@ -89,6 +90,9 @@ export default function OrderCreationFlow({
         onOpenChange={setIsCreateOrderOpen}
         variant="sheet"
       >
+        <div className="flex flex-col items-center mb-2">
+          <KioscoinBrand size="sm" showSlogan={false} />
+        </div>
         {selectedOffer && (
           <CreateOrder
             onClose={handleClose}

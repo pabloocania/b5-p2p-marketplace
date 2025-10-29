@@ -67,10 +67,10 @@ export default function ReleaseFundsConfirmation({
   };
 
   return (
-    <div className="flex justify-center items-center pt-6">
+    <div className="flex justify-center items-center pt-6 font-secondary">
       <Card className="w-full max-w-md">
         <CardHeader className="flex justify-center items-center pt-4">
-          <CardTitle className="text-center text-primary">
+          <CardTitle className="text-center text-dark">
             {t("transaction_details")}
           </CardTitle>
         </CardHeader>

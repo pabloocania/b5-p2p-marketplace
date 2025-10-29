@@ -25,13 +25,9 @@ export const useTransactionHandler = (
   ) => {
     try {
       setTransaction({
-        status: transactionType === "EOAToSW" ? "sent" : "waiting",
-        message: t(
-          transactionType === "EOAToSW"
-            ? "initiating_transaction"
-            : "transfering"
-        ),
-        progress: transactionType === "EOAToSW" ? 25 : 10,
+        status: "sending",
+        message: t("sending_tx_blockchain"),
+        progress: 50,
       });
       if (transactionType === "EOAToSW") {
         const transactionHash = await transferFromEOAToSW(
@@ -45,11 +41,6 @@ export const useTransactionHandler = (
           transferAmount,
           chainId
         );
-        setTransaction({
-          status: "sending",
-          message: t("sending_tx_blockchain"),
-          progress: 70,
-        });
         let opsReceipt = null;
         if (hash) {
           const timeout = Date.now() + 300000; // 5 minute timeout
@@ -63,13 +54,13 @@ export const useTransactionHandler = (
           setTransaction({
             status: "success",
             message: t("transaction_success"),
-            progress: 10,
+            progress: 100,
           });
         } else {
           setTransaction({
             status: "error",
             message: t("transaction_failed"),
-            progress: 10,
+            progress: 0,
           });
         }
       }

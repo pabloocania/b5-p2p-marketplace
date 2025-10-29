@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserProfile, EmailLoginForm, RegisterForm } from "./login";
 import { KioscoinUser } from "b5-api-client";
 import { useWeb3Auth } from "@web3auth/modal/react";
+import KioscoinBrand from "../branding/KioscoinBrand";
 
 interface UserMenuNewProps {
   readonly user: KioscoinUser | undefined;
@@ -51,7 +52,9 @@ const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
         className="w-full max-w-md border border-secondary/50"
         variant="border"
       >
-        <CardHeader></CardHeader>
+        <CardHeader>
+          <KioscoinBrand size="sm" className="items-center" />
+        </CardHeader>
         <CardContent className="py-2">
           <Tabs
             defaultValue="mock"

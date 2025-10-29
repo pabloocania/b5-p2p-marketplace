@@ -33,7 +33,6 @@ class TokenCardState {
 
 interface TokenBalanceCardListProps {
   balances?: TokenBalance[];
-  balanceType: "eoa" | "sw";
   onTokenSelect: (token: TokenBalance | null) => void;
   handleTransfer: (transferAmount: string) => void;
   hideEmptyBalances?: boolean; // New flag to hide zero balances
@@ -41,7 +40,6 @@ interface TokenBalanceCardListProps {
 
 export default function TokenBalanceCardList({
   balances = [],
-  balanceType,
   onTokenSelect,
   handleTransfer,
   hideEmptyBalances = false, // Default to false
@@ -50,12 +48,7 @@ export default function TokenBalanceCardList({
 
   // Filter out zero balances if hideEmptyBalances is true
   const filteredBalances = hideEmptyBalances
-    ? balances.filter(
-        (token) =>
-          parseFloat(
-            balanceType === "eoa" ? token.eoaBalance : token.smartWalletBalance
-          ) > 0
-      )
+    ? balances.filter((token) => parseFloat(token.smartWalletBalance) > 0)
     : balances;
 
   const handleSelectToken = (token: TokenBalance) => {
@@ -82,35 +75,26 @@ export default function TokenBalanceCardList({
   const selectedToken =
     filteredBalances.find((token) => state.isSelected(token.name)) || null;
 
-  // Sort balances to show tokens with balance first
   const sortedBalances = [...filteredBalances].sort((a, b) => {
-    const balanceA = parseFloat(
-      balanceType === "eoa" ? a.eoaBalance : a.smartWalletBalance
-    );
-    // console.log(balanceA);
-    const balanceB = parseFloat(
-      balanceType === "eoa" ? b.eoaBalance : b.smartWalletBalance
-    );
-    // console.log(balanceB);
-    return balanceB - balanceA; // Descending order
+    const balanceA = parseFloat(a.smartWalletBalance);
+    const balanceB = parseFloat(b.smartWalletBalance);
+    return balanceB - balanceA;
   });
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-3">
         {sortedBalances.map((token, index) => {
-          const balance =
-            balanceType === "eoa" ? token.eoaBalance : token.smartWalletBalance;
+          const balance = token.smartWalletBalance;
           const hasBalance = parseFloat(balance) > 0;
           const isSelected = state.isSelected(token.name);
 
-          // Return full card for tokens with balance
           if (hasBalance) {
             return (
               <Card
                 key={index}
                 className={`
-                  overflow-hidden transition-all duration-200 ease-in-out shadow
+                  overflow-hidden transition-all duration-200 ease-in-out shadow-md border border-secondary/20
                   ${
                     isSelected && !hideEmptyBalances
                       ? "ring-2 ring-primary"
@@ -125,7 +109,7 @@ export default function TokenBalanceCardList({
                   <CardContent className="p-2">
                     {/* Wallet badge and transfer button */}
                     <div className="flex justify-between items-center">
-                      <Badge
+                      {/* <Badge
                         variant="outline"
                         className="py-1 px-2 flex items-center gap-1 text-xs font-medium bg-primary/10 text-primary border-primary/20"
                       >
@@ -133,7 +117,7 @@ export default function TokenBalanceCardList({
                         {balanceType === "eoa"
                           ? "EOA Wallet"
                           : "Kioscoin wallet"}
-                      </Badge>
+                      </Badge> */}
 
                       {!hideEmptyBalances && (
                         <button
@@ -165,21 +149,22 @@ export default function TokenBalanceCardList({
                           token.decimals
                         )}
                         showAmount={true}
-                        textSizeClass="text-lg"
+                        textSizeClass="text-md"
                         decimals={token.decimals}
+                        amountTextClassName="text-dark"
                       />
                     </div>
 
                     {/* Transfer component */}
                     {isSelected && !hideEmptyBalances && (
                       <div
-                        className="mt-4 pt-3 border-t"
+                        className="mt-4 pt-3"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <InternalTransferAmountInput
                           selectedToken={selectedToken}
                           handleTransfer={handleTransfer}
-                          isEOA={balanceType === "eoa"}
+                          isEOA={false}
                         />
                       </div>
                     )}
@@ -189,11 +174,10 @@ export default function TokenBalanceCardList({
             );
           }
 
-          // Return minimal design for tokens without balance
           return (
             <Card
               key={index}
-              className="overflow-hidden transition-all duration-200 ease-in-out bg-white/60 border-gray-100 opacity-70"
+              className="overflow-hidden transition-all duration-200 ease-in-out bg-white/60 border border-secondary/20"
             >
               <CardContent className="p-2">
                 <div className="flex flex-col items-center">

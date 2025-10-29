@@ -49,12 +49,12 @@ export function Rating({ orderId, ratedId, ratedUsername }: RatingProps) {
   ) : (
     <div className="flex justify-center items-center space-x-0.5 w-full rounded-md mt-2">
       <div className="flex items-center">
-        <span className="text-sm text-primary pr-2">
+        <span className="text-sm text-dark pr-2">
           <span className="font-secondary">{t("rate_user")}</span>{" "}
           {ratedUsername}:
         </span>
       </div>
-      <div className="flex items-center space-x-1 rounded-md bg-white p-0.5 border border-terciary border-opacity-20">
+      <div className="flex items-center space-x-1 rounded-md bg-white p-0.5 text-dark">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}

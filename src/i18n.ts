@@ -121,7 +121,7 @@ i18n.use(initReactI18next).init({
         created: "Created",
         select_blockchain: "Select a blockchain",
         write_message: "Write message",
-        amount_to_deposit: "Amount to deposit",
+        amount_to_deposit: "Total amount",
         sending: "Sending transaction to the blockchain...",
         sending_tx_blockchain:
           "Your transaction is being sent to the blockchain. Wait for its confirmation",
@@ -276,7 +276,8 @@ i18n.use(initReactI18next).init({
         push_notifications_disabled_description: "Push notifications are disabled.",
         notifications_enabled: "Notifications enabled",
         notifications_enabled_description: "You will now receive push notifications.",
-        failed_to_enable_push_notifications_description: "Failed to enable push notifications. Please try again."
+        failed_to_enable_push_notifications_description: "Failed to enable push notifications. Please try again.",
+        in: "in"
       },
     },
     es: {
@@ -401,7 +402,7 @@ i18n.use(initReactI18next).init({
         created: "Creada el",
         select_blockchain: "Selecciona la blockchain",
         write_message: "Escribe un mensaje",
-        amount_to_deposit: "Cantidad a depositar",
+        amount_to_deposit: "Total a depositar",
         sending: "Enviando transacción",
         sending_tx_blockchain:
           "Tu transacción está siendo enviada a la blockchain. Espera su confirmación",
@@ -540,7 +541,7 @@ i18n.use(initReactI18next).init({
         offer_match_shortly: "Haremos match con tu oferta pronto",
         request_failed: "Error al enviar solicitud",
         unexpected_error: "Error inesperado",
-        destination_address: "Dirección de destino",
+        destination_address: "Dirección de tu wallet",
         your_balance: "Tu Saldo",
         suggested: "Cambio sugerido",
         select_token_and_blockchain: "Selecciona la moneda y la blockchain",
@@ -560,7 +561,8 @@ i18n.use(initReactI18next).init({
         push_notifications_disabled_description: "Las notificaciones push están desactivadas.",
         notifications_enabled: "Notificaciones activadas",
         notifications_enabled_description: "Ahora recibirás notificaciones.",
-        failed_to_enable_push_notifications_description: "Se produjo un error al activar las notificaciones. Por favor, intente nuevamente."
+        failed_to_enable_push_notifications_description: "Se produjo un error al activar las notificaciones. Por favor, intente nuevamente.",
+        in: "en",
       },
     },
   },

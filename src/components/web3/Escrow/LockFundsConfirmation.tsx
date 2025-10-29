@@ -53,8 +53,14 @@ export default function LockFundsConfirmation({
   const renderOrderDetails = () => {
     return (
       <div className="space-y-3 text-sm bg-secondary bg-opacity-10 p-2 rounded-md">
-        <p className="text-primary font-secondary">
+        <p className="text-base mt-2 text-primary font-secondary">
           {t("amount_to_deposit")}:{" "}
+          <span className="font-semibold text-dark text-xl">
+            {totalAmount + " " + order.tokenCode}
+          </span>
+        </p>
+        <p className="text-primary font-secondary">
+          {t("amount")}:{" "}
           <span className="font-semibold text-dark">
             {orderAmount + " " + order.tokenCode}
           </span>
@@ -65,7 +71,7 @@ export default function LockFundsConfirmation({
             {fees.transaction + " " + order.tokenCode}
           </span>
         </p>
-        <p className="text-primary font-secondary">
+        {/* <p className="text-primary font-secondary">
           {t("network_gas_fee")}
           <span className="font-semibold text-dark">
             {fees.gas + " " + order.tokenCode}
@@ -73,30 +79,24 @@ export default function LockFundsConfirmation({
           <span className="ml-2 bg-primary font-secondary text-white px-2 py-0.5 text-xs rounded-full">
             {t("gasless")}
           </span>
-        </p>
-        <p className="text-base mt-2 text-primary font-secondary">
-          <span className="font-semibold text-primary text-xl">Total: </span>
-          <span className="font-semibold text-dark text-xl">
-            {totalAmount + " " + order.tokenCode}
-          </span>
-        </p>
+        </p> */}
       </div>
     );
   };
 
   return (
-    <div className="flex justify-center items-center pt-6">
+    <div className="flex justify-center items-center pt-6 font-secondary">
       <Card className="w-full max-w-md">
         <CardHeader className="flex justify-center items-center pt-4">
-          <CardTitle className="text-center text-secondary">
+          <CardTitle className="text-center text-dark font-secondary">
             {t("transaction_details")}
           </CardTitle>
         </CardHeader>
         <Separator className="my-2"></Separator>
-        <CardContent className="py-4 px-4">
+        <CardContent className="py-2 px-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-3">
-              <p className="text-xs text-gray-500 mt-1 font-secondary text-center">
+              <p className="text-xs text-dark mt-1 font-secondary text-center">
                 {t("sw_fee_details")}
               </p>
             </div>

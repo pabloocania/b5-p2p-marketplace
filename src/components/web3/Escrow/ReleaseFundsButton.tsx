@@ -109,7 +109,7 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
       <Sheet open={isReleaseOpen} onOpenChange={setIsReleaseOpen}>
         <SheetTrigger asChild>
           <Button
-            className="w-full text-white bg-secondary font-secondary shadow-sm"
+            className="w-full text-white bg-secondary font-secondary shadow-sm hover:text-secondary hover:bg-white hover:border hover:border-secondary"
             onClick={() => setIsReleaseOpen(true)}
           >
             {t("release_funds")}

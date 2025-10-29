@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Clipboard, RefreshCw, Send } from "lucide-react";
+import { Clipboard, Pencil, Send } from "lucide-react";
 import { IconButton } from "@/components/ui/IconButton";
 import { useTranslation } from "react-i18next";
+import { Input } from "@/components/ui/input";
 
 interface AddressProps {
   address: string;
+  isOperation?: boolean;
+  showLabel?: boolean;
 }
 
-const Address: React.FC<AddressProps> = ({ address }) => {
-  const { t } = useTranslation();
-  const [isCopied, setIsCopied] = useState(false);
+const useAddressSliceLength = () => {
   const [leftSliceLength, setLeftSliceLength] = useState(30);
-
-  // Adjust how much of the address is shown on small screens so it fits
   useEffect(() => {
     const updateSlice = () => {
       // Tailwind sm breakpoint is 640px
@@ -22,6 +21,18 @@ const Address: React.FC<AddressProps> = ({ address }) => {
     window.addEventListener("resize", updateSlice);
     return () => window.removeEventListener("resize", updateSlice);
   }, []);
+
+  return leftSliceLength;
+};
+
+const Address: React.FC<AddressProps> = ({
+  address,
+  isOperation = false,
+  showLabel = true,
+}) => {
+  const { t } = useTranslation();
+  const [isCopied, setIsCopied] = useState(false);
+  const leftSliceLength = useAddressSliceLength();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(address).then(() => {
@@ -39,18 +50,22 @@ const Address: React.FC<AddressProps> = ({ address }) => {
     <div className="w-full space-y-2">
       {/* Primera línea: Título "Dirección" + Botón Send */}
       <div className="flex items-baseline justify-between">
-        <p className="font-primary text-dark text-xs flex-grow">
-          {t("your_address")}
-        </p>
-        <IconButton
-          className="p-2 font-secondary border-primary/50 bg-white h-6 text-primary hover:bg-secondary/20"
-          variant="outline"
-          size="sm"
-          onClick={handleSend}
-          icon={Send}
-          aria-label="send"
-          label={t("send_button")}
-        />
+        {showLabel ? (
+          <p className="font-primary text-dark text-xs flex-grow">
+            {t("your_address")}
+          </p>
+        ) : null}
+        {!isOperation ? (
+          <IconButton
+            className="p-2 font-secondary border-primary/50 bg-white h-6 text-primary hover:bg-secondary/20"
+            variant="outline"
+            size="sm"
+            onClick={handleSend}
+            icon={Send}
+            aria-label="send"
+            label={t("send_button")}
+          />
+        ) : null}
       </div>
 
       {/* Segunda línea: Address + Botón Copy */}

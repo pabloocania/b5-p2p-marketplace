@@ -29,6 +29,7 @@ import {
   FilterGroupConfig,
 } from "../filter";
 import { initializeFilterConstants } from "../filter/constants";
+import KioscoinUserLoginFlow from "../users/KioscoinUserLoginFlow";
 
 export enum Filter {
   ALL = "ALL",
@@ -288,57 +289,12 @@ export default function OrdersFeed({
             >
               {t("login_to_view")}
             </Button>
-            <Sheet open={isLoginSheetOpen} onOpenChange={setIsLoginSheetOpen}>
-              <SheetTrigger asChild>
-                <div />
-              </SheetTrigger>
-              <SheetContent
-                side="bottom"
-                className="h-[75vh] font-secondary"
-                closeText={t("close")}
-              >
-                <div className="w-full h-full overflow-y-auto">
-                  <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-4">
-                    <div className="flex bg-gray-100 rounded-lg p-1 mb-3">
-                      <button
-                        onClick={() => setAuthMode("login")}
-                        className={`flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 ${
-                          authMode === "login"
-                            ? "bg-white text-purple-600 shadow-sm"
-                            : "text-gray-600 hover:text-gray-900"
-                        }`}
-                      >
-                        {t("login")}
-                      </button>
-                      <button
-                        onClick={() => setAuthMode("register")}
-                        className={`flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 ${
-                          authMode === "register"
-                            ? "bg-white text-purple-600 shadow-sm"
-                            : "text-gray-600 hover:text-gray-900"
-                        }`}
-                      >
-                        {t("register")}
-                      </button>
-                    </div>
-
-                    <div className="min-h-[220px]">
-                      {authMode === "login" ? (
-                        <EmailLoginForm
-                          onLogin={login}
-                          onSwitchToRegister={() => setAuthMode("register")}
-                        />
-                      ) : (
-                        <RegisterForm
-                          onLogin={login}
-                          onSwitchToEmailLogin={() => setAuthMode("login")}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
+            <KioscoinUserLoginFlow
+              variant="sheet"
+              open={isLoginSheetOpen}
+              onOpenChange={setIsLoginSheetOpen}
+              onLogin={login}
+            />
           </div>
         )}
       </ScrollableContainer>

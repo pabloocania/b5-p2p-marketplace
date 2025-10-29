@@ -169,8 +169,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                         tokenCode={offer.tokenCode}
                         formattedAmount={offer.tokenAmount}
                         showAmount={true}
-                        textSizeClass="text-lg text-dark"
-                        amountTextClassName="mr-1"
+                        textSizeClass="text-dark font-bold text-lg"
                       />
                     </span>
                   </div>
