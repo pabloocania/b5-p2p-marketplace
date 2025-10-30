@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
 import { formatFiatAmount } from "@/lib/utils";
-import { EntityBadge } from "./PaymentMethodDisplay";
+import PaymentMethodDisplay from "./PaymentMethodDisplay";
 
 interface NotifyFiatSentButtonProps {
   order: Order;
@@ -11,10 +11,6 @@ interface NotifyFiatSentButtonProps {
   onRefresh?: () => void;
   fiatSent: (order: Order) => Promise<void>;
 }
-
-const formatAlias = (alias: string | undefined): string => {
-  return alias?.startsWith("@") ? alias : `${alias}`;
-};
 
 const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
   order,
@@ -48,13 +44,13 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
             </span>
             <span className="font-secondary">{t("to_receive")}</span>
           </p>
-          <div className="space-y-2 py-1 text-center">
+          <div className="space-y-2 py-1 text-center max-w-full">
             {order.paymentMethods?.map((method, index) => (
-              <EntityBadge
-                entity={method.entity!}
-                type={method.type!}
-                alias={formatAlias(method.alias)}
-                size="lg"
+              <PaymentMethodDisplay
+                key={`${method.type}-${index}`}
+                method={method}
+                showAlias
+                size="md"
               />
             ))}
           </div>

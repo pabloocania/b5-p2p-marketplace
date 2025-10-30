@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { BannerOffer } from "../banner/types";
 import { transformBannerOfferToOrderRequest } from "../banner/utils";
-import CreateOrder from "./create-orders/CreateOrder";
+import CreateOrder from "./create-orders/CreateOrderForm";
 import { useUserContext } from "../users/UserContext";
 import { useTranslation } from "react-i18next";
 import { ConfigStore } from "@/lib/ConfigStore";

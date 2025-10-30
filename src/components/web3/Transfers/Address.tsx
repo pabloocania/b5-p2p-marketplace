@@ -49,7 +49,7 @@ const Address: React.FC<AddressProps> = ({
   return (
     <div className="w-full space-y-2">
       {/* Primera línea: Título "Dirección" + Botón Send */}
-      <div className="flex items-baseline justify-between">
+      <div className="flex items-center justify-between">
         {showLabel ? (
           <p className="font-primary text-dark text-xs flex-grow">
             {t("your_address")}
@@ -69,11 +69,11 @@ const Address: React.FC<AddressProps> = ({
       </div>
 
       {/* Segunda línea: Address + Botón Copy */}
-      <div className="flex items-baseline justify-between">
+      <div className="flex items-center justify-between">
         <p className="font-secondary text-dark text-xs flex-grow">
           {address.slice(0, leftSliceLength)}...{address.slice(-4)}
         </p>
-        <div className="relative">
+        <div className="relative h-full">
           <IconButton
             className="p-2 font-secondary border-primary/50 bg-white h-6 text-primary hover:bg-secondary/20"
             variant="outline"
@@ -85,7 +85,7 @@ const Address: React.FC<AddressProps> = ({
           />
           {/* Feedback visual */}
           {isCopied && (
-            <div className="absolute font-secondary -top-6 left-1/2 transform -translate-x-1/2 bg-secondary text-white text-xs px-1 py-0.5 rounded shadow-lg z-10">
+            <div className="absolute font-secondary -top-6 left-1/2 transform -translate-x-1/2 bg-secondary text-white text-xs rounded shadow-lg z-10">
               {t("copied")}
             </div>
           )}

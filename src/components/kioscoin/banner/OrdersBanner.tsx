@@ -12,7 +12,7 @@ import {
 import { useEffect, useState, useRef } from "react";
 import { BannerOfferClickHandler } from "./types";
 
-import PaymentMethodDisplay, { EntityBadge } from "../PaymentMethodDisplay";
+import PaymentMethodDisplay from "../PaymentMethodDisplay";
 import { CryptoAmountIcon } from "../CryptoIcon";
 import { useTranslation } from "react-i18next";
 import { formatFiatAmount } from "@/lib/utils";

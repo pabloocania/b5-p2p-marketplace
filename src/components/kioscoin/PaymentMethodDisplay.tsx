@@ -1,9 +1,10 @@
 import { PaymentMethod } from "b5-api-client/dist/types";
-import { useTranslation } from "react-i18next";
 import { Tally1, Landmark, LucideIcon, WalletMinimal } from "lucide-react";
 
 interface PaymentMethodDisplayProps {
   method: PaymentMethod;
+  showAlias?: boolean;
+  size?: keyof typeof sizeMap;
 }
 
 // Add color mapping for different entities
@@ -39,6 +40,7 @@ interface EntityBadgeProps {
   readonly type: string;
   readonly alias?: string;
   readonly size?: keyof typeof sizeMap;
+  readonly showAlias?: boolean;
 }
 
 export const EntityBadge: React.FC<EntityBadgeProps> = ({
@@ -46,28 +48,38 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
   type,
   alias,
   size = "md", // default to md size
+  showAlias = false,
 }) => {
   const IconComponent = paymentMethodIconMap[type] ?? Tally1;
   const sizeClass = sizeMap[size];
-
   return (
-    <div className="inline-flex items-center space-x-1 p-1 rounded-md bg-secondary/50 text-dark">
-      <IconComponent
-        className={`${sizeClass.icon} ${
-          paymentMethodColorMap[type] ?? entityColorMap.default
-        }`}
-      />
-      <span className={sizeClass.text}>{entity}</span>
-      {alias && <span className={sizeClass.text + " font-bold"}>{alias}</span>}
+    <div className="inline-flex max-w-full flex-col items-start gap-0.5 px-2 py-1 rounded-md bg-secondary/50 text-dark text-left">
+      <div className="flex items-center gap-1">
+        <IconComponent
+          className={`${sizeClass.icon} ${
+            paymentMethodColorMap[type] ?? entityColorMap.default
+          } shrink-0`}
+        />
+        {entity && (
+          <span className={`${sizeClass.text} text-dark whitespace-normal`}>
+            {entity}
+          </span>
+        )}
+      </div>
+      {showAlias && alias && (
+        <span className={`${sizeClass.text} font-bold break-all text-dark`}>
+          {alias}
+        </span>
+      )}
     </div>
   );
 };
 
 const PaymentMethodDisplay: React.FC<PaymentMethodDisplayProps> = ({
   method,
+  showAlias = false,
+  size = "md",
 }) => {
-  const { t } = useTranslation();
-
   // Mapeo de tipos de métodos de pago
   const paymentMethodMap: { [key: string]: string } = {
     MERCADO_PAGO: "Fintech",
@@ -95,14 +107,28 @@ const PaymentMethodDisplay: React.FC<PaymentMethodDisplayProps> = ({
   // Descripción del método de pago
   const methodDescription = paymentMethodMap[method.type] ?? "Unknown Method";
 
-  const allEntities = method.entity
-    ? method.entity.split(",").map((e) => mapEntity(e.trim()))
-    : [methodDescription]; // Si no hay entidad, usa el tipo de método
+  const entities = method.entity
+    ? method.entity
+        .split(",")
+        .map((value) => mapEntity(value.trim()))
+        .filter((value) => value.length > 0)
+    : [methodDescription];
+
+  const rawAlias = method.alias?.trim() ?? "";
+  const formattedAlias =
+    showAlias && rawAlias.length > 0 ? formatAlias(rawAlias) : undefined;
 
   return (
-    <div className="flex flex-wrap my-1 text-xs font-secondary">
-      {allEntities.map((description, index) => (
-        <EntityBadge key={index} entity={description} type={method.type} />
+    <div className="flex flex-wrap gap-2 my-1 text-xs font-secondary">
+      {entities.map((description, index) => (
+        <EntityBadge
+          key={`${description}-${index}`}
+          entity={description}
+          type={method.type ?? ""}
+          alias={index === 0 ? formattedAlias : undefined}
+          showAlias={showAlias}
+          size={size}
+        />
       ))}
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import CreateOrder from "../src/components/kioscoin/orders/create-orders/CreateOrder";
+import CreateOrder from "../src/components/kioscoin/orders/create-orders/CreateOrderForm";
 import OrdersFeed, {
   Filter,
 } from "../src/components/kioscoin/orders/OrdersFeed";
@@ -26,6 +26,11 @@ export default function Home() {
   const { user, login, logout } = useUserContext();
 
   const [refreshKey, setRefreshKey] = useState(0);
+  const incrementRefreshKey = () => {
+    setRefreshKey((prevKey) =>
+      prevKey >= Number.MAX_SAFE_INTEGER ? 0 : prevKey + 1
+    );
+  };
   const { disconnect } = useDisconnect();
   const { transaction, resetTransaction } = useTransaction();
   const { i18n, t } = useTranslation();
@@ -56,14 +61,18 @@ export default function Home() {
 
   const handleCreateOrderClose = () => {
     setIsCreateOrderOpen(false);
-    setRefreshKey((prevKey) =>
-      prevKey >= Number.MAX_SAFE_INTEGER ? 0 : prevKey + 1
-    );
+    incrementRefreshKey();
   };
 
   const handleUserMenuOpen = () => {
     setIsCreateOrderOpen(false);
     setIsUserMenuOpen(true);
+  };
+
+  const handleOrderCreated = () => {
+    setActiveComponent("MyOrders");
+    setActiveSubFilter(Filter.WAITING_PAYMENT);
+    incrementRefreshKey();
   };
 
   const renderComponent = () => {
@@ -99,7 +108,10 @@ export default function Home() {
             onClose={resetTransaction}
           />
           <div className="w-full max-w-md mx-auto px-2 flex flex-col">
-            <KioscoinOperationFlow activeComponent={activeComponent} />
+            <KioscoinOperationFlow
+              activeComponent={activeComponent}
+              onOrderCreated={handleOrderCreated}
+            />
             <div className="flex-1">{renderComponent()}</div>
           </div>
         </main>

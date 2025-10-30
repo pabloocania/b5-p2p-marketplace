@@ -1,5 +1,5 @@
 // OrderCardContent.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { CardContent } from "@/components/ui/card";
 
 // Minimal chat button – removed glow/animations
@@ -117,6 +117,38 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
     onPaymentMethodsChange?.(updatedMethods);
   };
 
+  useEffect(() => {
+    if (order.paymentMethods && order.paymentMethods.length > 0) {
+      setSelectedPaymentMethods(order.paymentMethods);
+      return;
+    }
+
+    if (
+      isSeller &&
+      user?.settings?.paymentMethods &&
+      user.settings.paymentMethods.length > 0
+    ) {
+      setSelectedPaymentMethods(user.settings.paymentMethods);
+    }
+  }, [
+    order.paymentMethods,
+    order.id,
+    isSeller,
+    user?.settings?.paymentMethods,
+  ]);
+
+  const paymentMethodsToDisplay = useMemo(() => {
+    if (order.paymentMethods && order.paymentMethods.length > 0) {
+      return order.paymentMethods;
+    }
+
+    if (selectedPaymentMethods.length > 0) {
+      return selectedPaymentMethods;
+    }
+
+    return [] as PaymentMethod[];
+  }, [order.paymentMethods, selectedPaymentMethods]);
+
   return (
     <CardContent className="pb-2 mt-2 font-secondary">
       <div className="rounded-lg space-y-1 px-2 bg-secondary bg-opacity-10 space-y-1 pt-1">
@@ -207,11 +239,9 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
           </div>
           {/* Payment methods */}
           <div className="text-right">
-            <span className="text-xs">
-              {order.paymentMethods?.map((method, index) => (
-                <PaymentMethodDisplay key={index} method={method} />
-              ))}
-            </span>
+            {paymentMethodsToDisplay.map((method, index) => (
+              <PaymentMethodDisplay key={index} method={method} />
+            ))}
           </div>
         </div>
         {/* Order created date */}

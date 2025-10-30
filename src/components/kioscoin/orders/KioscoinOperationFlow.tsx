@@ -8,11 +8,15 @@ import { CreateOrderContainer } from "./create-orders/CreateOrderContainer";
 import OperationForm from "./operation/OperationForm";
 import KioscoinUserLoginFlow from "../users/KioscoinUserLoginFlow";
 
+interface KioscoinOperationFlowProps {
+  activeComponent: string;
+  onOrderCreated: () => void;
+}
+
 export default function KioscoinOperationFlow({
   activeComponent,
-}: {
-  activeComponent: string;
-}) {
+  onOrderCreated,
+}: KioscoinOperationFlowProps) {
   const [isOperationOpen, setIsOperationOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<OrderOffer | null>(null);
@@ -64,6 +68,7 @@ export default function KioscoinOperationFlow({
               offer={selectedOffer}
               onCancel={handleClose}
               onLockFundsSuccess={handleClose}
+              onOrderCreated={onOrderCreated}
             />
           )}
         </div>

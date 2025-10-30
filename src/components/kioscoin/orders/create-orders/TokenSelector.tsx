@@ -109,7 +109,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
               <CryptoAmountIcon
                 tokenCode={token}
                 showAmount={false}
-                showTokenCode={true}
+                showTokenCode={false}
                 textSizeClass="text-sm"
               />
             </button>

@@ -16,18 +16,20 @@ import OperationBalanceSection from "./OperationBalanceSection";
 import { CreditCard, Wallet } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Separator } from "@/components/ui/separator";
-import Address, { EditableAddress } from "@/components/web3/Transfers/Address";
+import Address from "@/components/web3/Transfers/Address";
 
 interface OperationFormProps {
   offer: OrderOffer;
   onCancel: () => void;
-  onLockFundsSuccess?: () => void; // only used for SELL after lock funds
+  onLockFundsSuccess: () => void; // only used for SELL after lock funds
+  onOrderCreated: () => void;
 }
 
 export default function OperationForm({
   offer,
   onCancel,
   onLockFundsSuccess,
+  onOrderCreated,
 }: OperationFormProps) {
   const { t } = useTranslation();
   const { user, loginId } = useUserContext();
@@ -98,12 +100,10 @@ export default function OperationForm({
       if (isSell) {
         if (response.order) {
           setOrder(response.order);
+          onOrderCreated?.();
         }
       } else {
-        toast({
-          title: t("request_sent"),
-          description: t("offer_match_shortly"),
-        });
+        onOrderCreated?.();
         onCancel();
       }
     } catch (e: any) {

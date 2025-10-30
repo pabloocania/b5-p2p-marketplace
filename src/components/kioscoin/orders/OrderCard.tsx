@@ -38,6 +38,12 @@ export function OrderCard({
     setOrder(orderDTO);
   }, [orderDTO]);
 
+  useEffect(() => {
+    if (order?.paymentMethods && order.paymentMethods.length > 0) {
+      setSelectedPaymentMethods(order.paymentMethods);
+    }
+  }, [order?.id, order?.paymentMethods]);
+
   const handlePaymentMethodsChange = (methods: PaymentMethod[]) => {
     setSelectedPaymentMethods(methods);
   };
@@ -95,6 +101,7 @@ export function OrderCard({
         showDetails={showDetails}
         setWalletAddress={setWalletAddress}
         onPaymentMethodsChange={handlePaymentMethodsChange}
+        selectedPaymentMethods={selectedPaymentMethods}
       />
       <OrderCardFooter
         order={order}
