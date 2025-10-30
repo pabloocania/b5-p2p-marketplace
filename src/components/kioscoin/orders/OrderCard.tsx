@@ -101,7 +101,6 @@ export function OrderCard({
         showDetails={showDetails}
         setWalletAddress={setWalletAddress}
         onPaymentMethodsChange={handlePaymentMethodsChange}
-        selectedPaymentMethods={selectedPaymentMethods}
       />
       <OrderCardFooter
         order={order}
