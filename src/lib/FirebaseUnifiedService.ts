@@ -14,11 +14,42 @@ import {
     isSignInWithEmailLink,
     sendSignInLinkToEmail,
     signInWithEmailLink,
-    Auth
+    Auth,
+    applyActionCode
 } from "firebase/auth";
-import { getMessaging, getToken, onMessage, MessagePayload } from "firebase/messaging";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { p2pMarketAPIClient as client } from "./APIClients";
-import { CreateUserRequest, KioscoinUser } from "b5-api-client";
+import { CreateUserRequest, KioscoinUser, UpdateUserSettingsRequest } from "b5-api-client";
+
+
+const DEFAULT_EMAIL_VERIFICATION_PAGE =
+    process.env.NEXT_PUBLIC_EMAIL_VERIFICATION_URL ??
+    process.env.REACT_APP_EMAIL_VERIFICATION_URL ??
+    "http://localhost:3000/auth/email-verified";
+
+const DEFAULT_EMAIL_LINK_URL =
+    process.env.NEXT_PUBLIC_EMAIL_LINK_URL ??
+    process.env.REACT_APP_EMAIL_LINK_URL ??
+    "http://localhost:3000/auth/verify-email";
+
+const trimTrailingSlash = (value: string): string => value.replace(/\/+$/, "");
+
+const appendQueryParams = (
+    base: string,
+    params: Record<string, string | undefined>
+): string => {
+    const query = Object.entries(params)
+        .filter(([, value]) => value !== undefined && value !== null)
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value as string)}`)
+        .join("&");
+
+    if (!query) {
+        return base;
+    }
+
+    const separator = base.includes("?") ? "&" : "?";
+    return `${base}${separator}${query}`;
+};
 
 // Auth provider type for better type safety
 export enum AuthProvider {
@@ -115,12 +146,26 @@ export class FirebaseUnifiedService {
     private app: ReturnType<typeof initializeApp> | null = null;
     private messaging: ReturnType<typeof getMessaging> | null = null;
     private auth: Auth | null = null;
-    private readonly actionCodeSettings = {
-        url: 'http://localhost:3000/auth/verify-email',
-        handleCodeInApp: true,
-    } as const;
+    private readonly actionCodeSettings: { url: string; handleCodeInApp: boolean };
+    private readonly emailVerificationUrl: string;
+    private readonly emailVerificationContinueUrl?: string;
 
     constructor() {
+        const configuredEmailVerificationUrl =
+            process.env.NEXT_PUBLIC_EMAIL_VERIFICATION_URL ??
+            process.env.REACT_APP_EMAIL_VERIFICATION_URL ??
+            DEFAULT_EMAIL_VERIFICATION_PAGE;
+
+        this.emailVerificationUrl = trimTrailingSlash(configuredEmailVerificationUrl);
+        this.emailVerificationContinueUrl =
+            process.env.NEXT_PUBLIC_EMAIL_VERIFICATION_CONTINUE_URL ??
+            process.env.REACT_APP_EMAIL_VERIFICATION_CONTINUE_URL ??
+            undefined;
+
+        this.actionCodeSettings = {
+            url: DEFAULT_EMAIL_LINK_URL,
+            handleCodeInApp: true,
+        };
         this.initializeFirebase();
     }
 
@@ -141,6 +186,63 @@ export class FirebaseUnifiedService {
         } catch (error) {
             console.error("Error fetching Firebase configuration:", error);
             throw new Error("Failed to initialize Firebase configuration");
+        }
+    }
+
+    private buildEmailVerificationSettings(loginId: string) {
+        return {
+            url: this.buildEmailVerificationUrl(loginId),
+            handleCodeInApp: false,
+        };
+    }
+
+    private buildEmailVerificationUrl(loginId: string): string {
+        return appendQueryParams(this.emailVerificationUrl, {
+            loginId,
+            continueUrl: this.emailVerificationContinueUrl,
+        });
+    }
+
+    private async ensureBackendVerification(
+        firebaseUser: User,
+        backendUser: KioscoinUser,
+        idToken: string
+    ): Promise<KioscoinUser> {
+        const firebaseVerified = firebaseUser.emailVerified;
+        const backendVerified = backendUser.settings?.hasVerified ?? false;
+
+        if (!firebaseVerified || backendVerified) {
+            return backendUser;
+        }
+
+        if (!backendUser.id) {
+            console.warn("Missing backend user id when attempting to mark verification status.");
+            return backendUser;
+        }
+
+        const settingsUpdate: UpdateUserSettingsRequest["settings"] = {
+            paymentMethods: (backendUser.settings?.paymentMethods ?? []).map((method) => ({ ...method })),
+            hasVerified: true,
+        };
+
+        const preferredToken = backendUser.settings?.preferredTokenCode;
+        if (preferredToken !== undefined && preferredToken !== null) {
+            settingsUpdate.preferredTokenCode = preferredToken;
+        }
+
+        const request: UpdateUserSettingsRequest = {
+            userId: backendUser.id,
+            settings: settingsUpdate,
+        };
+
+        try {
+            const response = await client.updateUserSettings(request, {
+                Authorization: `Bearer ${idToken}`,
+            });
+            return response.users?.[0] ?? backendUser;
+        } catch (error) {
+            console.error("Failed to update backend verification status:", error);
+            return backendUser;
         }
     }
 
@@ -208,7 +310,17 @@ export class FirebaseUnifiedService {
             const backendUser = await this.getUserFromBackend(userCredential.user.uid, idToken);
 
             if (backendUser) {
-                return this._createSuccessAuthResult(userCredential.user, backendUser, AuthProvider.EMAIL, idToken);
+                const syncedBackendUser = await this.ensureBackendVerification(
+                    userCredential.user,
+                    backendUser,
+                    idToken
+                );
+                return this._createSuccessAuthResult(
+                    userCredential.user,
+                    syncedBackendUser,
+                    AuthProvider.EMAIL,
+                    idToken
+                );
             } else {
                 return AuthResult.failure('User not found in backend');
             }
@@ -233,7 +345,7 @@ export class FirebaseUnifiedService {
             const user = userCredential.user;
             const idToken = await user.getIdToken();
             // Send email verification
-            await sendEmailVerification(user);
+            await sendEmailVerification(user, this.buildEmailVerificationSettings(user.uid));
 
             const backendUser = await this.createUserInBackend(user.uid, username, idToken);
 
@@ -257,13 +369,14 @@ export class FirebaseUnifiedService {
             const provider = new GoogleAuthProvider();
             const userCredential = await signInWithPopup(this.auth, provider);
             const user = userCredential.user;
+            const idToken = await user.getIdToken();
 
             // Get or create user in your Kotlin backend
-            const backendUser = await this.getUserFromBackend(user.uid, user.displayName || '');
-            const idToken = await user.getIdToken();
+            const backendUser = await this.getUserFromBackend(user.uid, idToken);
             if (backendUser) {
+                const syncedBackendUser = await this.ensureBackendVerification(user, backendUser, idToken);
                 // Use the new helper method
-                return this._createSuccessAuthResult(user, backendUser, AuthProvider.GOOGLE, idToken);
+                return this._createSuccessAuthResult(user, syncedBackendUser, AuthProvider.GOOGLE, idToken);
             } else {
                 return AuthResult.failure('Failed to get or create user in backend');
             }
@@ -282,13 +395,14 @@ export class FirebaseUnifiedService {
             const provider = new FacebookAuthProvider();
             const userCredential = await signInWithPopup(this.auth, provider);
             const user = userCredential.user;
+            const idToken = await user.getIdToken();
 
             // Get or create user in your Kotlin backend
-            const backendUser = await this.getUserFromBackend(user.uid, user.displayName || '');
-            const idToken = await user.getIdToken();
+            const backendUser = await this.getUserFromBackend(user.uid, idToken);
             if (backendUser) {
+                const syncedBackendUser = await this.ensureBackendVerification(user, backendUser, idToken);
                 // Use the new helper method
-                return this._createSuccessAuthResult(user, backendUser, AuthProvider.FACEBOOK, idToken);
+                return this._createSuccessAuthResult(user, syncedBackendUser, AuthProvider.FACEBOOK, idToken);
             } else {
                 return AuthResult.failure('Failed to get or create user in backend');
             }
@@ -307,13 +421,14 @@ export class FirebaseUnifiedService {
             const provider = new TwitterAuthProvider();
             const userCredential = await signInWithPopup(this.auth, provider);
             const user = userCredential.user;
+            const idToken = await user.getIdToken();
 
             // Get or create user in your Kotlin backend
-            const backendUser = await this.getUserFromBackend(user.uid, user.displayName || '');
-            const idToken = await user.getIdToken();
+            const backendUser = await this.getUserFromBackend(user.uid, idToken);
             if (backendUser) {
+                const syncedBackendUser = await this.ensureBackendVerification(user, backendUser, idToken);
                 // Use the new helper method
-                return this._createSuccessAuthResult(user, backendUser, AuthProvider.TWITTER, idToken);
+                return this._createSuccessAuthResult(user, syncedBackendUser, AuthProvider.TWITTER, idToken);
             } else {
                 return AuthResult.failure('Failed to get or create user in backend');
             }
@@ -331,7 +446,7 @@ export class FirebaseUnifiedService {
 
             const user = this.auth.currentUser;
             if (user) {
-                await sendEmailVerification(user);
+                await sendEmailVerification(user, this.buildEmailVerificationSettings(user.uid));
                 return true;
             }
             return false;
@@ -413,12 +528,14 @@ export class FirebaseUnifiedService {
             // Clear the email from localStorage
             window.localStorage.removeItem('emailForSignIn');
 
-            // Get or create user in your Kotlin backend
-            const backendUser = await this.getUserFromBackend(user.uid, user.displayName || '');
             const idToken = await user.getIdToken();
+
+            // Get or create user in your Kotlin backend
+            const backendUser = await this.getUserFromBackend(user.uid, idToken);
             if (backendUser) {
                 // Use the new helper method
-                return this._createSuccessAuthResult(user, backendUser, AuthProvider.EMAIL, idToken);
+                const syncedBackendUser = await this.ensureBackendVerification(user, backendUser, idToken);
+                return this._createSuccessAuthResult(user, syncedBackendUser, AuthProvider.EMAIL, idToken);
             } else {
                 return AuthResult.failure('Failed to get or create user in backend');
             }
@@ -430,6 +547,18 @@ export class FirebaseUnifiedService {
 
     getEmailForSignIn(): string | null {
         return window.localStorage.getItem('emailForSignIn');
+    }
+
+    async applyEmailVerificationCode(oobCode: string): Promise<void> {
+        if (!this.auth) {
+            await this.initializeFirebase();
+        }
+
+        if (!this.auth) {
+            throw new Error("Firebase Auth not initialized");
+        }
+
+        await applyActionCode(this.auth, oobCode);
     }
 
     // Helper method to create success AuthResult
@@ -450,10 +579,10 @@ export class FirebaseUnifiedService {
     }
 
     // Backend integration methods
-    private async getUserFromBackend(userId: string, loginId: string): Promise<KioscoinUser | null> {
+    private async getUserFromBackend(userId: string, authToken: string): Promise<KioscoinUser | null> {
         try {
             const response = await client.getUser(userId, {
-                Authorization: `Bearer ${loginId}`,
+                Authorization: `Bearer ${authToken}`,
             });
             return response.users[0];
         } catch (error) {

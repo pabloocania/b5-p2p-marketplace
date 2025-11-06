@@ -56,9 +56,19 @@ export default function UserSettings({ className }: UserSettingsProps) {
     try {
       const request: UpdateUserSettingsRequest = {
         userId: user.id,
-        settings: {
-          paymentMethods: selectedMethods.map((m) => ({ ...m })),
-        },
+        settings: (() => {
+          const settingsPayload: UpdateUserSettingsRequest["settings"] = {
+            paymentMethods: selectedMethods.map((m) => ({ ...m })),
+            hasVerified: user.settings?.hasVerified ?? false,
+          };
+
+          const preferredToken = user.settings?.preferredTokenCode;
+          if (preferredToken !== undefined) {
+            settingsPayload.preferredTokenCode = preferredToken;
+          }
+
+          return settingsPayload;
+        })(),
       };
 
       await p2pMarketAPIClient.updateUserSettings(request, {
