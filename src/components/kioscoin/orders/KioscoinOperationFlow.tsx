@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import OrdersBanner from "../banner/OrdersBanner";
 import { OrderOffer } from "b5-api-client";
-import { useUserContext } from "../users/UserContext";
+import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 import { CreateOrderContainer } from "./create-orders/CreateOrderContainer";
 import OperationForm from "./operation/OperationForm";
 import KioscoinUserLoginFlow from "../users/KioscoinUserLoginFlow";
@@ -20,7 +20,7 @@ export default function KioscoinOperationFlow({
   const [isOperationOpen, setIsOperationOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<OrderOffer | null>(null);
-  const { user, login, logout } = useUserContext();
+  const { user, login, logout } = useKioscoinUserContext();
 
   const handleOfferClick = (offer: OrderOffer) => {
     setSelectedOffer(offer);

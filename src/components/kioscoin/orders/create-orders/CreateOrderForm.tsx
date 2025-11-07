@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { p2pMarketAPIClient as client } from "../../../../lib/APIClients";
-import { useUserContext } from "../../users/UserContext";
+import { useKioscoinUserContext } from "../../users/KioscoinUserContext";
 import { useTranslation } from "react-i18next";
 import TokenSelector from "@/components/kioscoin/orders/create-orders/TokenSelector";
 import BlockchainSelector from "@/components/kioscoin/orders/create-orders/BlockchainSelector";
@@ -62,7 +62,7 @@ export default function CreateOrder({
   );
   const [rateError, setRateError] = useState<string | null>(null);
   const [isLoadingRate, setIsLoadingRate] = useState(false);
-  const { user, isLoggedIn, loginId, login, logout } = useUserContext();
+  const { user, isLoggedIn, loginId, login, logout } = useKioscoinUserContext();
   const { t } = useTranslation();
   const availableMethods = useMemo(
     () => ConfigStore.getInstance().getPaymentMethods(),

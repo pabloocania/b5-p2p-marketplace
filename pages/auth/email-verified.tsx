@@ -1,37 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
-import { firebaseService } from "@/lib/FirebaseUnifiedService";
-import { p2pMarketAPIClient } from "@/lib/APIClients";
+import { firebaseService, p2pMarketAPIClient } from "@/lib/APIClients";
 import KioscoinBrand from "@/components/kioscoin/branding/KioscoinBrand";
 
 type VerificationState = "idle" | "processing" | "success" | "error";
-
-const safeRedirect = (target?: string | string[] | null): string | null => {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  const value = Array.isArray(target) ? target[0] : target;
-
-  if (!value) {
-    return null;
-  }
-
-  try {
-    const parsed = new URL(value, window.location.origin);
-    if (parsed.origin === window.location.origin) {
-      return `${parsed.pathname}${parsed.search}${parsed.hash}`;
-    }
-  } catch (_error) {
-    // Ignore invalid URLs and fall through to returning null.
-  }
-
-  return null;
-};
 
 const EmailVerifiedPage = () => {
   const router = useRouter();
@@ -41,26 +17,30 @@ const EmailVerifiedPage = () => {
     "email_verification.verifying"
   );
 
-  const continuePath = useMemo(
-    () => safeRedirect(router.query.continueUrl ?? null),
-    [router.query.continueUrl]
-  );
-
   useEffect(() => {
     if (!router.isReady) {
       return;
     }
 
-    const { oobCode, loginId } = router.query;
+    const { oobCode, loginId, continueUrl } = router.query;
 
-    if (typeof loginId !== "string") {
-      setState("error");
-      setMessageKey("email_verification.invalid_link");
-      return;
+    let resolvedLoginId: string | null = null;
+    if (typeof loginId === "string") {
+      resolvedLoginId = loginId.trim();
     }
 
-    const trimmedLoginId = loginId.trim();
-    if (!trimmedLoginId) {
+    if (!resolvedLoginId && typeof continueUrl === "string") {
+      try {
+        const parsedContinue = new URL(continueUrl, window.location.origin);
+        const params = parsedContinue.searchParams;
+        const legacyLoginId = params.get("loginId")?.trim();
+        resolvedLoginId = legacyLoginId || null;
+      } catch (_error) {
+        // ignore malformed continueUrl
+      }
+    }
+
+    if (!resolvedLoginId) {
       setState("error");
       setMessageKey("email_verification.invalid_link");
       return;
@@ -83,16 +63,9 @@ const EmailVerifiedPage = () => {
         }
 
         setMessageKey("email_verification.syncing");
-        await p2pMarketAPIClient.verifyUserEmail({ loginId: trimmedLoginId });
+        await p2pMarketAPIClient.verifyUserEmail({ loginId: resolvedLoginId });
         setState("success");
         setMessageKey("email_verification.success");
-
-        if (continuePath) {
-          // Allow a brief moment for the success message before redirecting.
-          setTimeout(() => {
-            router.replace(continuePath);
-          }, 1200);
-        }
       } catch (error) {
         console.error("Email verification failed:", error);
         setState("error");
@@ -101,10 +74,9 @@ const EmailVerifiedPage = () => {
     };
 
     verify();
-  }, [router, continuePath]);
+  }, [router.isReady, router.asPath]);
 
-  const showRedirectNotice = state === "success" && Boolean(continuePath);
-  const showSuccessDetail = state === "success" && !showRedirectNotice;
+  const showSuccessDetail = state === "success";
 
   return (
     <>
@@ -116,7 +88,7 @@ const EmailVerifiedPage = () => {
           <div className="w-full max-w-lg space-y-10">
             <KioscoinBrand showSlogan className="justify-center" />
 
-            <div className="rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl shadow-xl p-8 sm:p-10 space-y-6 text-center">
+            <div className="rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl shadow-xl p-8 sm:p-10 space-y-6 text-center font-secondary">
               <div className="flex flex-col items-center space-y-4">
                 <div
                   className={`flex h-14 w-14 items-center justify-center rounded-full border transition-colors ${
@@ -146,7 +118,7 @@ const EmailVerifiedPage = () => {
                 </div>
               </div>
 
-              {state === "processing" && !showRedirectNotice && (
+              {state === "processing" && (
                 <p className="text-xs uppercase tracking-wide text-primary/80">
                   {t("email_verification.verifying")}
                 </p>
@@ -157,20 +129,7 @@ const EmailVerifiedPage = () => {
                   <p className="text-sm text-muted-foreground">
                     {t("email_verification.success_detail")}
                   </p>
-                  <Link
-                    href="/"
-                    className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"
-                  >
-                    {t("email_verification.go_dashboard")}
-                  </Link>
                 </div>
-              )}
-
-              {showRedirectNotice && (
-                <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  {t("email_verification.redirecting")}
-                </p>
               )}
 
               {state === "error" && (

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { BannerOffer } from "../banner/types";
 import { transformBannerOfferToOrderRequest } from "../banner/utils";
 import CreateOrder from "./create-orders/CreateOrderForm";
-import { useUserContext } from "../users/UserContext";
+import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 import { useTranslation } from "react-i18next";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { CreateOrderContainer } from "./create-orders/CreateOrderContainer";
@@ -19,7 +19,7 @@ export default function OrderCreationFlow({
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<BannerOffer | null>(null);
-  const { user, login, logout } = useUserContext();
+  const { user, login, logout } = useKioscoinUserContext();
   const { t } = useTranslation();
 
   const handleClose = () => {

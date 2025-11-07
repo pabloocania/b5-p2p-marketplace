@@ -5,7 +5,7 @@ import OrdersFeed, {
 } from "../src/components/kioscoin/orders/OrdersFeed";
 import { Button } from "@/components/ui/button";
 import { Plus, User, Languages, HelpCircle } from "lucide-react";
-import { useUserContext } from "../src/components/kioscoin/users/UserContext";
+import { useKioscoinUserContext } from "../src/components/kioscoin/users/KioscoinUserContext";
 import { useDisconnect } from "wagmi";
 import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
 import { TransactionStatus } from "@/components/kioscoin/TransactionStatus";
@@ -18,12 +18,12 @@ import KioscoinOperationFlow from "@/components/kioscoin/orders/KioscoinOperatio
 import { CreateOrderContainer } from "@/components/kioscoin/orders/create-orders/CreateOrderContainer";
 import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
 import { HelpDialog } from "@/components/kioscoin/HelpDialog";
-import SmartWalletOnboarding from "@/components/kioscoin/users/SmartWalletOnboarding";
+import SmartWalletOnboarding from "@/components/kioscoin/users/profile/SmartWalletOnboarding";
 
 export default function Home() {
   const [activeComponent, setActiveComponent] = useState("OrderFeed");
   const [activeSubFilter, setActiveSubFilter] = useState(Filter.PENDING);
-  const { user, login, logout } = useUserContext();
+  const { user, login, logout } = useKioscoinUserContext();
 
   const [refreshKey, setRefreshKey] = useState(0);
   const incrementRefreshKey = () => {

@@ -1,13 +1,13 @@
 import { ReactNode } from "react";
 import { CreateOrderContainer } from "../orders/create-orders/CreateOrderContainer";
 import UserMenuNew from "./UserMenuNew";
-import { KioscoinUser } from "b5-api-client";
+import { KioscoinUser, UserData } from "b5-api-client";
 
 interface UserMenuSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user: KioscoinUser | undefined;
-  onLogin: (userData: KioscoinUser, loginId: string) => void;
+  onLogin: (kioscoinUser: KioscoinUser, userData: UserData) => void;
   onLogout: () => void;
   trigger?: ReactNode;
 }

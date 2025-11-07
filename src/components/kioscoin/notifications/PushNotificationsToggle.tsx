@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { p2pMarketAPIClient as client } from "@/lib/APIClients";
+import {
+  p2pMarketAPIClient as client,
+  firebaseService,
+} from "@/lib/APIClients";
 import { useTranslation } from "react-i18next";
-import { useUserContext } from "@/components/kioscoin/users/UserContext";
-import { firebaseService } from "@/lib/FirebaseUnifiedService";
+import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUserContext";
 
 interface PushNotificationsToggleProps {
   userId: string;
@@ -17,7 +19,7 @@ const PushNotificationsToggle: React.FC<PushNotificationsToggleProps> = ({
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
-  const { loginId } = useUserContext();
+  const { loginId } = useKioscoinUserContext();
 
   useEffect(() => {
     // Check current notification permission status

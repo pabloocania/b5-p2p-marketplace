@@ -15,7 +15,7 @@ import LockFundsButton from "@/components/web3/Escrow/LockFundsButton";
 import ReleaseFundsButton from "@/components/web3/Escrow/ReleaseFundsButton";
 import { p2pMarketAPIClient as client } from "../../../lib/APIClients";
 import { useTranslation } from "react-i18next";
-import { useUserContext } from "../users/UserContext";
+import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 import { useAccount, useChainId } from "wagmi";
 import { ConnectToContinueButton } from "./ConnectToContinueButton";
 import NotifyFiatSentButton from "../NotifyFiatSentButton";
@@ -49,7 +49,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   setOrder,
   paymentMethods,
 }) => {
-  const { user, isLoggedIn, loginId } = useUserContext();
+  const { user, isLoggedIn, loginId } = useKioscoinUserContext();
   const { isConnected } = useAccount();
   const { isConnected: isConnectedWeb3Auth } = useWeb3AuthConnect();
   const chainId = useChainId();

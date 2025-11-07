@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
-import { useUserContext } from "../../users/UserContext";
+import { useKioscoinUserContext } from "../../users/KioscoinUserContext";
 import PaymentMethodSelector from "../create-orders/PaymentMethodSelector";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
@@ -32,7 +32,7 @@ export default function OperationForm({
   onOrderCreated,
 }: OperationFormProps) {
   const { t } = useTranslation();
-  const { user, loginId } = useUserContext();
+  const { user, loginId } = useKioscoinUserContext();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>([]);

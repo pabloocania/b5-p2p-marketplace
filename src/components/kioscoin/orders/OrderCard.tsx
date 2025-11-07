@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Order, PaymentMethod } from "b5-api-client";
-import { useUserContext } from "../users/UserContext";
+import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 import OrderStatusBar from "./OrderStatus";
 import { useTranslation } from "react-i18next";
 import OrderCardHeader from "./OrderCardHeader";
@@ -32,7 +32,7 @@ export function OrderCard({
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
     PaymentMethod[]
   >([]);
-  const { user } = useUserContext();
+  const { user } = useKioscoinUserContext();
 
   useEffect(() => {
     setOrder(orderDTO);

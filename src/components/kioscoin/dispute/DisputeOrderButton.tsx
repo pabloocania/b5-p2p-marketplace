@@ -14,7 +14,7 @@ import { IconButton } from "@/components/ui/IconButton";
 
 import { Order } from "b5-api-client";
 import { p2pMarketAPIClient as client } from "@/lib/APIClients";
-import { useUserContext } from "@/components/kioscoin/users/UserContext";
+import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUserContext";
 import { CreateDisputeRequest } from "b5-api-client";
 
 // interface DisputeOrderRequest {
@@ -27,7 +27,7 @@ interface DisputeOrderButtonProps {
 }
 
 export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
-  const { user, loginId } = useUserContext();
+  const { user, loginId } = useKioscoinUserContext();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [apiResult, setApiResult] = useState<string | null>(null);

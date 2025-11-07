@@ -5,7 +5,7 @@ import { p2pMarketAPIClient as client } from "@/lib/APIClients";
 import { createNotificationsService, getNotificationsService, NotificationsServiceImpl } from "@/lib/NotificationsService";
 import { Message } from "b5-api-client";
 import { NotificationDto } from "b5-api-client";
-import { useUserContext } from "@/components/kioscoin/users/UserContext";
+import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUserContext";
 import { toast } from "@/components/ui/use-toast";
 import NotificationCard from "@/components/kioscoin/notifications/NotificationCard";
 
@@ -26,7 +26,7 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isConnected, setIsConnected] = useState(false);
-    const { loginId } = useUserContext();
+    const { loginId } = useKioscoinUserContext();
     const notificationsServiceRef = useRef<NotificationsServiceImpl | null>(null);
 
     // Fetch notifications from API

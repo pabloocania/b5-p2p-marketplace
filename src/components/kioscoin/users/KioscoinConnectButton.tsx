@@ -1,7 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import KioscoinOnboarding from "./SmartWalletOnboarding";
+import KioscoinOnboarding from "./profile/SmartWalletOnboarding";
 
 interface KioscoinConnectButtonProps {
   onConnectingChange: (isConnecting: boolean) => void;

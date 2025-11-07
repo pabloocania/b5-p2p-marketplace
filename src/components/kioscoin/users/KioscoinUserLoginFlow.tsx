@@ -6,6 +6,7 @@ import { EmailLoginForm } from "./login/EmailLoginForm";
 import { RegisterForm } from "./login/RegisterForm";
 import { useTranslation } from "react-i18next";
 import KioscoinBrand from "../branding/KioscoinBrand";
+import { KioscoinUser, UserData } from "b5-api-client";
 
 type Mode = "login" | "register";
 
@@ -13,7 +14,7 @@ interface KioscoinUserLoginFlowProps {
   variant?: "sheet" | "inline";
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  onLogin: (user: any, token: string) => void;
+  onLogin: (user: KioscoinUser, userData: UserData) => void;
   showBrand?: boolean;
 }
 

@@ -12,10 +12,10 @@ import type {
 } from "b5-api-client";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { ConfigStore } from "@/lib/ConfigStore";
-import { useUserContext } from "./UserContext";
+import { useKioscoinUserContext } from "../KioscoinUserContext";
 import { useTranslation } from "react-i18next";
 import PushNotificationsToggle from "@/components/kioscoin/notifications/PushNotificationsToggle";
-import PaymentMethodsComponent from "../orders/create-orders/PaymentMethodsComponent";
+import PaymentMethodsComponent from "../../orders/create-orders/PaymentMethodsComponent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserSettingsProps {
@@ -23,7 +23,7 @@ interface UserSettingsProps {
 }
 
 export default function UserSettings({ className }: UserSettingsProps) {
-  const { user, loginId } = useUserContext();
+  const { user, loginId } = useKioscoinUserContext();
   const { toast } = useToast();
   const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>([]);
   const [isSaving, setIsSaving] = useState(false);

@@ -6,13 +6,13 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserProfile, EmailLoginForm, RegisterForm } from "./login";
-import { KioscoinUser } from "b5-api-client";
+import { KioscoinUser, UserData } from "b5-api-client";
 import { useWeb3Auth } from "@web3auth/modal/react";
 import KioscoinBrand from "../branding/KioscoinBrand";
 
 interface UserMenuNewProps {
   readonly user: KioscoinUser | undefined;
-  readonly onLogin: (user: KioscoinUser, loginId: string) => void;
+  readonly onLogin: (user: KioscoinUser, userData: UserData) => void;
   readonly onLogout: () => void;
 }
 
@@ -97,10 +97,6 @@ const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
                 onSwitchToEmailLogin={() => setActiveTab("email")}
               />
             </TabsContent>
-
-            {/* <TabsContent value="mock" className="space-y-4">
-            <MockUsersList mockUsers={mockUsers} onLogin={onLogin} />
-          </TabsContent> */}
           </Tabs>
         </CardContent>
       </Card>

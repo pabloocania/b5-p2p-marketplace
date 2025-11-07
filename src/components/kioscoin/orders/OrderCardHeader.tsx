@@ -4,7 +4,7 @@ import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
-import { UserInfoCard } from "../users/UserInfoCard";
+import { UserInfoCard } from "../users/profile/UserInfoCard";
 
 interface OrderCardHeaderProps {
   order: Order;

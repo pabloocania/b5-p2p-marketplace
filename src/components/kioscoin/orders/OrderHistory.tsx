@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { p2pMarketAPIClient as client } from "../../../lib/APIClients";
-import { useUserContext } from "../users/UserContext";
+import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 import { useTranslation } from "react-i18next";
 
 interface OrderEvent {
@@ -17,7 +17,7 @@ export default function OrderHistory({ orderId }: OrderHistoryProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
-  const { loginId } = useUserContext();
+  const { loginId } = useKioscoinUserContext();
 
   useEffect(() => {
     if (!orderId) {

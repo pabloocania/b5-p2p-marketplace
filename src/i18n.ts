@@ -291,7 +291,11 @@ i18n.use(initReactI18next).init({
         notifications_enabled: "Notifications enabled",
         notifications_enabled_description: "You will now receive push notifications.",
         failed_to_enable_push_notifications_description: "Failed to enable push notifications. Please try again.",
-        in: "in"
+        in: "in",
+        loading_kioscoin: "Loading Kioscoin",
+        setting_up_experience: "Setting up your experience...",
+        email_not_verified: "Email not verified",
+        verify_email_message: "Please check your inbox and verify your email to access all features."
       },
     },
     es: {
@@ -591,6 +595,10 @@ i18n.use(initReactI18next).init({
         notifications_enabled_description: "Ahora recibirás notificaciones.",
         failed_to_enable_push_notifications_description: "Se produjo un error al activar las notificaciones. Por favor, intente nuevamente.",
         in: "en",
+        loading_kioscoin: "Cargando Kioscoin",
+        setting_up_experience: "Preparando tu experiencia...",
+        email_not_verified: "Email sin verificar",
+        verify_email_message: "Por favor revisa tu bandeja de entrada y verifica tu email para acceder a todas las funciones."
       },
     },
   },

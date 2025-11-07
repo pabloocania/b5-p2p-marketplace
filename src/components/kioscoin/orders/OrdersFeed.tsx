@@ -10,7 +10,7 @@ import {
 import { OrderCard } from "./OrderCard";
 import { ScrollableContainer } from "../ScrollabelContainer";
 import { p2pMarketAPIClient as client } from "../../../lib/APIClients";
-import { useUserContext } from "../users/UserContext";
+import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -61,7 +61,7 @@ export default function OrdersFeed({
   onBack,
   filterGroups,
 }: OrderFeedProps) {
-  const { user, login, loginId } = useUserContext();
+  const { user, login, loginId } = useKioscoinUserContext();
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
     undefined

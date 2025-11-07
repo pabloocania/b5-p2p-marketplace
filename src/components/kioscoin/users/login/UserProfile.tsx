@@ -1,5 +1,5 @@
 import React from "react";
-import { LogOut, Loader2, RotateCcw } from "lucide-react";
+import { LogOut, Loader2, RotateCcw, AlertCircle } from "lucide-react";
 
 import {
   Card,
@@ -8,18 +8,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import KioscoinConnectButton from "../KioscoinConnectButton";
 import UserWalletsComponent from "../UserWalletsComponent";
-import { ProfileHeader } from "../ProfileHeader";
-import UserBalance from "../UserBalance";
-import SmartWalletOnboarding from "../SmartWalletOnboarding";
+import { ProfileHeader } from "../profile/ProfileHeader";
+import UserBalance from "../profile/UserBalance";
+import SmartWalletOnboarding from "../profile/SmartWalletOnboarding";
 import { KioscoinUser } from "b5-api-client";
 import { useState, useEffect } from "react";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import { useWeb3Auth } from "@web3auth/modal/react";
-import UserSettings from "../UserSettings";
+import UserSettings from "../profile/UserSettings";
+import { useKioscoinUserContext } from "../KioscoinUserContext";
 // Usando isotipo PNG en lugar del componente SVG
 
 interface UserProfileProps {
@@ -38,6 +40,7 @@ export const UserProfile = ({
   onConnectingChange,
 }: UserProfileProps) => {
   const { t } = useTranslation();
+  const { emailVerified } = useKioscoinUserContext();
   const { balances, isLoading, isReady } = useEtherspotSdk();
   const { isConnected: web3AuthConnected, status: web3authStatus } =
     useWeb3Auth();
@@ -153,6 +156,19 @@ export const UserProfile = ({
           <ProfileHeader user={user} />
         </CardTitle>
       </CardHeader>
+
+      {/* Email Verification Alert */}
+      {!emailVerified && (
+        <div className="px-3 py-2">
+          <Alert className="bg-secondary/5">
+            <AlertCircle className="h-4 w-4 text-dark" />
+            <AlertDescription className="font-secondary text-xs text-primary">
+              <span className="font-semibold">{t("email_not_verified")}:</span>{" "}
+              {t("verify_email_message")}
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
 
       {/* UserBalance independiente debajo del ProfileHeader */}
       {canShowWallet && balances && (

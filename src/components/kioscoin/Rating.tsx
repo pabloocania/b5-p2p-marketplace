@@ -5,7 +5,7 @@ import { Star, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { p2pMarketAPIClient as client } from "../../lib/APIClients";
 import { useTranslation } from "react-i18next";
-import { useUserContext } from "./users/UserContext";
+import { useKioscoinUserContext } from "./users/KioscoinUserContext";
 
 interface RatingProps {
   orderId: string;
@@ -18,7 +18,7 @@ export function Rating({ orderId, ratedId, ratedUsername }: RatingProps) {
   const [rating, setRating] = useState<number>(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { t } = useTranslation();
-  const { loginId } = useUserContext();
+  const { loginId } = useKioscoinUserContext();
 
   const handleSubmit = async () => {
     if (rating > 0) {

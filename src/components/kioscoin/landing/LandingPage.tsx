@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import { EmailLoginForm } from "@/components/kioscoin/users/login/EmailLoginForm";
 import { RegisterForm } from "@/components/kioscoin/users/login/RegisterForm";
 import { cn } from "@/lib/utils";
-import { useUserContext } from "@/components/kioscoin/users/UserContext";
+import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUserContext";
+import { KioscoinUser, UserData } from "b5-api-client";
 import {
   Users,
   TrendingUp,
@@ -18,9 +19,7 @@ import KioscoinUserLoginFlow from "../users/KioscoinUserLoginFlow";
 
 export function LandingPage() {
   const { t } = useTranslation();
-  const { login } = useUserContext();
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
-
+  const { login } = useKioscoinUserContext();
   const [verbIndex, setVerbIndex] = useState(0);
   const [isFading, setIsFading] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -38,11 +37,6 @@ export function LandingPage() {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
-
-  const handleLogin = (user: any, token: string) => {
-    // Use the real login function from UserContext
-    login(user, token);
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -85,7 +79,7 @@ export function LandingPage() {
         {/* Auth Section - Compact size */}
         <KioscoinUserLoginFlow
           variant="inline"
-          onLogin={handleLogin}
+          onLogin={login}
           showBrand={false}
         />
       </div>

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useCallback, useMemo } from "react";
 import { NotificationsPanel } from "./notifications/NotificationsPanel";
 import { useNotifications } from "@/hooks/useNotifications";
-import { useUserContext } from "./users/UserContext";
+import { useKioscoinUserContext } from "./users/KioscoinUserContext";
 
 interface TopBarProps {
   activeComponent: string;
@@ -15,7 +15,7 @@ export function TopBar({ activeComponent }: TopBarProps) {
   const { t } = useTranslation();
   const [isNotificationsPanelOpen, setIsNotificationsPanelOpen] =
     useState(false);
-  const { user } = useUserContext();
+  const { user } = useKioscoinUserContext();
 
   const apiBaseUrl = useMemo(
     () =>

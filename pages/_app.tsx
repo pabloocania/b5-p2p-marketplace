@@ -2,7 +2,7 @@ import Head from "next/head";
 import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { AppProps } from "next/app";
-import { UserProvider } from "../src/components/kioscoin/users/UserContext";
+import { KioscoinUserProvider } from "../src/components/kioscoin/users/KioscoinUserContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
@@ -18,6 +18,7 @@ import { Web3AuthProvider } from "@web3auth/modal/react";
 import { useTranslation } from "react-i18next";
 import web3AuthContextConfig from "../src/components/web3/web3auth";
 import { Toaster } from "@/components/ui/toaster";
+import { AppLoadingScreen } from "@/components/kioscoin/loading/AppLoadingScreen";
 
 const queryClient = new QueryClient();
 
@@ -51,7 +52,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   }, [i18n.language, t]);
 
   if (!isConfigLoaded) {
-    return <div>Loading...</div>; // Or your loading component
+    return <AppLoadingScreen />;
   }
 
   return (
@@ -99,7 +100,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         {/* <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/> */}
       </Head>
       <Web3AuthProvider config={web3AuthContextConfig}>
-        <UserProvider>
+        <KioscoinUserProvider>
           <WagmiProvider config={wagmiConfig}>
             <QueryClientProvider client={queryClient}>
               <RainbowKitProvider
@@ -116,7 +117,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
               </RainbowKitProvider>
             </QueryClientProvider>
           </WagmiProvider>
-        </UserProvider>
+        </KioscoinUserProvider>
       </Web3AuthProvider>
     </>
   );
