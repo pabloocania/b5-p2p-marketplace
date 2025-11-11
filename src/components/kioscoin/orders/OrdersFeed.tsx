@@ -252,7 +252,7 @@ export default function OrdersFeed({
                 showDetails={true}
                 onRefresh={refreshOrders}
               />
-            ) : orders && orders.length > 0 ? (
+            ) : (
               <>
                 <div className="mb-2">
                   <FilterBar
@@ -261,24 +261,26 @@ export default function OrdersFeed({
                     filterGroups={filterGroups || defaultFilterGroups}
                   />
                 </div>
-                <div className="space-y-2 p-3 bg-white rounded-lg border border-secondary/20 shadow-md">
-                  {orders.map((order) => (
-                    <div key={order.id}>
-                      <OrderCard
-                        orderDTO={order}
-                        onSelect={handleOrderSelect}
-                        onRefresh={refreshOrders}
-                      />
+                {orders && orders.length > 0 ? (
+                  <div className="space-y-4 p-4 bg-white rounded-lg border border-none shadow-primary/20">
+                    {orders.map((order) => (
+                      <div key={order.id}>
+                        <OrderCard
+                          orderDTO={order}
+                          onSelect={handleOrderSelect}
+                          onRefresh={refreshOrders}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center h-full">
+                    <div className="mb-5 text-dark font-bold font-secondary">
+                      {t("no_orders_available")}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                )}
               </>
-            ) : (
-              <div className="flex flex-col items-center h-full">
-                <div className="mb-5 text-dark font-bold font-secondary">
-                  {t("no_orders_available")}
-                </div>
-              </div>
             )}
           </>
         ) : (

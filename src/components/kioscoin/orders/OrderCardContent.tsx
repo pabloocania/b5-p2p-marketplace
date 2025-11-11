@@ -22,15 +22,6 @@ import {
   ConfigStore,
   getBlockchainDisplayName,
 } from "@/lib/ConfigStore";
-import { MessageCircle } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"; // Import Sheet components
-import { ChatInterface } from "@/components/chat/ChatInterface";
-import { Button } from "../../ui/button";
 import { Rating } from "../Rating";
 import { formatFiatAmount } from "@/lib/utils";
 import PaymentMethodSelector from "./create-orders/PaymentMethodSelector";
@@ -62,31 +53,11 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   setWalletAddress,
   onPaymentMethodsChange,
 }) => {
-  // No animated styles for chat button
   const { t } = useTranslation();
-  const [clipboardSupported, setClipboardSupported] = useState(false);
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
     PaymentMethod[]
   >([]);
   const availableMethods = ConfigStore.getInstance().getPaymentMethods();
-
-  useEffect(() => {
-    setClipboardSupported("clipboard" in navigator);
-  }, []);
-
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [hasUnreadMessage, setHasUnreadMessage] = useState(false);
-
-  const handleChatIconClick = () => {
-    setIsChatOpen(true);
-    setHasUnreadMessage(false);
-  };
-
-  // Cleanup function to handle WebSocket disconnection
-  const handleChatClose = () => {
-    setIsChatOpen(false);
-    // Add any additional cleanup logic here if needed
-  };
 
   const hasValidFiatData = (
     order: Order
@@ -100,17 +71,6 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   const isSeller = order.sellerId === user?.id;
   const buyerHasNotRated = isBuyer && !order.buyerHasRated;
   const sellerHasNotRated = isSeller && !order.sellerHasRated;
-
-  function isOrderCompleted(status: string): boolean {
-    const completedStatuses = [
-      "COMPLETED",
-      "COMPLETED_BY_ADMIN",
-      "RELEASED",
-      "CANCELLED",
-    ];
-
-    return completedStatuses.includes(status);
-  }
 
   const handleUpdatePaymentMethod = (updatedMethods: PaymentMethod[]) => {
     setSelectedPaymentMethods(updatedMethods);
@@ -164,51 +124,12 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
                 formattedAmount={order.amount!!}
                 tokenCode={order.tokenCode?.toLowerCase()!!}
                 textSizeClass="text-lg text-dark"
-                amountTextClassName="mr-1"
               />
             </span>
           </div>
-          {/* Chat icon */}
-          {order.chatId && !isOrderCompleted(order.status!!) && (
-            <div className="flex items-center">
-              <Sheet
-                open={isChatOpen}
-                onOpenChange={(open) => {
-                  setIsChatOpen(open);
-                  if (!open) handleChatClose();
-                }}
-              >
-                <SheetTrigger asChild>
-                  <Button
-                    onClick={handleChatIconClick}
-                    className={`p-2 rounded-md bg-white text-primary border ${
-                      hasUnreadMessage
-                        ? "border-primary ring-2 ring-primary animate-pulse"
-                        : "border-primary"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <MessageCircle size={18} />
-                      <span className="text-sm">Chat</span>
-                    </div>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="bottom" className="h-[75vh]" closeText="">
-                  <SheetTitle></SheetTitle>
-                  <ChatInterface
-                    order={order}
-                    userId={user?.id}
-                    onIncomingMessage={() => {
-                      if (!isChatOpen) setHasUnreadMessage(true);
-                    }}
-                  />
-                </SheetContent>
-              </Sheet>
-            </div>
-          )}
         </div>
         {/* Order details */}
-        <div className="flex justify-between w-full pb-1 space-y-2 pt-1 font-secondary">
+        <div className="flex justify-between w-full pb-1 pt-1 font-secondary">
           <div className="w-1/2 min-w-[60%] flex flex-col space-y-0.5">
             <div className="flex-1">
               <p className="text-left w-full text-primary whitespace-nowrap overflow-hidden text-ellipsis text-sm">

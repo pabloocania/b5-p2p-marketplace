@@ -12,6 +12,7 @@ import OrderCardFooter from "./OrderCardFooter";
 import ViewHistoryButton from "./ViewHistoryButton";
 import CopyIdButton from "./CopyIdButton";
 import DisputeOrderButton from "../dispute/DisputeOrderButton";
+import ChatButton from "./ChatButton";
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -80,6 +81,24 @@ export function OrderCard({
     </div>
   );
 
+  const renderChatButton = () => {
+    const isOrderCompleted = (status: string): boolean => {
+      const completedStatuses = [
+        "COMPLETED",
+        "COMPLETED_BY_ADMIN",
+        "RELEASED",
+        "CANCELLED",
+      ];
+      return completedStatuses.includes(status);
+    };
+
+    return order?.chatId && !isOrderCompleted(order.status ?? "") ? (
+      <div className="flex font-secondary w-full shadow-xs">
+        <ChatButton order={order} user={user} />
+      </div>
+    ) : null;
+  };
+
   if (!order) {
     return (
       <Card className="w-full">
@@ -91,7 +110,10 @@ export function OrderCard({
   }
 
   return (
-    <Card className="w-full border border-secondary/20" variant="shadow">
+    <Card
+      className="w-full border border-none shadow-primary/20"
+      variant="shadow"
+    >
       <OrderStatusBar status={order.status ?? "Unknown"} />
       <OrderCardHeader order={order} />
       <OrderCardContent
@@ -113,14 +135,29 @@ export function OrderCard({
         paymentMethods={selectedPaymentMethods}
       />
       {/* <Separator className="mb-1" /> */}
-      <div
-        className={`px-3 py-2 grid ${
-          canShowDisputeButton ? "grid-cols-3" : "grid-cols-2"
-        } gap-2`}
-      >
-        {renderHistoryButton()}
-        {renderCopyIdButton()}
-        {canShowDisputeButton && renderDisputeButton()}
+      <div className="px-3 py-2 space-y-2">
+        {/* First row: History, Copy ID, Chat */}
+        <div
+          className={`grid ${(() => {
+            const showChat =
+              order?.chatId &&
+              ![
+                "COMPLETED",
+                "COMPLETED_BY_ADMIN",
+                "RELEASED",
+                "CANCELLED",
+              ].includes(order.status ?? "");
+            return showChat ? "grid-cols-3" : "grid-cols-2";
+          })()} gap-2`}
+        >
+          {renderHistoryButton()}
+          {renderCopyIdButton()}
+          {renderChatButton()}
+        </div>
+        {/* Second row: Dispute button */}
+        {canShowDisputeButton && (
+          <div className="grid grid-cols-1 gap-2">{renderDisputeButton()}</div>
+        )}
       </div>
       <p className="text-[10px] font-secondary text-dark pb-1 text-right pr-4">
         ID: {order.id}

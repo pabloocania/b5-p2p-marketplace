@@ -100,7 +100,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full pt-3">
+    <div className="flex flex-col h-full pt-3 font-secondary">
       <div className="flex-1 overflow-y-auto py-2 space-y-4 bg-secondary bg-opacity-10 rounded-lg rounded-xs p-2">
         {messages.map((msg) => {
           // Handle admin event messages
@@ -137,7 +137,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   : "mr-auto items-start"
               }`}
             >
-              <p className="text-primary font-bold">
+              <p className="text-primary font-secondary">
                 {msg.sender === userId
                   ? t("you") + ":"
                   : "@" + getUsername(msg.sender) + ":"}

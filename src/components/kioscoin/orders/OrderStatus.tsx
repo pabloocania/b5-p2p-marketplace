@@ -22,7 +22,7 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
             status === "COMPLETED_BY_ADMIN" ||
             status === "RELEASED"
           ? "bg-primary/80 text-white"
-          : "bg-lightYellow text-secondary";
+          : "bg-lightYellow text-gray-400";
       case 3:
         return status === "ACTIVE"
           ? "bg-primary/80 text-white"
@@ -31,7 +31,7 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
             status === "COMPLETED_BY_ADMIN" ||
             status === "RELEASED"
           ? "bg-primary/80 text-white"
-          : "bg-lightYellow  text-secondary";
+          : "bg-lightYellow  text-gray-400";
       case 4:
         return status === "FIAT_SENT"
           ? "bg-primary/80 text-white"
@@ -41,9 +41,9 @@ const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
           ? "bg-primary/80 text-white"
           : status === "CANCELLED"
           ? "bg-error"
-          : "bg-lightYellow  text-secondary";
+          : "bg-lightYellow  text-gray-400";
       default:
-        return "bg-lightYellow  text-secondary";
+        return "bg-lightYellow  text-gray-400";
     }
   };
 

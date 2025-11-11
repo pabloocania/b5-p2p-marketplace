@@ -119,7 +119,7 @@ const PaymentMethodDisplay: React.FC<PaymentMethodDisplayProps> = ({
     showAlias && rawAlias.length > 0 ? formatAlias(rawAlias) : undefined;
 
   return (
-    <div className="flex flex-wrap gap-2 my-1 text-xs font-secondary">
+    <div className="flex flex-wrap gap-1 text-xs font-secondary mb-1">
       {entities.map((description, index) => (
         <EntityBadge
           key={`${description}-${index}`}
