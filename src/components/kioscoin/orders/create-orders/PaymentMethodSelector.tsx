@@ -166,7 +166,7 @@ export default function PaymentMethodSelector({
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full border-none shadow-md">
       <CardContent className="py-3 font-secondary">
         {methods.length > 0 ? (
           <div className="space-y-1.5">

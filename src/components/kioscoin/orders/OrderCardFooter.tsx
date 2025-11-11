@@ -217,14 +217,14 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     </CardFooter>
   ) : orderTaken ? (
     <CardFooter className="pb-0">
-      <div className="text-secondary block text-center font-semibold">
+      <div className="text-secondary block text-center font-secondary">
         {t("order_taken")}
       </div>
     </CardFooter>
   ) : shouldShowSelectButton && !showDetails && canSelectOrder ? (
     <CardFooter className="pb-0">
       <Button
-        className="w-full bg-secondary text-white font-semibold"
+        className="w-full bg-secondary text-white font-secondary"
         onClick={() => onSelect && onSelect(order)}
       >
         {order.type === "SELL" ? t("buy") : t("sell")} {order.tokenCode}
@@ -233,7 +233,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   ) : showDetails && (walletAddress || order.type === "BUY") ? (
     <CardFooter className="pb-0">
       <Button
-        className="w-full bg-secondary text-white font-semibold"
+        className="w-full bg-secondary text-white font-secondary"
         onClick={() => !orderTaken && takeOrder(order)}
       >
         {order.type === "BUY"

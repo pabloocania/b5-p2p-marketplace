@@ -60,9 +60,9 @@ export default function KioscoinOperationFlow({
         onOpenChange={setIsOperationOpen}
         variant="sheet"
         hideCloseButton
-        className="p-0"
+        className="px-2"
       >
-        <div className="p-2 mt-6 mx-auto max-w-md bg-secondary/10 rounded-lg border border-secondary/20 shadow-lg">
+        <div className="p-2 mx-auto max-w-md bg-secondary/10 rounded-lg border border-secondary/20 shadow-lg">
           {selectedOffer && (
             <OperationForm
               offer={selectedOffer}
