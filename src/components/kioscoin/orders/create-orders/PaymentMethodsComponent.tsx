@@ -92,7 +92,9 @@ export default function PaymentMethodsComponent({
     <Card className="w-full font-secondary border-none">
       <CardContent className="p-0">
         <div className="flex items-center mb-2">
-          <h3 className="text-dark text-xs">{t("payment_methods")}</h3>
+          <h3 className="text-dark text-xs font-secondary">
+            {t("payment_methods")}
+          </h3>
         </div>
 
         {methods.length === 0 ? (

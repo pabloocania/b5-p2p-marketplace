@@ -104,7 +104,10 @@ export default function UserSettings({ className }: UserSettingsProps) {
 
         <Tabs defaultValue="payments" className="w-full">
           <TabsList className="grid grid-cols-2 mb-3 bg-secondary/10">
-            <TabsTrigger value="payments" className="text-dark font-secondary">
+            <TabsTrigger
+              value="payments"
+              className="text-dark text-xs font-secondary"
+            >
               {t("payment_methods")}
             </TabsTrigger>
             <TabsTrigger
@@ -137,7 +140,6 @@ export default function UserSettings({ className }: UserSettingsProps) {
           <Button
             className="flex items-center w-full font-secondary font-bold border-secondary text-secondary text-sm sm:text-base py-2 px-2 hover:text-white hover:bg-secondary"
             onClick={() => {
-              // Guard against any unhandled rejections in dev
               handleSave().catch(() => {});
             }}
             disabled={!isValid || isSaving}

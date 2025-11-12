@@ -23,6 +23,7 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import UserMenuNew from "../../users/UserMenuNew";
 import { ConfigStore } from "@/lib/ConfigStore";
 import PaymentMethodsComponent from "./PaymentMethodsComponent";
+import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 
 export default function CreateOrder({
   onClose,
@@ -51,7 +52,8 @@ export default function CreateOrder({
   const [tokenCode, setTokenCode] = useState(
     preFilledData?.tokenCode || "PDOC"
   );
-  const [walletAddress, setWalletAddress] = useState("");
+  const { swAddress } = useEtherspotSdk();
+  const [walletAddress, setWalletAddress] = useState(swAddress || "");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const [blockchain, setBlockchain] = useState(preFilledData?.blockchain || "");
 
@@ -207,7 +209,7 @@ export default function CreateOrder({
                     onChange={(e) =>
                       setTokenAmount(parseFloat(e.target.value) || 0)
                     }
-                    className="focus:ring-primary focus:border-primary text-lg font-secondary border-2 border-[#fcce4c]"
+                    className="focus:ring-primary focus:border-primary font-secondary border border-primary [&::placeholder]:font-secondary [&::placeholder]:text-xs"
                   />
                 </div>
               </CardContent>
@@ -217,7 +219,7 @@ export default function CreateOrder({
             <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
               <CardContent className="text-primary px-4 py-3 space-y-3 font-secondary w-full">
                 {/* Token selector */}
-                <h3 className="text-black/75 text-xs">
+                <h3 className="text-dark text-xs">
                   {t("select_token_and_blockchain")}
                 </h3>
                 <TokenSelector
@@ -251,7 +253,7 @@ export default function CreateOrder({
                       key={code}
                       type="button"
                       onClick={() => setFiatCode(code)}
-                      className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition ${
+                      className={`flex-1 px-3 py-2 rounded-lg border text-xs font-secondary transition ${
                         fiatCode === code
                           ? "bg-primary/10 border-primary text-primary"
                           : "border-gray-300 text-muted-foreground"
@@ -296,10 +298,10 @@ export default function CreateOrder({
 
                 {/* Monto a recibir */}
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">
+                  <span className="text-xs font-secondary">
                     {t("you_will_receive")}:
                   </span>
-                  <span className="text-lg font-bold">
+                  <span className="text-xs font-secondary">
                     {fiatCode === "EUR" ? "€" : "$"}
                     {calculateFiatEquivalent().toLocaleString("es-AR", {
                       minimumFractionDigits: 2,
@@ -320,25 +322,22 @@ export default function CreateOrder({
                     methods={availableMethods}
                   />
                   {orderType === "BUY" && (
-                    <div>
-                      <Label
-                        className="font-bold text-sm font-secondary"
-                        htmlFor="wallet-address"
-                      >
-                        {t("address")}
-                      </Label>
+                    <div className="space-y-2 pt-2">
+                      <h3 className="text-dark text-xs font-secondary">
+                        {t("your_address")}
+                      </h3>
                       <Input
                         id="wallet-address"
                         placeholder={t("insert_wallet_address")}
                         value={walletAddress}
                         onChange={(e) => setWalletAddress(e.target.value)}
-                        className="focus:ring-primary focus:border-primary font-secondary [&::placeholder]:font-secondary"
+                        className="focus:ring-primary focus:border-primary font-secondary [&::placeholder]:font-secondary [&::placeholder]:text-xs border border-primary"
                       />
                     </div>
                   )}
                 </CardContent>
                 {!createdOrder && (
-                  <CardFooter className="p-0">
+                  <CardFooter className="px-3 py-2">
                     <Button
                       className="w-full rounded-b-lg text-xs font-semibold shadow-none transition-colors bg-primary text-white hover:bg-primary/90 font-secondary"
                       style={{
