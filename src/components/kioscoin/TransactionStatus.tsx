@@ -47,9 +47,9 @@ export function TransactionStatus({
       case "sent":
       case "waiting":
       case "sending":
-        return "bg-primary/5 border-primary/20";
+        return "bg-secondary/10 border-secondary/20";
       case "success":
-        return "bg-success/5 border-success/20";
+        return "bg-secondary/10 border-secondary/20";
       case "error":
         return "bg-error/5 border-error/20";
       default:
@@ -100,7 +100,7 @@ export function TransactionStatus({
               {getStatusIcon(status)}
               {getStatusText(status)}
             </AlertTitle>
-            <AlertDescription className="text-dark pt-2">
+            <AlertDescription className="text-dark pt-2 text-left">
               {message}
             </AlertDescription>
           </Alert>
@@ -114,7 +114,7 @@ export function TransactionStatus({
             <>
               <Button
                 onClick={handleClose}
-                className="w-full mb-4 bg-secondary text-white hover:text-secondary hover:bg-white/80 border hover:border-secondary"
+                className="w-full mb-4 bg-dark text-white"
               >
                 {t("close")}
               </Button>

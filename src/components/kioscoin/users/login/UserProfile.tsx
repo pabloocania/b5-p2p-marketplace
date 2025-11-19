@@ -223,7 +223,7 @@ export const UserProfile = ({
 
         {canShowWallet && (
           <div className="w-full flex space-y-1.5 pt-2">
-            <UserWalletsComponent />
+            <UserWalletsComponent selectedBlockchain={selectedBlockchain} />
           </div>
         )}
 

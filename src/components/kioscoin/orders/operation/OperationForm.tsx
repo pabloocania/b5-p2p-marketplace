@@ -206,7 +206,7 @@ export default function OperationForm({
             <Button
               onClick={handlePointOfSale}
               disabled={!isValid || isSubmitting}
-              className="w-full bg-secondary text-white font-secondary hover:bg-white/80 hover:text-secondary"
+              className="w-full bg-secondary text-white font-secondary hover:bg-dark"
             >
               {isSubmitting ? t("sending") : t("continue")}
             </Button>
@@ -217,7 +217,7 @@ export default function OperationForm({
           <Button
             onClick={handlePointOfSale}
             disabled={!isValid || isSubmitting}
-            className="w-full bg-secondary text-white font-secondary hover:bg-white/80 hover:text-secondary"
+            className="w-full bg-secondary text-white font-secondary hover:bg-dark"
           >
             {isSubmitting ? t("sending") : t("continue")}
           </Button>

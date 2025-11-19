@@ -76,7 +76,7 @@ i18n.use(initReactI18next).init({
         enter_transfer_amount:
           "Enter the amount to transfer between your wallets",
         sent: "Sent",
-        waiting: "Waiting signature...",
+        waiting: "Waiting",
         success: "Success",
         error: "Error",
         no_stablecoins_available: "No stablecoins available",
@@ -296,7 +296,11 @@ i18n.use(initReactI18next).init({
         loading_kioscoin: "Loading Kioscoin",
         setting_up_experience: "Setting up your experience...",
         email_not_verified: "Email not verified",
-        verify_email_message: "Please check your inbox and verify your email to access all features."
+        verify_email_message: "Please check your inbox and verify your email to access all features.",
+        send_funds: "Withdraw funds",
+        send_funds_description: "Send your balance to an external address in Kioscoin.",
+        destination_address_to: "Destination address",
+        preparing_transaction: "Preparing transaction",
       },
     },
     es: {
@@ -373,7 +377,7 @@ i18n.use(initReactI18next).init({
         enter_transfer_amount:
           "Ingresa la cantidad a transferir entre tus billeteras",
         sent: "Enviado",
-        waiting: "Esperando firma...",
+        waiting: "Esperando",
         success: "Éxito",
         error: "Error",
         no_stablecoins_available: "No hay stablecoins disponibles",
@@ -600,7 +604,11 @@ i18n.use(initReactI18next).init({
         loading_kioscoin: "Cargando Kioscoin",
         setting_up_experience: "Preparando tu experiencia...",
         email_not_verified: "Email sin verificar",
-        verify_email_message: "Por favor revisa tu bandeja de entrada y verifica tu email para acceder a todas las funciones."
+        verify_email_message: "Por favor revisa tu bandeja de entrada y verifica tu email para acceder a todas las funciones.",
+        send_funds: "Retirar fondos",
+        send_funds_description: "Envía tu saldo a una dirección externa a Kioscoin.",
+        destination_address_to: "Dirección de la wallet de destino",
+        preparing_transaction: "Preparando transacción",
       },
     },
   },

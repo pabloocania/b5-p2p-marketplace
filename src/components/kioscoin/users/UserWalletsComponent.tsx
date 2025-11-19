@@ -77,7 +77,13 @@ class TransferState {
 import { parseUnits } from "viem";
 import { useWeb3Auth } from "@web3auth/modal/react";
 
-export default function UserWalletsComponent() {
+interface UserWalletsComponentProps {
+  selectedBlockchain?: string;
+}
+
+export default function UserWalletsComponent({
+  selectedBlockchain = "BSC_MAINNET",
+}: UserWalletsComponentProps) {
   const { t } = useTranslation();
   const { setTransaction } = useTransaction();
   const { balances, swAddress, primeSdk, eoaAddress, refreshBalances } =
@@ -95,7 +101,6 @@ export default function UserWalletsComponent() {
 
   // State for UserBalance component
   const [selectedToken, setSelectedToken] = useState("USDK");
-  const [selectedBlockchain, setSelectedBlockchain] = useState("BSC_MAINNET");
 
   const { checkTransactionStatus } = useTransactionStatusChecker();
   const { handleTransaction } = useTransactionHandler(
@@ -210,11 +215,6 @@ export default function UserWalletsComponent() {
     console.log("Token changed to:", token);
   };
 
-  const handleBlockchainChange = (blockchain: string) => {
-    setSelectedBlockchain(blockchain);
-    console.log("Blockchain changed to:", blockchain);
-  };
-
   if (!tokenBalances) {
     return <div>{t("no_stablecoins_available")}</div>;
   }
@@ -226,7 +226,12 @@ export default function UserWalletsComponent() {
           {swAddress && (
             <div>
               {/* <p className="font-bold text-primary text-sm">{t("address")}</p> */}
-              <Address address={swAddress} />
+              <Address
+                address={swAddress}
+                balances={tokenBalances}
+                currentBlockchain={selectedBlockchain}
+                onRefreshBalances={refreshBalances}
+              />
             </div>
           )}
           {/* <div className="flex items-center">
