@@ -40,18 +40,16 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
       try {
         setIsTransacting(true);
         const txHashPromise = releaseFunds(order);
+        // setTransaction({
+        //   status: "idle",
+        //   message: t("initiating_transaction"),
+        //   progress: 0,
+        // });
         setTransaction({
-          status: "idle",
-          message: t("initiating_transaction"),
-          progress: 0,
+          status: "waiting",
+          message: t("releasing_funds"),
+          progress: 45,
         });
-        setTimeout(() => {
-          setTransaction({
-            status: "waiting",
-            message: t("releasing_funds"),
-            progress: 45,
-          });
-        }, 500);
 
         try {
           const uoOpsHash = await txHashPromise;

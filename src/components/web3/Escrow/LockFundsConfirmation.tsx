@@ -95,11 +95,11 @@ export default function LockFundsConfirmation({
         <Separator className="my-2"></Separator>
         <CardContent className="py-2 px-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-3">
+            {/* <div className="space-y-3">
               <p className="text-xs text-dark mt-1 font-secondary text-center">
                 {t("sw_fee_details")}
               </p>
-            </div>
+            </div> */}
             {renderOrderDetails()}
           </form>
         </CardContent>

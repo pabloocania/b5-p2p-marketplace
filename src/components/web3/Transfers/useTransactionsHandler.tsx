@@ -1,7 +1,7 @@
 import { useEtherspotFlow } from "@/components/web3/AccountAbstraction/useEtherspotFlow";
 import { TransactionStatusResponse } from "b5-api-client";
-import { useChainId } from "wagmi";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
+import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 
 export const useTransactionHandler = (
   setTransaction: (transaction: any) => void,
@@ -16,7 +16,8 @@ export const useTransactionHandler = (
     transferFromEOAToSW,
     getUserOperationReceipt,
   } = useEtherspotFlow();
-  const chainId = useChainId();
+  const { currentChainId } = useEtherspotSdk();
+  const chainId = currentChainId;
 
   const handleTransaction = async (
     transactionType: "EOAToSW" | "EtherspotToEOA",

@@ -49,7 +49,7 @@ export async function initializeConfigs() {
             chains: enabledChains.length > 0 ? enabledChains : defaultChains,
             ssr: true,
             transports: {
-                [bsc.id]: http('https://rpc.ankr.com/bsc/100aaa5748c3b0467dcea9f3f096568697028026ed9dd75284a413f34c87ab90'),
+                [bsc.id]: http('https://rpc.ankr.com/bsc/43e5f2a7dbfddf572c74f1b3b07cc450e42d68d64fa30ea90efb41bdc5cf2e10'),
             },
         });
         // 
@@ -75,7 +75,7 @@ export function createWagmiConfig(chains: readonly [Chain, ...Chain[]]) {
         projectId: "95db6ef5cbe6a2117818a0df1791fd86",
         chains,
         transports: {
-            [bsc.id]: http('https://rpc.ankr.com/bsc/100aaa5748c3b0467dcea9f3f096568697028026ed9dd75284a413f34c87ab90'),
+            [bsc.id]: http('https://rpc.ankr.com/bsc/43e5f2a7dbfddf572c74f1b3b07cc450e42d68d64fa30ea90efb41bdc5cf2e10'),
         },
         ssr: true,
     });

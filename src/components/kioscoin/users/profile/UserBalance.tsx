@@ -30,36 +30,9 @@ export default function UserBalance({
     Array<{ code: string; name: string; icon: string }>
   >([]);
 
-  // Get available tokens and blockchains from ConfigStore
+  // Get available blockchains from ConfigStore (only once on mount)
   useEffect(() => {
     const configStore = ConfigStore.getInstance();
-
-    // Get available tokens
-    const backendStablecoins = configStore.getBackendStablecoins();
-    if (backendStablecoins?.supportedStablecoins) {
-      const tokens = backendStablecoins.supportedStablecoins.map(
-        (stablecoin) => {
-          // Map tokens to their specific icons
-          let icon = "🪙"; // Default icon
-          if (stablecoin.name === "USDK") {
-            icon = "/criptoicon/usdk.svg";
-          } else if (stablecoin.name === "USDC") {
-            icon =
-              "https://cdn.jsdelivr.net/npm/cryptocurrency-icons/svg/color/usdc.svg";
-          } else if (stablecoin.name === "USDT") {
-            icon =
-              "https://cdn.jsdelivr.net/npm/cryptocurrency-icons/svg/color/usdt.svg";
-          }
-
-          return {
-            code: stablecoin.name,
-            name: stablecoin.name,
-            icon: icon,
-          };
-        }
-      );
-      setAvailableTokens(tokens);
-    }
 
     // Get available blockchains
     const blockchainNames = configStore.getAllBlockchainNames();
@@ -85,6 +58,39 @@ export default function UserBalance({
     });
     setAvailableBlockchains(blockchains);
   }, []);
+
+  // Update available tokens when blockchain changes
+  useEffect(() => {
+    if (!selectedBlockchain) return;
+
+    const configStore = ConfigStore.getInstance();
+
+    // Get tokens available on the selected blockchain
+    const stablecoinsForBlockchain =
+      configStore.getStablecoinsByBlockchain(selectedBlockchain);
+
+    const tokens = stablecoinsForBlockchain.map((stablecoin) => {
+      // Map tokens to their specific icons
+      let icon = "🪙"; // Default icon
+      if (stablecoin.name === "USDK") {
+        icon = "/criptoicon/usdk.svg";
+      } else if (stablecoin.name === "USDC") {
+        icon =
+          "https://cdn.jsdelivr.net/npm/cryptocurrency-icons/svg/color/usdc.svg";
+      } else if (stablecoin.name === "USDT") {
+        icon =
+          "https://cdn.jsdelivr.net/npm/cryptocurrency-icons/svg/color/usdt.svg";
+      }
+
+      return {
+        code: stablecoin.name,
+        name: stablecoin.name,
+        icon: icon,
+      };
+    });
+
+    setAvailableTokens(tokens);
+  }, [selectedBlockchain]);
 
   // Get current balance for selected token
   const selectedTokenBalance = balances.find((b) => b.name === selectedToken);

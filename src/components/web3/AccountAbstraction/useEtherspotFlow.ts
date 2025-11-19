@@ -221,9 +221,25 @@ export const useEtherspotFlow = () => {
     // }
 
     const maxPriorityFeePerGas = parseGwei(maxPriorityFeePerGasGwei.toString());
-    const maxFeePerGas =
-      baseFee + maxPriorityFeePerGas * BigInt(2) * BigInt(20); // Double for safety
+
+    // Some chains (BSC, etc.) require maxFeePerGas === maxPriorityFeePerGas
+    // Check if we're on a chain that requires equal gas values
+    const chainsRequiringEqualGas = [56, 97]; // BSC Mainnet, BSC Testnet
+    const requiresEqualGas = chainsRequiringEqualGas.includes(chainId);
+
+    let maxFeePerGas: bigint;
+    if (requiresEqualGas) {
+      // For chains that require equal gas values
+      maxFeePerGas = maxPriorityFeePerGas;
+      console.log(`Chain ${chainId} requires equal gas values`);
+    } else {
+      // For EIP-1559 compatible chains (Ethereum, Arbitrum, etc.)
+      maxFeePerGas = baseFee + maxPriorityFeePerGas * BigInt(2);
+    }
+
     console.log("maxFeePerGas", maxFeePerGas);
+    console.log("maxPriorityFeePerGas", maxPriorityFeePerGas);
+
     const gasDetails: TransactionGasInfoForUserOp = {
       maxFeePerGas: maxFeePerGas,
       maxPriorityFeePerGas: maxPriorityFeePerGas,

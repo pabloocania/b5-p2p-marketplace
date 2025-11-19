@@ -16,8 +16,9 @@ import ReleaseFundsButton from "@/components/web3/Escrow/ReleaseFundsButton";
 import { p2pMarketAPIClient as client } from "../../../lib/APIClients";
 import { useTranslation } from "react-i18next";
 import { useKioscoinUserContext } from "../users/KioscoinUserContext";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { ConnectToContinueButton } from "./ConnectToContinueButton";
+import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import NotifyFiatSentButton from "../NotifyFiatSentButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -52,7 +53,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   const { user, isLoggedIn, loginId } = useKioscoinUserContext();
   const { isConnected } = useAccount();
   const { isConnected: isConnectedWeb3Auth } = useWeb3AuthConnect();
-  const chainId = useChainId();
+  const { currentChainId } = useEtherspotSdk();
   const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [orderTaken, setOrderTaken] = useState(false);
@@ -126,12 +127,12 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   const renderWrongNetworkAlert = (blockchain: string | undefined) => {
     if (!blockchain) return null;
     const orderChainId = getChainIdFromBlockchain(blockchain);
-    const isCorrectChain = chainId === orderChainId;
+    const isCorrectChain = currentChainId === orderChainId;
     if (!isCorrectChain) {
       return (
         <Alert
           variant="destructive"
-          className="bg-red-50 border-none text-left pl-2 text-sm"
+          className="bg-red-50 font-secondary border-none text-left pl-2 text-sm"
         >
           <AlertCircle className="h-4 w-4" />
           <AlertTitle className="font-semibold">

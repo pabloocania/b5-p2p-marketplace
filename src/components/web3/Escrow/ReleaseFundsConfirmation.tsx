@@ -86,11 +86,11 @@ export default function ReleaseFundsConfirmation({
             </AlertDescription>
           </Alert>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-3">
+            {/* <div className="space-y-3">
               <p className="text-xs text-gray-500 mt-1 font-secondary text-center">
                 {t("sw_fee_details")}
               </p>
-            </div>
+            </div> */}
             <div className="space-y-2 text-sm">{renderGasFee()}</div>
           </form>
         </CardContent>

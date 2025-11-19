@@ -22,6 +22,7 @@ import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotS
 import { useWeb3Auth } from "@web3auth/modal/react";
 import UserSettings from "../profile/UserSettings";
 import { useKioscoinUserContext } from "../KioscoinUserContext";
+import { ConfigStore } from "@/lib/ConfigStore";
 // Usando isotipo PNG en lugar del componente SVG
 
 interface UserProfileProps {
@@ -41,7 +42,8 @@ export const UserProfile = ({
 }: UserProfileProps) => {
   const { t } = useTranslation();
   const { emailVerified } = useKioscoinUserContext();
-  const { balances, isLoading, isReady } = useEtherspotSdk();
+  const { balances, isLoading, isReady, switchToChain, currentChainId } =
+    useEtherspotSdk();
   const { isConnected: web3AuthConnected, status: web3authStatus } =
     useWeb3Auth();
 
@@ -60,9 +62,20 @@ export const UserProfile = ({
     console.log("Token changed to:", token);
   };
 
-  const handleBlockchainChange = (blockchain: string) => {
+  const handleBlockchainChange = async (blockchain: string) => {
     setSelectedBlockchain(blockchain);
     console.log("Blockchain changed to:", blockchain);
+
+    // Get the chainId for the selected blockchain
+    const configStore = ConfigStore.getInstance();
+    const chainId = configStore.getChainIdFromBlockchain(blockchain);
+
+    if (chainId && chainId !== 0) {
+      console.log("Switching to chainId:", chainId);
+      await switchToChain(chainId);
+    } else {
+      console.warn(`No chainId found for blockchain: ${blockchain}`);
+    }
   };
 
   // Handlers para SmartWalletOnboarding
@@ -98,6 +111,21 @@ export const UserProfile = ({
       setPreviousConnectionState(false);
     }
   }, [web3AuthConnected, previousConnectionState]);
+
+  // Sync selectedBlockchain with the current chainId from SDK
+  useEffect(() => {
+    if (currentChainId && currentChainId !== 0) {
+      const configStore = ConfigStore.getInstance();
+      const blockchainName = configStore.getBlockchainName(currentChainId);
+      if (blockchainName && blockchainName !== selectedBlockchain) {
+        console.log(
+          "Syncing blockchain selector with current chain:",
+          blockchainName
+        );
+        setSelectedBlockchain(blockchainName);
+      }
+    }
+  }, [currentChainId]);
 
   // Add a separate effect to ensure onboarding shows on first load if wallet is already connected
   useEffect(() => {
@@ -147,7 +175,7 @@ export const UserProfile = ({
   const walletInitializing =
     web3authStatus === "connecting" ||
     (web3AuthConnected && (isLoading || !isReady));
-  const canShowWallet = isReady;
+  const canShowWallet = isReady && !walletInitializing;
 
   return (
     <Card className="w-full border border-secondary/20">

@@ -9,7 +9,7 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { createWagmiConfig } from "@/components/web3/wagmi";
 import { EtherspotSdkProvider } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import { TransactionProvider } from "@/components/web3/Transactions/TransactionContext";
-import { arbitrumSepolia } from "wagmi/chains";
+import { arbitrumSepolia, bsc } from "wagmi/chains";
 import "../src/i18n"; // Adjust the path as necessary
 import { useEffect, useState } from "react";
 import type { Config } from "wagmi";
@@ -25,7 +25,7 @@ const queryClient = new QueryClient();
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [isConfigLoaded, setIsConfigLoaded] = useState(false);
   const [wagmiConfig, setWagmiConfig] = useState<Config>(
-    createWagmiConfig([arbitrumSepolia])
+    createWagmiConfig([bsc])
   );
   const { t, i18n } = useTranslation();
 

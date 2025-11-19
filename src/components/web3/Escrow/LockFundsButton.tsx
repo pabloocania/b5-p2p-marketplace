@@ -59,18 +59,12 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
         setIsTransacting(true);
         const txHashPromise = batchApproveAndEscrow(order);
         console.log("txHashPromise", txHashPromise);
+
         setTransaction({
-          status: "idle",
-          message: t("initiating_transaction"),
-          progress: 0,
+          status: "waiting",
+          message: t("approve_and_lock"),
+          progress: 45,
         });
-        setTimeout(() => {
-          setTransaction({
-            status: "waiting",
-            message: t("approve_and_lock"),
-            progress: 45,
-          });
-        }, 500);
 
         try {
           const uoOpsHash = await txHashPromise;
