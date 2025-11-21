@@ -9,6 +9,8 @@ import {
     useWeb3Auth
 } from "@web3auth/modal/react";
 import { UserData } from "b5-api-client";
+import { destroyNotificationsService } from "@/lib/NotificationsService";
+import { p2pMarketAPIClient as client } from "@/lib/APIClients";
 
 export function useKioscoinUser() {
     const [user, setUser] = useState<KioscoinUser | undefined>(undefined);
@@ -73,8 +75,20 @@ export function useKioscoinUser() {
         }
     };
 
-    const logout = () => {
+    const logout = async () => {
+        // Disconnect and destroy WebSocket service
+        destroyNotificationsService();
+        
+        // Clear session cookie on backend
+        try {
+            await client.clearSession();
+            console.log('[useKioscoinUser] Session cleared on backend');
+        } catch (error) {
+            console.error('[useKioscoinUser] Error clearing session:', error);
+        }
+
         setUser(undefined);
+        setLoginId(undefined);
         wagmiDisconnect(config);
         disconnect();
     };

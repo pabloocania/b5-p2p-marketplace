@@ -42,8 +42,8 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
 
               ${
                 action.isSelected
-                  ? "bg-[#8b5fdc] text-white"
-                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                  ? "bg-dark text-secondary"
+                  : "bg-lightYellow/20 hover:bg-lightYellow/40 text-dark/60"
               }
             `}
           >

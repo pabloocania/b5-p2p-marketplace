@@ -28,6 +28,7 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
     const [isConnected, setIsConnected] = useState(false);
     const { loginId } = useKioscoinUserContext();
     const notificationsServiceRef = useRef<NotificationsServiceImpl | null>(null);
+    const isSettingUpRef = useRef(false); // Prevent multiple simultaneous setups
 
     // Fetch notifications from API
     const fetchNotifications = useCallback(async () => {
@@ -105,8 +106,27 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
     useEffect(() => {
         if (!loginId || !apiBaseUrl) {
             setIsLoading(false);
+            setIsConnected(false);
+            isSettingUpRef.current = false; // Reset setup flag when logged out
             return;
         }
+
+        // Prevent multiple simultaneous setups
+        if (isSettingUpRef.current) {
+            console.log('[useNotifications] Setup already in progress, skipping');
+            return;
+        }
+
+        // Check if we already have a connected service
+        const existingService = getNotificationsService();
+        if (existingService?.isConnected()) {
+            console.log('[useNotifications] WebSocket already connected, skipping setup');
+            setIsConnected(true);
+            fetchNotifications();
+            return;
+        }
+
+        isSettingUpRef.current = true;
 
         // Fetch initial notifications
         fetchNotifications();
@@ -114,12 +134,26 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
         // Initialize WebSocket connection
         const setupWebSocket = async () => {
             try {
+                console.log('[useNotifications] Setting up WebSocket connection...');
+
+                // Try to establish/refresh session with the backend
+                const sessionData = await client.createSession({ idToken: loginId });
+
+                if (!sessionData.success) {
+                    console.error('[useNotifications] Session creation unsuccessful');
+                    setIsConnected(false);
+                    isSettingUpRef.current = false;
+                    return;
+                }
+
+                console.log('[useNotifications] Session established successfully');
+
+                // Now connect to WebSocket (session cookie will be sent automatically)
                 let service = getNotificationsService();
 
                 if (!service) {
                     service = createNotificationsService({
                         baseUrl: apiBaseUrl,
-                        loginId,
                     });
                     notificationsServiceRef.current = service;
                 }
@@ -127,9 +161,15 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
                 if (!service.isConnected()) {
                     service.connect(handleNewMessage);
                     setIsConnected(true);
+                } else {
+                    console.log('[useNotifications] Service already connected');
+                    setIsConnected(true);
                 }
             } catch (err) {
                 console.error('[useNotifications] WebSocket setup error:', err);
+                setIsConnected(false);
+            } finally {
+                isSettingUpRef.current = false;
             }
         };
 
@@ -140,7 +180,7 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
             // Note: We keep the WebSocket connection alive for real-time updates
             // Don't disconnect on unmount unless needed
         };
-    }, [loginId, apiBaseUrl, fetchNotifications, handleNewMessage]);
+    }, [loginId, apiBaseUrl]); // Removed function dependencies to prevent re-runs
 
     return {
         notifications,

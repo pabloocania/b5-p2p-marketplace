@@ -301,6 +301,7 @@ i18n.use(initReactI18next).init({
         send_funds_description: "Send your balance to an external address in Kioscoin.",
         destination_address_to: "Destination address",
         preparing_transaction: "Preparing transaction",
+        select_fiat_code: "Select the exchange currency",
       },
     },
     es: {
@@ -362,10 +363,10 @@ i18n.use(initReactI18next).init({
         transfering: "Transfiriendo...",
         funds_released: "Fondos enviados al comprador.",
         releasing_funds:
-          "Debes firmar la transacción con tu wallet para liberarle los fondos al comprador",
+          "Liberando los fondos al comprador",
         funds_locked: "Los fondos están asegurados en el contrato inteligente",
         approve_and_lock:
-          "Debes firmar la transacción con tu wallet para depositar los fondos en el contrato inteligente",
+          "Depositando los fondos en el contrato inteligente seguro",
         you: "tú",
         connect_to_continue: "Conectar wallet para continuar",
         connect_wallet: "Conecta tu wallet",
@@ -473,7 +474,7 @@ i18n.use(initReactI18next).init({
           failure: "No pudimos verificar tu correo. El enlace puede haber expirado o ya fue utilizado.",
           request_new: "Si crees que se trata de un error, solicita un nuevo correo de verificación desde la configuración de tu cuenta.",
           go_dashboard: "Ir al panel",
-          back_home: "Volver al inicio",
+          back_home: "Volver al inicio"
         },
         available: "Disponible",
         estimated_gas_fee: "Tarifa de gas estimada",
@@ -609,6 +610,7 @@ i18n.use(initReactI18next).init({
         send_funds_description: "Envía tu saldo a una dirección externa a Kioscoin.",
         destination_address_to: "Dirección de la wallet de destino",
         preparing_transaction: "Preparando transacción",
+        select_fiat_code: "Selecciona la moneda de cambio"
       },
     },
   },

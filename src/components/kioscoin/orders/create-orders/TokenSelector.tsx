@@ -29,9 +29,6 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
     preSelectedToken,
     preSelectedBlockchain,
   }) => {
-    const [blockchains, setBlockchains] = useState<Blockchain | undefined>(
-      undefined
-    );
     const [stablecoinConfig, setStablecoinConfig] = useState<
       StablecoinConfig | undefined
     >(undefined);
@@ -41,7 +38,6 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
     const [selectedBlockchain, setSelectedBlockchain] = useState<string>(
       preSelectedBlockchain || ""
     );
-    const { t } = useTranslation();
 
     useEffect(() => {
       const backendStablecoinsConfig =
@@ -93,16 +89,16 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
     return (
       <div className="flex flex-col gap-3 w-full font-secondary">
         {/* Stablecoin as buttons */}
-        <div className="flex flex-wrap gap-2 justify-center">
+        <div className="flex flex-wrap gap-2">
           {tokens.map((token) => (
             <button
               key={token}
               onClick={(e) => handleTokenChange(e, token)}
-              className={`rounded-full border p-2 min-w-12 h-12 px-3 flex items-center justify-center transition
+              className={`rounded-md gap-2 p-2 border min-w-12 h-10 flex items-center transition
                   ${
                     selectedToken === token
                       ? "bg-primary/10 border-primary"
-                      : "border-gray-300"
+                      : "border-primary/50"
                   }`}
               aria-label={token}
             >

@@ -169,6 +169,7 @@ export default function Home() {
                       </span>
                     </Button>
                   }
+                  className="p-2"
                 >
                   <CreateOrder
                     onClose={handleCreateOrderClose}

@@ -48,7 +48,7 @@ export default function BlockchainSelector({
 
   return (
     <div className="w-full space-y-2 font-secondary">
-      <div className="flex flex-wrap gap-2 justify-center">
+      <div className="flex flex-wrap gap-2">
         {availableBlockchains.map(({ blockchain }) => {
           const normalized = blockchain.toLowerCase();
           const matchedKey = Object.keys(blockchainIconMap).find((key) =>
@@ -64,10 +64,10 @@ export default function BlockchainSelector({
               type="button"
               onClick={() => onBlockchainChange(blockchain)}
               className={cn(
-                "flex items-center gap-2 rounded-full border px-3 py-2 transition",
+                "flex gap-2 items-center rounded-md p-2 border transition h-10",
                 selectedBlockchain === blockchain
-                  ? "bg-primary/10 border-primary text-primary"
-                  : "border-gray-300 text-muted-foreground hover:bg-accent"
+                  ? "bg-primary/10 border-primary"
+                  : "border-primary/50"
               )}
             >
               {iconFile && (
@@ -77,7 +77,7 @@ export default function BlockchainSelector({
                   className="w-5 h-5"
                 />
               )}
-              <span className="text-sm font-medium">
+              <span className="text-sm">
                 {getBlockchainDisplayName(blockchain as BlockchainName)}
               </span>
             </button>

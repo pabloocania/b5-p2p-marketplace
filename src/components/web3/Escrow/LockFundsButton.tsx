@@ -77,7 +77,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
           if (uoOpsHash) {
             const timeout = Date.now() + 300000; // 5 minute timeout
             while (opsReceipt == null && Date.now() < timeout) {
-              await sleep(5);
+              await sleep(2);
               opsReceipt = await getUserOperationReceipt(uoOpsHash);
             }
           }

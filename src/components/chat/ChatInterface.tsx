@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { formatEventType } from "@/lib/utils";
+import { getEventTypeTranslationKey } from "@/lib/utils";
 
 interface ChatInterfaceProps {
   userId: string | undefined;
@@ -111,15 +111,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 className="w-full flex flex-col items-center"
               >
                 <div className="bg-terciary py-2 rounded-md w-full">
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-md text-muted-foreground text-white">
+                  <div className="flex items-center justify-center gap-2 text-dark">
+                    <span className="text-md">
                       {formatTimestamp(msg.timestamp)}
                     </span>
-                    <span className="text-md text-muted-foreground text-white">
-                      -
-                    </span>
-                    <span className="text-md font-semibold text-white">
-                      {formatEventType(msg.content.event.eventType)}
+                    <span className="text-md">-</span>
+                    <span className="text-md font-semibold">
+                      {t(
+                        getEventTypeTranslationKey(msg.content.event.eventType)
+                      )}
                     </span>
                   </div>
                 </div>

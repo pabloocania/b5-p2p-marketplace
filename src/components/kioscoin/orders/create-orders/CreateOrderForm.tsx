@@ -170,7 +170,7 @@ export default function CreateOrder({
 
   return (
     <ScrollableContainer>
-      <div className="flex justify-center items-center pt-2">
+      <div className="flex justify-center items-center pt-8">
         {!isLoggedIn ? (
           <Sheet open>
             <SheetContent
@@ -182,18 +182,9 @@ export default function CreateOrder({
             </SheetContent>
           </Sheet>
         ) : (
-          <div className="w-full max-w-6xl mx-auto px-4">
-            {/* Card 0: Título principal */}
-            {/* <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
-              <CardHeader className="flex justify-center items-center pb-1 pt-2">
-                <CardTitle className="text-center text-primary text-xl font-bold font-primary">
-                  Create Order
-                </CardTitle>
-              </CardHeader>
-            </Card> */}
-
+          <div className="w-full max-w-4xl mx-auto gap-1">
             {/* Tarjeta 1: Compra/Venta */}
-            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
+            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-2">
               <CardContent className="text-primary px-4 py-3 space-y-3 font-secondary">
                 <OrderTypeSelector
                   orderType={orderType}
@@ -209,26 +200,24 @@ export default function CreateOrder({
                     onChange={(e) =>
                       setTokenAmount(parseFloat(e.target.value) || 0)
                     }
-                    className="focus:ring-primary focus:border-primary font-secondary border border-primary [&::placeholder]:font-secondary [&::placeholder]:text-xs"
+                    className="focus:ring-primary focus:border-primary font-secondary border border-primary/50 [&::placeholder]:font-secondary [&::placeholder]:text-xs"
                   />
                 </div>
               </CardContent>
             </Card>
 
             {/* Tarjeta 2: Token y Blockchain */}
-            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
+            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-2">
               <CardContent className="text-primary px-4 py-3 space-y-3 font-secondary w-full">
                 {/* Token selector */}
-                <h3 className="text-dark text-xs">
-                  {t("select_token_and_blockchain")}
-                </h3>
+                <h3 className="text-dark text-xs">{t("select_token")}</h3>
                 <TokenSelector
                   onBlockchainChange={setBlockchain}
                   onTokenChange={setTokenCode}
                   preSelectedBlockchain={blockchain}
                   preSelectedToken={tokenCode}
                 />
-
+                <h3 className="text-dark text-xs">{t("select_blockchain")}</h3>
                 {/* BlockchainSelector */}
                 <BlockchainSelector
                   selectedToken={tokenCode}
@@ -244,9 +233,10 @@ export default function CreateOrder({
             </Card>
 
             {/* Tarjeta 3: Tasa de Cambio */}
-            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-4">
+            <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90 mb-2">
               <CardContent className="text-primary px-4 py-3 space-y-3 font-secondary">
                 {/* Botones de moneda fiat */}
+                <h3 className="text-dark text-xs">{t("select_fiat_code")}</h3>
                 <div className="flex gap-2">
                   {(["ARS", "EUR"] as const).map((code) => (
                     <button
@@ -265,13 +255,17 @@ export default function CreateOrder({
                 </div>
 
                 {/* Input de tasa de cambio con sugerencia - ancho limitado */}
-                <div className="flex gap-2 items-end">
-                  <div className="w-1/2">
+                <div className="flex gap-2 items-center">
+                  <div className="text-xs text-dark w-2/3 text-right">
+                    {t("suggested")}: {fiatCode === "EUR" ? "€" : "$"}
+                    {suggestedRate?.toFixed(2) || "..."}
+                  </div>
+                  <div className="w-1/3">
                     <Input
                       type="number"
                       min="0"
                       step="0.01"
-                      value={customRate ?? ""}
+                      value={customRate !== null ? customRate.toFixed(2) : ""}
                       onChange={(e) => {
                         const value = e.target.value;
                         if (value === "") {
@@ -280,33 +274,27 @@ export default function CreateOrder({
                         }
                         const numValue = parseFloat(value);
                         if (!isNaN(numValue)) {
-                          setCustomRate(numValue);
+                          // Round to 2 decimals for consistency
+                          setCustomRate(Math.round(numValue * 100) / 100);
                         }
                       }}
-                      placeholder="Enter exchange rate"
-                      className="focus:ring-primary focus:border-primary border-2 border-[#fcce4c]"
+                      placeholder="0.00"
+                      className="focus:ring-primary focus:border-primary border border-primary text-sm"
                     />
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {t("suggested")}: {fiatCode === "EUR" ? "€" : "$"}
-                    {suggestedRate?.toLocaleString("es-AR", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }) || "..."}
                   </div>
                 </div>
 
-                {/* Monto a recibir */}
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-secondary">
-                    {t("you_will_receive")}:
+                {/* Monto a recibir o pagar */}
+                <div className="flex items-right font-bold w-full justify-end">
+                  <span className="text-xs font-secondary pr-1">
+                    {orderType === "BUY"
+                      ? t("you_will_pay")
+                      : t("you_will_receive")}
+                    :
                   </span>
                   <span className="text-xs font-secondary">
                     {fiatCode === "EUR" ? "€" : "$"}
-                    {calculateFiatEquivalent().toLocaleString("es-AR", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    {calculateFiatEquivalent().toFixed(2)}
                   </span>
                 </div>
               </CardContent>

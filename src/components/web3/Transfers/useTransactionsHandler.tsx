@@ -46,7 +46,7 @@ export const useTransactionHandler = (
         if (hash) {
           const timeout = Date.now() + 300000; // 5 minute timeout
           while (opsReceipt == null && Date.now() < timeout) {
-            await sleep(5);
+            await sleep(2);
             opsReceipt = await getUserOperationReceipt(hash);
             console.log("opsReceipt", opsReceipt);
           }

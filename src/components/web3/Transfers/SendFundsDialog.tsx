@@ -199,7 +199,7 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
         const timeout = Date.now() + 300000; // 5 minute timeout
 
         while (opsReceipt == null && Date.now() < timeout) {
-          await sleep(5); // Sleep 5 seconds between attempts
+          await sleep(2); // Sleep 5 seconds between attempts
           opsReceipt = await getUserOperationReceipt(userOpHash);
           console.log("opsReceipt", opsReceipt);
         }
