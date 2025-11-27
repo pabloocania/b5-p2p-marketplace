@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { CryptoAmountIcon } from "./CryptoIcon";
 import InternalTransferAmountInput from "@/components/web3/Transfers/TransferComponent";
 import { formatTokenAmount } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 /**
  * Immutable data class for token card state
  */
@@ -45,7 +46,7 @@ export default function TokenBalanceCardList({
   hideEmptyBalances = false, // Default to false
 }: TokenBalanceCardListProps) {
   const [state, setState] = useState<TokenCardState>(TokenCardState.create());
-
+  const { t } = useTranslation();
   // Filter out zero balances if hideEmptyBalances is true
   const filteredBalances = hideEmptyBalances
     ? balances.filter((token) => parseFloat(token.smartWalletBalance) > 0)
@@ -64,9 +65,9 @@ export default function TokenBalanceCardList({
   // For empty state
   if (filteredBalances.length === 0) {
     return (
-      <div className="p-8 flex flex-col items-center justify-center space-y-3">
-        <WalletIcon className="h-12 w-12 text-muted-foreground opacity-50" />
-        <p className="text-center text-muted-foreground">No tokens available</p>
+      <div className="p-8 flex flex-col items-center justify-center space-y-3 font-secondary text-dark">
+        <WalletIcon className="h-12 w-12 text-dark opacity-50" />
+        <p className="text-center text-dark">{t("no_stablecoins_available")}</p>
       </div>
     );
   }

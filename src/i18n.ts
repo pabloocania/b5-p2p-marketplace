@@ -302,6 +302,7 @@ i18n.use(initReactI18next).init({
         destination_address_to: "Destination address",
         preparing_transaction: "Preparing transaction",
         select_fiat_code: "Select the exchange currency",
+        info_text_fund_wallet: "You don't have enough funds in your wallet to deposit. Check the blockchain and the crypto dollar selected"
       },
     },
     es: {
@@ -610,7 +611,8 @@ i18n.use(initReactI18next).init({
         send_funds_description: "Envía tu saldo a una dirección externa a Kioscoin.",
         destination_address_to: "Dirección de la wallet de destino",
         preparing_transaction: "Preparando transacción",
-        select_fiat_code: "Selecciona la moneda de cambio"
+        select_fiat_code: "Selecciona la moneda de cambio",
+        info_text_fund_wallet: "No tienes suficientes fondos en tu wallet para depositar. Chequea la blockchain y el dolar crypto seleccionados"
       },
     },
   },

@@ -138,7 +138,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
           </Button>
         </SheetTrigger>
         {!hasSufficientBalance && (
-          <p className="text-gray-600 mt-2 font-secondary">
+          <p className="text-dark text-xs mt-2 font-secondary text-center">
             {t("info_text_fund_wallet")}
           </p>
         )}
