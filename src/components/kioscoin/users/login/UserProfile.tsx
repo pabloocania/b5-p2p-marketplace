@@ -1,5 +1,5 @@
 import React from "react";
-import { LogOut, Loader2, AlertCircle } from "lucide-react";
+import { LogOut, AlertCircle } from "lucide-react";
 
 import {
   Card,
@@ -22,6 +22,7 @@ import { useWeb3Auth } from "@web3auth/modal/react";
 import UserSettings from "../profile/UserSettings";
 import { useKioscoinUserContext } from "../KioscoinUserContext";
 import { ConfigStore } from "@/lib/ConfigStore";
+import { LoadingWallet } from "../../LoadingWallet";
 // Usando isotipo PNG en lugar del componente SVG
 
 interface UserProfileProps {
@@ -195,14 +196,7 @@ export const UserProfile = ({
       )}
 
       <CardContent className="space-y-4 sm:space-y-4">
-        {(isConnecting || walletInitializing) && (
-          <div className="w-full flex justify-center items-center py-4 font-secondary text-dark">
-            <div className="flex items-center space-x-2">
-              <Loader2 className="h-4 w-4 animate-spin text-yellow-600" />
-              <span className="text-sm block">{t("loading_wallet")}</span>
-            </div>
-          </div>
-        )}
+        {(isConnecting || walletInitializing) && <LoadingWallet />}
 
         {canShowWallet && (
           <div className="w-full flex space-y-1.5 pt-2">

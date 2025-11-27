@@ -17,7 +17,6 @@ import { p2pMarketAPIClient as client } from "../../../lib/APIClients";
 import { useTranslation } from "react-i18next";
 import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 import { useAccount } from "wagmi";
-import { ConnectToContinueButton } from "./ConnectToContinueButton";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import NotifyFiatSentButton from "../NotifyFiatSentButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -27,8 +26,8 @@ import {
   ConfigStore,
   getBlockchainDisplayName,
 } from "@/lib/ConfigStore";
-import DisputeOrderButton from "@/components/kioscoin/dispute/DisputeOrderButton";
-import { useWeb3AuthConnect } from "@web3auth/modal/react";
+import { useWeb3AuthConnect, useWeb3Auth } from "@web3auth/modal/react";
+import { LoadingWallet } from "../LoadingWallet";
 
 interface OrderCardFooterProps {
   order: Order;
@@ -53,12 +52,22 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   const { user, isLoggedIn, loginId } = useKioscoinUserContext();
   const { isConnected } = useAccount();
   const { isConnected: isConnectedWeb3Auth } = useWeb3AuthConnect();
-  const { currentChainId } = useEtherspotSdk();
+  const { status: web3authStatus } = useWeb3Auth();
+  const {
+    currentChainId,
+    isLoading: isEtherspotLoading,
+    isReady,
+  } = useEtherspotSdk();
   const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [orderTaken, setOrderTaken] = useState(false);
   const isSeller: boolean = order.sellerId === user?.id;
   const canSelectOrder = isLoggedIn && user?.id !== order?.creatorId;
+
+  // Check if wallet is connecting
+  const walletConnecting =
+    web3authStatus === "connecting" ||
+    (isConnectedWeb3Auth && (isEtherspotLoading || !isReady));
 
   const shouldShowSelectButton =
     !order || order.status === ("PENDING" as OrderStatus);
@@ -165,6 +174,10 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       const wrongNetworkAlert = renderWrongNetworkAlert(order.blockchain);
       if (wrongNetworkAlert) return wrongNetworkAlert;
 
+      if (walletConnecting) {
+        return <LoadingWallet />;
+      }
+
       return isConnected || isConnectedWeb3Auth ? (
         <LockFundsButton
           order={order}
@@ -172,13 +185,19 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
           onSuccess={() => {}}
         />
       ) : (
-        <ConnectToContinueButton />
+        <div className="w-full py-2 text-center text-sm text-red-600 font-secondary">
+          {t("wallet_connection_error")}
+        </div>
       );
     }
 
     if (order.status === "FIAT_SENT" && isSeller) {
       const wrongNetworkAlert = renderWrongNetworkAlert(order.blockchain);
       if (wrongNetworkAlert) return wrongNetworkAlert;
+
+      if (walletConnecting) {
+        return <LoadingWallet />;
+      }
 
       return isConnected || isConnectedWeb3Auth ? (
         <ReleaseFundsButton
@@ -187,7 +206,9 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
           canRelease={isSeller}
         />
       ) : (
-        <ConnectToContinueButton />
+        <div className="w-full py-2 text-center text-sm text-red-600 font-secondary">
+          {t("wallet_connection_error")}
+        </div>
       );
     }
 
