@@ -302,7 +302,8 @@ i18n.use(initReactI18next).init({
         destination_address_to: "Destination address",
         preparing_transaction: "Preparing transaction",
         select_fiat_code: "Select the exchange currency",
-        info_text_fund_wallet: "You don't have enough funds in your wallet to deposit. Check the blockchain and the crypto dollar selected"
+        info_text_fund_wallet: "You don't have enough funds in your wallet to deposit. Check the blockchain and the crypto dollar selected",
+        login_to_start: "Login to start buying and selling now"
       },
     },
     es: {
@@ -332,7 +333,7 @@ i18n.use(initReactI18next).init({
         waiting_release: "Esperando vendedor",
         completed: "Completa",
         canceled: "Cancelada",
-        no_orders_available: "No hay órdenes disponibles",
+        no_orders_available: "No hay órdenes en el mercado",
         buyer: "Comprador",
         seller: "Vendedor",
         take_order_information:
@@ -612,7 +613,8 @@ i18n.use(initReactI18next).init({
         destination_address_to: "Dirección de la wallet de destino",
         preparing_transaction: "Preparando transacción",
         select_fiat_code: "Selecciona la moneda de cambio",
-        info_text_fund_wallet: "No tienes suficientes fondos en tu wallet para depositar. Chequea la blockchain y el dolar crypto seleccionados"
+        info_text_fund_wallet: "No tienes suficientes fondos en tu wallet para depositar. Chequea la blockchain y el dolar crypto seleccionados",
+        login_to_start: "Inicia sesión para empezar a comprar y vender ya"
       },
     },
   },

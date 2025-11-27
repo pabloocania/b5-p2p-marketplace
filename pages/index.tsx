@@ -1,28 +1,26 @@
 import { useState, useEffect } from "react";
 import CreateOrder from "../src/components/kioscoin/orders/create-orders/CreateOrderForm";
-import OrdersFeed, {
-  Filter,
-} from "../src/components/kioscoin/orders/OrdersFeed";
+import { Filter } from "../src/components/kioscoin/orders/OrdersFeed";
 import { Button } from "@/components/ui/button";
-import { Plus, User, Languages, HelpCircle } from "lucide-react";
+import { Plus, Languages, HelpCircle } from "lucide-react";
 import { useKioscoinUserContext } from "../src/components/kioscoin/users/KioscoinUserContext";
 import { useDisconnect } from "wagmi";
 import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
 import { TransactionStatus } from "@/components/kioscoin/TransactionStatus";
-import UserOrdersMenu from "@/components/kioscoin/TopLevelSubMenu";
 import { useTranslation } from "react-i18next";
 import { NavBar } from "@/components/kioscoin/NavBar";
 import { TopBar } from "@/components/kioscoin/TopBar";
-import { LandingPage } from "@/components/kioscoin/landing/LandingPage";
-import KioscoinOperationFlow from "@/components/kioscoin/orders/KioscoinOperationFlow";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/create-orders/CreateOrderContainer";
-import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
 import { HelpDialog } from "@/components/kioscoin/HelpDialog";
 import SmartWalletOnboarding from "@/components/kioscoin/users/profile/SmartWalletOnboarding";
+import {
+  MainViewRenderer,
+  ActiveView,
+} from "@/components/kioscoin/MainViewRenderer";
 
 export default function Home() {
-  const [activeComponent, setActiveComponent] = useState("OrderFeed");
-  const [activeSubFilter, setActiveSubFilter] = useState(Filter.PENDING);
+  const [activeComponent, setActiveComponent] =
+    useState<ActiveView>("OrderFeed");
   const { user, login, logout } = useKioscoinUserContext();
 
   const [refreshKey, setRefreshKey] = useState(0);
@@ -71,28 +69,7 @@ export default function Home() {
 
   const handleOrderCreated = () => {
     setActiveComponent("MyOrders");
-    setActiveSubFilter(Filter.WAITING_PAYMENT);
     incrementRefreshKey();
-  };
-
-  const renderComponent = () => {
-    if (activeComponent === "OrderFeed") {
-      return <OrdersFeed refreshKey={refreshKey} />;
-    } else if (activeComponent === "UserMenu") {
-      if (!user) {
-        return <LandingPage />;
-      }
-      return <UserMenuNew user={user} onLogin={login} onLogout={logout} />;
-    } else if (activeComponent === "MyOrders") {
-      return (
-        <UserOrdersMenu
-          activeSubFilter={activeSubFilter}
-          setActiveSubFilter={setActiveSubFilter}
-          refreshKey={refreshKey}
-          user={user}
-        />
-      );
-    }
   };
 
   return (
@@ -108,11 +85,14 @@ export default function Home() {
             onClose={resetTransaction}
           />
           <div className="w-full max-w-md mx-auto px-2 flex flex-col">
-            <KioscoinOperationFlow
-              activeComponent={activeComponent}
+            <MainViewRenderer
+              activeView={activeComponent}
+              refreshKey={refreshKey}
+              user={user}
+              onLogin={login}
+              onLogout={logout}
               onOrderCreated={handleOrderCreated}
             />
-            <div className="flex-1">{renderComponent()}</div>
           </div>
         </main>
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { LogOut, Loader2, RotateCcw, AlertCircle } from "lucide-react";
+import { LogOut, Loader2, AlertCircle } from "lucide-react";
 
 import {
   Card,
@@ -11,7 +11,6 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import KioscoinConnectButton from "../KioscoinConnectButton";
 import UserWalletsComponent from "../UserWalletsComponent";
 import { ProfileHeader } from "../profile/ProfileHeader";
 import UserBalance from "../profile/UserBalance";
@@ -154,22 +153,6 @@ export const UserProfile = ({
       )
     );
   };
-
-  function ConnectWalletButton() {
-    return (
-      <div className="w-full">
-        <style jsx>{`
-          div :global(.iek7po2) {
-            width: 100%;
-          }
-        `}</style>
-        <KioscoinConnectButton
-          onConnectingChange={onConnectingChange}
-          isConnecting={isConnecting}
-        />
-      </div>
-    );
-  }
 
   // Derived UI flags
   const walletInitializing =

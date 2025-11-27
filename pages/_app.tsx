@@ -1,15 +1,13 @@
 import Head from "next/head";
 import "../styles/globals.css";
-import "@rainbow-me/rainbowkit/styles.css";
 import { AppProps } from "next/app";
 import { KioscoinUserProvider } from "../src/components/kioscoin/users/KioscoinUserContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { createWagmiConfig } from "@/components/web3/wagmi";
 import { EtherspotSdkProvider } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import { TransactionProvider } from "@/components/web3/Transactions/TransactionContext";
-import { arbitrumSepolia, bsc } from "wagmi/chains";
+import { bsc } from "wagmi/chains";
 import "../src/i18n"; // Adjust the path as necessary
 import { useEffect, useState } from "react";
 import type { Config } from "wagmi";
@@ -103,18 +101,12 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <KioscoinUserProvider>
           <WagmiProvider config={wagmiConfig}>
             <QueryClientProvider client={queryClient}>
-              <RainbowKitProvider
-                modalSize="compact"
-                coolMode
-                initialChain={arbitrumSepolia}
-              >
-                <EtherspotSdkProvider>
-                  <TransactionProvider>
-                    <Component {...pageProps} />
-                    <Toaster />
-                  </TransactionProvider>
-                </EtherspotSdkProvider>
-              </RainbowKitProvider>
+              <EtherspotSdkProvider>
+                <TransactionProvider>
+                  <Component {...pageProps} />
+                  <Toaster />
+                </TransactionProvider>
+              </EtherspotSdkProvider>
             </QueryClientProvider>
           </WagmiProvider>
         </KioscoinUserProvider>

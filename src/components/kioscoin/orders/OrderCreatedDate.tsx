@@ -2,7 +2,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { format, formatDistanceToNow } from "date-fns";
 import { Calendar } from "lucide-react";
-import { i18n } from "@rainbow-me/rainbowkit/dist/locales";
 import { es, enUS } from "date-fns/locale";
 
 interface OrderCreatedDateProps {

@@ -1,15 +1,17 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useWeb3Auth } from "@web3auth/modal/react";
 import { useTranslation } from "react-i18next";
 
 export const ConnectToContinueButton: React.FC = () => {
-  const { openConnectModal } = useConnectModal();
+  const { connect } = useWeb3Auth();
   const { t } = useTranslation();
 
-  const handleConnect = () => {
-    if (openConnectModal) {
-      openConnectModal();
+  const handleConnect = async () => {
+    try {
+      await connect();
+    } catch (error) {
+      console.error("Failed to connect:", error);
     }
   };
 

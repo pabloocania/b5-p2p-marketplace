@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
 import { useTranslation } from "react-i18next";
 import { Mail, UserPlus } from "lucide-react";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserProfile, EmailLoginForm, RegisterForm } from "./login";
@@ -17,22 +15,16 @@ interface UserMenuNewProps {
 }
 
 const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
-  const [mockUsers, setMockUsers] = useState<KioscoinUser[]>([]);
-  // const { isConnected } = useAccount();
   const { isConnected } = useWeb3Auth();
   const { t } = useTranslation();
   const [isConnecting, setIsConnecting] = useState(false);
-  const { connectModalOpen } = useConnectModal();
   const [activeTab, setActiveTab] = useState("email");
 
   useEffect(() => {
     if (isConnected) {
       setIsConnecting(false);
     }
-    if (!connectModalOpen) {
-      setIsConnecting(false);
-    }
-  }, [isConnected, connectModalOpen]);
+  }, [isConnected]);
 
   if (user) {
     return (

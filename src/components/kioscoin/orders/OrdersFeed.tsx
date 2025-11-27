@@ -12,15 +12,6 @@ import { ScrollableContainer } from "../ScrollabelContainer";
 import { p2pMarketAPIClient as client } from "../../../lib/APIClients";
 import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-// import UserMenuNew from "../users/UserMenuNew"; // Replaced by inline auth sheet
-import { EmailLoginForm } from "@/components/kioscoin/users/login/EmailLoginForm";
-import { RegisterForm } from "@/components/kioscoin/users/login/RegisterForm";
 import { useTranslation } from "react-i18next";
 import {
   FilterBar,
@@ -30,6 +21,9 @@ import {
 } from "../filter";
 import { initializeFilterConstants } from "../filter/constants";
 import KioscoinUserLoginFlow from "../users/KioscoinUserLoginFlow";
+import { CreateOrderContainer } from "./create-orders/CreateOrderContainer";
+import CreateOrder from "./create-orders/CreateOrderForm";
+import { Plus } from "lucide-react";
 
 export enum Filter {
   ALL = "ALL",
@@ -69,6 +63,7 @@ export default function OrdersFeed({
   const { t } = useTranslation();
   const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
 
   // Initialize filter state
   const [filterState, setFilterState] = useState<FilterState>({
@@ -201,6 +196,11 @@ export default function OrdersFeed({
     await fetchOrders();
   };
 
+  const handleCreateOrderClose = () => {
+    setIsCreateOrderOpen(false);
+    refreshOrders();
+  };
+
   useEffect(() => {
     if (resetSelectedOrder) {
       setSelectedOrder(undefined);
@@ -254,30 +254,72 @@ export default function OrdersFeed({
               />
             ) : (
               <>
-                <div className="mb-2">
-                  <FilterBar
-                    filters={filterState}
-                    setFilters={setFilterState}
-                    filterGroups={filterGroups || defaultFilterGroups}
-                  />
-                </div>
                 {orders && orders.length > 0 ? (
-                  <div className="space-y-4 p-4 bg-white rounded-lg border border-none shadow-primary/20">
-                    {orders.map((order) => (
-                      <div key={order.id}>
-                        <OrderCard
-                          orderDTO={order}
-                          onSelect={handleOrderSelect}
-                          onRefresh={refreshOrders}
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  <>
+                    <div className="mb-2">
+                      <FilterBar
+                        filters={filterState}
+                        setFilters={setFilterState}
+                        filterGroups={filterGroups || defaultFilterGroups}
+                      />
+                    </div>
+                    <div className="space-y-4 p-4 bg-white rounded-lg border border-none shadow-primary/20">
+                      {orders.map((order) => (
+                        <div key={order.id}>
+                          <OrderCard
+                            orderDTO={order}
+                            onSelect={handleOrderSelect}
+                            onRefresh={refreshOrders}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 ) : (
-                  <div className="flex flex-col items-center h-full">
-                    <div className="mb-5 text-dark font-bold font-secondary">
+                  <div className="flex flex-col items-center justify-center h-full space-y-4 py-4">
+                    <div className="text-dark font-bold font-secondary text-center">
                       {t("no_orders_available")}
                     </div>
+                    {user ? (
+                      <CreateOrderContainer
+                        open={isCreateOrderOpen}
+                        onOpenChange={(open) => {
+                          setIsCreateOrderOpen(open);
+                          if (!open) handleCreateOrderClose();
+                        }}
+                        trigger={
+                          <Button className="bg-primary text-white font-secondary hover:bg-primary/90 shadow-lg">
+                            <Plus className="h-4 w-4 mr-2" />
+                            {t("create_order")}
+                          </Button>
+                        }
+                        className="p-2"
+                      >
+                        <CreateOrder
+                          onClose={handleCreateOrderClose}
+                          onConnectWallet={() => setIsLoginSheetOpen(true)}
+                          preFilledData={{
+                            fiatCode: "ARS",
+                            paymentMethods: [],
+                          }}
+                        />
+                      </CreateOrderContainer>
+                    ) : (
+                      <>
+                        <Button
+                          onClick={() => setIsLoginSheetOpen(true)}
+                          className="bg-primary text-white font-secondary hover:bg-primary/90 shadow-lg w-full"
+                        >
+                          {t("login_to_start")}
+                        </Button>
+                        <KioscoinUserLoginFlow
+                          variant="sheet"
+                          open={isLoginSheetOpen}
+                          onOpenChange={setIsLoginSheetOpen}
+                          onLogin={login}
+                        />
+                      </>
+                    )}
                   </div>
                 )}
               </>
