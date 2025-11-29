@@ -162,7 +162,7 @@ export const UserProfile = ({
   const canShowWallet = isReady && !walletInitializing;
 
   return (
-    <Card className="w-full border border-secondary/20">
+    <Card className="w-full border border-secondary/20 mt-4">
       <CardHeader className="pb-2">
         <CardTitle className="flex justify-center items-center align-center mt-1 sm:mt-2 w-full">
           <ProfileHeader user={user} />

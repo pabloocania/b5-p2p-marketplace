@@ -6,11 +6,12 @@ import { LandingPage } from "./landing/LandingPage";
 import UserOrdersMenu from "./TopLevelSubMenu";
 import KioscoinOperationFlow from "./orders/KioscoinOperationFlow";
 import { KioscoinUser, UserData } from "b5-api-client";
+import { useNavigation, ActiveView } from "./NavigationContext";
 
-export type ActiveView = "OrderFeed" | "UserMenu" | "MyOrders";
+// Re-export ActiveView for backward compatibility
+export type { ActiveView } from "./NavigationContext";
 
 interface MainViewRendererProps {
-  activeView: ActiveView;
   refreshKey: number;
   user: KioscoinUser | undefined;
   onLogin: (user: KioscoinUser, userData: UserData) => Promise<void>;
@@ -19,25 +20,40 @@ interface MainViewRendererProps {
 }
 
 export const MainViewRenderer: React.FC<MainViewRendererProps> = ({
-  activeView,
   refreshKey,
   user,
   onLogin,
   onLogout,
   onOrderCreated,
 }) => {
+  const { currentView, params } = useNavigation();
+
   // Encapsulated state for MyOrders filter - defaults to WAITING_PAYMENT
+  // Can be overridden by navigation params
   const [myOrdersFilter, setMyOrdersFilter] = useState<Filter>(
     Filter.WAITING_PAYMENT
   );
 
+  // Update filter from navigation params if provided
+  useEffect(() => {
+    if (params?.filter) {
+      setMyOrdersFilter(params.filter);
+    }
+  }, [params?.filter]);
+
   const shouldShowOperationFlow =
-    activeView === "OrderFeed" || activeView === "MyOrders";
+    currentView === "OrderFeed" || currentView === "MyOrders";
 
   const renderView = () => {
-    switch (activeView) {
+    switch (currentView) {
       case "OrderFeed":
-        return <OrdersFeed refreshKey={refreshKey} />;
+        return (
+          <OrdersFeed
+            refreshKey={refreshKey}
+            orderId={params?.orderId}
+            showDetails={params?.showDetails}
+          />
+        );
 
       case "UserMenu":
         if (!user) {
@@ -54,6 +70,7 @@ export const MainViewRenderer: React.FC<MainViewRendererProps> = ({
             setActiveSubFilter={setMyOrdersFilter}
             refreshKey={refreshKey}
             user={user}
+            orderId={params?.orderId}
           />
         );
 
@@ -66,7 +83,7 @@ export const MainViewRenderer: React.FC<MainViewRendererProps> = ({
     <>
       {shouldShowOperationFlow && (
         <KioscoinOperationFlow
-          activeComponent={activeView}
+          activeComponent={currentView}
           onOrderCreated={onOrderCreated}
         />
       )}

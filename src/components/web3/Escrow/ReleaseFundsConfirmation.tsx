@@ -11,7 +11,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ArrowRight } from "lucide-react";
 import { Order } from "b5-api-client/dist/types";
 import { OPSReceipt } from "@/components/web3/types";
 import { Separator } from "../../../components/ui/separator";
@@ -71,12 +71,12 @@ export default function ReleaseFundsConfirmation({
       <Card className="w-full max-w-md">
         <CardHeader className="flex justify-center items-center pt-4">
           <CardTitle className="text-center text-dark">
-            {t("transaction_details")}
+            {t("release_funds")}
           </CardTitle>
         </CardHeader>
         <Separator className="my-2"></Separator>
-        <CardContent className="py-4 px-4">
-          <Alert className="mb-6 bg-yellow-100 border border-yellow-100">
+        <CardContent className="p-3">
+          <Alert className="bg-primary/10 border border-primary/50">
             <AlertTriangle className="h-4 w-4 font-bold" />
             <AlertTitle className="text-primary font-bold">
               {t("warning")}
@@ -85,22 +85,23 @@ export default function ReleaseFundsConfirmation({
               {t("warning_release_text")}
             </AlertDescription>
           </Alert>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-2">
             {/* <div className="space-y-3">
               <p className="text-xs text-gray-500 mt-1 font-secondary text-center">
                 {t("sw_fee_details")}
               </p>
             </div> */}
-            <div className="space-y-2 text-sm">{renderGasFee()}</div>
+            {/* <div className="space-y-2 text-sm">{renderGasFee()}</div> */}
           </form>
         </CardContent>
-        <CardFooter className="flex justify-between pb-3">
+        <CardFooter className="flex justify-between pb-2">
           <Button
             onClick={handleConfirm}
             className="w-full text-white bg-secondary"
             disabled={isLoading}
           >
             {t("release_funds")}
+            <ArrowRight className="ml-2" />
           </Button>
         </CardFooter>
       </Card>

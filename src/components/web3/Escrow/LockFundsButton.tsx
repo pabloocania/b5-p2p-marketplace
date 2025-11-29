@@ -51,6 +51,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
   const handleLockFunds = async () => {
     if (!isTransacting) {
       setIsLoading(true);
+      setIsOpen(false); // Close the sheet immediately
       onSuccess();
       try {
         if (!hasSufficientBalance) {
@@ -126,15 +127,22 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
           <Button
             className={`w-full font-secondary ${
               hasSufficientBalance
-                ? "text-white bg-secondary font-secondary shadow-sm hover:text-secondary hover:bg-white hover:border hover:border-secondary"
+                ? "text-white bg-secondary font-secondary shadow-sm hover:text-white hover:bg-primary"
                 : "text-white bg-red-500 border-red-500"
             }`}
             onClick={() =>
-              hasSufficientBalance && !isLoading && setIsOpen(true)
+              hasSufficientBalance &&
+              !isLoading &&
+              !isTransacting &&
+              setIsOpen(true)
             }
-            disabled={isLoading || !hasSufficientBalance}
+            disabled={isLoading || isTransacting || !hasSufficientBalance}
           >
-            {hasSufficientBalance ? t("lock_funds") : t("not_enough_balance")}
+            {!hasSufficientBalance
+              ? t("not_enough_balance")
+              : isLoading
+              ? t("locking_funds")
+              : t("lock_funds")}
           </Button>
         </SheetTrigger>
         {!hasSufficientBalance && (

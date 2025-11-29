@@ -28,6 +28,8 @@ import {
 } from "@/lib/ConfigStore";
 import { useWeb3AuthConnect, useWeb3Auth } from "@web3auth/modal/react";
 import { LoadingWallet } from "../LoadingWallet";
+import { useNavigation } from "../NavigationContext";
+import { Filter } from "./OrdersFeed";
 
 interface OrderCardFooterProps {
   order: Order;
@@ -49,6 +51,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   setOrder,
   paymentMethods,
 }) => {
+  const { navigate } = useNavigation();
   const { user, isLoggedIn, loginId } = useKioscoinUserContext();
   const { isConnected } = useAccount();
   const { isConnected: isConnectedWeb3Auth } = useWeb3AuthConnect();
@@ -128,6 +131,8 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       if (onRefresh) {
         onRefresh(); // Call the refresh callback
       }
+      // Navigate to MyOrders with WAITING_PAYMENT filter after successfully taking the order
+      navigate("MyOrders", { filter: Filter.WAITING_PAYMENT });
     } catch (error) {
       console.error("Failed to take order:", error);
     }
@@ -231,6 +236,23 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       order.status as OrderStatus
     ) && isUserInvolved;
 
+  // For BUY orders, seller must provide a payment method with both entity and alias
+  const hasValidPaymentMethod =
+    order.type === "BUY"
+      ? paymentMethods.length > 0 &&
+        paymentMethods.some(
+          (pm) =>
+            pm.entity &&
+            pm.entity.trim().length > 0 &&
+            pm.alias &&
+            pm.alias.trim().length > 0
+        )
+      : true;
+
+  const canTakeBuyOrder = order.type === "BUY" && hasValidPaymentMethod;
+  const canTakeSellOrder = order.type === "SELL" && walletAddress;
+  const canTakeOrder = canTakeBuyOrder || canTakeSellOrder;
+
   return isWaitingAction ? (
     <CardFooter className="pb-0">
       <div className="text-center w-full text-white">
@@ -252,7 +274,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         {order.type === "SELL" ? t("buy") : t("sell")} {order.tokenCode}
       </Button>
     </CardFooter>
-  ) : showDetails && (walletAddress || order.type === "BUY") ? (
+  ) : showDetails && canTakeOrder ? (
     <CardFooter className="pb-0">
       <Button
         className="w-full bg-secondary text-white font-secondary"
@@ -262,6 +284,12 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
           ? `${t("sell")} ${order.tokenCode}`
           : `${t("buy")} ${order.tokenCode}`}
       </Button>
+    </CardFooter>
+  ) : showDetails && order.type === "BUY" && !hasValidPaymentMethod ? (
+    <CardFooter className="pb-0">
+      <div className="w-full py-2 text-center text-sm text-muted-foreground font-secondary">
+        {t("select_payment_method_to_continue")}
+      </div>
     </CardFooter>
   ) : null;
 };

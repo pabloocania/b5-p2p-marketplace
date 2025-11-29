@@ -180,6 +180,25 @@ a {
   }
 }
 
+@keyframes progress-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes unread-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 4px rgba(139, 92, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+  }
+}
+
 /* Clases de animación */
 .animate-spin-slow {
   animation: spin-slow 3s linear infinite;
@@ -199,6 +218,14 @@ a {
 
 .animate-typing-glow {
   animation: typing-glow 2.5s ease-in-out infinite;
+}
+
+.animate-progress-sweep {
+  animation: progress-sweep 1.5s ease-in-out infinite;
+}
+
+.animate-unread-glow {
+  animation: unread-glow 2s ease-in-out infinite;
 }
 
 @layer utilities {

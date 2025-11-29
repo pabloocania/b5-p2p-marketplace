@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import CreateOrder from "../src/components/kioscoin/orders/create-orders/CreateOrderForm";
-import { Filter } from "../src/components/kioscoin/orders/OrdersFeed";
 import { Button } from "@/components/ui/button";
 import { Plus, Languages, HelpCircle } from "lucide-react";
 import { useKioscoinUserContext } from "../src/components/kioscoin/users/KioscoinUserContext";
@@ -13,22 +12,25 @@ import { TopBar } from "@/components/kioscoin/TopBar";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/create-orders/CreateOrderContainer";
 import { HelpDialog } from "@/components/kioscoin/HelpDialog";
 import SmartWalletOnboarding from "@/components/kioscoin/users/profile/SmartWalletOnboarding";
+import { MainViewRenderer } from "@/components/kioscoin/MainViewRenderer";
 import {
-  MainViewRenderer,
+  NavigationProvider,
+  useNavigation,
   ActiveView,
-} from "@/components/kioscoin/MainViewRenderer";
+} from "@/components/kioscoin/NavigationContext";
+import { Filter } from "@/components/kioscoin/orders/OrdersFeed";
 
-export default function Home() {
-  const [activeComponent, setActiveComponent] =
-    useState<ActiveView>("OrderFeed");
+function HomeContent() {
   const { user, login, logout } = useKioscoinUserContext();
+  const { currentView, navigate } = useNavigation();
 
   const [refreshKey, setRefreshKey] = useState(0);
-  const incrementRefreshKey = () => {
+  const incrementRefreshKey = useCallback(() => {
     setRefreshKey((prevKey) =>
       prevKey >= Number.MAX_SAFE_INTEGER ? 0 : prevKey + 1
     );
-  };
+  }, []);
+
   const { disconnect } = useDisconnect();
   const { transaction, resetTransaction } = useTransaction();
   const { i18n, t } = useTranslation();
@@ -44,9 +46,9 @@ export default function Home() {
 
   useEffect(() => {
     if (!user) {
-      setActiveComponent("OrderFeed");
+      navigate("OrderFeed");
     }
-  }, [user, disconnect]);
+  }, [user, disconnect, navigate]);
 
   useEffect(() => {
     if (user && !localStorage.getItem("hasSeenSmartWalletOnboarding")) {
@@ -68,7 +70,12 @@ export default function Home() {
   };
 
   const handleOrderCreated = () => {
-    setActiveComponent("MyOrders");
+    navigate("MyOrders", { filter: Filter.WAITING_PAYMENT });
+    incrementRefreshKey();
+  };
+
+  const handleSetActiveComponent = (view: ActiveView) => {
+    navigate(view);
     incrementRefreshKey();
   };
 
@@ -76,7 +83,7 @@ export default function Home() {
     <div className="min-h-screen flex justify-center">
       <div className="w-full flex flex-col bg-secondary/10 relative h-screen">
         <main className="flex-1 overflow-y-auto pt-14 sm:pt-19 pb-20 sm:pb-24 md:pb-28 relative">
-          <TopBar activeComponent={activeComponent} />
+          <TopBar activeComponent={currentView} />
           <TransactionStatus
             status={transaction.status}
             message={transaction.message}
@@ -86,7 +93,6 @@ export default function Home() {
           />
           <div className="w-full max-w-md mx-auto px-2 flex flex-col">
             <MainViewRenderer
-              activeView={activeComponent}
               refreshKey={refreshKey}
               user={user}
               onLogin={login}
@@ -98,8 +104,8 @@ export default function Home() {
 
         <div className="pb-8 sm:pb-10">
           <NavBar
-            activeComponent={activeComponent}
-            setActiveComponent={setActiveComponent}
+            activeComponent={currentView}
+            setActiveComponent={handleSetActiveComponent}
           />
         </div>
 
@@ -173,5 +179,13 @@ export default function Home() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <NavigationProvider initialView="OrderFeed">
+      <HomeContent />
+    </NavigationProvider>
   );
 }

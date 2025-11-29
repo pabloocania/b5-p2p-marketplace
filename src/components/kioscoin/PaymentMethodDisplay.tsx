@@ -19,8 +19,8 @@ const entityColorMap: Readonly<Record<string, string>> = {
 };
 
 const paymentMethodColorMap: Readonly<Record<string, string>> = {
-  FINTECH: "text-green-500",
-  BANK: "text-orange-500",
+  FINTECH: "text-dark",
+  BANK: "text-dark",
 } as const;
 
 const paymentMethodIconMap: Readonly<Record<string, LucideIcon>> = {
@@ -53,7 +53,7 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
   const IconComponent = paymentMethodIconMap[type] ?? Tally1;
   const sizeClass = sizeMap[size];
   return (
-    <div className="inline-flex max-w-full flex-col items-start gap-0.5 px-2 py-1 rounded-md bg-secondary/50 text-dark text-left">
+    <div className="inline-flex max-w-full flex-col items-start gap-0.5 px-1 py-1 rounded-md bg-secondary/30 text-dark text-left">
       <div className="flex items-center gap-1">
         <IconComponent
           className={`${sizeClass.icon} ${

@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Order, PaymentMethod } from "b5-api-client";
 import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 import OrderStatusBar from "./OrderStatus";
@@ -13,6 +12,19 @@ import ViewHistoryButton from "./ViewHistoryButton";
 import CopyIdButton from "./CopyIdButton";
 import DisputeOrderButton from "../dispute/DisputeOrderButton";
 import ChatButton from "./ChatButton";
+
+const FINAL_STATUSES = [
+  "COMPLETED",
+  "COMPLETED_BY_ADMIN",
+  "RELEASED",
+  "CANCELLED",
+  "CANCELED",
+  "EXPIRED",
+  "CLOSED",
+] as const;
+
+const isFinalStatus = (status: string): boolean =>
+  FINAL_STATUSES.includes(status as (typeof FINAL_STATUSES)[number]);
 
 interface OrderCardProps {
   orderDTO: Order | undefined;
@@ -40,10 +52,28 @@ export function OrderCard({
   }, [orderDTO]);
 
   useEffect(() => {
-    if (order?.paymentMethods && order.paymentMethods.length > 0) {
+    // For PENDING BUY orders, don't pre-populate from order.paymentMethods
+    // because the seller needs to explicitly provide their own payment methods
+    const isPendingBuyOrder =
+      order?.status === "PENDING" && order?.type === "BUY";
+    const isNotCreator = user?.id !== order?.creatorId;
+
+    // Only pre-populate for non-PENDING orders or when user is already involved
+    if (
+      order?.paymentMethods &&
+      order.paymentMethods.length > 0 &&
+      !(isPendingBuyOrder && isNotCreator)
+    ) {
       setSelectedPaymentMethods(order.paymentMethods);
     }
-  }, [order?.id, order?.paymentMethods]);
+  }, [
+    order?.id,
+    order?.paymentMethods,
+    order?.status,
+    order?.type,
+    order?.creatorId,
+    user?.id,
+  ]);
 
   const handlePaymentMethodsChange = (methods: PaymentMethod[]) => {
     setSelectedPaymentMethods(methods);
@@ -81,23 +111,12 @@ export function OrderCard({
     </div>
   );
 
-  const renderChatButton = () => {
-    const isOrderCompleted = (status: string): boolean => {
-      const completedStatuses = [
-        "COMPLETED",
-        "COMPLETED_BY_ADMIN",
-        "RELEASED",
-        "CANCELLED",
-      ];
-      return completedStatuses.includes(status);
-    };
-
-    return order?.chatId && !isOrderCompleted(order.status ?? "") ? (
+  const renderChatButton = () =>
+    order?.chatId && !isFinalStatus(order.status ?? "") ? (
       <div className="flex font-secondary w-full shadow-xs">
         <ChatButton order={order} user={user} />
       </div>
     ) : null;
-  };
 
   if (!order) {
     return (
@@ -109,11 +128,14 @@ export function OrderCard({
     );
   }
 
+  // const showStatusBar = !isFinalStatus(order.status ?? "");
+
   return (
     <Card
       className="w-full border border-none shadow-primary/20"
       variant="shadow"
     >
+      {/* {showStatusBar && <OrderStatusBar status={order.status ?? "Unknown"} />} */}
       <OrderStatusBar status={order.status ?? "Unknown"} />
       <OrderCardHeader order={order} />
       <OrderCardContent
@@ -138,17 +160,11 @@ export function OrderCard({
       <div className="px-3 py-2 space-y-2">
         {/* First row: History, Copy ID, Chat */}
         <div
-          className={`grid ${(() => {
-            const showChat =
-              order?.chatId &&
-              ![
-                "COMPLETED",
-                "COMPLETED_BY_ADMIN",
-                "RELEASED",
-                "CANCELLED",
-              ].includes(order.status ?? "");
-            return showChat ? "grid-cols-3" : "grid-cols-2";
-          })()} gap-2`}
+          className={`grid ${
+            order?.chatId && !isFinalStatus(order.status ?? "")
+              ? "grid-cols-3"
+              : "grid-cols-2"
+          } gap-2`}
         >
           {renderHistoryButton()}
           {renderCopyIdButton()}

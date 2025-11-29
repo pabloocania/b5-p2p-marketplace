@@ -37,6 +37,7 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   const handleReleaseFunds = async () => {
     if (!isTransacting) {
       setIsLoading(true);
+      setIsReleaseOpen(false); // Close the sheet immediately
       try {
         setIsTransacting(true);
         const txHashPromise = releaseFunds(order);
@@ -107,10 +108,11 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
       <Sheet open={isReleaseOpen} onOpenChange={setIsReleaseOpen}>
         <SheetTrigger asChild>
           <Button
-            className="w-full text-white bg-secondary font-secondary shadow-sm hover:text-secondary hover:bg-white hover:border hover:border-secondary"
-            onClick={() => setIsReleaseOpen(true)}
+            className="w-full text-white bg-secondary font-secondary shadow-sm hover:text-white hover:bg-primary"
+            onClick={() => !isLoading && setIsReleaseOpen(true)}
+            disabled={isLoading || isTransacting}
           >
-            {t("release_funds")}
+            {isLoading ? t("releasing_funds") : t("release_funds")}
           </Button>
         </SheetTrigger>
         <SheetContent

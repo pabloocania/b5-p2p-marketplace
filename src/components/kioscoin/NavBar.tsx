@@ -3,7 +3,7 @@ import { Wallet, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { MarketplaceIcon } from "@/icons/MarketplaceIcon";
-import { ActiveView } from "./MainViewRenderer";
+import { ActiveView } from "./NavigationContext";
 
 interface NavBarProps {
   activeComponent: ActiveView;

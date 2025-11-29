@@ -9,6 +9,7 @@ interface TopLevelSubMenuProps {
   setActiveSubFilter: (filter: Filter) => void;
   refreshKey: number;
   user: KioscoinUser | undefined;
+  orderId?: string;
 }
 
 const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
@@ -16,6 +17,7 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
   setActiveSubFilter,
   refreshKey,
   user,
+  orderId,
 }) => {
   const { t } = useTranslation();
 
@@ -69,6 +71,8 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
           filter={activeSubFilter}
           refreshKey={refreshKey}
           resetSelectedOrder={true}
+          orderId={orderId}
+          showDetails={!!orderId}
         />
       </div>
     </div>

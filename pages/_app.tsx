@@ -94,8 +94,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           type="font/otf"
           crossOrigin="anonymous"
         />
-        <meta name="theme-color" content="rgba(225, 234, 240)" />
-        {/* <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/> */}
+        <meta name="theme-color" content="#3e2262" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </Head>
       <Web3AuthProvider config={web3AuthContextConfig}>
         <KioscoinUserProvider>

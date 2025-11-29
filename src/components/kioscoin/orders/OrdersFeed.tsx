@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Order,
-  OrderStatus,
-  OrderType,
-  PaymentMethod,
-  GetOrdersParams as OriginalGetOrdersParams,
-  GetOrdersParams,
-} from "b5-api-client";
+import { Order, OrderStatus, GetOrdersParams } from "b5-api-client";
 import { OrderCard } from "./OrderCard";
 import { ScrollableContainer } from "../ScrollabelContainer";
 import { p2pMarketAPIClient as client } from "../../../lib/APIClients";
@@ -43,9 +36,11 @@ interface OrderFeedProps {
   resetSelectedOrder?: boolean; // Add resetSelectedOrder prop
   onBack?: () => void; // Add onBack prop
   filterGroups?: FilterGroupConfig[]; // Add filterGroups prop
+  showDetails?: boolean; // Show details for a specific order
 }
 
 export default function OrdersFeed({
+  orderId,
   creatorId,
   buyerId,
   filter = Filter.ALL,
@@ -54,16 +49,37 @@ export default function OrdersFeed({
   resetSelectedOrder,
   onBack,
   filterGroups,
+  showDetails: initialShowDetails,
 }: OrderFeedProps) {
   const { user, login, loginId } = useKioscoinUserContext();
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
     undefined
   );
+  const [showDetails, setShowDetails] = useState(initialShowDetails ?? false);
   const { t } = useTranslation();
   const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
+
+  // Fetch specific order by ID if provided
+  // useEffect(() => {
+  //   const fetchOrderById = async () => {
+  //     if (orderId && loginId) {
+  //       try {
+  //         const response = await client.getOrder(orderId, {
+  //           Authorization: `Bearer ${loginId}`,
+  //         });
+  //         if (response) {
+  //           setSelectedOrder(response);
+  //           setShowDetails(true);
+  //         }
+  //       } catch (error) {
+  //         console.error("Failed to fetch order by ID:", error);
+  //       }
+  //     }
+  //   };
+  //   fetchOrderById();
+  // }, [orderId, loginId]);
 
   // Initialize filter state
   const [filterState, setFilterState] = useState<FilterState>({
@@ -232,10 +248,12 @@ export default function OrdersFeed({
 
   const handleOrderSelect = (order: Order) => {
     setSelectedOrder(order);
+    setShowDetails(true);
   };
 
   const handleBack = () => {
     setSelectedOrder(undefined);
+    setShowDetails(false);
     if (onBack) {
       onBack(); // Call the onBack function if provided
     }
@@ -249,7 +267,7 @@ export default function OrdersFeed({
             {selectedOrder ? (
               <OrderCard
                 orderDTO={selectedOrder}
-                showDetails={true}
+                showDetails={showDetails}
                 onRefresh={refreshOrders}
               />
             ) : (

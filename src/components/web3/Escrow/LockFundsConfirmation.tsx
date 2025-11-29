@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -8,13 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Order } from "b5-api-client/dist/types";
 import { OPSReceipt } from "@/components/web3/types";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import { ArrowRight } from "lucide-react";
+import { CryptoAmountIcon } from "@/components/kioscoin/CryptoIcon";
 
 interface LockFundsConfirmationProps {
   order: Order;
@@ -30,7 +29,6 @@ export default function LockFundsConfirmation({
   onClose,
 }: LockFundsConfirmationProps) {
   const { t } = useTranslation();
-  const walletType = "smart";
   const orderAmount = parseFloat(order.amount ?? "0");
   const orderFee = parseFloat(order.fee ?? "0");
 
@@ -51,35 +49,41 @@ export default function LockFundsConfirmation({
   };
 
   const renderOrderDetails = () => {
+    const tokenCode = order.tokenCode?.toLowerCase() ?? "";
+
     return (
-      <div className="space-y-3 text-sm bg-secondary bg-opacity-10 p-2 rounded-md">
-        <p className="text-base mt-2 text-primary font-secondary">
-          {t("amount_to_deposit")}:{" "}
-          <span className="font-semibold text-dark text-xl">
-            {totalAmount + " " + order.tokenCode}
+      <div className="space-y-3 text-sm bg-secondary/10 p-3 rounded-md">
+        <div className="flex items-center justify-between">
+          <span className="text-base text-primary font-secondary font-bold">
+            {t("amount_to_deposit")}:
           </span>
-        </p>
-        <p className="text-primary font-secondary">
-          {t("amount")}:{" "}
-          <span className="font-semibold text-dark">
-            {orderAmount + " " + order.tokenCode}
+          <CryptoAmountIcon
+            formattedAmount={totalAmount.toString()}
+            tokenCode={tokenCode}
+            textSizeClass="text-lg text-dark"
+            iconSize="md"
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-primary font-secondary">{t("amount")}:</span>
+          <CryptoAmountIcon
+            formattedAmount={orderAmount.toString()}
+            tokenCode={tokenCode}
+            textSizeClass="text-sm text-dark"
+            iconSize="sm"
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-primary font-secondary">
+            {t("transaction_fee")}:
           </span>
-        </p>
-        <p className="text-primary font-secondary">
-          {t("transaction_fee")}:{" "}
-          <span className="font-semibold text-dark">
-            {fees.transaction + " " + order.tokenCode}
-          </span>
-        </p>
-        {/* <p className="text-primary font-secondary">
-          {t("network_gas_fee")}
-          <span className="font-semibold text-dark">
-            {fees.gas + " " + order.tokenCode}
-          </span>
-          <span className="ml-2 bg-primary font-secondary text-white px-2 py-0.5 text-xs rounded-full">
-            {t("gasless")}
-          </span>
-        </p> */}
+          <CryptoAmountIcon
+            formattedAmount={fees.transaction.toString()}
+            tokenCode={tokenCode}
+            textSizeClass="text-sm text-dark"
+            iconSize="sm"
+          />
+        </div>
       </div>
     );
   };
@@ -89,17 +93,15 @@ export default function LockFundsConfirmation({
       <Card className="w-full max-w-md">
         <CardHeader className="flex justify-center items-center pt-4">
           <CardTitle className="text-center text-dark font-secondary">
-            {t("transaction_details")}
+            {t("lock_funds")}
           </CardTitle>
         </CardHeader>
         <Separator className="my-2"></Separator>
         <CardContent className="py-2 px-4">
+          <p className="text-sm text-dark font-secondary w-full text-center mb-2">
+            {t("deposit_funds")}
+          </p>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* <div className="space-y-3">
-              <p className="text-xs text-dark mt-1 font-secondary text-center">
-                {t("sw_fee_details")}
-              </p>
-            </div> */}
             {renderOrderDetails()}
           </form>
         </CardContent>

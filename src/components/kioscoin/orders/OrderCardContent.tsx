@@ -25,6 +25,7 @@ import {
 import { Rating } from "../Rating";
 import { formatFiatAmount } from "@/lib/utils";
 import PaymentMethodSelector from "./create-orders/PaymentMethodSelector";
+import FiatReceiveMethodSelector from "./FiatReceiveMethodSelector";
 
 interface OrderCardContentProps {
   order: Order;
@@ -78,17 +79,19 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
   };
 
   useEffect(() => {
-    if (order.paymentMethods && order.paymentMethods.length > 0) {
-      setSelectedPaymentMethods(order.paymentMethods);
-      return;
-    }
+    // Only set payment methods that have valid aliases
+    const hasValidAlias = (pm: PaymentMethod) =>
+      pm.alias && pm.alias.trim().length > 0;
 
     if (
       isSeller &&
       user?.settings?.paymentMethods &&
       user.settings.paymentMethods.length > 0
     ) {
-      setSelectedPaymentMethods(user.settings.paymentMethods);
+      const validMethods = user.settings.paymentMethods.filter(hasValidAlias);
+      if (validMethods.length > 0) {
+        setSelectedPaymentMethods(validMethods);
+      }
     }
   }, [
     order.paymentMethods,
@@ -200,12 +203,13 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
         user &&
         showDetails &&
         order.type === ("BUY" as OrderType) && (
-          <div className="py-2">
-            <PaymentMethodSelector
-              selectedMethods={selectedPaymentMethods}
-              onChange={handleUpdatePaymentMethod}
-              methods={availableMethods}
-              readOnly={true}
+          <div className="pt-3">
+            <FiatReceiveMethodSelector
+              availableMethods={availableMethods}
+              userMethods={user?.settings?.paymentMethods ?? []}
+              selectedMethod={selectedPaymentMethods[0] ?? null}
+              onMethodSelect={(method) => handleUpdatePaymentMethod([method])}
+              fiatCode={order.fiatCode}
             />
           </div>
         )}
