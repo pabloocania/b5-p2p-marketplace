@@ -19,10 +19,16 @@ import {
   ActiveView,
 } from "@/components/kioscoin/NavigationContext";
 import { Filter } from "@/components/kioscoin/orders/OrdersFeed";
+import { useDeepLink } from "@/hooks/useDeepLink";
+import KioscoinUserLoginFlow from "@/components/kioscoin/users/KioscoinUserLoginFlow";
 
 function HomeContent() {
   const { user, login, logout } = useKioscoinUserContext();
-  const { currentView, navigate } = useNavigation();
+  const { currentView, navigate, pendingNavigation } = useNavigation();
+
+  // Handle deeplink navigation
+  const { requiresLogin } = useDeepLink(user);
+  const [showDeepLinkLogin, setShowDeepLinkLogin] = useState(false);
 
   const [refreshKey, setRefreshKey] = useState(0);
   const incrementRefreshKey = useCallback(() => {
@@ -44,11 +50,26 @@ function HomeContent() {
     i18n.changeLanguage(lng);
   };
 
+  // Show login dialog when deeplink requires authentication
   useEffect(() => {
-    if (!user) {
+    if (requiresLogin && !user) {
+      setShowDeepLinkLogin(true);
+    }
+  }, [requiresLogin, user]);
+
+  // Close login dialog after successful login
+  useEffect(() => {
+    if (user && showDeepLinkLogin) {
+      setShowDeepLinkLogin(false);
+    }
+  }, [user, showDeepLinkLogin]);
+
+  useEffect(() => {
+    // Only navigate to OrderFeed if there's no pending deeplink navigation
+    if (!user && !pendingNavigation) {
       navigate("OrderFeed");
     }
-  }, [user, disconnect, navigate]);
+  }, [user, disconnect, navigate, pendingNavigation]);
 
   useEffect(() => {
     if (user && !localStorage.getItem("hasSeenSmartWalletOnboarding")) {
@@ -177,6 +198,15 @@ function HomeContent() {
             onComplete={() => setShowSmartWalletOnboarding(false)}
           />
         )}
+
+        {/* Deeplink login flow - shown when user opens a shared link without being logged in */}
+        <KioscoinUserLoginFlow
+          variant="sheet"
+          open={showDeepLinkLogin}
+          onOpenChange={setShowDeepLinkLogin}
+          onLogin={login}
+          showBrand={true}
+        />
       </div>
     </div>
   );

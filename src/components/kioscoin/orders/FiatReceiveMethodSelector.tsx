@@ -216,7 +216,7 @@ export default function FiatReceiveMethodSelector({
     selectedMethod.alias.trim().length > 0;
 
   return (
-    <div className="w-full">
+    <div className="w-full font-secondary">
       {/* Trigger button */}
       <button
         type="button"
@@ -224,7 +224,7 @@ export default function FiatReceiveMethodSelector({
         disabled={disabled}
         className={`
           w-full flex items-center px-3 py-2 rounded-lg
-          bg-secondary/10 transition-all duration-200 border border-secondary
+          bg-white transition-all duration-200 border border-secondary
           ${
             disabled
               ? "opacity-50 cursor-not-allowed"

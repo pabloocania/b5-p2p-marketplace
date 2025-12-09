@@ -10,6 +10,7 @@ import OrderCardContent from "./OrderCardContent";
 import OrderCardFooter from "./OrderCardFooter";
 import ViewHistoryButton from "./ViewHistoryButton";
 import CopyIdButton from "./CopyIdButton";
+import { ShareOrderButton } from "./ShareOrderButton";
 import DisputeOrderButton from "../dispute/DisputeOrderButton";
 import ChatButton from "./ChatButton";
 
@@ -98,12 +99,21 @@ export function OrderCard({
       </div>
     ) : null;
 
-  const renderCopyIdButton = () =>
-    user ? (
+  const isPending = order?.status === "PENDING";
+
+  const renderShareOrCopyButton = () => {
+    if (!user) return null;
+
+    return (
       <div className="flex font-secondary w-full shadow-xs">
-        <CopyIdButton orderId={order?.id} />
+        {isPending && order?.id ? (
+          <ShareOrderButton orderId={order.id} />
+        ) : (
+          <CopyIdButton orderId={order?.id} />
+        )}
       </div>
-    ) : null;
+    );
+  };
 
   const renderDisputeButton = () => (
     <div className="flex font-secondary w-full shadow-xs">
@@ -167,7 +177,7 @@ export function OrderCard({
           } gap-2`}
         >
           {renderHistoryButton()}
-          {renderCopyIdButton()}
+          {renderShareOrCopyButton()}
           {renderChatButton()}
         </div>
         {/* Second row: Dispute button */}

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Order, OrderOffer, PaymentMethod } from "b5-api-client";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { useKioscoinUserContext } from "../../users/KioscoinUserContext";
@@ -11,12 +11,16 @@ import PaymentMethodSelector from "../create-orders/PaymentMethodSelector";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import LockFundsButton from "@/components/web3/Escrow/LockFundsButton";
-import OperationOrderDetails from "./OperationOrderDetails";
 import OperationBalanceSection from "./OperationBalanceSection";
-import { CreditCard, Wallet } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import AddressInput from "../AddressInput";
+import FiatReceiveMethodSelector from "../FiatReceiveMethodSelector";
+import FiatSendMethodSelector from "../FiatSendMethodSelector";
+import { CryptoAmountIcon } from "../../CryptoIcon";
+import { formatFiatAmount } from "@/lib/utils";
+import { getBlockchainDisplayName, BlockchainName } from "@/lib/ConfigStore";
 import { Separator } from "@/components/ui/separator";
-import Address from "@/components/web3/Transfers/Address";
 
 interface OperationFormProps {
   offer: OrderOffer;
@@ -54,15 +58,22 @@ export default function OperationForm({
   }, [user?.id, user?.settings?.paymentMethods]);
 
   const isValid = useMemo(() => {
-    const hasValidMethod = selectedMethods.some(
-      (m) => (m.entity?.trim()?.length ?? 0) > 0
-    );
     if (isSell) {
-      // SELL flow must also ensure seller has a non-empty balance check in API; here just method presence
-      return hasValidMethod;
+      // SELL offer (isSell): API requires paymentMethods
+      return selectedMethods.some(
+        (m) =>
+          (m.entity?.trim()?.length ?? 0) > 0 &&
+          (m.alias?.trim()?.length ?? 0) > 0
+      );
     }
-    // BUY flow requires destination address + method
-    return buyerAddress.trim().length > 0 && hasValidMethod;
+    // BUY offer (!isSell): API requires buyerAddress + valid fiat receive method
+    const firstMethod = selectedMethods[0];
+    return (
+      buyerAddress.trim().length > 0 &&
+      firstMethod !== undefined &&
+      firstMethod.alias !== undefined &&
+      firstMethod.alias.trim().length > 0
+    );
   }, [selectedMethods, buyerAddress, isSell]);
 
   const handlePointOfSale = async () => {
@@ -132,66 +143,111 @@ export default function OperationForm({
     onCancel();
   };
 
+  const handleFiatMethodSelect = (method: PaymentMethod) => {
+    setSelectedMethods([method]);
+  };
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-2 w-full justify-center">
-          <span className="text-2xl text-dark font-bold font-secondary w-full text-center">
-            {isSell ? t("sell") : t("buy")} {offer.tokenCode}
-          </span>
-        </div>
+      <div className="flex justify-center items-center">
+        <span className="text-2xl text-dark font-bold font-secondary">
+          {isSell ? t("sell") : t("buy")} {offer.tokenCode}
+        </span>
       </div>
-
-      <OperationBalanceSection
-        balances={balances}
-        onTokenSelect={() => {}}
-        handleTransfer={() => {}}
-        hideEmptyBalances={true}
-      />
-
-      {/* Order Details */}
-      <OperationOrderDetails
-        offer={offer}
-        mainLineKey={isSell ? "you_will_receive" : "you_must_pay"}
-      />
-
-      {/* BUY: Destination Address */}
-      {!isSell && (
-        <div className="space-y-2">
-          <Label
-            htmlFor="orderDetails"
-            className="font-secondary text-dark flex items-center gap-2"
-          >
-            <Wallet className="h-4 w-4" />
-            {t("destination_address")}
-          </Label>
-          <div className="rounded-lg mb-2 p-2 pt-0 bg-white border border-secondary/20 shadow-md">
-            <Address
-              address={buyerAddress}
-              isOperation={true}
-              showLabel={false}
-            />
-          </div>
-        </div>
+      {isSell && (
+        <>
+          {/* Balance Section */}
+          <OperationBalanceSection
+            balances={balances}
+            onTokenSelect={() => {}}
+            handleTransfer={() => {}}
+            hideEmptyBalances={true}
+          />
+        </>
       )}
 
-      <Label
-        htmlFor="userBalance"
-        className="font-secondary text-dark flex items-center gap-2"
-      >
-        <CreditCard className="h-4 w-4" />
-        {t("payment_method")}
-      </Label>
-      {/* Payment Method Selector */}
-      <PaymentMethodSelector
-        selectedMethods={selectedMethods}
-        onChange={setSelectedMethods}
-        methods={availableMethods}
-        readOnly={!isSell}
-      />
+      <Card className="w-full bg-primary/10 border-primary/40 border shadow-md rounded-md">
+        <CardContent className="px-4 py-3 space-y-2 font-secondary">
+          <div className="space-y-1.5">
+            {/* Main transaction line */}
+            <div className="flex items-center gap-1">
+              <span className="text-sm text-primary font-secondary">
+                {isSell ? t("you_will_receive") : t("you_must_pay")}
+              </span>
+              <span className="text-sm font-bold text-dark font-secondary">
+                {formatFiatAmount(offer.fiatAmount, offer.fiatCode)}
+              </span>
+            </div>
+            {/* Token amount */}
+            <div className="flex items-center gap-1">
+              <span className="text-sm text-primary font-secondary">
+                {t("for")}
+              </span>
+              <CryptoAmountIcon
+                formattedAmount={offer.tokenAmount}
+                tokenCode={offer.tokenCode?.toLowerCase()!!}
+                textSizeClass="text-sm text-dark font-bold"
+                amountTextClassName="font-bold"
+                iconSize="sm"
+              />
+            </div>
+            {/* Blockchain */}
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-primary font-secondary">
+                {t("on")}
+              </span>
+              <span className="text-xs font-medium text-dark font-secondary">
+                {getBlockchainDisplayName(offer.blockchain as BlockchainName)}
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Actions */}
+      {/* BUY offer (!isSell): Destination Address - API requires buyerAddress */}
+
+      {/* Payment Method Selection */}
+      {isSell ? (
+        // SELL offer (isSell): Use FiatReceiveMethodSelector - how user will receive fiat
+        <>
+          <FiatReceiveMethodSelector
+            availableMethods={availableMethods}
+            userMethods={user?.settings?.paymentMethods ?? []}
+            selectedMethod={selectedMethods[0] ?? null}
+            onMethodSelect={handleFiatMethodSelect}
+            fiatCode={offer.fiatCode}
+          />
+        </>
+      ) : (
+        // <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
+        //   <CardContent className="px-4 py-3 space-y-2 font-secondary">
+
+        //   </CardContent>
+        // </Card>
+        // BUY offer (!isSell): Use FiatSendMethodSelector - how user will send fiat
+        // <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
+        // <CardContent className="px-4 py-3 space-y-2 font-secondary">
+        <>
+          <AddressInput
+            walletAddress={buyerAddress}
+            setWalletAddress={setBuyerAddress}
+            orderStatus="PENDING"
+          />
+          <FiatSendMethodSelector
+            availableMethods={availableMethods}
+            userMethods={user?.settings?.paymentMethods ?? []}
+            selectedMethod={selectedMethods[0] ?? null}
+            onMethodSelect={handleFiatMethodSelect}
+            fiatCode={offer.fiatCode}
+            requireAlias={false}
+          />
+        </>
+        // </CardContent>
+        // </Card>
+      )}
+
+      {/* Action Buttons */}
       {isSell ? (
         order ? (
           <div>
@@ -202,38 +258,43 @@ export default function OperationForm({
             />
           </div>
         ) : (
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col gap-2 pt-2">
             <Button
               onClick={handlePointOfSale}
               disabled={!isValid || isSubmitting}
-              className="w-full bg-secondary text-white font-secondary hover:bg-dark"
+              className="w-full bg-secondary text-white font-secondary hover:bg-secondary/90 text-sm font-semibold shadow-none"
             >
               {isSubmitting ? t("sending") : t("continue")}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={onCancel}
+              disabled={isSubmitting}
+              className="w-full bg-white text-secondary font-secondary border border-secondary/80 hover:bg-secondary/10 text-sm"
+            >
+              {t("cancel")}
             </Button>
           </div>
         )
       ) : (
-        <div className="flex gap-3 pt-4">
+        <div className="flex flex-col gap-2 pt-2">
           <Button
             onClick={handlePointOfSale}
             disabled={!isValid || isSubmitting}
-            className="w-full bg-secondary text-white font-secondary hover:bg-dark"
+            className="w-full bg-secondary text-white font-secondary hover:bg-secondary/90 text-sm font-semibold shadow-none"
           >
             {isSubmitting ? t("sending") : t("continue")}
           </Button>
+          <Button
+            variant="outline"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className="w-full bg-white text-secondary font-secondary border border-secondary/80 hover:bg-secondary/10 text-sm"
+          >
+            {t("cancel")}
+          </Button>
         </div>
       )}
-
-      <div className="">
-        <Button
-          variant="outline"
-          onClick={isSell ? handleCancelSell : onCancel}
-          disabled={isSubmitting}
-          className="w-full bg-white text-secondary font-secondary border border-secondary/80 hover:bg-secondary/10"
-        >
-          {t("cancel")}
-        </Button>
-      </div>
     </div>
   );
 }

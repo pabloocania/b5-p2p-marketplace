@@ -272,27 +272,27 @@ export default function OrdersFeed({
               />
             ) : (
               <>
+                {/* FilterBar always visible when no order is selected */}
+                <div className="mb-2">
+                  <FilterBar
+                    filters={filterState}
+                    setFilters={setFilterState}
+                    filterGroups={filterGroups || defaultFilterGroups}
+                  />
+                </div>
+
                 {orders && orders.length > 0 ? (
-                  <>
-                    <div className="mb-2">
-                      <FilterBar
-                        filters={filterState}
-                        setFilters={setFilterState}
-                        filterGroups={filterGroups || defaultFilterGroups}
-                      />
-                    </div>
-                    <div className="space-y-4 p-4 bg-white rounded-lg border border-none shadow-primary/20">
-                      {orders.map((order) => (
-                        <div key={order.id}>
-                          <OrderCard
-                            orderDTO={order}
-                            onSelect={handleOrderSelect}
-                            onRefresh={refreshOrders}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </>
+                  <div className="space-y-4 p-4 bg-white rounded-lg border border-none shadow-primary/20">
+                    {orders.map((order) => (
+                      <div key={order.id}>
+                        <OrderCard
+                          orderDTO={order}
+                          onSelect={handleOrderSelect}
+                          onRefresh={refreshOrders}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full space-y-4 py-4">
                     <div className="text-dark font-bold font-secondary text-center">

@@ -119,9 +119,9 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
         <div className="flex justify-between items-center w-full text-xl font-bold">
           {/* Order type and amount */}
           <div className="flex space-x-1 items-baseline">
-            <span className="text-base text-primary text-lg">
+            {/* <span className="text-base text-primary text-lg">
               {order.type === "SELL" ? t("sells") : t("buys")}
-            </span>
+            </span> */}
             <span className="flex">
               <CryptoAmountIcon
                 formattedAmount={order.amount!!}

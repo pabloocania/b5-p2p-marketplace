@@ -29,17 +29,18 @@ export const MainViewRenderer: React.FC<MainViewRendererProps> = ({
   const { currentView, params } = useNavigation();
 
   // Encapsulated state for MyOrders filter - defaults to WAITING_PAYMENT
-  // Can be overridden by navigation params
+  // Only updated when explicitly navigating to MyOrders with a filter param
   const [myOrdersFilter, setMyOrdersFilter] = useState<Filter>(
     Filter.WAITING_PAYMENT
   );
 
-  // Update filter from navigation params if provided
+  // Update filter from navigation params only when navigating to MyOrders
+  // This prevents deeplink params (for OrderFeed) from affecting MyOrders filter
   useEffect(() => {
-    if (params?.filter) {
+    if (currentView === "MyOrders" && params?.filter) {
       setMyOrdersFilter(params.filter);
     }
-  }, [params?.filter]);
+  }, [currentView, params?.filter]);
 
   const shouldShowOperationFlow =
     currentView === "OrderFeed" || currentView === "MyOrders";
@@ -70,7 +71,6 @@ export const MainViewRenderer: React.FC<MainViewRendererProps> = ({
             setActiveSubFilter={setMyOrdersFilter}
             refreshKey={refreshKey}
             user={user}
-            orderId={params?.orderId}
           />
         );
 

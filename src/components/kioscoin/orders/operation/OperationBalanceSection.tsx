@@ -27,14 +27,10 @@ export default function OperationBalanceSection({
   if (!visible) return null;
 
   return (
-    <div className="space-y-3">
-      <Label
-        htmlFor="userBalance"
-        className="font-secondary text-dark flex items-center gap-2"
-      >
-        <Wallet className="h-4 w-4" />
+    <div className="space-y-1">
+      <div className="text-xs text-dark font-secondary">
         {t("your_balance")}
-      </Label>
+      </div>
       <TokenBalanceCardList
         balances={balances}
         onTokenSelect={onTokenSelect}

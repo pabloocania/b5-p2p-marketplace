@@ -15,11 +15,19 @@ interface NavigationState {
   params?: NavigationParams;
 }
 
+interface PendingNavigation {
+  view: ActiveView;
+  params?: NavigationParams;
+}
+
 interface NavigationContextValue {
   currentView: ActiveView;
   params: NavigationParams | undefined;
   navigate: (view: ActiveView, params?: NavigationParams) => void;
   clearParams: () => void;
+  pendingNavigation: PendingNavigation | undefined;
+  setPendingNavigation: (pending: PendingNavigation | undefined) => void;
+  executePendingNavigation: () => void;
 }
 
 const NavigationContext = createContext<NavigationContextValue | undefined>(
@@ -41,6 +49,9 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
     view: initialView,
     params: undefined,
   });
+  const [pendingNavigation, setPendingNavigation] = useState<
+    PendingNavigation | undefined
+  >(undefined);
 
   const navigate = useCallback(
     (view: ActiveView, params?: NavigationParams) => {
@@ -54,11 +65,25 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
     setState((prev) => ({ ...prev, params: undefined }));
   }, []);
 
+  const executePendingNavigation = useCallback(() => {
+    if (pendingNavigation) {
+      navigate(pendingNavigation.view, pendingNavigation.params);
+      setPendingNavigation(undefined);
+      // Clean URL after navigation
+      if (typeof window !== "undefined") {
+        window.history.replaceState({}, "", window.location.pathname);
+      }
+    }
+  }, [pendingNavigation, navigate]);
+
   const value: NavigationContextValue = {
     currentView: state.view,
     params: state.params,
     navigate,
     clearParams,
+    pendingNavigation,
+    setPendingNavigation,
+    executePendingNavigation,
   };
 
   return (
