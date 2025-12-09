@@ -16,7 +16,8 @@ import { initializeFilterConstants } from "../filter/constants";
 import KioscoinUserLoginFlow from "../users/KioscoinUserLoginFlow";
 import { CreateOrderContainer } from "./create-orders/CreateOrderContainer";
 import CreateOrder from "./create-orders/CreateOrderForm";
-import { Plus } from "lucide-react";
+import { Plus, X, Link } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export enum Filter {
   ALL = "ALL",
@@ -61,25 +62,42 @@ export default function OrdersFeed({
   const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
 
-  // Fetch specific order by ID if provided
-  // useEffect(() => {
-  //   const fetchOrderById = async () => {
-  //     if (orderId && loginId) {
-  //       try {
-  //         const response = await client.getOrder(orderId, {
-  //           Authorization: `Bearer ${loginId}`,
-  //         });
-  //         if (response) {
-  //           setSelectedOrder(response);
-  //           setShowDetails(true);
-  //         }
-  //       } catch (error) {
-  //         console.error("Failed to fetch order by ID:", error);
-  //       }
-  //     }
-  //   };
-  //   fetchOrderById();
-  // }, [orderId, loginId]);
+  // State for deeplinked/shared order
+  const [deeplinkedOrder, setDeeplinkedOrder] = useState<Order | undefined>(
+    undefined
+  );
+  const [isDeeplinkActive, setIsDeeplinkActive] = useState(false);
+
+  // Fetch specific order by ID if provided (deeplink)
+  useEffect(() => {
+    const fetchOrderById = async () => {
+      if (orderId && loginId) {
+        try {
+          const response = await client.getOrderById(orderId, {
+            Authorization: `Bearer ${loginId}`,
+          });
+          if (response?.orders?.[0]) {
+            setDeeplinkedOrder(response.orders[0]);
+            setIsDeeplinkActive(true);
+          }
+        } catch (error) {
+          console.error("Failed to fetch order by ID:", error);
+          setIsDeeplinkActive(false);
+        }
+      } else if (!orderId) {
+        // Clear deeplink state when orderId is removed
+        setDeeplinkedOrder(undefined);
+        setIsDeeplinkActive(false);
+      }
+    };
+    fetchOrderById();
+  }, [orderId, loginId]);
+
+  // Clear deeplink filter to show all orders
+  const clearDeeplinkFilter = () => {
+    setDeeplinkedOrder(undefined);
+    setIsDeeplinkActive(false);
+  };
 
   // Initialize filter state
   const [filterState, setFilterState] = useState<FilterState>({
@@ -270,6 +288,38 @@ export default function OrdersFeed({
                 showDetails={showDetails}
                 onRefresh={refreshOrders}
               />
+            ) : isDeeplinkActive && deeplinkedOrder ? (
+              /* Show only the deeplinked/shared order */
+              <>
+                {/* Shared order indicator with clear button */}
+                <div className="mb-2">
+                  <div className="bg-secondary/20 shadow-sm font-secondary px-3 py-2 rounded-lg bg-white border border-secondary/20 shadow-md">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Link size={16} className="text-primary" />
+                        <span className="text-xs text-primary font-medium">
+                          {t("shared_order", "Shared order")}
+                        </span>
+                      </div>
+                      <Badge
+                        className="bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer flex items-center gap-1 text-xs"
+                        onClick={clearDeeplinkFilter}
+                      >
+                        {t("show_all_orders", "Show all orders")}
+                        <X size={12} />
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 p-4 bg-white rounded-lg border border-none shadow-primary/20">
+                  <OrderCard
+                    orderDTO={deeplinkedOrder}
+                    onSelect={handleOrderSelect}
+                    onRefresh={refreshOrders}
+                  />
+                </div>
+              </>
             ) : (
               <>
                 {/* FilterBar always visible when no order is selected */}
