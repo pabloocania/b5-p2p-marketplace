@@ -8,6 +8,7 @@ interface CryptoAmountIconProps {
   textSizeClass?: string; // Class for text size
   decimals?: number;
   amountTextClassName?: string; // Optional class to style amount + token text
+  iconSize?: "sm" | "md"; // Size of the token icon image
 }
 
 export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
@@ -17,6 +18,7 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
   showTokenCode = false,
   textSizeClass = "text-2xl",
   amountTextClassName,
+  iconSize = "md",
 }) => {
   const tokenCodeLower = tokenCode.toLowerCase();
   const isGenericIcon = tokenCodeLower === "pdoc" || tokenCodeLower === "usdk";
@@ -39,15 +41,9 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
 
   const amountFontSize = getAmountFontSize();
 
-  // Determine image size based on amount length
+  // Determine image size based on explicit prop
   const getImageSize = () => {
-    if (!formattedAmount) return "w-[25px] h-[25px]";
-
-    const length = formattedAmount.length;
-
-    if (length > 9) return "w-[18px] h-[18px]";
-    if (length > 7) return "w-[20px] h-[20px]";
-    return "w-[25px] h-[25px]";
+    return iconSize === "sm" ? "w-[18px] h-[18px]" : "w-[25px] h-[25px]";
   };
 
   const imageSize = getImageSize();
@@ -65,12 +61,15 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
     : { color: "#1f2937 !important" };
 
   return (
-    <div className="inline-flex items-center justify-center">
+    <span className="inline-flex items-center justify-center">
       {showAmount && formattedAmount && (
         <span className={amountTextClasses} style={inlineStyle}>
-          {formattedAmount} {tokenCode.toUpperCase()}
+          {formattedAmount}
         </span>
       )}
+      <span className={`text-primary ml-1 mr-1 ${textSizeClass || ""}`}>
+        {tokenCode.toUpperCase()}
+      </span>
       <img
         src={imgError ? fallbackSrc : iconSrc}
         alt={tokenCode}
@@ -78,10 +77,10 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
         onError={() => setImgError(true)}
       />
       {showTokenCode && (
-        <span className={`${textSizeClass} font-secondary text-gray-700 ml-1`}>
+        <span className={`${textSizeClass} font-secondary ml-1`}>
           {tokenCode.toUpperCase()}
         </span>
       )}
-    </div>
+    </span>
   );
 };

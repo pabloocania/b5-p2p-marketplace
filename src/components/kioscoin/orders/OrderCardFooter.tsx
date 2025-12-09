@@ -15,9 +15,9 @@ import LockFundsButton from "@/components/web3/Escrow/LockFundsButton";
 import ReleaseFundsButton from "@/components/web3/Escrow/ReleaseFundsButton";
 import { p2pMarketAPIClient as client } from "../../../lib/APIClients";
 import { useTranslation } from "react-i18next";
-import { useUserContext } from "../users/UserContext";
-import { useAccount, useChainId } from "wagmi";
-import { ConnectToContinueButton } from "./ConnectToContinueButton";
+import { useKioscoinUserContext } from "../users/KioscoinUserContext";
+import { useAccount } from "wagmi";
+import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import NotifyFiatSentButton from "../NotifyFiatSentButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -26,8 +26,10 @@ import {
   ConfigStore,
   getBlockchainDisplayName,
 } from "@/lib/ConfigStore";
-import DisputeOrderButton from "@/components/kioscoin/dispute/DisputeOrderButton";
-import { useWeb3AuthConnect } from "@web3auth/modal/react";
+import { useWeb3AuthConnect, useWeb3Auth } from "@web3auth/modal/react";
+import { LoadingWallet } from "../LoadingWallet";
+import { useNavigation } from "../NavigationContext";
+import { Filter } from "./OrdersFeed";
 
 interface OrderCardFooterProps {
   order: Order;
@@ -49,15 +51,26 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   setOrder,
   paymentMethods,
 }) => {
-  const { user, isLoggedIn, loginId } = useUserContext();
+  const { navigate } = useNavigation();
+  const { user, isLoggedIn, loginId } = useKioscoinUserContext();
   const { isConnected } = useAccount();
   const { isConnected: isConnectedWeb3Auth } = useWeb3AuthConnect();
-  const chainId = useChainId();
+  const { status: web3authStatus } = useWeb3Auth();
+  const {
+    currentChainId,
+    isLoading: isEtherspotLoading,
+    isReady,
+  } = useEtherspotSdk();
   const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [orderTaken, setOrderTaken] = useState(false);
   const isSeller: boolean = order.sellerId === user?.id;
   const canSelectOrder = isLoggedIn && user?.id !== order?.creatorId;
+
+  // Check if wallet is connecting
+  const walletConnecting =
+    web3authStatus === "connecting" ||
+    (isConnectedWeb3Auth && (isEtherspotLoading || !isReady));
 
   const shouldShowSelectButton =
     !order || order.status === ("PENDING" as OrderStatus);
@@ -118,6 +131,8 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       if (onRefresh) {
         onRefresh(); // Call the refresh callback
       }
+      // Navigate to MyOrders with WAITING_PAYMENT filter after successfully taking the order
+      navigate("MyOrders", { filter: Filter.WAITING_PAYMENT });
     } catch (error) {
       console.error("Failed to take order:", error);
     }
@@ -126,12 +141,12 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   const renderWrongNetworkAlert = (blockchain: string | undefined) => {
     if (!blockchain) return null;
     const orderChainId = getChainIdFromBlockchain(blockchain);
-    const isCorrectChain = chainId === orderChainId;
+    const isCorrectChain = currentChainId === orderChainId;
     if (!isCorrectChain) {
       return (
         <Alert
           variant="destructive"
-          className="bg-red-50 border-none text-left pl-2 text-sm"
+          className="bg-red-50 font-secondary border-none text-left pl-2 text-sm"
         >
           <AlertCircle className="h-4 w-4" />
           <AlertTitle className="font-semibold">
@@ -164,6 +179,10 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       const wrongNetworkAlert = renderWrongNetworkAlert(order.blockchain);
       if (wrongNetworkAlert) return wrongNetworkAlert;
 
+      if (walletConnecting) {
+        return <LoadingWallet />;
+      }
+
       return isConnected || isConnectedWeb3Auth ? (
         <LockFundsButton
           order={order}
@@ -171,13 +190,19 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
           onSuccess={() => {}}
         />
       ) : (
-        <ConnectToContinueButton />
+        <div className="w-full py-2 text-center text-sm text-red-600 font-secondary">
+          {t("wallet_connection_error")}
+        </div>
       );
     }
 
     if (order.status === "FIAT_SENT" && isSeller) {
       const wrongNetworkAlert = renderWrongNetworkAlert(order.blockchain);
       if (wrongNetworkAlert) return wrongNetworkAlert;
+
+      if (walletConnecting) {
+        return <LoadingWallet />;
+      }
 
       return isConnected || isConnectedWeb3Auth ? (
         <ReleaseFundsButton
@@ -186,7 +211,9 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
           canRelease={isSeller}
         />
       ) : (
-        <ConnectToContinueButton />
+        <div className="w-full py-2 text-center text-sm text-red-600 font-secondary">
+          {t("wallet_connection_error")}
+        </div>
       );
     }
 
@@ -209,6 +236,23 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       order.status as OrderStatus
     ) && isUserInvolved;
 
+  // For BUY orders, seller must provide a payment method with both entity and alias
+  const hasValidPaymentMethod =
+    order.type === "BUY"
+      ? paymentMethods.length > 0 &&
+        paymentMethods.some(
+          (pm) =>
+            pm.entity &&
+            pm.entity.trim().length > 0 &&
+            pm.alias &&
+            pm.alias.trim().length > 0
+        )
+      : true;
+
+  const canTakeBuyOrder = order.type === "BUY" && hasValidPaymentMethod;
+  const canTakeSellOrder = order.type === "SELL" && walletAddress;
+  const canTakeOrder = canTakeBuyOrder || canTakeSellOrder;
+
   return isWaitingAction ? (
     <CardFooter className="pb-0">
       <div className="text-center w-full text-white">
@@ -217,29 +261,35 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     </CardFooter>
   ) : orderTaken ? (
     <CardFooter className="pb-0">
-      <div className="text-secondary block text-center font-semibold">
+      <div className="text-secondary block text-center font-secondary">
         {t("order_taken")}
       </div>
     </CardFooter>
   ) : shouldShowSelectButton && !showDetails && canSelectOrder ? (
     <CardFooter className="pb-0">
       <Button
-        className="w-full bg-secondary text-white font-semibold"
+        className="w-full bg-secondary text-white font-secondary"
         onClick={() => onSelect && onSelect(order)}
       >
         {order.type === "SELL" ? t("buy") : t("sell")} {order.tokenCode}
       </Button>
     </CardFooter>
-  ) : showDetails && (walletAddress || order.type === "BUY") ? (
+  ) : showDetails && canTakeOrder ? (
     <CardFooter className="pb-0">
       <Button
-        className="w-full bg-secondary text-white font-semibold"
+        className="w-full bg-secondary text-white font-secondary"
         onClick={() => !orderTaken && takeOrder(order)}
       >
         {order.type === "BUY"
           ? `${t("sell")} ${order.tokenCode}`
           : `${t("buy")} ${order.tokenCode}`}
       </Button>
+    </CardFooter>
+  ) : showDetails && order.type === "BUY" && !hasValidPaymentMethod ? (
+    <CardFooter className="pb-0">
+      <div className="w-full py-2 text-center text-sm text-muted-foreground font-secondary">
+        {t("select_payment_method_to_continue")}
+      </div>
     </CardFooter>
   ) : null;
 };

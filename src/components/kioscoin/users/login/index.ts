@@ -6,5 +6,4 @@ export * from './ErrorAlert';
 export * from './EmailLoginForm';
 export * from './EmailLinkLoginForm';
 export * from './RegisterForm';
-export * from './MockUsersList';
 export * from './UserProfile'; 

@@ -46,7 +46,7 @@ export class PublicClientManager {
             case 56: // BNB Mainnet Chain ID
                 return createPublicClient({
                     chain: bsc,
-                    transport: http('https://rpc.ankr.com/bsc/100aaa5748c3b0467dcea9f3f096568697028026ed9dd75284a413f34c87ab90'),
+                    transport: http('https://rpc.ankr.com/bsc/43e5f2a7dbfddf572c74f1b3b07cc450e42d68d64fa30ea90efb41bdc5cf2e10'),
                 });
             case 137: // Polygon Mainnet Chain ID
                 return createPublicClient({

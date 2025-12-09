@@ -10,23 +10,28 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { formatEventType } from "@/lib/utils";
+import { getEventTypeTranslationKey } from "@/lib/utils";
 
 interface ChatInterfaceProps {
   userId: string | undefined;
-  order: Order; // Add Order to props
-  onIncomingMessage?: (message: ChatMessage) => void;
+  order: Order;
+  client: ChatWebSocketClient | null;
+  initialMessages: ChatMessage[];
+  onRegisterMessageCallback?: (
+    callback: (message: ChatMessage) => void
+  ) => () => void;
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   userId,
   order,
-  onIncomingMessage,
+  client,
+  initialMessages,
+  onRegisterMessageCallback,
 }) => {
   const { t } = useTranslation();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [newMessage, setNewMessage] = useState("");
-  const [client, setClient] = useState<ChatWebSocketClient | null>(null);
 
   useEffect(() => {
     scrollToBottom();
@@ -37,29 +42,37 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const hasInitializedRef = useRef(false);
 
+  // Initialize with initial messages when component mounts or when initialMessages first become available
   useEffect(() => {
-    if (order.chatId && userId) {
-      const chatClient = new ChatWebSocketClient(
-        order.chatId,
-        userId,
-        (message) => {
-          setMessages((prevMessages) => [...prevMessages, message]);
-          if (message.sender !== userId) {
-            onIncomingMessage?.(message);
-          }
-        }
-      );
-
-      chatClient.connect();
-      setClient(chatClient);
-
-      return () => {
-        chatClient.disconnect(); // Ensure WebSocket is disconnected on unmount
-        setMessages([]); // Clear messages when the chat is closed
-      };
+    if (!hasInitializedRef.current) {
+      if (initialMessages.length > 0) {
+        setMessages(initialMessages);
+        hasInitializedRef.current = true;
+      }
     }
-  }, [order.chatId, userId, onIncomingMessage]);
+  }, [initialMessages]);
+
+  // Register callback to receive messages from the shared WebSocket connection
+  useEffect(() => {
+    if (onRegisterMessageCallback && userId) {
+      const unregister = onRegisterMessageCallback((message: ChatMessage) => {
+        setMessages((prevMessages) => {
+          // Avoid duplicates by checking timestamp
+          const exists = prevMessages.some(
+            (msg) => msg.timestamp === message.timestamp
+          );
+          if (exists) {
+            return prevMessages;
+          }
+          return [...prevMessages, message];
+        });
+      });
+
+      return unregister;
+    }
+  }, [onRegisterMessageCallback, userId]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +83,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         content: { type: "TEXT", text: newMessage },
       };
       client.sendMessage(message);
-      setMessages((prev) => [...prev, message]);
+      // Message will be added via the callback, but we can optimistically add it
+      setMessages((prev) => {
+        const exists = prev.some((msg) => msg.timestamp === message.timestamp);
+        if (exists) {
+          return prev;
+        }
+        return [...prev, message];
+      });
       setNewMessage("");
     }
   };
@@ -100,7 +120,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full pt-3">
+    <div className="flex flex-col h-full pt-3 font-secondary">
       <div className="flex-1 overflow-y-auto py-2 space-y-4 bg-secondary bg-opacity-10 rounded-lg rounded-xs p-2">
         {messages.map((msg) => {
           // Handle admin event messages
@@ -111,15 +131,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 className="w-full flex flex-col items-center"
               >
                 <div className="bg-terciary py-2 rounded-md w-full">
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-md text-muted-foreground text-white">
+                  <div className="flex items-center justify-center gap-2 text-dark">
+                    <span className="text-md">
                       {formatTimestamp(msg.timestamp)}
                     </span>
-                    <span className="text-md text-muted-foreground text-white">
-                      -
-                    </span>
-                    <span className="text-md font-semibold text-white">
-                      {formatEventType(msg.content.event.eventType)}
+                    <span className="text-md">-</span>
+                    <span className="text-md font-semibold">
+                      {t(
+                        getEventTypeTranslationKey(msg.content.event.eventType)
+                      )}
                     </span>
                   </div>
                 </div>
@@ -137,7 +157,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   : "mr-auto items-start"
               }`}
             >
-              <p className="text-primary font-bold">
+              <p className="text-primary font-secondary">
                 {msg.sender === userId
                   ? t("you") + ":"
                   : "@" + getUsername(msg.sender) + ":"}

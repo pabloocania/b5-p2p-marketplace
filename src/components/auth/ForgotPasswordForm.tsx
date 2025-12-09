@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { firebaseService } from "../../lib/FirebaseUnifiedService";
+import { firebaseService } from "../../lib/APIClients";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";

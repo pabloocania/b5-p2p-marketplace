@@ -2,7 +2,6 @@ import { Message } from 'b5-api-client';
 
 export interface NotificationsServiceConfig {
     baseUrl: string;
-    loginId: string;
 }
 
 export class NotificationsServiceImpl {
@@ -19,15 +18,23 @@ export class NotificationsServiceImpl {
     }
 
     connect(onMessage: (message: Message) => void): void {
+        // Prevent connecting if already connected or connecting
+        if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
+            console.log('[NotificationsService] Already connected or connecting, skipping');
+            return;
+        }
+
         this.messageCallback = onMessage;
         this.isManuallyClosing = false;
 
         try {
             const wsUrl = this.buildWebSocketUrl();
+            console.log('[NotificationsService] Connecting to WebSocket...');
 
             this.socket = new WebSocket(wsUrl);
 
             this.socket.onopen = () => {
+                console.log('[NotificationsService] WebSocket connected successfully');
                 this.reconnectAttempts = 0;
             };
 
@@ -44,8 +51,15 @@ export class NotificationsServiceImpl {
                 console.error('[NotificationsService] WebSocket error:', error);
             };
 
-            this.socket.onclose = () => {
-                console.log('[NotificationsService] Connection closed');
+            this.socket.onclose = (event: CloseEvent) => {
+                console.log('[NotificationsService] Connection closed', event.code, event.reason);
+
+                // Check close code - don't retry on authentication failures
+                if (event.code === 1008) { // VIOLATED_POLICY = auth failure
+                    console.error('[NotificationsService] Authentication failed - session invalid');
+                    return;
+                }
+
                 if (!this.isManuallyClosing && this.reconnectAttempts < this.maxReconnectAttempts) {
                     this.attemptReconnect();
                 }
@@ -79,8 +93,7 @@ export class NotificationsServiceImpl {
 
     private buildWebSocketUrl(): string {
         const host = process.env.NEXT_PUBLIC_KIOSCOIN_WEBSOCKET_URL ?? "wss://bolsillo-argento-586dfd80364d.herokuapp.com";
-        const token = encodeURIComponent(this.config.loginId);
-        return `${host}/api/notifications/ws?token=${token}`;
+        return `${host}/api/notifications/ws`;
     }
 }
 
@@ -96,4 +109,12 @@ export function createNotificationsService(config: NotificationsServiceConfig): 
 
 export function getNotificationsService(): NotificationsServiceImpl | null {
     return instance;
+}
+
+export function destroyNotificationsService(): void {
+    if (instance) {
+        instance.disconnect();
+        instance = null;
+        console.log('[NotificationsService] Service destroyed');
+    }
 }

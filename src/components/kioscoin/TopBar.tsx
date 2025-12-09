@@ -1,12 +1,11 @@
 "use client";
 import { Bell, Menu } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useState, useCallback, useMemo } from "react";
 import { NotificationsPanel } from "./notifications/NotificationsPanel";
 import { useNotifications } from "@/hooks/useNotifications";
-import { useUserContext } from "./users/UserContext";
+import { useKioscoinUserContext } from "./users/KioscoinUserContext";
 
 interface TopBarProps {
   activeComponent: string;
@@ -16,7 +15,7 @@ export function TopBar({ activeComponent }: TopBarProps) {
   const { t } = useTranslation();
   const [isNotificationsPanelOpen, setIsNotificationsPanelOpen] =
     useState(false);
-  const { user } = useUserContext();
+  const { user } = useKioscoinUserContext();
 
   const apiBaseUrl = useMemo(
     () =>
@@ -64,7 +63,7 @@ export function TopBar({ activeComponent }: TopBarProps) {
                   <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-secondary" />
                 </Button>
                 {unreadCount > 0 && (
-                  <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center font-secondary">
                     {unreadCount > 99 ? "99+" : unreadCount}
                   </div>
                 )}

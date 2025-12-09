@@ -12,7 +12,7 @@ import {
 import { useEffect, useState, useRef } from "react";
 import { BannerOfferClickHandler } from "./types";
 
-import PaymentMethodDisplay, { EntityBadge } from "../PaymentMethodDisplay";
+import PaymentMethodDisplay from "../PaymentMethodDisplay";
 import { CryptoAmountIcon } from "../CryptoIcon";
 import { useTranslation } from "react-i18next";
 import { formatFiatAmount } from "@/lib/utils";
@@ -66,50 +66,50 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
           return;
         }
 
-        // Fetch rates for each offer
-        const offersWithRates = await Promise.all(
-          response.offers.map(async (offer) => {
-            try {
-              const rate = await ExchangeRatesService.fetchRateWithRetry(
-                offer.tokenCode,
-                offer.fiatCode
-              );
+        // // Fetch rates for each offer
+        // const offersWithRates = await Promise.all(
+        //   response.offers.map(async (offer) => {
+        //     try {
+        //       const rate = await ExchangeRatesService.fetchRateWithRetry(
+        //         offer.tokenCode,
+        //         offer.fiatCode
+        //       );
 
-              if (!rate) {
-                return null;
-              }
+        //       if (!rate) {
+        //         return null;
+        //       }
 
-              const updatedOffer: OrderOffer = {
-                ...offer,
-                fiatAmount: rate.toString(),
-              };
+        //       const updatedOffer: OrderOffer = {
+        //         ...offer,
+        //         fiatAmount: rate.toString(),
+        //       };
 
-              return updatedOffer;
-            } catch (error) {
-              console.error(
-                `Failed to fetch rate for ${offer.tokenCode}:`,
-                error
-              );
-              return {
-                ...offer,
-                fiatAmount: "1",
-              };
-            }
-          })
-        );
+        //       return updatedOffer;
+        //     } catch (error) {
+        //       console.error(
+        //         `Failed to fetch rate for ${offer.tokenCode}:`,
+        //         error
+        //       );
+        //       return {
+        //         ...offer,
+        //         fiatAmount: "1",
+        //       };
+        //     }
+        //   })
+        // );
 
         // Filter out offers with no valid rates
-        const validOffers = offersWithRates.filter(
-          (offer): offer is OrderOffer => offer !== null
-        );
+        // const validOffers = response?.offers.filter(
+        //   (offer): offer is OrderOffer => offer !== null
+        // );
 
-        if (validOffers.length === 0) {
+        if (response?.offers.length === 0) {
           console.log("No valid offers after rate fetching");
           setShouldRender(false);
           return;
         }
 
-        setValidOffers(validOffers);
+        setValidOffers(response?.offers);
         setShouldRender(true);
       } catch (error) {
         console.error("Failed to fetch order offers:", error);
@@ -169,8 +169,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                         tokenCode={offer.tokenCode}
                         formattedAmount={offer.tokenAmount}
                         showAmount={true}
-                        textSizeClass="text-lg text-dark"
-                        amountTextClassName="mr-1"
+                        textSizeClass="text-dark font-bold text-lg"
                       />
                     </span>
                   </div>

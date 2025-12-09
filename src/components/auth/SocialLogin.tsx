@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { firebaseService } from "../../lib/FirebaseUnifiedService";
+import { firebaseService } from "../../lib/APIClients";
 import { Loader2 } from "lucide-react";
 
 interface SocialLoginProps {

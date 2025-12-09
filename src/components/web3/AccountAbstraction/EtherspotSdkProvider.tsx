@@ -16,6 +16,8 @@ interface EtherspotSdkContextType {
   eoaAddress: string;
   balances: TokenBalance[];
   refreshBalances: () => Promise<void>;
+  switchToChain: (chainId: number) => Promise<void>;
+  currentChainId: number;
   // True while we are initializing SDK and fetching initial balances
   isLoading: boolean;
   // True after the first successful initialization + balances fetch
@@ -29,42 +31,22 @@ const EtherspotSdkContext = createContext<EtherspotSdkContextType | undefined>(
 export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { address, isConnected } = useAccount();
-  // const { isConnected: isConnectedWeb3Auth } = useWeb3AuthConnect();
   const [primeSdk, setPrimeSdk] = useState<PrimeSdk | null>(null);
+  const [primeSdkMap, setPrimeSdkMap] = useState<Map<number, PrimeSdk>>(
+    new Map()
+  );
   const [arkaInstance, setArkaInstance] = useState<ArkaPaymaster | null>(null);
   const [smartWalletAddress, setSwAddress] = useState<string>("");
   const [eoaAddress, setEoaAddress] = useState<string>("");
   const [balances, setBalances] = useState<TokenBalance[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
-  const { data: walletClient } = useWalletClient();
-  const account = useAccount();
+  const [currentChainId, setCurrentChainId] = useState<number>(0);
   const chainId = useChainId();
-  const {
-    web3Auth,
-    isConnected: isConnectedWeb3Auth,
-    provider,
-    status,
-  } = useWeb3Auth();
-
-  const createWalletProvider = () => ({
-    ...walletClient,
-    address: account.address ?? "0x0",
-    signMessage: async (message: any) => {
-      return walletClient!!.signMessage({
-        message: { raw: message },
-      });
-    },
-    signTypedData: async (params: any) => {
-      return walletClient!!.signTypedData(params);
-    },
-  });
+  const { isConnected: isConnectedWeb3Auth, provider } = useWeb3Auth();
 
   const createWeb3AuthWalletProvider = async (web3authProvider: any) => {
     if (!web3authProvider) throw new Error("Web3Auth provider not initialized");
-    // Use the Etherspot wrapper
-    // return new Web3WalletProvider(web3authProvider);
     return await Web3WalletProvider.connect(web3authProvider);
   };
 
@@ -79,19 +61,81 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const switchToChain = async (targetChainId: number) => {
+    if (!eoaAddress || !isConnectedWeb3Auth) {
+      console.warn("Cannot switch chain: not connected");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Check if we already have a PrimeSdk for this chain
+      let targetPrimeSdk = primeSdkMap.get(targetChainId);
+
+      // If not, create one
+      if (!targetPrimeSdk) {
+        const walletProvider = await createWeb3AuthWalletProvider(provider);
+        const newPrimeSdk =
+          await EtherspotSdksManager.getInstance().createPrimeSdk(
+            walletProvider,
+            targetChainId
+          );
+
+        if (newPrimeSdk) {
+          targetPrimeSdk = newPrimeSdk;
+          // Store it in the map
+          setPrimeSdkMap((prev) =>
+            new Map(prev).set(targetChainId, newPrimeSdk)
+          );
+        }
+      }
+
+      if (targetPrimeSdk) {
+        // Switch to the target SDK
+        setPrimeSdk(targetPrimeSdk);
+        setCurrentChainId(targetChainId);
+
+        // Update smart wallet address for this chain
+        const smartWalletAddress =
+          await targetPrimeSdk.getCounterFactualAddress();
+        setSwAddress(smartWalletAddress);
+
+        // Fetch balances for this chain
+        const balances =
+          await EtherspotSdksManager.getInstance().getTokensBalances(
+            targetPrimeSdk,
+            eoaAddress
+          );
+        setBalances(balances ?? []);
+      }
+    } catch (error) {
+      console.error(`Error switching to chain ${targetChainId}:`, error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     const connectToSdk = async () => {
       // Handle disconnect
       if (!isConnectedWeb3Auth) {
-        if (primeSdk) {
-          primeSdk.destroy();
-        }
+        // Destroy all SDK instances
+        primeSdkMap.forEach((sdk) => {
+          try {
+            sdk.destroy();
+          } catch (e) {
+            console.error("Error destroying SDK:", e);
+          }
+        });
+        setPrimeSdkMap(new Map());
         setPrimeSdk(null);
         setSwAddress("");
         setEoaAddress("");
         setBalances([]);
         setIsLoading(false);
         setIsReady(false);
+        setCurrentChainId(0);
         return;
       }
 
@@ -115,6 +159,9 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
           setEoaAddress(walletProvider.address);
           setSwAddress(smartWalletAddress);
           setPrimeSdk(primeSdkInstance);
+          setCurrentChainId(chainId);
+          // Store the initial SDK in the map
+          setPrimeSdkMap(new Map().set(chainId, primeSdkInstance));
           setArkaInstance(arkaInstance);
           const balances =
             await EtherspotSdksManager.getInstance().getTokensBalances(
@@ -142,6 +189,8 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
         eoaAddress: eoaAddress,
         balances,
         refreshBalances,
+        switchToChain,
+        currentChainId,
         isLoading,
         isReady,
       }}

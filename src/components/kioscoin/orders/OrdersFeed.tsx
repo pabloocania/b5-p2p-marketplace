@@ -1,26 +1,10 @@
 import { useEffect, useState } from "react";
-import {
-  Order,
-  OrderStatus,
-  OrderType,
-  PaymentMethod,
-  GetOrdersParams as OriginalGetOrdersParams,
-  GetOrdersParams,
-} from "b5-api-client";
+import { Order, OrderStatus, GetOrdersParams } from "b5-api-client";
 import { OrderCard } from "./OrderCard";
 import { ScrollableContainer } from "../ScrollabelContainer";
 import { p2pMarketAPIClient as client } from "../../../lib/APIClients";
-import { useUserContext } from "../users/UserContext";
+import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-// import UserMenuNew from "../users/UserMenuNew"; // Replaced by inline auth sheet
-import { EmailLoginForm } from "@/components/kioscoin/users/login/EmailLoginForm";
-import { RegisterForm } from "@/components/kioscoin/users/login/RegisterForm";
 import { useTranslation } from "react-i18next";
 import {
   FilterBar,
@@ -29,6 +13,11 @@ import {
   FilterGroupConfig,
 } from "../filter";
 import { initializeFilterConstants } from "../filter/constants";
+import KioscoinUserLoginFlow from "../users/KioscoinUserLoginFlow";
+import { CreateOrderContainer } from "./create-orders/CreateOrderContainer";
+import CreateOrder from "./create-orders/CreateOrderForm";
+import { Plus, X, Link } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export enum Filter {
   ALL = "ALL",
@@ -48,9 +37,11 @@ interface OrderFeedProps {
   resetSelectedOrder?: boolean; // Add resetSelectedOrder prop
   onBack?: () => void; // Add onBack prop
   filterGroups?: FilterGroupConfig[]; // Add filterGroups prop
+  showDetails?: boolean; // Show details for a specific order
 }
 
 export default function OrdersFeed({
+  orderId,
   creatorId,
   buyerId,
   filter = Filter.ALL,
@@ -59,15 +50,54 @@ export default function OrdersFeed({
   resetSelectedOrder,
   onBack,
   filterGroups,
+  showDetails: initialShowDetails,
 }: OrderFeedProps) {
-  const { user, login, loginId } = useUserContext();
+  const { user, login, loginId } = useKioscoinUserContext();
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
     undefined
   );
+  const [showDetails, setShowDetails] = useState(initialShowDetails ?? false);
   const { t } = useTranslation();
   const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
+
+  // State for deeplinked/shared order
+  const [deeplinkedOrder, setDeeplinkedOrder] = useState<Order | undefined>(
+    undefined
+  );
+  const [isDeeplinkActive, setIsDeeplinkActive] = useState(false);
+
+  // Fetch specific order by ID if provided (deeplink)
+  useEffect(() => {
+    const fetchOrderById = async () => {
+      if (orderId && loginId) {
+        try {
+          const response = await client.getOrderById(orderId, {
+            Authorization: `Bearer ${loginId}`,
+          });
+          if (response?.orders?.[0]) {
+            setDeeplinkedOrder(response.orders[0]);
+            setIsDeeplinkActive(true);
+          }
+        } catch (error) {
+          console.error("Failed to fetch order by ID:", error);
+          setIsDeeplinkActive(false);
+        }
+      } else if (!orderId) {
+        // Clear deeplink state when orderId is removed
+        setDeeplinkedOrder(undefined);
+        setIsDeeplinkActive(false);
+      }
+    };
+    fetchOrderById();
+  }, [orderId, loginId]);
+
+  // Clear deeplink filter to show all orders
+  const clearDeeplinkFilter = () => {
+    setDeeplinkedOrder(undefined);
+    setIsDeeplinkActive(false);
+  };
 
   // Initialize filter state
   const [filterState, setFilterState] = useState<FilterState>({
@@ -200,6 +230,11 @@ export default function OrdersFeed({
     await fetchOrders();
   };
 
+  const handleCreateOrderClose = () => {
+    setIsCreateOrderOpen(false);
+    refreshOrders();
+  };
+
   useEffect(() => {
     if (resetSelectedOrder) {
       setSelectedOrder(undefined);
@@ -231,10 +266,12 @@ export default function OrdersFeed({
 
   const handleOrderSelect = (order: Order) => {
     setSelectedOrder(order);
+    setShowDetails(true);
   };
 
   const handleBack = () => {
     setSelectedOrder(undefined);
+    setShowDetails(false);
     if (onBack) {
       onBack(); // Call the onBack function if provided
     }
@@ -248,11 +285,44 @@ export default function OrdersFeed({
             {selectedOrder ? (
               <OrderCard
                 orderDTO={selectedOrder}
-                showDetails={true}
+                showDetails={showDetails}
                 onRefresh={refreshOrders}
               />
-            ) : orders && orders.length > 0 ? (
+            ) : isDeeplinkActive && deeplinkedOrder ? (
+              /* Show only the deeplinked/shared order */
               <>
+                {/* Shared order indicator with clear button */}
+                <div className="mb-2">
+                  <div className="bg-secondary/20 shadow-sm font-secondary px-3 py-2 rounded-lg bg-white border border-secondary/20 shadow-md">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Link size={16} className="text-primary" />
+                        <span className="text-xs text-primary font-medium">
+                          {t("shared_order", "Shared order")}
+                        </span>
+                      </div>
+                      <Badge
+                        className="bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer flex items-center gap-1 text-xs"
+                        onClick={clearDeeplinkFilter}
+                      >
+                        {t("show_all_orders", "Show all orders")}
+                        <X size={12} />
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 p-4 bg-white rounded-lg border border-none shadow-primary/20">
+                  <OrderCard
+                    orderDTO={deeplinkedOrder}
+                    onSelect={handleOrderSelect}
+                    onRefresh={refreshOrders}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {/* FilterBar always visible when no order is selected */}
                 <div className="mb-2">
                   <FilterBar
                     filters={filterState}
@@ -260,24 +330,67 @@ export default function OrdersFeed({
                     filterGroups={filterGroups || defaultFilterGroups}
                   />
                 </div>
-                <div className="space-y-2 p-3 bg-white rounded-lg border border-secondary/20 shadow-md">
-                  {orders.map((order) => (
-                    <div key={order.id}>
-                      <OrderCard
-                        orderDTO={order}
-                        onSelect={handleOrderSelect}
-                        onRefresh={refreshOrders}
-                      />
+
+                {orders && orders.length > 0 ? (
+                  <div className="space-y-4 p-4 bg-white rounded-lg border border-none shadow-primary/20">
+                    {orders.map((order) => (
+                      <div key={order.id}>
+                        <OrderCard
+                          orderDTO={order}
+                          onSelect={handleOrderSelect}
+                          onRefresh={refreshOrders}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full space-y-4 py-4">
+                    <div className="text-dark font-bold font-secondary text-center">
+                      {t("no_orders_available")}
                     </div>
-                  ))}
-                </div>
+                    {user ? (
+                      <CreateOrderContainer
+                        open={isCreateOrderOpen}
+                        onOpenChange={(open) => {
+                          setIsCreateOrderOpen(open);
+                          if (!open) handleCreateOrderClose();
+                        }}
+                        trigger={
+                          <Button className="bg-primary text-white font-secondary hover:bg-primary/90 shadow-lg">
+                            <Plus className="h-4 w-4 mr-2" />
+                            {t("create_order")}
+                          </Button>
+                        }
+                        className="p-2"
+                      >
+                        <CreateOrder
+                          onClose={handleCreateOrderClose}
+                          onConnectWallet={() => setIsLoginSheetOpen(true)}
+                          preFilledData={{
+                            fiatCode: "ARS",
+                            paymentMethods: [],
+                          }}
+                        />
+                      </CreateOrderContainer>
+                    ) : (
+                      <>
+                        <Button
+                          onClick={() => setIsLoginSheetOpen(true)}
+                          className="bg-primary text-white font-secondary hover:bg-primary/90 shadow-lg w-full"
+                        >
+                          {t("login_to_start")}
+                        </Button>
+                        <KioscoinUserLoginFlow
+                          variant="sheet"
+                          open={isLoginSheetOpen}
+                          onOpenChange={setIsLoginSheetOpen}
+                          onLogin={login}
+                        />
+                      </>
+                    )}
+                  </div>
+                )}
               </>
-            ) : (
-              <div className="flex flex-col items-center h-full">
-                <div className="mb-5 text-dark font-bold font-secondary">
-                  {t("no_orders_available")}
-                </div>
-              </div>
             )}
           </>
         ) : (
@@ -288,57 +401,12 @@ export default function OrdersFeed({
             >
               {t("login_to_view")}
             </Button>
-            <Sheet open={isLoginSheetOpen} onOpenChange={setIsLoginSheetOpen}>
-              <SheetTrigger asChild>
-                <div />
-              </SheetTrigger>
-              <SheetContent
-                side="bottom"
-                className="h-[75vh] font-secondary"
-                closeText={t("close")}
-              >
-                <div className="w-full h-full overflow-y-auto">
-                  <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-4">
-                    <div className="flex bg-gray-100 rounded-lg p-1 mb-3">
-                      <button
-                        onClick={() => setAuthMode("login")}
-                        className={`flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 ${
-                          authMode === "login"
-                            ? "bg-white text-purple-600 shadow-sm"
-                            : "text-gray-600 hover:text-gray-900"
-                        }`}
-                      >
-                        {t("login")}
-                      </button>
-                      <button
-                        onClick={() => setAuthMode("register")}
-                        className={`flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 ${
-                          authMode === "register"
-                            ? "bg-white text-purple-600 shadow-sm"
-                            : "text-gray-600 hover:text-gray-900"
-                        }`}
-                      >
-                        {t("register")}
-                      </button>
-                    </div>
-
-                    <div className="min-h-[220px]">
-                      {authMode === "login" ? (
-                        <EmailLoginForm
-                          onLogin={login}
-                          onSwitchToRegister={() => setAuthMode("register")}
-                        />
-                      ) : (
-                        <RegisterForm
-                          onLogin={login}
-                          onSwitchToEmailLogin={() => setAuthMode("login")}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
+            <KioscoinUserLoginFlow
+              variant="sheet"
+              open={isLoginSheetOpen}
+              onOpenChange={setIsLoginSheetOpen}
+              onLogin={login}
+            />
           </div>
         )}
       </ScrollableContainer>

@@ -7,7 +7,7 @@ import {
   MessageContentEvent,
   MessageContent,
 } from "b5-api-client";
-import { formatEventType } from "@/lib/utils";
+import { getEventTypeTranslationKey } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
 export interface NotificationCardProps {
@@ -65,7 +65,7 @@ export function NotificationCard({
         {isEvent ? (
           <div>
             <p className="text-sm font-semibold text-gray-900">
-              {formatEventType(eventType ?? "")} -{" "}
+              {t(getEventTypeTranslationKey(eventType ?? ""))} -{" "}
               {formatDate(notification.createdAt)}
             </p>
             <p className="text-xs text-gray-500 mt-1"></p>

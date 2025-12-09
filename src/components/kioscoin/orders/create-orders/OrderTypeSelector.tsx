@@ -17,7 +17,7 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
 
   return (
     <div className="w-full space-y-2 font-secondary">
-      <h3 className="text-black/75 text-xs">{t("i_want_to")}</h3>
+      <h3 className="text-dark text-xs">{t("i_want_to")}</h3>
       {/* Botonera horizontal */}
       <div className="flex gap-2">
         {[
@@ -42,8 +42,8 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
 
               ${
                 action.isSelected
-                  ? "bg-[#8b5fdc] text-white"
-                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                  ? "bg-dark text-secondary"
+                  : "bg-lightYellow/20 hover:bg-lightYellow/40 text-dark/60"
               }
             `}
           >

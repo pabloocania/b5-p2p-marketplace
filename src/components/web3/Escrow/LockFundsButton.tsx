@@ -51,6 +51,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
   const handleLockFunds = async () => {
     if (!isTransacting) {
       setIsLoading(true);
+      setIsOpen(false); // Close the sheet immediately
       onSuccess();
       try {
         if (!hasSufficientBalance) {
@@ -59,18 +60,12 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
         setIsTransacting(true);
         const txHashPromise = batchApproveAndEscrow(order);
         console.log("txHashPromise", txHashPromise);
+
         setTransaction({
-          status: "idle",
-          message: t("initiating_transaction"),
-          progress: 0,
+          status: "waiting",
+          message: t("approve_and_lock"),
+          progress: 45,
         });
-        setTimeout(() => {
-          setTransaction({
-            status: "waiting",
-            message: t("approve_and_lock"),
-            progress: 45,
-          });
-        }, 500);
 
         try {
           const uoOpsHash = await txHashPromise;
@@ -83,7 +78,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
           if (uoOpsHash) {
             const timeout = Date.now() + 300000; // 5 minute timeout
             while (opsReceipt == null && Date.now() < timeout) {
-              await sleep(5);
+              await sleep(2);
               opsReceipt = await getUserOperationReceipt(uoOpsHash);
             }
           }
@@ -132,19 +127,26 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
           <Button
             className={`w-full font-secondary ${
               hasSufficientBalance
-                ? "text-white bg-secondary font-secondary shadow-sm"
+                ? "text-white bg-secondary font-secondary shadow-sm hover:text-white hover:bg-primary"
                 : "text-white bg-red-500 border-red-500"
             }`}
             onClick={() =>
-              hasSufficientBalance && !isLoading && setIsOpen(true)
+              hasSufficientBalance &&
+              !isLoading &&
+              !isTransacting &&
+              setIsOpen(true)
             }
-            disabled={isLoading || !hasSufficientBalance}
+            disabled={isLoading || isTransacting || !hasSufficientBalance}
           >
-            {hasSufficientBalance ? t("lock_funds") : t("not_enough_balance")}
+            {!hasSufficientBalance
+              ? t("not_enough_balance")
+              : isLoading
+              ? t("locking_funds")
+              : t("lock_funds")}
           </Button>
         </SheetTrigger>
         {!hasSufficientBalance && (
-          <p className="text-gray-600 mt-2 font-secondary">
+          <p className="text-dark text-xs mt-2 font-secondary text-center">
             {t("info_text_fund_wallet")}
           </p>
         )}

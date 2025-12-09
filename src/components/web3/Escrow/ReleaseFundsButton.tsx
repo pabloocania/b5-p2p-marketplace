@@ -37,21 +37,20 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   const handleReleaseFunds = async () => {
     if (!isTransacting) {
       setIsLoading(true);
+      setIsReleaseOpen(false); // Close the sheet immediately
       try {
         setIsTransacting(true);
         const txHashPromise = releaseFunds(order);
+        // setTransaction({
+        //   status: "idle",
+        //   message: t("initiating_transaction"),
+        //   progress: 0,
+        // });
         setTransaction({
-          status: "idle",
-          message: t("initiating_transaction"),
-          progress: 0,
+          status: "waiting",
+          message: t("releasing_funds"),
+          progress: 45,
         });
-        setTimeout(() => {
-          setTransaction({
-            status: "waiting",
-            message: t("releasing_funds"),
-            progress: 45,
-          });
-        }, 500);
 
         try {
           const uoOpsHash = await txHashPromise;
@@ -64,7 +63,7 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
           if (uoOpsHash) {
             const timeout = Date.now() + 300000; // 5 minute timeout
             while (opsReceipt == null && Date.now() < timeout) {
-              await sleep(5);
+              await sleep(2);
               opsReceipt = await getUserOperationReceipt(uoOpsHash);
             }
           }
@@ -109,10 +108,11 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
       <Sheet open={isReleaseOpen} onOpenChange={setIsReleaseOpen}>
         <SheetTrigger asChild>
           <Button
-            className="w-full text-white bg-secondary font-secondary shadow-sm"
-            onClick={() => setIsReleaseOpen(true)}
+            className="w-full text-white bg-secondary font-secondary shadow-sm hover:text-white hover:bg-primary"
+            onClick={() => !isLoading && setIsReleaseOpen(true)}
+            disabled={isLoading || isTransacting}
           >
-            {t("release_funds")}
+            {isLoading ? t("releasing_funds") : t("release_funds")}
           </Button>
         </SheetTrigger>
         <SheetContent

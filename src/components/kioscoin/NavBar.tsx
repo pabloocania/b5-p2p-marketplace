@@ -3,10 +3,11 @@ import { Wallet, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { MarketplaceIcon } from "@/icons/MarketplaceIcon";
+import { ActiveView } from "./NavigationContext";
 
 interface NavBarProps {
-  activeComponent: string;
-  setActiveComponent: (component: string) => void;
+  activeComponent: ActiveView;
+  setActiveComponent: (component: ActiveView) => void;
 }
 
 export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
@@ -24,21 +25,26 @@ export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
       isActive ? activeButtonClasses : inactiveButtonClasses
     );
 
-  const navItems = [
+  const navItems: Array<{
+    id: ActiveView;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    active: boolean;
+  }> = [
     {
-      id: "OrderFeed",
+      id: "OrderFeed" as const,
       label: t("p2p_market"),
       icon: MarketplaceIcon,
       active: activeComponent === "OrderFeed",
     },
     {
-      id: "MyOrders",
+      id: "MyOrders" as const,
       label: t("my_orders"),
       icon: Wallet,
       active: activeComponent === "MyOrders",
     },
     {
-      id: "UserMenu",
+      id: "UserMenu" as const,
       label: t("my_account"),
       icon: User,
       active: activeComponent === "UserMenu",

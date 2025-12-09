@@ -16,6 +16,7 @@ interface CreateOrderContainerProps {
   variant?: "sheet" | "dialog";
   className?: string;
   closeButtonPosition?: string;
+  hideCloseButton?: boolean;
 }
 
 export function CreateOrderContainer({
@@ -26,6 +27,7 @@ export function CreateOrderContainer({
   variant = "sheet",
   className,
   closeButtonPosition,
+  hideCloseButton = false,
 }: CreateOrderContainerProps) {
   const { t } = useTranslation();
 
@@ -35,11 +37,12 @@ export function CreateOrderContainer({
         {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
         <SheetContent
           side="bottom"
-          className={`h-[90vh] bg-backgroundMain overflow-y-auto ${
-            className || ""
-          }`}
-          closeText={t("close")}
-          closeButtonPosition={closeButtonPosition}
+          className={`h-[90vh] overflow-y-auto ${className || ""}`}
+          closeText={hideCloseButton ? "" : t("close")}
+          closeButtonPosition={
+            hideCloseButton ? undefined : closeButtonPosition
+          }
+          showCloseButton={!hideCloseButton}
         >
           {children}
         </SheetContent>
@@ -49,9 +52,7 @@ export function CreateOrderContainer({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className={`max-w-2xl bg-backgroundMain ${className || ""}`}
-      >
+      <DialogContent className={`max-w-2xl p-0 ${className || ""}`}>
         {children}
       </DialogContent>
     </Dialog>

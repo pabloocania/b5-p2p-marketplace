@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { useTranslation } from "react-i18next";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -119,20 +118,23 @@ export const parseAmountToBigInt = (amount: string, decimals: number): bigint =>
   }
 };
 
-export const formatEventType = (eventType: string) => {
-  const { t } = useTranslation();
+/**
+ * Maps event types to translation keys
+ * Components should use the returned key with their translation function
+ */
+export const getEventTypeTranslationKey = (eventType: string): string => {
   switch (eventType) {
     case "LOCKED":
-      return t("order_locked");
+      return "order_locked";
     case "RELEASED":
-      return t("order_released");
+      return "order_released";
     case "FIAT_SENT":
-      return t("fiat_transferred");
+      return "fiat_transferred";
     case "TAKEN":
-      return t("order_taken_event");
+      return "order_taken_event";
     case "REFUNDED":
-      return t("order_refunded");
+      return "order_refunded";
     default:
-      return eventType;
+      return eventType; // Return as-is if no translation key exists
   }
 };

@@ -1,5 +1,4 @@
 import React from "react";
-import { LucideIcon } from "lucide-react"; // Adjust the import path as necessary
 
 interface UserStatBadgeProps {
   value: string;
@@ -15,7 +14,7 @@ const UserStatBadge: React.FC<UserStatBadgeProps> = ({
 }) => {
   return (
     <span
-      className={`inline-flex items-center space-x-1 bg-white rounded-md px-2 py-1 border border-primary text-xs ${
+      className={`inline-flex items-center space-x-1 bg-white rounded-md px-2 py-1 border border-primary/20 text-xs ${
         color ?? "text-primary"
       }`}
     >

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { firebaseService } from "../../../../lib/FirebaseUnifiedService";
+import { firebaseService } from "../../../../lib/APIClients";
 import { FormInput } from "./FormInput";
 import { LoadingButton } from "./LoadingButton";
 import { ErrorAlert } from "./ErrorAlert";

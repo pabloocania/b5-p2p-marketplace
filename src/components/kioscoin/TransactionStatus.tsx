@@ -47,9 +47,9 @@ export function TransactionStatus({
       case "sent":
       case "waiting":
       case "sending":
-        return "bg-primary/5 border-primary/20";
+        return "bg-secondary/10 border-secondary/20";
       case "success":
-        return "bg-success/5 border-success/20";
+        return "bg-secondary/10 border-secondary/20";
       case "error":
         return "bg-error/5 border-error/20";
       default:
@@ -92,17 +92,15 @@ export function TransactionStatus({
   };
 
   return (
-    <div className="font-secondary fixed inset-0 flex items-center justify-center p-5 bg-black/50 z-[60]">
-      {" "}
-      {/* Added z-index */}
+    <div className="font-secondary fixed inset-0 flex items-center justify-center p-2 bg-black/70 z-[60]">
       <Card className="w-full max-w-sm mb-12">
         <CardContent className="pt-4 px-4">
           <Alert className={`${getStatusColor(status)} mb-4`}>
-            <AlertTitle className="flex items-center gap-2 text-primary font-bold">
+            <AlertTitle className="flex items-center gap-2 text-dark font-bold">
               {getStatusIcon(status)}
               {getStatusText(status)}
             </AlertTitle>
-            <AlertDescription className="text-dark pt-2 font-secondary">
+            <AlertDescription className="text-dark pt-2 text-left">
               {message}
             </AlertDescription>
           </Alert>
@@ -116,7 +114,7 @@ export function TransactionStatus({
             <>
               <Button
                 onClick={handleClose}
-                className="w-full mb-4 bg-primary text-white hover:bg-primary/90"
+                className="w-full mb-4 bg-dark text-white"
               >
                 {t("close")}
               </Button>
@@ -125,7 +123,7 @@ export function TransactionStatus({
           {status === "error" && (
             <Button
               onClick={handleClose}
-              className="w-full mb-4 bg-primary text-white hover:bg-primary/90"
+              className="w-full mb-4 bg-secondary text-white hover:text-secondary hover:bg-white/80 hover:border hover:border-secondary"
             >
               {t("close")}
             </Button>

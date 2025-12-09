@@ -89,6 +89,42 @@ export const useEtherspotFlow = () => {
     }
   };
 
+  const transferTokens = async (
+    tokenAddress: string,
+    destinationAddress: string,
+    amount: string,
+    chainId: number
+  ): Promise<string | undefined> => {
+    try {
+      if (!primeSdk) {
+        throw new Error("PrimeSdk instance is not available.");
+      }
+
+      const data = encodeFunctionData({
+        abi: ERC20abi,
+        functionName: "transfer",
+        args: [getAddress(destinationAddress), amount],
+      });
+
+      console.log("Transfer tokens:", {
+        tokenAddress,
+        destinationAddress,
+        amount,
+        chainId
+      });
+
+      const operation = {
+        to: tokenAddress,
+        data: data,
+      };
+
+      return await executeTransaction([operation], chainId);
+    } catch (error) {
+      console.error("Error transferring tokens:", error);
+      return Promise.reject(error);
+    }
+  };
+
   const releaseFunds = async (order: Order): Promise<string | undefined> => {
     try {
       const contractAddress = ConfigStore.getInstance().getKioscoinEscrowAddressByBlockchain(order.blockchain!!)
@@ -221,9 +257,25 @@ export const useEtherspotFlow = () => {
     // }
 
     const maxPriorityFeePerGas = parseGwei(maxPriorityFeePerGasGwei.toString());
-    const maxFeePerGas =
-      baseFee + maxPriorityFeePerGas * BigInt(2) * BigInt(20); // Double for safety
+
+    // Some chains (BSC, etc.) require maxFeePerGas === maxPriorityFeePerGas
+    // Check if we're on a chain that requires equal gas values
+    const chainsRequiringEqualGas = [56, 97]; // BSC Mainnet, BSC Testnet
+    const requiresEqualGas = chainsRequiringEqualGas.includes(chainId);
+
+    let maxFeePerGas: bigint;
+    if (requiresEqualGas) {
+      // For chains that require equal gas values
+      maxFeePerGas = maxPriorityFeePerGas;
+      console.log(`Chain ${chainId} requires equal gas values`);
+    } else {
+      // For EIP-1559 compatible chains (Ethereum, Arbitrum, etc.)
+      maxFeePerGas = baseFee + maxPriorityFeePerGas * BigInt(2);
+    }
+
     console.log("maxFeePerGas", maxFeePerGas);
+    console.log("maxPriorityFeePerGas", maxPriorityFeePerGas);
+
     const gasDetails: TransactionGasInfoForUserOp = {
       maxFeePerGas: maxFeePerGas,
       maxPriorityFeePerGas: maxPriorityFeePerGas,
@@ -252,6 +304,7 @@ export const useEtherspotFlow = () => {
   return {
     transferFromEOAToSW,
     transferFromSmartWalletToEOA,
+    transferTokens,
     batchApproveAndEscrow,
     releaseFunds,
     getUserOperationReceipt,

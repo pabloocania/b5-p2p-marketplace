@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { firebaseService } from "../../../../lib/FirebaseUnifiedService";
+import { firebaseService } from "../../../../lib/APIClients";
 import { FormInput } from "./FormInput";
 import { LoadingButton } from "./LoadingButton";
 import { ErrorAlert } from "./ErrorAlert";
 import { useTranslation } from "react-i18next";
-import { KioscoinUser } from "b5-api-client";
+import { KioscoinUser, UserData } from "b5-api-client";
 import {
   useWeb3AuthConnect,
   useWeb3AuthDisconnect,
 } from "@web3auth/modal/react";
 
 interface EmailLoginFormProps {
-  readonly onLogin: (user: KioscoinUser, token: string) => void;
+  readonly onLogin: (user: KioscoinUser, userData: UserData) => void;
   readonly onSwitchToRegister?: () => void;
 }
 
@@ -40,15 +40,10 @@ export const EmailLoginForm = ({
     try {
       const result = await firebaseService.signInWithEmail(email, password);
 
-      if (
-        result.success &&
-        result.user &&
-        result.userData &&
-        result.userData.idToken
-      ) {
-        onLogin(result.user, result.userData.idToken);
+      if (result.success && result.user && result.userData) {
+        onLogin(result.user, result.userData);
       } else {
-        setError(result.error || t("login_failed"));
+        setError(t("login_failed"));
       }
     } catch (err: any) {
       setError(err.message || t("unexpected_error_occurred"));

@@ -4,7 +4,7 @@ import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
-import { UserInfoCard } from "../users/UserInfoCard";
+import { UserInfoCard } from "../users/profile/UserInfoCard";
 
 interface OrderCardHeaderProps {
   order: Order;
@@ -14,7 +14,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
   const { t } = useTranslation();
 
   function mapOrderVariant(order: Order): string {
-    const baseClass = "text-secondary font-bold font-secondary bg-secondary/10";
+    const baseClass = "text-primary font-secondary bg-primary/10";
     switch (order.status) {
       case "PENDING":
         return baseClass;

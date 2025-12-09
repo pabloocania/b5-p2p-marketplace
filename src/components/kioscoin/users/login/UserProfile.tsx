@@ -1,5 +1,5 @@
 import React from "react";
-import { LogOut, Loader2, RotateCcw } from "lucide-react";
+import { LogOut, AlertCircle } from "lucide-react";
 
 import {
   Card,
@@ -8,18 +8,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import KioscoinConnectButton from "../KioscoinConnectButton";
 import UserWalletsComponent from "../UserWalletsComponent";
-import { ProfileHeader } from "../ProfileHeader";
-import UserBalance from "../UserBalance";
-import SmartWalletOnboarding from "../SmartWalletOnboarding";
+import { ProfileHeader } from "../profile/ProfileHeader";
+import UserBalance from "../profile/UserBalance";
+import SmartWalletOnboarding from "../profile/SmartWalletOnboarding";
 import { KioscoinUser } from "b5-api-client";
 import { useState, useEffect } from "react";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import { useWeb3Auth } from "@web3auth/modal/react";
-import UserSettings from "../UserSettings";
+import UserSettings from "../profile/UserSettings";
+import { useKioscoinUserContext } from "../KioscoinUserContext";
+import { ConfigStore } from "@/lib/ConfigStore";
+import { LoadingWallet } from "../../LoadingWallet";
 // Usando isotipo PNG en lugar del componente SVG
 
 interface UserProfileProps {
@@ -38,7 +41,9 @@ export const UserProfile = ({
   onConnectingChange,
 }: UserProfileProps) => {
   const { t } = useTranslation();
-  const { balances, isLoading, isReady } = useEtherspotSdk();
+  const { emailVerified } = useKioscoinUserContext();
+  const { balances, isLoading, isReady, switchToChain, currentChainId } =
+    useEtherspotSdk();
   const { isConnected: web3AuthConnected, status: web3authStatus } =
     useWeb3Auth();
 
@@ -57,9 +62,20 @@ export const UserProfile = ({
     console.log("Token changed to:", token);
   };
 
-  const handleBlockchainChange = (blockchain: string) => {
+  const handleBlockchainChange = async (blockchain: string) => {
     setSelectedBlockchain(blockchain);
     console.log("Blockchain changed to:", blockchain);
+
+    // Get the chainId for the selected blockchain
+    const configStore = ConfigStore.getInstance();
+    const chainId = configStore.getChainIdFromBlockchain(blockchain);
+
+    if (chainId && chainId !== 0) {
+      console.log("Switching to chainId:", chainId);
+      await switchToChain(chainId);
+    } else {
+      console.warn(`No chainId found for blockchain: ${blockchain}`);
+    }
   };
 
   // Handlers para SmartWalletOnboarding
@@ -96,6 +112,21 @@ export const UserProfile = ({
     }
   }, [web3AuthConnected, previousConnectionState]);
 
+  // Sync selectedBlockchain with the current chainId from SDK
+  useEffect(() => {
+    if (currentChainId && currentChainId !== 0) {
+      const configStore = ConfigStore.getInstance();
+      const blockchainName = configStore.getBlockchainName(currentChainId);
+      if (blockchainName && blockchainName !== selectedBlockchain) {
+        console.log(
+          "Syncing blockchain selector with current chain:",
+          blockchainName
+        );
+        setSelectedBlockchain(blockchainName);
+      }
+    }
+  }, [currentChainId]);
+
   // Add a separate effect to ensure onboarding shows on first load if wallet is already connected
   useEffect(() => {
     // If wallet is connected on first render, check if we should show onboarding
@@ -124,35 +155,32 @@ export const UserProfile = ({
     );
   };
 
-  function ConnectWalletButton() {
-    return (
-      <div className="w-full">
-        <style jsx>{`
-          div :global(.iek7po2) {
-            width: 100%;
-          }
-        `}</style>
-        <KioscoinConnectButton
-          onConnectingChange={onConnectingChange}
-          isConnecting={isConnecting}
-        />
-      </div>
-    );
-  }
-
   // Derived UI flags
   const walletInitializing =
     web3authStatus === "connecting" ||
     (web3AuthConnected && (isLoading || !isReady));
-  const canShowWallet = isReady;
+  const canShowWallet = isReady && !walletInitializing;
 
   return (
-    <Card className="w-full border border-secondary/20">
+    <Card className="w-full border border-secondary/20 mt-4">
       <CardHeader className="pb-2">
         <CardTitle className="flex justify-center items-center align-center mt-1 sm:mt-2 w-full">
           <ProfileHeader user={user} />
         </CardTitle>
       </CardHeader>
+
+      {/* Email Verification Alert */}
+      {!emailVerified && (
+        <div className="px-3 py-2">
+          <Alert className="bg-secondary/5">
+            <AlertCircle className="h-4 w-4 text-dark" />
+            <AlertDescription className="font-secondary text-xs text-primary">
+              <span className="font-semibold">{t("email_not_verified")}:</span>{" "}
+              {t("verify_email_message")}
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
 
       {/* UserBalance independiente debajo del ProfileHeader */}
       {canShowWallet && balances && (
@@ -168,18 +196,11 @@ export const UserProfile = ({
       )}
 
       <CardContent className="space-y-4 sm:space-y-4">
-        {(isConnecting || walletInitializing) && (
-          <div className="w-full flex justify-center items-center py-4 font-secondary text-dark">
-            <div className="flex items-center space-x-2">
-              <Loader2 className="h-4 w-4 animate-spin text-yellow-600" />
-              <span className="text-sm block">{t("loading_wallet")}</span>
-            </div>
-          </div>
-        )}
+        {(isConnecting || walletInitializing) && <LoadingWallet />}
 
         {canShowWallet && (
           <div className="w-full flex space-y-1.5 pt-2">
-            <UserWalletsComponent />
+            <UserWalletsComponent selectedBlockchain={selectedBlockchain} />
           </div>
         )}
 

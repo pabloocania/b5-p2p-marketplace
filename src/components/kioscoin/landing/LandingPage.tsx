@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmailLoginForm } from "@/components/kioscoin/users/login/EmailLoginForm";
 import { RegisterForm } from "@/components/kioscoin/users/login/RegisterForm";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useUserContext } from "@/components/kioscoin/users/UserContext";
+import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUserContext";
+import { KioscoinUser, UserData } from "b5-api-client";
 import {
   Users,
   TrendingUp,
@@ -14,12 +14,12 @@ import {
   Zap,
   DollarSign,
 } from "lucide-react";
+import KioscoinBrand from "../branding/KioscoinBrand";
+import KioscoinUserLoginFlow from "../users/KioscoinUserLoginFlow";
 
 export function LandingPage() {
   const { t } = useTranslation();
-  const { login } = useUserContext();
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
-
+  const { login } = useKioscoinUserContext();
   const [verbIndex, setVerbIndex] = useState(0);
   const [isFading, setIsFading] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -37,52 +37,11 @@ export function LandingPage() {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
-  const currentVerb = t(
-    verbIndex === 0 ? "buy_rioplatense" : "sell_rioplatense"
-  );
-
-  const handleLogin = (user: any, token: string) => {
-    // Use the real login function from UserContext
-    login(user, token);
-  };
-
-  const handleSwitchToRegister = () => {
-    setAuthMode("register");
-  };
-
-  const handleSwitchToLogin = () => {
-    setAuthMode("login");
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="flex flex-col gap-5 text-center py-1 px-1">
-        <div className="flex justify-center">
-          <img
-            height={250}
-            width={250}
-            src="/icons/kioscoin-imagotipo.png"
-            alt="Kioscoin"
-          />
-          {/* <div className="flex">
-            <p className="text-5xl font-bold font-primary text-primary">
-              Kioscoin
-            </p>
-          </div> */}
-        </div>
-        <div className="">
-          <p className="text-center font-secondary sm:text-lg text-primary">
-            <span
-              className={cn(
-                "inline-block transition-opacity duration-300 font-bold",
-                isFading ? "opacity-0" : "opacity-100"
-              )}
-            >
-              {currentVerb}
-            </span>
-            {t("slogan_suffix")}
-          </p>
-        </div>
+      <div className="flex flex-col gap-5 text-center px-1">
+        <KioscoinBrand showSlogan className="justify-center" />
         <div className="flex justify-center gap-3 font-primary w-full max-w-md mx-auto">
           <div className="border border-purple-200 bg-white/80 rounded-xl p-2 sm:p-3 text-center min-w-[110px] sm:min-w-[130px] shadow-sm hover:shadow-md transition-all">
             <div className="flex justify-center mb-1">
@@ -118,50 +77,11 @@ export function LandingPage() {
           </div>
         </div>
         {/* Auth Section - Compact size */}
-        <div className="w-full max-w-md mx-auto">
-          <div className="bg-white rounded-xl shadow-lg p-4 font-secondary transform transition-transform duration-200 border border-secondary/10">
-            {/* Toggle Buttons - Compact */}
-            <div className="flex bg-gray-100 rounded-lg p-1 mb-3">
-              <button
-                onClick={() => setAuthMode("login")}
-                className={cn(
-                  "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 font-secondary",
-                  authMode === "login"
-                    ? "bg-white text-purple-600 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                )}
-              >
-                {t("login")}
-              </button>
-              <button
-                onClick={() => setAuthMode("register")}
-                className={cn(
-                  "flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all duration-200 font-secondary",
-                  authMode === "register"
-                    ? "bg-white text-purple-600 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                )}
-              >
-                {t("register")}
-              </button>
-            </div>
-
-            {/* Form - compact height */}
-            <div>
-              {authMode === "login" ? (
-                <EmailLoginForm
-                  onLogin={handleLogin}
-                  onSwitchToRegister={handleSwitchToRegister}
-                />
-              ) : (
-                <RegisterForm
-                  onLogin={handleLogin}
-                  onSwitchToEmailLogin={handleSwitchToLogin}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        <KioscoinUserLoginFlow
+          variant="inline"
+          onLogin={login}
+          showBrand={false}
+        />
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from "react";
-import { LucideProps, Star, Clock, Timer, CheckCircle2 } from "lucide-react";
+import { LucideProps, Star, Clock, Timer, Handshake } from "lucide-react";
 import UserStatBadge from "./UserStatBadge"; // Adjust the import path as necessary
 
 interface UserStatsProps {
@@ -68,8 +68,8 @@ export const UserStats: React.FC<UserStatsProps> = ({
       {transactionCount !== undefined && transactionCount !== null && (
         <UserStatBadge
           value={transactionCount.toString()}
-          Icon={CheckCircle2}
-          color="text-green-500"
+          Icon={Handshake}
+          color="text-green-600"
         />
       )}
       {rating && (

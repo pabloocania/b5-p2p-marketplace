@@ -100,7 +100,7 @@ export default function PaymentMethodSelector({
   const renderInputField = (method: ExtendedPaymentMethod) => {
     const isFintech = method.type === "FINTECH";
     const isIBAN = method.display === "IBAN";
-    const fieldName = isFintech ? "alias" : isIBAN ? "cbu" : "alias";
+    const fieldName = isFintech ? "alias" : isIBAN ? "cbu" : "";
     const placeholder =
       aliasValues[method.entity ?? ""] ||
       (isFintech
@@ -135,6 +135,9 @@ export default function PaymentMethodSelector({
   ) => {
     console.log("method", method);
     e.preventDefault();
+    if (readOnly) {
+      return;
+    }
     const isSelected = selectedMethods.some((m) => m.entity === method.entity);
     onChange(
       isSelected
@@ -143,12 +146,9 @@ export default function PaymentMethodSelector({
     );
     if (!readOnly) {
       if (isSelected) {
-        console.log("isSelected", isSelected);
         setEditingMethod(null);
       } else {
-        console.log("method", method);
         const existingMethod = methods.find((m) => m.entity === method.entity);
-        console.log("existingMethod", existingMethod);
         setEditingMethod(
           existingMethod
             ? { ...existingMethod, display: method.display }
@@ -159,36 +159,24 @@ export default function PaymentMethodSelector({
   };
 
   const getAlias = (method: PaymentMethod) => {
-    console.log("method*", method);
-    console.log("selectedMethods*", selectedMethods);
     const existingMethod = selectedMethods.find(
       (m) => m.entity === method.entity
     );
-    return existingMethod?.alias || "alias";
+    return existingMethod?.alias || "";
   };
 
   return (
-    <Card className="w-full">
-      <CardContent className="py-3">
-        <div className="flex items-center mb-2">
-          <h3
-            className="text-xs font-secondary !text-gray-800 flex items-center gap-2"
-            style={{ fontFamily: "Montserrat, sans-serif !important" }}
-          >
-            <CreditCard className="h-4 w-4" />
-            {t("payment_methods")}
-          </h3>
-        </div>
-        <div>
-          {methods.length > 0 ? (
-            <div className="space-y-1.5">
-              {methods.map((method) => (
-                <div
-                  key={`${method.type}-${method.entity}`}
-                  className="space-y-1"
-                >
-                  <button
-                    className={`w-full px-3 py-2 flex items-center gap-2 rounded-lg text-left
+    <Card className="w-full border-none shadow-md">
+      <CardContent className="py-3 font-secondary">
+        {methods.length > 0 ? (
+          <div className="space-y-1.5">
+            {methods.map((method) => (
+              <div
+                key={`${method.type}-${method.entity}`}
+                className="space-y-1"
+              >
+                <button
+                  className={`w-full px-3 py-2 flex items-center gap-2 rounded-lg text-left
                       ${getColor(method.type)}
                       ${
                         selectedMethods.some((m) => m.entity === method.entity)
@@ -197,67 +185,49 @@ export default function PaymentMethodSelector({
                       }
                       transition-all duration-200
                     `}
-                    onClick={(e) =>
-                      handleMethodClick(e, {
-                        ...method,
-                        display: method.alias || "alias",
-                      })
-                    }
-                  >
-                    {getIcon(method.type)}
-                    <span
-                      className="font-medium text-xs text-primary font-montserrat-force"
+                  onClick={(e) =>
+                    handleMethodClick(e, {
+                      ...method,
+                      display: method.alias || "alias",
+                    })
+                  }
+                >
+                  {getIcon(method.type)}
+                  <span className="font-medium text-xs text-primary font-secondar">
+                    {method.entity}
+                  </span>
+                  <span className="ml-auto text-xs !text-gray-600 font-medium font-secondary">
+                    {getAlias(method)}
+                  </span>
+                </button>
+                {!readOnly && editingMethod?.entity === method.entity && (
+                  <div className="flex gap-2 px-1 w-full">
+                    <div
                       style={{
-                        fontFamily: "Montserrat, sans-serif !important",
+                        borderLeft: "2px",
+                        paddingLeft: "1rem",
                       }}
+                      className="w-full"
                     >
-                      {method.entity}
-                    </span>
-                    <span
-                      className="ml-auto text-xs !text-gray-600 font-medium font-montserrat-force"
-                      style={{
-                        fontFamily: "Montserrat, sans-serif !important",
-                      }}
-                    >
-                      {getAlias(method)}
-                    </span>
-                    {/* {!readOnly &&
-                      selectedMethods.some((m) => m.entity === method.entity) &&
-                      renderMethodValue({ ...method, display: "alias" }) && (
-                        <span className="ml-auto text-xs text-primary text-opacity-70">
-                          {renderMethodValue({ ...method, display: "alias" })}
-                        </span>
-                      )} */}
-                  </button>
-                  {!readOnly && editingMethod?.entity === method.entity && (
-                    <div className="flex gap-2 px-1 w-full">
-                      <div
-                        style={{
-                          borderLeft: "2px",
-                          paddingLeft: "1rem",
-                        }}
-                        className="w-full"
-                      >
-                        {renderInputField({ ...method, display: "alias" })}
-                      </div>
-                      <Button
-                        size="sm"
-                        className="h-8 w-8 p-0 bg-primary text-white font-secondary"
-                        onClick={handleSave}
-                      >
-                        <Check className="h-4 w-4" />
-                      </Button>
+                      {renderInputField({ ...method, display: "alias" })}
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-primary text-opacity-70 font-secondary">
-              {t("no_payment_methods_available")}
-            </p>
-          )}
-        </div>
+                    <Button
+                      size="sm"
+                      className="h-8 w-8 p-0 bg-primary text-white font-secondary"
+                      onClick={handleSave}
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-primary text-opacity-70 font-secondary">
+            {t("no_payment_methods_available")}
+          </p>
+        )}
       </CardContent>
     </Card>
   );

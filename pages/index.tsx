@@ -1,31 +1,42 @@
-import { useState, useEffect } from "react";
-import CreateOrder from "../src/components/kioscoin/orders/create-orders/CreateOrder";
-import OrdersFeed, {
-  Filter,
-} from "../src/components/kioscoin/orders/OrdersFeed";
+import { useState, useEffect, useCallback } from "react";
+import CreateOrder from "../src/components/kioscoin/orders/create-orders/CreateOrderForm";
 import { Button } from "@/components/ui/button";
-import { Plus, User, Languages, HelpCircle } from "lucide-react";
-import { useUserContext } from "../src/components/kioscoin/users/UserContext";
+import { Plus, Languages, HelpCircle } from "lucide-react";
+import { useKioscoinUserContext } from "../src/components/kioscoin/users/KioscoinUserContext";
 import { useDisconnect } from "wagmi";
 import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
 import { TransactionStatus } from "@/components/kioscoin/TransactionStatus";
-import UserOrdersMenu from "@/components/kioscoin/TopLevelSubMenu";
 import { useTranslation } from "react-i18next";
 import { NavBar } from "@/components/kioscoin/NavBar";
 import { TopBar } from "@/components/kioscoin/TopBar";
-import { LandingPage } from "@/components/kioscoin/landing/LandingPage";
-import KioscoinOperationFlow from "@/components/kioscoin/orders/KioscoinOperationFlow";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/create-orders/CreateOrderContainer";
-import UserMenuNew from "@/components/kioscoin/users/UserMenuNew";
 import { HelpDialog } from "@/components/kioscoin/HelpDialog";
-import SmartWalletOnboarding from "@/components/kioscoin/users/SmartWalletOnboarding";
+import SmartWalletOnboarding from "@/components/kioscoin/users/profile/SmartWalletOnboarding";
+import { MainViewRenderer } from "@/components/kioscoin/MainViewRenderer";
+import {
+  NavigationProvider,
+  useNavigation,
+  ActiveView,
+} from "@/components/kioscoin/NavigationContext";
+import { Filter } from "@/components/kioscoin/orders/OrdersFeed";
+import { useDeepLink } from "@/hooks/useDeepLink";
+import KioscoinUserLoginFlow from "@/components/kioscoin/users/KioscoinUserLoginFlow";
 
-export default function Home() {
-  const [activeComponent, setActiveComponent] = useState("OrderFeed");
-  const [activeSubFilter, setActiveSubFilter] = useState(Filter.PENDING);
-  const { user, login, logout } = useUserContext();
+function HomeContent() {
+  const { user, login, logout } = useKioscoinUserContext();
+  const { currentView, navigate, pendingNavigation } = useNavigation();
+
+  // Handle deeplink navigation
+  const { requiresLogin } = useDeepLink(user);
+  const [showDeepLinkLogin, setShowDeepLinkLogin] = useState(false);
 
   const [refreshKey, setRefreshKey] = useState(0);
+  const incrementRefreshKey = useCallback(() => {
+    setRefreshKey((prevKey) =>
+      prevKey >= Number.MAX_SAFE_INTEGER ? 0 : prevKey + 1
+    );
+  }, []);
+
   const { disconnect } = useDisconnect();
   const { transaction, resetTransaction } = useTransaction();
   const { i18n, t } = useTranslation();
@@ -39,11 +50,26 @@ export default function Home() {
     i18n.changeLanguage(lng);
   };
 
+  // Show login dialog when deeplink requires authentication
   useEffect(() => {
-    if (!user) {
-      setActiveComponent("OrderFeed");
+    if (requiresLogin && !user) {
+      setShowDeepLinkLogin(true);
     }
-  }, [user, disconnect]);
+  }, [requiresLogin, user]);
+
+  // Close login dialog after successful login
+  useEffect(() => {
+    if (user && showDeepLinkLogin) {
+      setShowDeepLinkLogin(false);
+    }
+  }, [user, showDeepLinkLogin]);
+
+  useEffect(() => {
+    // Only navigate to OrderFeed if there's no pending deeplink navigation
+    if (!user && !pendingNavigation) {
+      navigate("OrderFeed");
+    }
+  }, [user, disconnect, navigate, pendingNavigation]);
 
   useEffect(() => {
     if (user && !localStorage.getItem("hasSeenSmartWalletOnboarding")) {
@@ -56,9 +82,7 @@ export default function Home() {
 
   const handleCreateOrderClose = () => {
     setIsCreateOrderOpen(false);
-    setRefreshKey((prevKey) =>
-      prevKey >= Number.MAX_SAFE_INTEGER ? 0 : prevKey + 1
-    );
+    incrementRefreshKey();
   };
 
   const handleUserMenuOpen = () => {
@@ -66,31 +90,21 @@ export default function Home() {
     setIsUserMenuOpen(true);
   };
 
-  const renderComponent = () => {
-    if (activeComponent === "OrderFeed") {
-      return <OrdersFeed refreshKey={refreshKey} />;
-    } else if (activeComponent === "UserMenu") {
-      if (!user) {
-        return <LandingPage />;
-      }
-      return <UserMenuNew user={user} onLogin={login} onLogout={logout} />;
-    } else if (activeComponent === "MyOrders") {
-      return (
-        <UserOrdersMenu
-          activeSubFilter={activeSubFilter}
-          setActiveSubFilter={setActiveSubFilter}
-          refreshKey={refreshKey}
-          user={user}
-        />
-      );
-    }
+  const handleOrderCreated = () => {
+    navigate("MyOrders", { filter: Filter.WAITING_PAYMENT });
+    incrementRefreshKey();
+  };
+
+  const handleSetActiveComponent = (view: ActiveView) => {
+    navigate(view);
+    incrementRefreshKey();
   };
 
   return (
     <div className="min-h-screen flex justify-center">
       <div className="w-full flex flex-col bg-secondary/10 relative h-screen">
         <main className="flex-1 overflow-y-auto pt-14 sm:pt-19 pb-20 sm:pb-24 md:pb-28 relative">
-          <TopBar activeComponent={activeComponent} />
+          <TopBar activeComponent={currentView} />
           <TransactionStatus
             status={transaction.status}
             message={transaction.message}
@@ -99,15 +113,20 @@ export default function Home() {
             onClose={resetTransaction}
           />
           <div className="w-full max-w-md mx-auto px-2 flex flex-col">
-            <KioscoinOperationFlow activeComponent={activeComponent} />
-            <div className="flex-1">{renderComponent()}</div>
+            <MainViewRenderer
+              refreshKey={refreshKey}
+              user={user}
+              onLogin={login}
+              onLogout={logout}
+              onOrderCreated={handleOrderCreated}
+            />
           </div>
         </main>
 
         <div className="pb-8 sm:pb-10">
           <NavBar
-            activeComponent={activeComponent}
-            setActiveComponent={setActiveComponent}
+            activeComponent={currentView}
+            setActiveComponent={handleSetActiveComponent}
           />
         </div>
 
@@ -157,6 +176,7 @@ export default function Home() {
                       </span>
                     </Button>
                   }
+                  className="p-2"
                 >
                   <CreateOrder
                     onClose={handleCreateOrderClose}
@@ -178,7 +198,24 @@ export default function Home() {
             onComplete={() => setShowSmartWalletOnboarding(false)}
           />
         )}
+
+        {/* Deeplink login flow - shown when user opens a shared link without being logged in */}
+        <KioscoinUserLoginFlow
+          variant="sheet"
+          open={showDeepLinkLogin}
+          onOpenChange={setShowDeepLinkLogin}
+          onLogin={login}
+          showBrand={true}
+        />
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <NavigationProvider initialView="OrderFeed">
+      <HomeContent />
+    </NavigationProvider>
   );
 }
