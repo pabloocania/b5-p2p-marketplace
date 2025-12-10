@@ -28,8 +28,8 @@ export default function KioscoinOnboarding({
       icon: <Info className="h-10 w-10 text-blue-500 animate-bounce" />,
     },
     {
-      title: t("kioskoin_step_2_title"),
-      description: t("kioskoin_step_2_desc"),
+      title: t("help_step2_title", "Kioscoin wallet"),
+      description: "",
       icon: <Wallet className="h-10 w-10 text-purple-500" />,
       video: (
         <div className="aspect-video w-full overflow-hidden rounded-md border bg-muted flex items-center justify-center">
@@ -40,8 +40,8 @@ export default function KioscoinOnboarding({
       ),
     },
     {
-      title: t("kioskoin_step_3_title"),
-      subtitle: t("kioskoin_step_3_subtitle"),
+      title: t("help_step3_title", "Acepto Términos y condiciones"),
+      subtitle: "",
       icon: (
         <div className="relative flex items-center justify-center">
           <div className="absolute h-14 w-14 rounded-full bg-primary/30 animate-ping"></div>
@@ -97,25 +97,41 @@ export default function KioscoinOnboarding({
             <h3 className="text-lg font-semibold text-primary text-center leading-tight">
               {current.title}
             </h3>
-            {step !== 2 && (
+            {step !== 2 && current.description && (
               <p className="text-center text-sm text-muted-foreground leading-snug max-w-sm">
                 {current.description}
               </p>
             )}
-            {step === 2 && (
+            {step === 2 && current.subtitle && (
               <p className="text-center text-sm text-muted-foreground">
                 {current.subtitle}
               </p>
             )}
           </div>
 
+          {step === 1 && (
+            <div className="bg-white border rounded-lg shadow-sm p-4 w-full space-y-3 mt-2">
+              {t("help_step2_lines", "")
+                .split("\n")
+                .filter((l) => l.trim().length > 0)
+                .map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex justify-between items-center border-b pb-1 last:border-b-0"
+                  >
+                    <span className="text-sm text-primary">{item}</span>
+                    <CheckCircle2 className="w-4 h-4 text-green-500 min-w-[1.25rem]" />
+                  </div>
+                ))}
+            </div>
+          )}
+
           {step === 2 && (
             <div className="bg-white border rounded-lg shadow-sm p-4 w-full space-y-3 mt-2">
-              {[
-                t("kioskoin_step_3_benefit_1"),
-                t("kioskoin_step_3_benefit_2"),
-                t("kioskoin_step_3_benefit_3"),
-              ].map((item, i) => (
+              {t("help_step3_lines", "")
+                .split("\n")
+                .filter((l) => l.trim().length > 0)
+                .map((item, i) => (
                 <div
                   key={i}
                   className="flex justify-between items-center border-b pb-1 last:border-b-0"
@@ -171,7 +187,7 @@ export default function KioscoinOnboarding({
           </Button>
           <Button className="bg-secondary text-white" onClick={handleNext}>
             {step === steps.length - 1
-              ? t("activate_smart_wallet", "Activate Smart Wallet")
+              ? t("help_accept_tyc", "Acepto TyC")
               : t("next", "Next")}
           </Button>
         </DialogFooter>
