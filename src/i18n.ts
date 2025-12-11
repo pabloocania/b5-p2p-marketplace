@@ -218,7 +218,7 @@ i18n.use(initReactI18next).init({
         // HelpDialog step 2/3
         help_step2_title: "Kioscoin wallet",
         help_step2_lines:
-          "Welcome, remember you have a Kioscoin wallet to deposit USDT or USDC.\nTransfer crypto from Binance to Kioscoin\nYou can send any stablecoin via Binance Smart Chain and Arbitrum to trade!",
+          "Welcome, remember you have a Kioscoin wallet to deposit USDT or USDC.\nIn your profile, access your wallet to send and receive funds.\nYou can send any stablecoin via Binance Smart Chain and Arbitrum to trade!",
         help_step3_title: "Accept Terms and Conditions",
         help_step3_lines:
           "Kioscoin is in a closed beta where invited users only perform transactions.\nKioscoin coming soon! For more info visit our social media.",
@@ -553,7 +553,7 @@ i18n.use(initReactI18next).init({
         // HelpDialog paso 2/3
         help_step2_title: "Kioscoin wallet",
         help_step2_lines:
-          "Bienvenido, recuerda que tienes una kioscoin wallet para depositar USDT o USDC.\nCómo transferirme USDT o USDC\nPuedes enviarte cualquier stablecoin por Binance Smart Chain y Arbitrum para intercambiar!",
+          "Bienvenido, recuerda que tienes una Kioscoin wallet para depositar USDT o USDC.\nEn tu perfil puedes acceder a tu wallet para enviar y recibir fondos.\nPuedes enviarte cualquier stablecoin por Binance Smart Chain y Arbitrum para intercambiar!",
         help_step3_title: "Acepto Términos y condiciones",
         help_step3_lines:
           "Kioscoin está en una fase beta cerrada donde usuarios invitados solamente realizan transacciones.\nKioscoin coming soon! Para más info visita nuestras redes sociales.",
