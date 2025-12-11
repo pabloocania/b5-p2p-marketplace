@@ -16,7 +16,7 @@ export function MarketplaceIcon({
         d="M14.57,4.43a8,8,0,0,1,3.09,1.91,8.13,8.13,0,0,1,2,3.3"
         style={{
           fill: "none",
-          stroke: "#8b5fdc",
+          stroke: "currentColor",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2",
@@ -28,7 +28,7 @@ export function MarketplaceIcon({
         points="17.85 8.81 19.66 9.65 20.5 7.84"
         style={{
           fill: "none",
-          stroke: "#8b5fdc",
+          stroke: "currentColor",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2",
@@ -40,7 +40,7 @@ export function MarketplaceIcon({
         d="M4.35,14.36a8.13,8.13,0,0,0,2,3.3,8,8,0,0,0,3.09,1.91"
         style={{
           fill: "none",
-          stroke: "#8b5fdc",
+          stroke: "currentColor",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2",
@@ -52,7 +52,7 @@ export function MarketplaceIcon({
         points="6.15 15.19 4.34 14.35 3.5 16.16"
         style={{
           fill: "none",
-          stroke: "#8b5fdc",
+          stroke: "currentColor",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2",
@@ -63,7 +63,7 @@ export function MarketplaceIcon({
         d="M7,3a4,4,0,1,0,4,4A4,4,0,0,0,7,3ZM17,21a4,4,0,1,0-4-4A4,4,0,0,0,17,21Z"
         style={{
           fill: "none",
-          stroke: "#8b5fdc",
+          stroke: "currentColor",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2",
