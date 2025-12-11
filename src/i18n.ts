@@ -36,6 +36,13 @@ i18n.use(initReactI18next).init({
           "Insert the address where you want to receive the funds",
         notify_fiat_sent: "Notify seller",
         order_taken: "Order taken",
+        take_guard_title_buy: "You are about to take a BUY order of {{token}}",
+        take_guard_title_sell: "You are about to take a SELL order of {{token}}",
+        take_guard_body_buy:
+          "We will notify the seller. Make sure you have a payment method with alias configured.",
+        take_guard_body_sell:
+          "Seller will reserve the funds. Provide your receiving address if required.",
+        take_guard_confirm: "Confirm and take order",
         take_order: "Take order",
         not_enough_balance: "Insufficient balance",
         awaiting_buyer: "Awaiting buyer",
@@ -141,6 +148,10 @@ i18n.use(initReactI18next).init({
         send: "You must send",
         please_verify_payment_details:
           "Please verify payment details. Once you send the funds, click on the button below to notify the seller.",
+        fiat_guard_title: "Did you send the transfer to the other user?",
+        fiat_guard_body:
+          "Click “Notify deposit” only after you have sent the money via the agreed method.",
+        fiat_guard_confirm: "Yes, notify deposit",
         to_receive: "through:",
         seller_has_locked: "The seller has locked the crypto in the smart contract",
         ago: "ago",
@@ -363,6 +374,13 @@ i18n.use(initReactI18next).init({
           "Ingresa la dirección donde deseas recibir la cripto",
         notify_fiat_sent: "He enviado el dinero",
         order_taken: "Has elegido esta orden",
+        take_guard_title_buy: "Vas a tomar una Orden de Compra de {{token}}",
+        take_guard_title_sell: "Vas a tomar una Orden de Venta de {{token}}",
+        take_guard_body_buy:
+          "Se notificará al vendedor. Asegúrate de tener un método de pago con alias configurado.",
+        take_guard_body_sell:
+          "El vendedor reservará los fondos. Indicá tu dirección de recepción si es requerido.",
+        take_guard_confirm: "Confirmar y tomar orden",
         take_order: "Elegir orden",
         not_enough_balance: "Balance insuficiente",
         awaiting_buyer: "Esperando al comprador",
@@ -471,6 +489,10 @@ i18n.use(initReactI18next).init({
         to_receive: "a traves de:",
         please_verify_payment_details:
           "Por favor, verifica los detalles de pago. Una vez que envíes los fondos, haz click en el botón de abajo para notificar al vendedor.",
+        fiat_guard_title: "¿Hiciste la transferencia al otro usuario?",
+        fiat_guard_body:
+          "Presioná “Notificar depósito” solo si ya enviaste el dinero por el método acordado.",
+        fiat_guard_confirm: "Sí, notificar depósito",
         seller_has_locked: "El vendedor ha depositado los fondos en el contrato de custodia",
         ago: "atras",
         already_have_account: "¿Ya tienes una cuenta?",
