@@ -18,13 +18,15 @@ export class NotificationsServiceImpl {
     }
 
     connect(onMessage: (message: Message) => void): void {
+        // Always update the callback, even if already connected
+        this.messageCallback = onMessage;
+
         // Prevent connecting if already connected or connecting
         if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
-            console.log('[NotificationsService] Already connected or connecting, skipping');
+            console.log('[NotificationsService] Already connected or connecting, callback updated');
             return;
         }
 
-        this.messageCallback = onMessage;
         this.isManuallyClosing = false;
 
         try {
