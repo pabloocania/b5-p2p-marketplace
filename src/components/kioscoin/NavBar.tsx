@@ -16,9 +16,9 @@ export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
   // Centralized styling for nav buttons
   const commonButtonClasses =
     "flex flex-col items-center justify-center min-w-[80px] px-1 py-1 rounded-lg transition-colors h-14";
-  const activeButtonClasses = "bg-primary/10 text-secondary";
+  const activeButtonClasses = "bg-primary/30";
   const inactiveButtonClasses =
-    "text-primary/80 hover:bg-primary/5 border border-transparent";
+    "hover:bg-white/10 border border-transparent";
   const getButtonClasses = (isActive: boolean) =>
     cn(
       commonButtonClasses,
@@ -52,7 +52,7 @@ export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
   ];
 
   return (
-    <div className="border-t border-t-primary/50 py-2 px-1 fixed bottom-0 bg-white z-50 w-full shadow-top shadow-md">
+    <div className="border-t border-t-primary/50 py-2 px-1 fixed bottom-0 bg-dark z-50 w-full shadow-top shadow-md">
       <div className="flex h-18 items-center justify-between px-6 max-w-md mx-auto">
         {navItems.map((item) => (
           <button
@@ -60,8 +60,8 @@ export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
             onClick={() => setActiveComponent(item.id)}
             className={getButtonClasses(item.active)}
           >
-            <item.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-            <span className="text-xs mt-0.5 font-medium text-dark font-secondary">
+            <item.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+            <span className="text-xs mt-0.5 font-medium text-secondary font-secondary">
               {item.label}
             </span>
           </button>
