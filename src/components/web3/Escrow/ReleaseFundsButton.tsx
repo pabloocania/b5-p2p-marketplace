@@ -14,6 +14,8 @@ import {
 import ReleaseFundsConfirmation from "@/components/web3/Escrow/ReleaseFundsConfirmation";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 import { useWeb3AuthConnect } from "@web3auth/modal/react";
+import { p2pMarketAPIClient } from "@/lib/APIClients";
+import { PublicClientManager } from "../PublicClientManager";
 
 interface ReleaseFundsButtonProps {
   order: Order;
@@ -68,7 +70,20 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
             }
           }
           if (opsReceipt != undefined && opsReceipt.success) {
-            console.log("opsReceipt", opsReceipt);
+            // Fire-and-forget: log the operation receipt to the backend
+            p2pMarketAPIClient
+              .saveOpsLog({
+                chainId: PublicClientManager.getChainIdForBlockchain(
+                  order.blockchain ?? "RSK_TESTNET"
+                ),
+                userOp: opsReceipt as unknown as Record<string, unknown>,
+                orderId: order.id,
+                opsType: "RELEASE",
+              })
+              .catch((error: any) => {
+                console.error("Error saving ops log:", error);
+              });
+
             setTransaction({
               status: "success",
               message: t("funds_released"),
