@@ -27,9 +27,9 @@ export function FiatSentGuardSheet({
         closeText={t("close")}
       >
         <div className="w-full max-w-md mx-auto px-4">
-          <div className="rounded-xl border border-gray-300/70 bg-white/80 shadow-sm p-5 sm:p-6">
+          <div className="rounded-lg border border-gray-300/70 bg-white/80 shadow-sm p-5 sm:p-6">
             <SheetHeader className="space-y-2 mb-6">
-              <SheetTitle className="text-center">
+              <SheetTitle className="text-dark text-center">
                 {t("fiat_guard_title", "¿Hiciste la transferencia al otro usuario?")}
               </SheetTitle>
               <SheetDescription className="text-center">
@@ -40,17 +40,24 @@ export function FiatSentGuardSheet({
               </SheetDescription>
             </SheetHeader>
 
-            <SheetFooter className="gap-2 sm:justify-center">
-              <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-                {t("cancel")}
-              </Button>
-              <Button
-                className="bg-primary text-white hover:bg-primary/90 rounded-xl shadow-sm border border-white/20"
-                onClick={onConfirm}
-                disabled={loading}
-              >
-                {loading ? t("sending", "Sending...") : t("fiat_guard_confirm", "Sí, notificar depósito")}
-              </Button>
+            <SheetFooter className="mt-8 sm:justify-center">
+              <div className="w-full max-w-sm mx-auto flex items-center justify-between gap-3">
+                <Button
+                  variant="outline"
+                  className="rounded-md h-11 min-h-[44px] px-5 leading-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none hover:bg-transparent hover:text-inherit"
+                  onClick={() => onOpenChange(false)}
+                  disabled={loading}
+                >
+                  {t("cancel")}
+                </Button>
+                <Button
+                  className="bg-primary text-white hover:bg-primary/90 rounded-md shadow-sm border border-transparent h-11 min-h-[44px] px-5 leading-none"
+                  onClick={onConfirm}
+                  disabled={loading}
+                >
+                  {loading ? t("notifying_seller", "Notificando al vendedor…") : t("fiat_guard_confirm", "Sí, notificar depósito")}
+                </Button>
+              </div>
             </SheetFooter>
           </div>
         </div>

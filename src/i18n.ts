@@ -285,6 +285,8 @@ i18n.use(initReactI18next).init({
         dispute_already_message:
           "This order is already in dispute. Please contact support via TELEGRAM.",
         dispute_button_close: "Close",
+        taking_order: "Taking order…",
+        notifying_seller: "Notifying the seller…",
         preferences: "Preferences",
         saving: "Saving...",
         save: "Save",
@@ -630,6 +632,8 @@ i18n.use(initReactI18next).init({
         dispute_already_message:
           "Esta orden ya está en disputa. Por favor, contacta al equipo de soporte vía TELEGRAM.",
         dispute_button_close: "Cerrar",
+        taking_order: "Tomando orden…",
+        notifying_seller: "Notificando al vendedor…",
         preferences: "Preferencias",
         saving: "Guardando...",
         save: "Guardar",
