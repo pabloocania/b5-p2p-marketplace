@@ -1,6 +1,6 @@
 import { ArkaPaymaster } from "@etherspot/prime-sdk/dist/sdk/paymaster/provider/arka";
 
-export const arka_api_key = process.env.NEXT_PUBLIC_ARKA_KEY;
+export const arka_api_key = process.env.ARKA_KEY;
 export const arka_url = "https://arka.etherspot.io";
 export const queryString = `?apiKey=${arka_api_key}&chainId=`;
 
