@@ -135,8 +135,13 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       if (onRefresh) {
         onRefresh(); // Call the refresh callback
       }
-      // Navigate to MyOrders with WAITING_PAYMENT filter after successfully taking the order
-      navigate("MyOrders", { filter: Filter.WAITING_PAYMENT });
+      // Navigate to MyOrders with WAITING_PAYMENT filter and open the taken order details
+      const takenOrderId = response.orders?.[0]?.id ?? order.id;
+      navigate("MyOrders", {
+        filter: Filter.WAITING_PAYMENT,
+        orderId: takenOrderId,
+        showDetails: true,
+      });
     } catch (error) {
       console.error("Failed to take order:", error);
     }
