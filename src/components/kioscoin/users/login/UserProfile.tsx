@@ -13,16 +13,23 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import UserWalletsComponent from "../UserWalletsComponent";
 import { ProfileHeader } from "../profile/ProfileHeader";
-import UserBalance from "../profile/UserBalance";
+import UserBalance, {
+  DEFAULT_BLOCKCHAIN,
+  hasPositiveBalance,
+  isMainnet,
+} from "../profile/UserBalance";
 import SmartWalletOnboarding from "../profile/SmartWalletOnboarding";
 import { KioscoinUser } from "b5-api-client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import { useWeb3Auth } from "@web3auth/modal/react";
 import UserSettings from "../profile/UserSettings";
 import { useKioscoinUserContext } from "../KioscoinUserContext";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { LoadingWallet } from "../../LoadingWallet";
+
+// Preferred mainnet blockchain for initial selection
+const PREFERRED_MAINNET = "BSC_MAINNET";
 // Usando isotipo PNG en lugar del componente SVG
 
 interface UserProfileProps {
@@ -50,7 +57,10 @@ export const UserProfile = ({
   // Estado para UserBalance
   const [selectedToken, setSelectedToken] = useState("USDK");
   const [selectedBlockchain, setSelectedBlockchain] =
-    useState("ARBITRUM_TESTNET");
+    useState(PREFERRED_MAINNET);
+
+  // Track if we've done the initial blockchain selection based on balance
+  const hasInitializedBlockchain = useRef(false);
 
   // Estado para SmartWalletOnboarding
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -126,6 +136,44 @@ export const UserProfile = ({
       }
     }
   }, [currentChainId]);
+
+  // Auto-select blockchain based on balance precedence:
+  // 1. If current mainnet has balance > 0, stay there
+  // 2. If current mainnet has no balance, fallback to ARBITRUM_TESTNET
+  // This runs once when balances are first loaded
+  useEffect(() => {
+    if (
+      !hasInitializedBlockchain.current &&
+      isReady &&
+      balances &&
+      balances.length > 0
+    ) {
+      hasInitializedBlockchain.current = true;
+
+      const currentIsMainnet = isMainnet(selectedBlockchain);
+      const currentHasBalance = hasPositiveBalance(balances);
+
+      console.log(
+        `Blockchain selection check: ${selectedBlockchain} (mainnet: ${currentIsMainnet}, hasBalance: ${currentHasBalance})`
+      );
+
+      // If we're on a mainnet without balance, fallback to ARBITRUM_TESTNET
+      if (currentIsMainnet && !currentHasBalance) {
+        console.log(
+          "No balance on mainnet, falling back to:",
+          DEFAULT_BLOCKCHAIN
+        );
+        handleBlockchainChange(DEFAULT_BLOCKCHAIN);
+      }
+    }
+  }, [isReady, balances, selectedBlockchain]);
+
+  // Reset initialization flag when wallet disconnects
+  useEffect(() => {
+    if (!web3AuthConnected) {
+      hasInitializedBlockchain.current = false;
+    }
+  }, [web3AuthConnected]);
 
   // Add a separate effect to ensure onboarding shows on first load if wallet is already connected
   useEffect(() => {
