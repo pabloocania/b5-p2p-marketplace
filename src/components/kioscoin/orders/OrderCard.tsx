@@ -13,6 +13,7 @@ import CopyIdButton from "./CopyIdButton";
 import { ShareOrderButton } from "./ShareOrderButton";
 import DisputeOrderButton from "../dispute/DisputeOrderButton";
 import ChatButton from "./ChatButton";
+import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 
 const FINAL_STATUSES = [
   "COMPLETED",
@@ -41,7 +42,8 @@ export function OrderCard({
   onRefresh,
 }: OrderCardProps) {
   const { t } = useTranslation();
-  const [walletAddress, setWalletAddress] = useState("");
+  const { swAddress } = useEtherspotSdk();
+  const [walletAddress, setWalletAddress] = useState(swAddress || "");
   const [order, setOrder] = useState(orderDTO);
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
     PaymentMethod[]

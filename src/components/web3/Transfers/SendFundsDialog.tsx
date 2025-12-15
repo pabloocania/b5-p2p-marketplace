@@ -23,6 +23,7 @@ import { PublicClientManager } from "@/components/web3/PublicClientManager";
 import { useEtherspotFlow } from "@/components/web3/AccountAbstraction/useEtherspotFlow";
 import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
+import { p2pMarketAPIClient } from "@/lib/APIClients";
 
 interface SendFundsDialogProps {
   open: boolean;
@@ -205,6 +206,19 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
         }
 
         if (opsReceipt != undefined && opsReceipt.success) {
+          // Fire-and-forget: log the operation receipt to the backend
+          p2pMarketAPIClient
+            .saveOpsLog({
+              chainId: PublicClientManager.getChainIdForBlockchain(
+                currentBlockchain ?? "RSK_TESTNET"
+              ),
+              userOp: opsReceipt as unknown as Record<string, unknown>,
+              opsType: "TRANSFER",
+            })
+            .catch((error: any) => {
+              console.error("Error saving ops log:", error);
+            });
+
           console.log("Transaction confirmed successfully");
 
           setTransaction({

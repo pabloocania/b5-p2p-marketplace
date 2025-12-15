@@ -26,6 +26,7 @@ import { Rating } from "../Rating";
 import { formatFiatAmount } from "@/lib/utils";
 import PaymentMethodSelector from "./create-orders/PaymentMethodSelector";
 import FiatReceiveMethodSelector from "./FiatReceiveMethodSelector";
+import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 
 interface OrderCardContentProps {
   order: Order;
@@ -59,6 +60,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
     PaymentMethod[]
   >([]);
   const availableMethods = ConfigStore.getInstance().getPaymentMethods();
+  const { balances, swAddress } = useEtherspotSdk();
 
   const hasValidFiatData = (
     order: Order

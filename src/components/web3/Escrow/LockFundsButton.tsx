@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/sheet";
 import LockFundsConfirmation from "@/components/web3/Escrow/LockFundsConfirmation";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
+import { p2pMarketAPIClient } from "@/lib/APIClients";
+import { PublicClientManager } from "../PublicClientManager";
 
 interface LockFundsButtonProps {
   order: Order;
@@ -28,7 +30,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
   const { batchApproveAndEscrow, getUserOperationReceipt } = useEtherspotFlow();
   const [isLoading, setIsLoading] = useState(false);
   const [hasSufficientBalance, setHasSufficientBalance] = useState(true);
-  const { balances } = useEtherspotSdk();
+  const { balances, currentChainId } = useEtherspotSdk();
   const [isTransacting, setIsTransacting] = useState(false);
   const { setTransaction } = useTransaction();
   const [isOpen, setIsOpen] = useState(false);
@@ -59,7 +61,6 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
         }
         setIsTransacting(true);
         const txHashPromise = batchApproveAndEscrow(order);
-        console.log("txHashPromise", txHashPromise);
 
         setTransaction({
           status: "waiting",
@@ -83,7 +84,20 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
             }
           }
           if (opsReceipt != undefined && opsReceipt.success) {
-            console.log("opsReceipt", opsReceipt);
+            // Fire-and-forget: log the operation receipt to the backend
+            p2pMarketAPIClient
+              .saveOpsLog({
+                chainId: PublicClientManager.getChainIdForBlockchain(
+                  order.blockchain ?? "RSK_TESTNET"
+                ),
+                userOp: opsReceipt as unknown as Record<string, unknown>,
+                orderId: order.id,
+                opsType: "LOCK",
+              })
+              .catch((error: any) => {
+                console.error("Error saving ops log:", error);
+              });
+
             setTransaction({
               status: "success",
               message: t("funds_locked"),
