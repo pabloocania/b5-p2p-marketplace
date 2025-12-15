@@ -54,9 +54,11 @@ export function NotificationCard({
 
   return (
     <div
-      className={`relative flex items-stretch bg-white border border-primary rounded-xl shadow-sm ${
-        compact ? "p-3" : "p-4"
-      } ${onClick ? "cursor-pointer hover:bg-gray-50" : ""} ${className || ""}`}
+      className={`relative flex items-stretch ${
+        isRead ? "bg-white border border-gray-200" : "bg-white border border-secondary"
+      } rounded-xl shadow-sm ${compact ? "p-3" : "p-4"} ${
+        onClick ? "cursor-pointer hover:bg-gray-50" : ""
+      } ${className || ""}`}
       onClick={onClick}
       role={onClick ? "button" : undefined}
     >
@@ -92,13 +94,13 @@ export function NotificationCard({
       {/* Right ticket */}
       <div
         className={`absolute top-0 right-0 h-full w-10 flex items-center justify-center rounded-r-xl ${
-          isRead ? "bg-secondary/10" : "bg-gray-200"
+          isRead ? "bg-gray-200" : "bg-secondary/10"
         }`}
         aria-label={isRead ? "read" : "unread"}
       >
         <div
           className={`h-6 w-6 rounded-full flex items-center justify-center ${
-            isRead ? "bg-secondary/80 text-white" : "bg-gray-400 text-white"
+            isRead ? "bg-gray-400 text-white" : "bg-secondary/80 text-white"
           }`}
         >
           <Check className="h-4 w-4" />
