@@ -195,7 +195,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
         order.type === ("SELL" as OrderType) && (
           <div className="py-2">
             <AddressInput
-              walletAddress={swAddress}
+              walletAddress={walletAddress}
               setWalletAddress={setWalletAddress}
               orderStatus={order.status ? order.status : "CANCELED"}
             />
