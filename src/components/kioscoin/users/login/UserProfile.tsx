@@ -23,6 +23,7 @@ import SmartWalletOnboarding from "../profile/SmartWalletOnboarding";
 import { KioscoinUser } from "b5-api-client";
 import { useState, useEffect, useRef } from "react";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import KioscoinWalletWizard from "@/components/kioscoin/wallet/KioscoinWalletWizard";
 import { useWeb3Auth } from "@web3auth/modal/react";
 import UserSettings from "../profile/UserSettings";
 import { useKioscoinUserContext } from "../KioscoinUserContext";
@@ -50,7 +51,7 @@ export const UserProfile = ({
 }: UserProfileProps) => {
   const { t } = useTranslation();
   const { emailVerified } = useKioscoinUserContext();
-  const { balances, isLoading, isReady, switchToChain, currentChainId } =
+  const { balances, isLoading, isReady, switchToChain, currentChainId, swAddress } =
     useEtherspotSdk();
   const { isConnected: web3AuthConnected, status: web3authStatus } =
     useWeb3Auth();
@@ -68,6 +69,8 @@ export const UserProfile = ({
   // Estado para SmartWalletOnboarding
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [previousConnectionState, setPreviousConnectionState] = useState(false);
+  // Estado para KioscoinWalletWizard
+  const [showWalletWizard, setShowWalletWizard] = useState(false);
 
   // Handlers para UserBalance
   const handleTokenChange = (token: string) => {
@@ -97,8 +100,8 @@ export const UserProfile = ({
     localStorage.setItem("hasSeenSmartWalletOnboarding", "true");
   };
 
-  const handleShowOnboarding = () => {
-    setShowOnboarding(true);
+  const handleShowWalletWizard = () => {
+    setShowWalletWizard(true);
   };
 
   // useEffect para manejar el onboarding
@@ -291,7 +294,7 @@ export const UserProfile = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={handleShowOnboarding}
+              onClick={handleShowWalletWizard}
               className="flex items-center w-full border-secondary font-bold text-secondary text-sm sm:text-base hover:text-white hover:bg-secondary shadow-md rounded-lg"
             >
               <span className="text-sm sm:text-base font-secondary">
@@ -309,6 +312,14 @@ export const UserProfile = ({
         {/* SmartWalletOnboarding independiente */}
         {showOnboarding && (
           <SmartWalletOnboarding onComplete={handleOnboardingComplete} />
+        )}
+        {/* Wizard de Kioscoin Wallet */}
+        {showWalletWizard && (
+          <KioscoinWalletWizard
+            open={showWalletWizard}
+            onClose={() => setShowWalletWizard(false)}
+            address={swAddress}
+          />
         )}
         <div className="shadow-md border border-secondary/20 rounded-lg">
           <UserSettings />
