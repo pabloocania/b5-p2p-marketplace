@@ -41,7 +41,14 @@ export default function KioscoinWalletWizard({
     }
   };
 
-  const steps = [
+  type Step = {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+    extra?: React.ReactNode;
+  };
+
+  const steps: Step[] = [
     {
       icon: <Wallet className="h-8 w-8 text-primary" />,
       title: t("wallet_step_address_title", "Your Kioscoin address"),
@@ -64,7 +71,7 @@ export default function KioscoinWalletWizard({
             {copied ? t("copied", "Copied!") : t("copy", "Copy")}
           </Button>
         </div>
-      ) : null,
+      ) : undefined,
     },
     {
       icon: <Download className="h-8 w-8 text-green-600" />,
@@ -90,7 +97,7 @@ export default function KioscoinWalletWizard({
         "Keep your seed phrase safe and never share it with anyone."
       ),
     },
-  ] as const;
+  ];
 
   const current = steps[step];
 
@@ -161,5 +168,3 @@ export default function KioscoinWalletWizard({
     </Dialog>
   );
 }
-
-
