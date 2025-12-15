@@ -30,6 +30,7 @@ import { useWeb3AuthConnect, useWeb3Auth } from "@web3auth/modal/react";
 import { LoadingWallet } from "../LoadingWallet";
 import { useNavigation } from "../NavigationContext";
 import { Filter } from "./OrdersFeed";
+import { TakeOrderGuardSheet } from "./TakeOrderGuardSheet";
 
 interface OrderCardFooterProps {
   order: Order;
@@ -64,6 +65,8 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [orderTaken, setOrderTaken] = useState(false);
+  const [isTakeGuardOpen, setIsTakeGuardOpen] = useState(false);
+  const [taking, setTaking] = useState(false);
   const isSeller: boolean = order.sellerId === user?.id;
   const canSelectOrder = isLoggedIn && user?.id !== order?.creatorId;
 
@@ -95,6 +98,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   const takeOrder = async (order: Order) => {
     try {
       if (orderTaken) return;
+      setTaking(true);
       let takeOrderRequest: TakeSellOrderRequest | TakeBuyOrderRequest;
       if (order.type === "SELL") {
         takeOrderRequest = {
@@ -131,10 +135,19 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       if (onRefresh) {
         onRefresh(); // Call the refresh callback
       }
-      // Navigate to MyOrders with WAITING_PAYMENT filter after successfully taking the order
-      navigate("MyOrders", { filter: Filter.WAITING_PAYMENT });
+      // Navigate to MyOrders with WAITING_PAYMENT filter and open the taken order details
+      const takenOrderId = response.orders?.[0]?.id ?? order.id;
+      navigate("MyOrders", {
+        filter: Filter.WAITING_PAYMENT,
+        orderId: takenOrderId,
+        showDetails: true,
+      });
     } catch (error) {
       console.error("Failed to take order:", error);
+    }
+    finally {
+      setTaking(false);
+      setIsTakeGuardOpen(false);
     }
   };
 
@@ -276,14 +289,24 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     </CardFooter>
   ) : showDetails && canTakeOrder ? (
     <CardFooter className="pb-0">
-      <Button
-        className="w-full bg-secondary text-white font-secondary"
-        onClick={() => !orderTaken && takeOrder(order)}
-      >
-        {order.type === "BUY"
-          ? `${t("sell")} ${order.tokenCode}`
-          : `${t("buy")} ${order.tokenCode}`}
-      </Button>
+      <>
+        <Button
+          className="w-full bg-secondary text-white font-secondary"
+          onClick={() => !orderTaken && setIsTakeGuardOpen(true)}
+        >
+          {order.type === "BUY"
+            ? `${t("sell")} ${order.tokenCode}`
+            : `${t("buy")} ${order.tokenCode}`}
+        </Button>
+        <TakeOrderGuardSheet
+          open={isTakeGuardOpen}
+          onOpenChange={setIsTakeGuardOpen}
+          onConfirm={() => takeOrder(order)}
+          order={order}
+          action={order.type === "SELL" ? "BUY" : "SELL"}
+          loading={taking}
+        />
+      </>
     </CardFooter>
   ) : showDetails && order.type === "BUY" && !hasValidPaymentMethod ? (
     <CardFooter className="pb-0">

@@ -4,6 +4,7 @@ import { Order, PaymentMethod } from "b5-api-client";
 import { useTranslation } from "react-i18next";
 import { formatFiatAmount } from "@/lib/utils";
 import { Landmark, WalletMinimal, Copy, Check } from "lucide-react";
+import { FiatSentGuardSheet } from "./orders/FiatSentGuardSheet";
 
 interface NotifyFiatSentButtonProps {
   order: Order;
@@ -86,12 +87,24 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
   fiatSent,
 }) => {
   const { t } = useTranslation();
+  const [guardOpen, setGuardOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleClick = () => {
-    if (!orderTaken) {
-      fiatSent(order);
+    setGuardOpen(true);
+  };
+
+  const handleConfirm = async () => {
+    try {
+      setSubmitting(true);
+      if (!orderTaken) {
+        await fiatSent(order);
+      }
+      onRefresh?.();
+      setGuardOpen(false);
+    } finally {
+      setSubmitting(false);
     }
-    onRefresh?.();
   };
 
   return (
@@ -125,6 +138,13 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
       >
         {t("notify_fiat_sent")}
       </Button>
+
+      <FiatSentGuardSheet
+        open={guardOpen}
+        onOpenChange={setGuardOpen}
+        onConfirm={handleConfirm}
+        loading={submitting}
+      />
     </div>
   );
 };

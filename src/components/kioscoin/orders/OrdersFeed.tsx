@@ -93,6 +93,14 @@ export default function OrdersFeed({
     fetchOrderById();
   }, [orderId, loginId]);
 
+  // Auto-open the deeplinked order details when requested by caller
+  useEffect(() => {
+    if (deeplinkedOrder && initialShowDetails) {
+      setSelectedOrder(deeplinkedOrder);
+      setShowDetails(true);
+    }
+  }, [deeplinkedOrder, initialShowDetails]);
+
   // Clear deeplink filter to show all orders
   const clearDeeplinkFilter = () => {
     setDeeplinkedOrder(undefined);

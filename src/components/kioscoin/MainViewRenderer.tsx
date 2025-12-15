@@ -71,6 +71,7 @@ export const MainViewRenderer: React.FC<MainViewRendererProps> = ({
             setActiveSubFilter={setMyOrdersFilter}
             refreshKey={refreshKey}
             user={user}
+            orderId={params?.orderId}
           />
         );
 
