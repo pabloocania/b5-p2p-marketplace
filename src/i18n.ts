@@ -42,7 +42,7 @@ i18n.use(initReactI18next).init({
           "We will notify the seller. Make sure you have a payment method with alias configured.",
         take_guard_body_sell:
           "Seller will reserve the funds. Provide your receiving address if required.",
-        take_guard_confirm: "Confirm and take order",
+        take_guard_confirm: "Confirm",
         take_order: "Take order",
         not_enough_balance: "Insufficient balance",
         awaiting_buyer: "Awaiting buyer",
@@ -382,7 +382,7 @@ i18n.use(initReactI18next).init({
           "Se notificará al vendedor. Asegúrate de tener un método de pago con alias configurado.",
         take_guard_body_sell:
           "El vendedor reservará los fondos. Indicá tu dirección de recepción si es requerido.",
-        take_guard_confirm: "Confirmar y tomar orden",
+        take_guard_confirm: "Confirmar",
         take_order: "Elegir orden",
         not_enough_balance: "Balance insuficiente",
         awaiting_buyer: "Esperando al comprador",
