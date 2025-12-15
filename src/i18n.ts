@@ -79,6 +79,7 @@ i18n.use(initReactI18next).init({
         wrong_network: "Wrong network",
         please_switch_to_network:
           "Please switch to {{network}} network to release funds",
+        switch_network: "Switch Network",
         transfer: "Transfer",
         transfer_amount: "Transfer Amount",
         enter_transfer_amount:
@@ -418,6 +419,7 @@ i18n.use(initReactI18next).init({
         wrong_network: "Red incorrecta",
         please_switch_to_network:
           "Por favor, cambia a la red {{network}} para liberar los fondos",
+        switch_network: "Cambiar de red",
         transfer: "Transferir",
         transfer_amount: "Cantidad a transferir",
         enter_transfer_amount:

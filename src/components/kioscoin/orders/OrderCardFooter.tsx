@@ -61,6 +61,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     currentChainId,
     isLoading: isEtherspotLoading,
     isReady,
+    switchToChain,
   } = useEtherspotSdk();
   const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
@@ -144,8 +145,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
       });
     } catch (error) {
       console.error("Failed to take order:", error);
-    }
-    finally {
+    } finally {
       setTaking(false);
       setIsTakeGuardOpen(false);
     }
@@ -170,6 +170,15 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
               network: getBlockchainDisplayName(blockchain as BlockchainName),
             })}
           </AlertDescription>
+          <Button
+            size="sm"
+            variant="outline"
+            className="mt-2 w-full border-red-300 text-red-700 hover:bg-red-100"
+            onClick={() => switchToChain(orderChainId)}
+            disabled={isEtherspotLoading}
+          >
+            {isEtherspotLoading ? t("loading_status") : t("switch_network")}
+          </Button>
         </Alert>
       );
     }
