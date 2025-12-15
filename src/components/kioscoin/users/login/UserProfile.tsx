@@ -17,6 +17,7 @@ import UserBalance, {
   DEFAULT_BLOCKCHAIN,
   hasPositiveBalance,
   isMainnet,
+  findTokenWithPositiveBalance,
 } from "../profile/UserBalance";
 import SmartWalletOnboarding from "../profile/SmartWalletOnboarding";
 import { KioscoinUser } from "b5-api-client";
@@ -61,6 +62,8 @@ export const UserProfile = ({
 
   // Track if we've done the initial blockchain selection based on balance
   const hasInitializedBlockchain = useRef(false);
+  // Track if we've done the initial token selection based on balance
+  const hasInitializedToken = useRef(false);
 
   // Estado para SmartWalletOnboarding
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -168,12 +171,43 @@ export const UserProfile = ({
     }
   }, [isReady, balances, selectedBlockchain]);
 
-  // Reset initialization flag when wallet disconnects
+  // Reset initialization flags when wallet disconnects
   useEffect(() => {
     if (!web3AuthConnected) {
       hasInitializedBlockchain.current = false;
+      hasInitializedToken.current = false;
     }
   }, [web3AuthConnected]);
+
+  // Auto-select token with positive balance when balances change
+  // This ensures we show the token with funds, not an empty one
+  useEffect(() => {
+    if (isReady && balances && balances.length > 0) {
+      // Check if current selected token has balance
+      const currentTokenBalance = balances.find(
+        (b) => b.name === selectedToken
+      );
+      const currentHasBalance =
+        currentTokenBalance &&
+        parseFloat(currentTokenBalance.smartWalletBalance || "0") > 0;
+
+      // If current token has no balance, find one that does
+      if (!currentHasBalance) {
+        const tokenWithBalance = findTokenWithPositiveBalance(balances);
+        if (tokenWithBalance && tokenWithBalance !== selectedToken) {
+          console.log(
+            `Auto-selecting token with balance: ${tokenWithBalance} (current: ${selectedToken})`
+          );
+          setSelectedToken(tokenWithBalance);
+        }
+      }
+    }
+  }, [isReady, balances, selectedToken]);
+
+  // Reset token initialization when blockchain changes
+  useEffect(() => {
+    hasInitializedToken.current = false;
+  }, [selectedBlockchain]);
 
   // Add a separate effect to ensure onboarding shows on first load if wallet is already connected
   useEffect(() => {

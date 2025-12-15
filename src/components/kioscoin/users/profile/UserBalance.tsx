@@ -87,6 +87,20 @@ export const hasPositiveBalance = (balances: TokenBalance[]): boolean => {
   });
 };
 
+/**
+ * Find the first token with positive balance (> 0)
+ * Returns the token name or undefined if no token has positive balance
+ */
+export const findTokenWithPositiveBalance = (
+  balances: TokenBalance[]
+): string | undefined => {
+  const tokenWithBalance = balances.find((balance) => {
+    const balanceValue = parseFloat(balance.smartWalletBalance || "0");
+    return balanceValue > 0;
+  });
+  return tokenWithBalance?.name;
+};
+
 const getBlockchainIcon = (blockchain: string): string => {
   if (blockchain === "ARBITRUM_TESTNET" || blockchain === "ARBITRUM_MAINNET") {
     return "/blockchains/arbitrum.svg";
