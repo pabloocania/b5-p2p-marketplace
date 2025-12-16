@@ -51,8 +51,14 @@ export const UserProfile = ({
 }: UserProfileProps) => {
   const { t } = useTranslation();
   const { emailVerified } = useKioscoinUserContext();
-  const { balances, isLoading, isReady, switchToChain, currentChainId, swAddress } =
-    useEtherspotSdk();
+  const {
+    balances,
+    isLoading,
+    isReady,
+    switchToChain,
+    currentChainId,
+    swAddress,
+  } = useEtherspotSdk();
   const { isConnected: web3AuthConnected, status: web3authStatus } =
     useWeb3Auth();
 
@@ -267,6 +273,27 @@ export const UserProfile = ({
         </div>
       )}
 
+      {/* Botón Learn debajo del header y antes del bloque de saldos */}
+      <div className="px-3 py-2">
+        <div className="w-full flex">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleShowWalletWizard}
+            className="flex items-center w-full border-secondary font-bold text-secondary text-sm sm:text-base hover:text-white hover:bg-secondary shadow-md rounded-lg"
+          >
+            <span className="text-sm sm:text-base font-secondary">
+              {t("read_about_kioscoin")}
+            </span>
+            <img
+              src="/icons/kioscoin-isotipo.png"
+              alt="Kioscoin"
+              className="h-8 w-8"
+            />
+          </Button>
+        </div>
+      </div>
+
       {/* UserBalance independiente debajo del ProfileHeader */}
       {canShowWallet && balances && (
         <div className="flex space-y-1.5 p-3 pb-2 pt-2">
@@ -286,26 +313,6 @@ export const UserProfile = ({
         {canShowWallet && (
           <div className="w-full flex space-y-1.5 pt-2">
             <UserWalletsComponent selectedBlockchain={selectedBlockchain} />
-          </div>
-        )}
-
-        {canShowWallet && (
-          <div className="w-full flex">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleShowWalletWizard}
-              className="flex items-center w-full border-secondary font-bold text-secondary text-sm sm:text-base hover:text-white hover:bg-secondary shadow-md rounded-lg"
-            >
-              <span className="text-sm sm:text-base font-secondary">
-                {t("read_about_kioscoin")}
-              </span>
-              <img
-                src="/icons/kioscoin-isotipo.png"
-                alt="Kioscoin"
-                className="h-8 w-8"
-              />
-            </Button>
           </div>
         )}
 
