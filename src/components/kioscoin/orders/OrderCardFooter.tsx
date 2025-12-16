@@ -273,7 +273,9 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
 
   const canTakeBuyOrder = order.type === "BUY" && hasValidPaymentMethod;
   const canTakeSellOrder = order.type === "SELL" && walletAddress;
-  const canTakeOrder = canTakeBuyOrder || canTakeSellOrder;
+  const isTakeableStatus = (order.status as OrderStatus) === "PENDING";
+  const canTakeOrder =
+    isTakeableStatus && (canTakeBuyOrder || canTakeSellOrder);
 
   return isWaitingAction ? (
     <CardFooter className="pb-0">

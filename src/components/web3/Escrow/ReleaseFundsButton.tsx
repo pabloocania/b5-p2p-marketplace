@@ -16,6 +16,8 @@ import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 import { useWeb3AuthConnect } from "@web3auth/modal/react";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { PublicClientManager } from "../PublicClientManager";
+import { useNavigation } from "@/components/kioscoin/NavigationContext";
+import { Filter } from "@/components/kioscoin/orders/OrdersFeed";
 
 interface ReleaseFundsButtonProps {
   order: Order;
@@ -35,6 +37,7 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
   const { releaseFunds, getUserOperationReceipt } = useEtherspotFlow(); // Import the lockFunds function from the hook
   const { setTransaction } = useTransaction();
   const [isReleaseOpen, setIsReleaseOpen] = useState(false);
+  const { navigate } = useNavigation();
 
   const handleReleaseFunds = async () => {
     if (!isTransacting) {
@@ -90,6 +93,12 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
               progress: 100,
               order: order,
             });
+            navigate("MyOrders", {
+              filter: Filter.CLOSED,
+              orderId: order.id,
+              showDetails: true,
+            });
+            onRefresh?.();
           } else {
             setTransaction({
               status: "error",
