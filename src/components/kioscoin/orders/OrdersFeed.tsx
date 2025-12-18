@@ -18,6 +18,7 @@ import { CreateOrderContainer } from "./create-orders/CreateOrderContainer";
 import CreateOrder from "./create-orders/CreateOrderForm";
 import { Plus, X, Link } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useNavigation } from "../NavigationContext";
 
 export enum Filter {
   ALL = "ALL",
@@ -67,6 +68,10 @@ export default function OrdersFeed({
     undefined
   );
   const [isDeeplinkActive, setIsDeeplinkActive] = useState(false);
+  const { navigate } = useNavigation();
+  const [prevSelectedStatus, setPrevSelectedStatus] = useState<
+    string | undefined
+  >(undefined);
 
   // Fetch specific order by ID if provided (deeplink)
   useEffect(() => {
@@ -100,6 +105,71 @@ export default function OrdersFeed({
       setShowDetails(true);
     }
   }, [deeplinkedOrder, initialShowDetails]);
+
+  // Auto-navigate to CLOSED when the selected order transitions to a closed status
+  useEffect(() => {
+    if (selectedOrder) {
+      if (prevSelectedStatus !== selectedOrder.status) {
+        setPrevSelectedStatus(selectedOrder.status);
+        const closedStatuses = [
+          "RELEASED",
+          "COMPLETED_BY_ADMIN",
+          "COMPLETED",
+          "SUCCESS",
+        ];
+        if (
+          closedStatuses.includes((selectedOrder.status || "") as string) &&
+          filter !== Filter.CLOSED
+        ) {
+          navigate("MyOrders", {
+            filter: Filter.CLOSED,
+            orderId: selectedOrder.id,
+            showDetails: true,
+          });
+        }
+      }
+    }
+  }, [selectedOrder, prevSelectedStatus, filter, navigate]);
+
+  // Poll the selected order or deeplinked order by ID to keep status fresh across filters
+  useEffect(() => {
+    const shouldPoll =
+      ((orderId && (showDetails || isDeeplinkActive)) ||
+        (selectedOrder && showDetails)) &&
+      !!loginId;
+    if (!shouldPoll) return;
+    let active = true;
+    const idToFetch = (selectedOrder && selectedOrder.id) || orderId;
+    const intervalId = setInterval(async () => {
+      try {
+        if (!idToFetch) return;
+        const response = await client.getOrderById(idToFetch, {
+          Authorization: `Bearer ${loginId}`,
+        });
+        const updated = response?.orders?.[0];
+        if (active && updated) {
+          setSelectedOrder((prev) => {
+            if (!prev || prev.id !== updated.id) return updated;
+            if (prev.status !== updated.status) return updated;
+            return prev;
+          });
+        }
+      } catch {
+        // ignore polling errors
+      }
+    }, refreshInterval);
+    return () => {
+      active = false;
+      clearInterval(intervalId);
+    };
+  }, [
+    orderId,
+    selectedOrder?.id,
+    showDetails,
+    isDeeplinkActive,
+    loginId,
+    refreshInterval,
+  ]);
 
   // Clear deeplink filter to show all orders
   const clearDeeplinkFilter = () => {
