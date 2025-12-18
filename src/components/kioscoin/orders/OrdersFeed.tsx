@@ -54,7 +54,7 @@ export default function OrdersFeed({
   showDetails: initialShowDetails,
 }: OrderFeedProps) {
   const { user, login, loginId } = useKioscoinUserContext();
-  const { clearParams, params: navParams } = useNavigation();
+  const { clearParams, params: navParams, orderRefresh } = useNavigation();
   const isFromDeeplink = navParams?.isDeeplink ?? false;
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
@@ -98,7 +98,7 @@ export default function OrdersFeed({
       }
     };
     fetchOrderById();
-  }, [orderId, loginId]);
+  }, [orderId, loginId, orderRefresh.trigger]);
 
   // Auto-open the deeplinked order details when requested by caller
   useEffect(() => {

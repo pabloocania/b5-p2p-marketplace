@@ -414,8 +414,8 @@ i18n.use(initReactI18next).init({
           "Ingresa la dirección donde deseas recibir la cripto",
         notify_fiat_sent: "He enviado el dinero",
         order_taken: "Has elegido esta orden",
-        take_guard_title_buy: "Vas a tomar una Orden de Compra de {{token}}",
-        take_guard_title_sell: "Vas a tomar una Orden de Venta de {{token}}",
+        take_guard_title_buy: "Confirma la compra de {{token}}",
+        take_guard_title_sell: "Confirma la venta de {{token}}",
         take_guard_body_buy:
           "Se notificará al vendedor. Asegúrate de tener un método de pago con alias configurado.",
         take_guard_body_sell:
@@ -430,7 +430,7 @@ i18n.use(initReactI18next).init({
         status: "Estado:",
         payment_method: "Método de Pago",
         user: "Usuario",
-        order_id: "ID de órden",
+        order_id: "ID:",
         insert_wallet_address: "Dirección de la wallet de destino",
         initiating_transaction: "Enviando transacción a la blockchain...",
         initiating_transfer_escrow: "Firma transferencia...",
@@ -470,7 +470,7 @@ i18n.use(initReactI18next).init({
         address: "Dirección",
         connected_to: "Wallet conectada a:",
         amount: "Cantidad",
-        en_ars: "En ARS",
+        en_ars: "Pagarás",
         enter_amount: "Ingresar cantidad",
         bank: "Banco",
         create_order: "Crear orden",

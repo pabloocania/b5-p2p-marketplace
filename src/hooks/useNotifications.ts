@@ -8,6 +8,7 @@ import { NotificationDto } from "b5-api-client";
 import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUserContext";
 import { toast } from "@/components/ui/use-toast";
 import NotificationCard from "@/components/kioscoin/notifications/NotificationCard";
+import { useNavigation } from "@/components/kioscoin/NavigationContext";
 
 
 export interface UseNotificationsResult {
@@ -27,6 +28,7 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
     const [error, setError] = useState<string | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const { loginId } = useKioscoinUserContext();
+    const { orderRefresh } = useNavigation();
     const notificationsServiceRef = useRef<NotificationsServiceImpl | null>(null);
     const isSettingUpRef = useRef(false); // Prevent multiple simultaneous setups
 
@@ -93,6 +95,12 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
                 setUnreadCount(prev => prev + 1);
             }
 
+            // Trigger order refresh when an order-related event arrives
+            const eventContent = notification.message?.content;
+            if (eventContent?.type === "EVENT" && (eventContent as any)?.event?.orderId) {
+                orderRefresh.refresh();
+            }
+
             let toastApi: { dismiss: () => void } | undefined;
             toastApi = toast({
                 description: React.createElement(NotificationCard, {
@@ -100,9 +108,10 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
                     compact: true,
                     onNavigate: () => toastApi?.dismiss(),
                 }),
+                className: "w-[420px] max-w-[90vw]",
             });
         }
-    }, []);
+    }, [orderRefresh]);
 
     // Initialize WebSocket connection and fetch initial notifications
     useEffect(() => {
