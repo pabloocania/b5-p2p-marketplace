@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { p2pMarketAPIClient as client } from "@/lib/APIClients";
-import { createNotificationsService, getNotificationsService, NotificationsServiceImpl } from "@/lib/NotificationsService";
+import { createNotificationsService, getNotificationsService, NotificationsServiceImpl, ConnectionStatus } from "@/lib/NotificationsService";
 import { Message } from "b5-api-client";
 import { NotificationDto } from "b5-api-client";
 import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUserContext";
@@ -19,6 +19,7 @@ export interface UseNotificationsResult {
     refreshNotifications: () => Promise<void>;
     markAsRead: (notificationId: string) => Promise<void>;
     isConnected: boolean;
+    connectionStatus: ConnectionStatus;
 }
 
 export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
@@ -27,17 +28,30 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isConnected, setIsConnected] = useState(false);
+    const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
     const { loginId } = useKioscoinUserContext();
     const { orderRefresh } = useNavigation();
     const notificationsServiceRef = useRef<NotificationsServiceImpl | null>(null);
     const isSettingUpRef = useRef(false); // Prevent multiple simultaneous setups
+
+    // Ref to hold the latest orderRefresh.refresh function
+    const orderRefreshRef = useRef(orderRefresh.refresh);
+    useEffect(() => {
+        orderRefreshRef.current = orderRefresh.refresh;
+    }, [orderRefresh.refresh]);
+
+    // Ref to hold the latest loginId for session refresh
+    const loginIdRef = useRef(loginId);
+    useEffect(() => {
+        loginIdRef.current = loginId;
+    }, [loginId]);
 
     // Fetch notifications from API
     const fetchNotifications = useCallback(async () => {
 
         try {
             setError(null);
-            const response = await client.listNotifications(10, 0, {
+            const response = await client.listNotifications(50, 0, {
                 Authorization: `Bearer ${loginId}`,
             });
             console.log("response", response);
@@ -85,20 +99,30 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
         }
     }, [loginId, notifications]);
 
-    // Handle incoming WebSocket message
+    // Handle incoming WebSocket message - uses refs to avoid stale closures
     const handleNewMessage = useCallback((message: Message) => {
+        console.log('[useNotifications] Received WebSocket message:', message);
+
         // If it's a notification message, add it to the list
         if (message.content?.type === "NOTIFICATION") {
-            const notification = message.content.notification as NotificationDto;
-            setNotifications(prev => [notification, ...prev]);
+            const notificationContent = message.content as { type: 'NOTIFICATION'; notification: NotificationDto };
+            const notification = notificationContent.notification;
+
+            console.log('[useNotifications] Processing notification:', notification);
+
+            setNotifications(prev => {
+                console.log('[useNotifications] Adding notification to list, prev count:', prev.length);
+                return [notification, ...prev];
+            });
+
             if (!notification.readAt) {
                 setUnreadCount(prev => prev + 1);
             }
 
-            // Trigger order refresh when an order-related event arrives
+            // Trigger order refresh when an order-related event arrives (use ref for latest function)
             const eventContent = notification.message?.content;
             if (eventContent?.type === "EVENT" && (eventContent as any)?.event?.orderId) {
-                orderRefresh.refresh();
+                orderRefreshRef.current();
             }
 
             let toastApi: { dismiss: () => void } | undefined;
@@ -108,10 +132,12 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
                     compact: true,
                     onNavigate: () => toastApi?.dismiss(),
                 }),
-                className: "w-[420px] max-w-[90vw]",
+                className: "w-[420px] max-w-[90vw] !bg-backgroundMain border-primary/20",
             });
+        } else {
+            console.log('[useNotifications] Message is not a NOTIFICATION type:', message.content?.type);
         }
-    }, [orderRefresh]);
+    }, []); // No dependencies - uses refs for dynamic values
 
     // Initialize WebSocket connection and fetch initial notifications
     useEffect(() => {
@@ -128,11 +154,18 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
             return;
         }
 
-        // Check if we already have a connected service
+        // Check if we already have a connected or connecting service
         const existingService = getNotificationsService();
         if (existingService?.isConnected()) {
-            console.log('[useNotifications] WebSocket already connected, skipping setup');
+            console.log('[useNotifications] WebSocket already connected, updating callback');
+            // Always update the callback to ensure latest state references
+            existingService.connect(handleNewMessage);
             setIsConnected(true);
+            fetchNotifications();
+            return;
+        }
+        if (existingService?.isConnecting()) {
+            console.log('[useNotifications] WebSocket already connecting, skipping setup');
             fetchNotifications();
             return;
         }
@@ -169,29 +202,53 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
                     notificationsServiceRef.current = service;
                 }
 
-                if (!service.isConnected()) {
+                // Set up session refresh callback for long disconnections
+                service.setSessionRefreshCallback(async () => {
+                    const currentLoginId = loginIdRef.current;
+                    if (!currentLoginId) return false;
+                    try {
+                        const sessionData = await client.createSession({ idToken: currentLoginId });
+                        return sessionData.success;
+                    } catch {
+                        return false;
+                    }
+                });
+
+                // Subscribe to connection status changes
+                const unsubscribe = service.onStatusChange((status) => {
+                    setConnectionStatus(status);
+                    setIsConnected(status === 'connected');
+                });
+
+                if (!service.isConnected() && !service.isConnecting()) {
                     service.connect(handleNewMessage);
-                    setIsConnected(true);
                 } else {
-                    console.log('[useNotifications] Service already connected');
-                    setIsConnected(true);
+                    console.log('[useNotifications] Service already connected or connecting');
+                    setIsConnected(service.isConnected());
+                    setConnectionStatus(service.getStatus());
                 }
+
+                // Store unsubscribe for cleanup
+                return unsubscribe;
             } catch (err) {
                 console.error('[useNotifications] WebSocket setup error:', err);
                 setIsConnected(false);
+                setConnectionStatus('disconnected');
+                return undefined;
             } finally {
                 isSettingUpRef.current = false;
             }
         };
 
-        setupWebSocket();
+        const cleanupPromise = setupWebSocket();
 
         // Cleanup
         return () => {
-            // Note: We keep the WebSocket connection alive for real-time updates
-            // Don't disconnect on unmount unless needed
+            cleanupPromise.then(unsubscribe => {
+                if (unsubscribe) unsubscribe();
+            });
         };
-    }, [loginId, apiBaseUrl]); // Removed function dependencies to prevent re-runs
+    }, [loginId, apiBaseUrl, handleNewMessage]); // handleNewMessage is now stable (no deps)
 
     return {
         notifications,
@@ -201,5 +258,6 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
         refreshNotifications: fetchNotifications,
         markAsRead,
         isConnected,
+        connectionStatus,
     };
 }

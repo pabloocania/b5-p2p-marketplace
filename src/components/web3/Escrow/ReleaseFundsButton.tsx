@@ -98,7 +98,6 @@ export const ReleaseFundsButton: React.FC<ReleaseFundsButtonProps> = ({
               orderId: order.id,
               showDetails: true,
             });
-            onRefresh?.();
           } else {
             setTransaction({
               status: "error",
