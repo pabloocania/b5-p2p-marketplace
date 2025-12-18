@@ -369,7 +369,14 @@ i18n.use(initReactI18next).init({
         preparing_transaction: "Preparing transaction",
         select_fiat_code: "Select the exchange currency",
         info_text_fund_wallet: "You don't have enough funds in your wallet to deposit. Check the blockchain and the crypto dollar selected",
-        login_to_start: "Login to start buying and selling now"
+        login_to_start: "Login to start buying and selling now",
+        view_order: "View",
+        notification_open_order: "Open the order",
+        notification_event_taken: "Your order has been taken",
+        notification_event_locked: "Funds have been deposited",
+        notification_event_released: "Funds have been transferred to the buyer",
+        notification_event_fiat_sent: "The buyer has sent the money",
+        notification_event_refunded: "Funds have been returned"
       },
     },
     es: {
@@ -747,7 +754,14 @@ i18n.use(initReactI18next).init({
         select_fiat_code: "Selecciona la moneda de cambio",
         info_text_fund_wallet: "No tienes suficientes fondos en tu wallet para depositar. Chequea la blockchain y el dolar crypto seleccionados",
         login_to_start: "Inicia sesión para empezar a comprar y vender ya",
-        deposit_funds: "Debes depositor los fondos en el contrato de custodia"
+        deposit_funds: "Debes depositor los fondos en el contrato de custodia",
+        view_order: "Ver",
+        notification_open_order: "Abrir la orden",
+        notification_event_taken: "Tu orden ha sido tomada",
+        notification_event_locked: "Los fondos han sido depositados",
+        notification_event_released: "Los fondos han sido transferidos al comprador",
+        notification_event_fiat_sent: "El comprador ha enviado el dinero",
+        notification_event_refunded: "Los fondos han sido devueltos"
       },
     },
   },

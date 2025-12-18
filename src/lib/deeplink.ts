@@ -23,6 +23,7 @@ export const parseDeepLink = (): DeepLinkData | undefined => {
         params: {
             orderId,
             showDetails: true,
+            isDeeplink: true, // Mark as deeplink to show "Shared order" banner
         },
     };
 };

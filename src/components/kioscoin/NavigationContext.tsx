@@ -8,6 +8,7 @@ export interface NavigationParams {
   orderId?: string;
   filter?: Filter;
   showDetails?: boolean;
+  isDeeplink?: boolean; // True only when order opened via URL deeplink (not from notifications)
 }
 
 interface NavigationState {

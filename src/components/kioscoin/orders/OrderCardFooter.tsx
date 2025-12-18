@@ -298,7 +298,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         {order.type === "SELL" ? t("buy") : t("sell")} {order.tokenCode}
       </Button>
     </CardFooter>
-  ) : showDetails && canTakeOrder ? (
+  ) : showDetails && canTakeOrder && shouldShowSelectButton ? (
     <CardFooter className="pb-0">
       <>
         <Button

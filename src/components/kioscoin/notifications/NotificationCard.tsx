@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import { Check } from "lucide-react";
+import React, { useCallback, useMemo } from "react";
 import {
   NotificationDto,
   MessageContentEvent,
@@ -9,10 +9,22 @@ import {
 } from "b5-api-client";
 import { getEventTypeTranslationKey } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { useNavigation } from "@/components/kioscoin/NavigationContext";
+import { Filter } from "@/components/kioscoin/orders/OrdersFeed";
+
+const EVENT_TYPE_TO_SUBTITLE_KEY = {
+  TAKEN: "notification_event_taken",
+  LOCKED: "notification_event_locked",
+  RELEASED: "notification_event_released",
+  FIAT_SENT: "notification_event_fiat_sent",
+  REFUNDED: "notification_event_refunded",
+} as const;
 
 export interface NotificationCardProps {
   notification: NotificationDto;
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
+  onNavigate?: () => void;
   className?: string;
   // When shown inside a toast, we want a tighter layout
   compact?: boolean;
@@ -21,73 +33,145 @@ export interface NotificationCardProps {
 export function NotificationCard({
   notification,
   onClick,
+  onNavigate,
   className,
   compact = false,
 }: NotificationCardProps) {
   const { t } = useTranslation();
+  const { navigate } = useNavigation();
   const isRead = Boolean(notification.readAt);
 
-  const content = notification.message?.content as MessageContent | undefined;
-  const isEvent = content?.type === "EVENT";
-  let eventOrderId: string | undefined;
-  let eventType: string | undefined;
-  if (content && content.type === "EVENT") {
-    const eventContent = content as MessageContentEvent;
-    eventOrderId = eventContent.event.orderId;
-    eventType = eventContent.event.eventType;
-  }
-  const getPreview = (): string => {
+  const formatDate = useCallback((dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      const day = date.toLocaleDateString();
+      const time = date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      return `${day} ${time}`;
+    } catch {
+      return dateString;
+    }
+  }, []);
+
+  const getPreview = useCallback((): string => {
     if (notification.message?.content?.type === "TEXT") {
       return notification.message.content.text;
     }
     return "Notification";
-  };
+  }, [notification]);
 
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString();
-    } catch {
-      return dateString;
+  const { isEvent, eventType, orderId, title, dateLabel } = useMemo(() => {
+    const content = notification.message?.content as MessageContent | undefined;
+    const eventContent =
+      content?.type === "EVENT" ? (content as MessageContentEvent) : undefined;
+
+    const oid = eventContent?.event?.orderId;
+    const etRaw = eventContent?.event?.eventType;
+    const et = etRaw?.trim().toUpperCase();
+
+    const titleText = eventContent?.event?.eventType
+      ? t(getEventTypeTranslationKey(et ?? ""))
+      : getPreview();
+
+    return {
+      isEvent: Boolean(eventContent),
+      eventType: et,
+      orderId: oid,
+      title: titleText,
+      dateLabel: formatDate(notification.createdAt),
+    };
+  }, [formatDate, getPreview, notification, t]);
+
+  const canNavigateToOrder = Boolean(orderId);
+  const eventSubtitle = useMemo(() => {
+    if (!isEvent) return "";
+    const key =
+      eventType &&
+      (EVENT_TYPE_TO_SUBTITLE_KEY as Record<string, string | undefined>)[
+        eventType
+      ];
+    if (!key) return t("notification_open_order") || "Open the order";
+    return t(key);
+  }, [eventType, isEvent, t]);
+
+  const targetFilter = useMemo(() => {
+    if (eventType === "RELEASED" || eventType === "REFUNDED") {
+      return Filter.CLOSED;
     }
-  };
+    return Filter.WAITING_PAYMENT;
+  }, [eventType]);
+
+  const navigateToOrder = useCallback(() => {
+    if (!orderId) return;
+    navigate("MyOrders", { orderId, filter: targetFilter, showDetails: true });
+    onNavigate?.();
+  }, [navigate, onNavigate, orderId, targetFilter]);
+
+  const handleCardClick = useCallback(() => {
+    void onClick?.();
+  }, [onClick]);
 
   return (
     <div
       className={`relative flex items-stretch ${
-        isRead ? "bg-white border border-gray-200" : "bg-white border border-secondary"
+        isRead
+          ? "bg-white border border-gray-200"
+          : "bg-white border border-secondary"
       } rounded-xl shadow-sm ${compact ? "p-3" : "p-4"} ${
         onClick ? "cursor-pointer hover:bg-gray-50" : ""
       } ${className || ""}`}
-      onClick={onClick}
+      onClick={onClick ? handleCardClick : undefined}
       role={onClick ? "button" : undefined}
     >
       {/* Main content */}
       <div className="flex-1 min-w-0 pr-10 font-secondary">
-        {isEvent ? (
-          <div>
-            <p className="text-sm font-semibold text-gray-900">
-              {t(getEventTypeTranslationKey(eventType ?? ""))} -{" "}
-              {formatDate(notification.createdAt)}
-            </p>
-            <p className="text-xs text-gray-500 mt-1"></p>
-            {eventOrderId && (
-              <p className="text-xs text-gray-700 mt-1">ID: {eventOrderId}</p>
-            )}
-          </div>
-        ) : (
-          <div>
-            <p
-              className={`text-sm font-medium text-gray-900 ${
-                compact ? "line-clamp-2" : "line-clamp-3"
-              }`}
-            >
-              {getPreview()}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              {formatDate(notification.createdAt)}
-            </p>
-          </div>
+        {/* 1) Event type / Title */}
+        <div className="flex items-start justify-between gap-2">
+          <p
+            className={`text-sm text-gray-900 ${
+              isEvent ? "font-semibold" : "font-medium"
+            } ${compact ? "line-clamp-2" : "line-clamp-3"}`}
+          >
+            {title}
+          </p>
+          <p className="text-xs text-gray-500 whitespace-nowrap">{dateLabel}</p>
+        </div>
+
+        {/* 2) Text + button to navigate to order */}
+        <div className="mt-2">
+          <p className="text-xs text-gray-600 line-clamp-2">
+            {isEvent ? eventSubtitle : ""}
+          </p>
+
+          {canNavigateToOrder && (
+            <div className="mt-2 w-full">
+              <Button
+                size="sm"
+                variant="outline"
+                className={
+                  compact
+                    ? "h-7 px-2 text-xs w-full border-primary/50 "
+                    : "border-primary/50 w-full bg-secondary/50 text-primary hover:bg-secondary/80"
+                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigateToOrder();
+                }}
+              >
+                {t("view_order") || "View order"}
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* 3) Order id (small) */}
+        {orderId && (
+          <p className="text-[10px] font-secondary text-dark pb-1 mt-2 break-all">
+            {t("order_id") || "Order ID"}: {orderId}
+          </p>
         )}
       </div>
 

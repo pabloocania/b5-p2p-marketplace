@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import web3AuthContextConfig from "../src/components/web3/web3auth";
 import { Toaster } from "@/components/ui/toaster";
 import { AppLoadingScreen } from "@/components/kioscoin/loading/AppLoadingScreen";
+import { NavigationProvider } from "@/components/kioscoin/NavigationContext";
 
 const queryClient = new QueryClient();
 
@@ -96,7 +97,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         />
         <meta name="theme-color" content="#3e2262" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
       </Head>
       <Web3AuthProvider config={web3AuthContextConfig}>
         <KioscoinUserProvider>
@@ -104,8 +108,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             <QueryClientProvider client={queryClient}>
               <EtherspotSdkProvider>
                 <TransactionProvider>
-                  <Component {...pageProps} />
-                  <Toaster />
+                  <NavigationProvider initialView="OrderFeed">
+                    <Component {...pageProps} />
+                    <Toaster />
+                  </NavigationProvider>
                 </TransactionProvider>
               </EtherspotSdkProvider>
             </QueryClientProvider>

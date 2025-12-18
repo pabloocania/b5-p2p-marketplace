@@ -54,6 +54,8 @@ export default function OrdersFeed({
   showDetails: initialShowDetails,
 }: OrderFeedProps) {
   const { user, login, loginId } = useKioscoinUserContext();
+  const { clearParams, params: navParams } = useNavigation();
+  const isFromDeeplink = navParams?.isDeeplink ?? false;
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
     undefined
@@ -101,7 +103,6 @@ export default function OrdersFeed({
   // Auto-open the deeplinked order details when requested by caller
   useEffect(() => {
     if (deeplinkedOrder && initialShowDetails) {
-      setSelectedOrder(deeplinkedOrder);
       setShowDetails(true);
     }
   }, [deeplinkedOrder, initialShowDetails]);
@@ -175,6 +176,8 @@ export default function OrdersFeed({
   const clearDeeplinkFilter = () => {
     setDeeplinkedOrder(undefined);
     setIsDeeplinkActive(false);
+    setShowDetails(false);
+    clearParams(); // Also clear navigation params so filters reappear
   };
 
   // Initialize filter state
@@ -367,20 +370,21 @@ export default function OrdersFeed({
                 onRefresh={refreshOrders}
               />
             ) : isDeeplinkActive && deeplinkedOrder ? (
-              /* Show only the deeplinked/shared order */
               <>
-                {/* Shared order indicator with clear button */}
+                {/* Only show "Shared order" banner for URL deeplinks, not notifications */}
                 <div className="mb-2">
                   <div className="bg-secondary/20 shadow-sm font-secondary px-3 py-2 rounded-lg bg-white border border-secondary/20 shadow-md">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Link size={16} className="text-primary" />
-                        <span className="text-xs text-primary font-medium">
-                          {t("shared_order", "Shared order")}
-                        </span>
-                      </div>
+                    <div className="flex items-center">
+                      {isFromDeeplink && (
+                        <div className="flex items-center gap-2">
+                          <Link size={16} className="text-primary" />
+                          <span className="text-xs text-primary font-medium">
+                            {t("shared_order", "Shared order")}
+                          </span>
+                        </div>
+                      )}
                       <Badge
-                        className="bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer flex items-center gap-1 text-xs"
+                        className="ml-auto bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer flex items-center gap-1 text-xs"
                         onClick={clearDeeplinkFilter}
                       >
                         {t("show_all_orders", "Show all orders")}
@@ -392,6 +396,7 @@ export default function OrdersFeed({
 
                 <div className="space-y-4 p-4 bg-white rounded-lg border border-none shadow-primary/20">
                   <OrderCard
+                    showDetails={showDetails}
                     orderDTO={deeplinkedOrder}
                     onSelect={handleOrderSelect}
                     onRefresh={refreshOrders}

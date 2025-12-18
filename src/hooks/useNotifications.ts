@@ -93,10 +93,12 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
                 setUnreadCount(prev => prev + 1);
             }
 
-            toast({
+            let toastApi: { dismiss: () => void } | undefined;
+            toastApi = toast({
                 description: React.createElement(NotificationCard, {
                     notification,
                     compact: true,
+                    onNavigate: () => toastApi?.dismiss(),
                 }),
             });
         }
