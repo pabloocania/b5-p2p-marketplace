@@ -17,21 +17,21 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
 
   return (
     <div className="w-full space-y-2 font-secondary">
-      <h3 className="text-dark text-xs">{t("i_want_to")}</h3>
+      {/* <h3 className="text-dark text-xs">{t("i_want_to")}</h3> */}
       {/* Botonera horizontal */}
       <div className="flex gap-2">
         {[
-          {
-            id: "BUY",
-            label: t("buy"),
-            icon: <ArrowDownToLine className="w-5 h-5 mb-1" />,
-            isSelected: orderType === "BUY",
-          },
           {
             id: "SELL",
             label: t("sell"),
             icon: <ArrowUpFromLine className="w-5 h-5 mb-1" />,
             isSelected: orderType === "SELL",
+          },
+          {
+            id: "BUY",
+            label: t("buy"),
+            icon: <ArrowDownToLine className="w-5 h-5 mb-1" />,
+            isSelected: orderType === "BUY",
           },
         ].map((action) => (
           <button

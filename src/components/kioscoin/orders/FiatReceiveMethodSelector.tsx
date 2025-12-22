@@ -19,6 +19,7 @@ interface FiatReceiveMethodSelectorProps {
   readonly onMethodSelect: (method: PaymentMethod) => void;
   readonly fiatCode: string;
   readonly disabled?: boolean;
+  readonly isBuyOrder?: boolean;
 }
 
 // Color mappings aligned with PaymentMethodDisplay
@@ -147,13 +148,14 @@ const AliasInputSection: React.FC<AliasInputSectionProps> = ({
   );
 };
 
-export default function FiatReceiveMethodSelector({
+export default function FiatSendReceiveMethodSelector({
   availableMethods,
   userMethods,
   selectedMethod,
   onMethodSelect,
   fiatCode,
   disabled = false,
+  isBuyOrder = false,
 }: FiatReceiveMethodSelectorProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -233,7 +235,7 @@ export default function FiatReceiveMethodSelector({
         `}
       >
         <span className="text-xs text-primary font-secondary whitespace-nowrap">
-          {t("receive_fiat_via", { fiatCode })}
+          {t(isBuyOrder ? "send_fiat_via" : "receive_fiat_via", { fiatCode })}
         </span>
         <div className="flex-1 flex items-center justify-end gap-2">
           {hasValidSelection ? (

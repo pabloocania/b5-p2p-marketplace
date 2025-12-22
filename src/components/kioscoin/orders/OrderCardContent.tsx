@@ -25,7 +25,7 @@ import {
 import { Rating } from "../Rating";
 import { formatFiatAmount } from "@/lib/utils";
 import PaymentMethodSelector from "./create-orders/PaymentMethodSelector";
-import FiatReceiveMethodSelector from "./FiatReceiveMethodSelector";
+import FiatSendReceiveMethodSelector from "./FiatReceiveMethodSelector";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 
 interface OrderCardContentProps {
@@ -206,7 +206,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
         showDetails &&
         order.type === ("BUY" as OrderType) && (
           <div className="pt-3">
-            <FiatReceiveMethodSelector
+            <FiatSendReceiveMethodSelector
               availableMethods={availableMethods}
               userMethods={user?.settings?.paymentMethods ?? []}
               selectedMethod={selectedPaymentMethods[0] ?? null}

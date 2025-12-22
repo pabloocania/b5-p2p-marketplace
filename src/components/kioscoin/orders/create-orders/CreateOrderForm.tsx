@@ -24,6 +24,7 @@ import UserMenuNew from "../../users/UserMenuNew";
 import { ConfigStore } from "@/lib/ConfigStore";
 import PaymentMethodsComponent from "./PaymentMethodsComponent";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import FiatSendReceiveMethodSelector from "../FiatReceiveMethodSelector";
 
 export default function CreateOrder({
   onClose,
@@ -49,9 +50,7 @@ export default function CreateOrder({
   const [tokenAmount, setTokenAmount] = useState(
     preFilledData?.amount ? parseFloat(preFilledData.amount) : 0
   );
-  const [tokenCode, setTokenCode] = useState(
-    preFilledData?.tokenCode || "PDOC"
-  );
+  const [tokenCode, setTokenCode] = useState(preFilledData?.tokenCode || "");
   const { swAddress } = useEtherspotSdk();
   const [walletAddress, setWalletAddress] = useState(swAddress || "");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
@@ -75,6 +74,24 @@ export default function CreateOrder({
   );
 
   const stablecoinConfig = ConfigStore.getInstance().getBackendStablecoins();
+
+  // Get available blockchains for the selected token
+  const availableBlockchains = useMemo(() => {
+    return (
+      stablecoinConfig?.supportedStablecoins
+        ?.filter((sc) => sc.name === tokenCode)
+        ?.flatMap((v) => v.addresses) || []
+    );
+  }, [stablecoinConfig, tokenCode]);
+
+  // Auto-select blockchain when there's only one available
+  useEffect(() => {
+    if (availableBlockchains.length === 1) {
+      setBlockchain(availableBlockchains[0].blockchain);
+    } else if (availableBlockchains.length > 1 && !preFilledData?.blockchain) {
+      setBlockchain("");
+    }
+  }, [availableBlockchains, preFilledData?.blockchain]);
 
   useEffect(() => {
     const fetchRate = async () => {
@@ -217,18 +234,19 @@ export default function CreateOrder({
                   preSelectedBlockchain={blockchain}
                   preSelectedToken={tokenCode}
                 />
-                <h3 className="text-dark text-xs">{t("select_blockchain")}</h3>
-                {/* BlockchainSelector */}
-                <BlockchainSelector
-                  selectedToken={tokenCode}
-                  selectedBlockchain={blockchain}
-                  availableBlockchains={
-                    stablecoinConfig?.supportedStablecoins
-                      ?.filter((sc) => sc.name === tokenCode)
-                      ?.flatMap((v) => v.addresses) || []
-                  }
-                  onBlockchainChange={setBlockchain}
-                />
+                {tokenCode && (
+                  <>
+                    <h3 className="text-dark text-xs">
+                      {t("select_blockchain")}
+                    </h3>
+                    <BlockchainSelector
+                      selectedToken={tokenCode}
+                      selectedBlockchain={blockchain}
+                      availableBlockchains={availableBlockchains}
+                      onBlockchainChange={setBlockchain}
+                    />
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -300,14 +318,16 @@ export default function CreateOrder({
               </CardContent>
             </Card>
 
-            {/* Tarjeta 4: Resto del formulario */}
             <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
               <form onSubmit={handleSubmit}>
                 <CardContent className="text-primary space-y-1 font-secondary px-4 py-3">
-                  <PaymentMethodsComponent
-                    selectedMethods={selectedMethods}
-                    onChange={setSelectedMethods}
-                    methods={availableMethods}
+                  <FiatSendReceiveMethodSelector
+                    availableMethods={availableMethods}
+                    userMethods={user?.settings?.paymentMethods ?? []}
+                    selectedMethod={selectedMethods[0] ?? null}
+                    onMethodSelect={(method) => setSelectedMethods([method])}
+                    fiatCode={fiatCode}
+                    isBuyOrder={orderType === "BUY"}
                   />
                   {orderType === "BUY" && (
                     <div className="space-y-2 pt-2">
