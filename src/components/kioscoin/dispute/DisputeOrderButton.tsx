@@ -136,8 +136,10 @@ export default function DisputeOrderButton({
                 {t("dispute_already_title")}
               </DialogTitle>
             </DialogHeader>
-            <div className="text-red-600 text-center py-4 font-secondary">
-              {t("dispute_already_message")}
+            <div className="font-secondary">
+              <div className="p-3 rounded-md mt-2 text-sm bg-secondary/10 border border-secondary/30 text-dark text-center">
+                {t("dispute_already_message")}
+              </div>
             </div>
             <DialogFooter className="flex justify-end gap-2 mt-4">
               <Button
@@ -206,14 +208,20 @@ export default function DisputeOrderButton({
                   <strong>ID:</strong> {order.id}
                 </p>
                 <p>
-                  <strong>{t("status")} </strong> {order.status}
+                  <strong>{t("status")} </strong>{" "}
+                  {t(`statuses.${order.status ?? ""}`, {
+                    defaultValue: order.status,
+                  })}
                 </p>
                 <p>
                   <strong>{t("amount")} </strong> {order.amount}{" "}
                   {order.tokenCode}
                 </p>
                 <p>
-                  <strong>{t("dispute_reason")}:</strong> {disputeReason}
+                  <strong>{t("dispute_reason")}:</strong>{" "}
+                  {t(`dispute_reasons.${disputeReason}`, {
+                    defaultValue: disputeReason,
+                  })}
                 </p>
               </div>
               <p className="mt-4">{t("dispute_confirm_message")}</p>
