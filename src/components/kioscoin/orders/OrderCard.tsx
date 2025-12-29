@@ -117,9 +117,28 @@ export function OrderCard({
     );
   };
 
+  const handleDisputeCreated = () => {
+    // Optimistic local flag to avoid duplicate dispute creation
+    setOrder((prev) => {
+      if (!prev) return prev as any;
+      const next: Order = { ...prev };
+      if (isBuyer) {
+        (next as any).buyerDisputed = true;
+      }
+      if (isSeller) {
+        (next as any).sellerDisputed = true;
+      }
+      return next;
+    });
+    if (onRefresh) onRefresh();
+  };
+
   const renderDisputeButton = () => (
     <div className="flex font-secondary w-full shadow-xs">
-      <DisputeOrderButton order={order ?? ({} as Order)} />
+      <DisputeOrderButton
+        order={order ?? ({} as Order)}
+        onDisputeCreated={handleDisputeCreated}
+      />
     </div>
   );
 
@@ -182,8 +201,8 @@ export function OrderCard({
           {renderShareOrCopyButton()}
           {renderChatButton()}
         </div>
-        {/* Second row: Dispute button */}
-        {canShowDisputeButton && (
+        {/* Second row: Dispute button or status */}
+        {(canShowDisputeButton || alreadyDisputed) && (
           <div className="grid grid-cols-1 gap-2">{renderDisputeButton()}</div>
         )}
       </div>
