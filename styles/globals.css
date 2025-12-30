@@ -30,6 +30,19 @@ body {
   overscroll-behavior-y: contain;
 }
 
+/* iOS PWA: paint the "clock / status bar" safe-area with the brand color */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  background: #3e2262;
+  pointer-events: none;
+  z-index: 2147483647;
+}
+
 a {
   color: inherit;
   text-decoration: none;
