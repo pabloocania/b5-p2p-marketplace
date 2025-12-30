@@ -76,7 +76,7 @@ export function TopBar({ activeComponent }: TopBarProps) {
   };
   return (
     <>
-      <div className="fixed top-0 z-50 w-full bg-dark shadow-lg">
+      <div className="fixed top-0 z-50 w-full bg-dark shadow-lg pt-[env(safe-area-inset-top)]">
         <div className="relative flex items-center justify-between max-w-md mx-auto px-2">
           {renderContent()}
         </div>
