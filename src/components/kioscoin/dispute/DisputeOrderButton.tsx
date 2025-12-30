@@ -63,10 +63,11 @@ export default function DisputeOrderButton({
   function getDisputeReason(
     order: Order
   ): "SELLER_NOT_RELEASING" | "BUYER_FIAT_NOT_SENT" | "SELLER_NOT_LOCKING" {
-    if (canBuyerDispute && order.status === "FIAT_SENT") {
+    if (isBuyer && canBuyerDispute && order.status === "FIAT_SENT") {
       return "SELLER_NOT_RELEASING";
     }
     if (
+      isSeller &&
       canSellerDispute &&
       (order.status === "ACTIVE" || order.status === "FIAT_SENT")
     ) {
