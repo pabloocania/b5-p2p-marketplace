@@ -46,12 +46,12 @@ export function TakeOrderGuardSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="h-[50vh] font-secondary border border-primary/20 rounded-t-xl overscroll bg-backgroundSecondary pt-10"
+        className="h-[50vh] font-secondary border border-primary/20 rounded-t-xl overscroll bg-backgroundSecondary pt-10 px-2"
         closeText={t("close")}
         closeButtonPosition="right-3 top-2 text-xs"
       >
-        <div className="w-full max-w-md mx-auto px-4">
-          <div className="rounded-lg border border-gray-300/70 bg-white/80 shadow-sm p-5 sm:p-6">
+        <div className="w-full max-w-md mx-auto px-2">
+          <div className="rounded-lg border border-gray-300/70 bg-white/80 shadow-sm p-3">
             <SheetHeader className="space-y-2 mt-2 mb-6">
               <SheetTitle className="text-dark text-base sm:text-lg text-center leading-tight">
                 {title}

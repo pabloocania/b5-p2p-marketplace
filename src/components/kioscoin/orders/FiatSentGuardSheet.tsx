@@ -30,11 +30,11 @@ export function FiatSentGuardSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="h-[50vh] font-secondary border border-primary/20 rounded-t-xl overscroll bg-backgroundSecondary pt-10"
+        className="h-[50vh] font-secondary border border-primary/20 rounded-t-xl overscroll bg-backgroundSecondary pt-10 px-2"
         closeText={t("close")}
       >
         <div className="w-full max-w-md mx-auto px-4">
-          <div className="rounded-lg border border-gray-300/70 bg-white/80 shadow-sm p-5 sm:p-6">
+          <div className="rounded-lg border border-gray-300/70 bg-white/80 shadow-sm p-3">
             <SheetHeader className="space-y-2 mb-6">
               <SheetTitle className="text-dark text-center">
                 {t(

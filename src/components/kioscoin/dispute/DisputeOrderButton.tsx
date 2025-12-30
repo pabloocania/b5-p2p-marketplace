@@ -66,7 +66,10 @@ export default function DisputeOrderButton({
     if (canBuyerDispute && order.status === "FIAT_SENT") {
       return "SELLER_NOT_RELEASING";
     }
-    if (canSellerDispute && order.status === "ACTIVE") {
+    if (
+      canSellerDispute &&
+      (order.status === "ACTIVE" || order.status === "FIAT_SENT")
+    ) {
       return "BUYER_FIAT_NOT_SENT";
     }
     return "SELLER_NOT_LOCKING";
