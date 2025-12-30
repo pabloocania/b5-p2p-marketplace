@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,9 +24,13 @@ import { CreateDisputeRequest } from "b5-api-client";
 
 interface DisputeOrderButtonProps {
   order: Order;
+  onDisputeCreated?: () => void;
 }
 
-export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
+export default function DisputeOrderButton({
+  order,
+  onDisputeCreated,
+}: DisputeOrderButtonProps) {
   const { user, loginId } = useKioscoinUserContext();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -37,12 +41,21 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
   const isBuyer = user?.id === order.buyerId;
   const isSeller = user?.id === order.sellerId;
 
-  const canBuyerDispute = isBuyer && order.buyerCanDispute;
-  const canSellerDispute = isSeller && order.sellerCanDispute;
+  const canBuyerDispute: boolean = isBuyer && (order?.buyerCanDispute ?? false);
+  const canSellerDispute: boolean =
+    isSeller && (order?.sellerCanDispute ?? false);
 
-  const buyerDisputed = isBuyer && order.buyerDisputed;
-  const sellerDisputed = isSeller && order.sellerDisputed;
-  const alreadyDisputed = buyerDisputed || sellerDisputed;
+  const buyerDisputed: boolean = isBuyer && (order?.buyerDisputed ?? false);
+  const sellerDisputed: boolean = isSeller && (order?.sellerDisputed ?? false);
+  const initialAlreadyDisputed: boolean = buyerDisputed || sellerDisputed;
+  const [localDisputed, setLocalDisputed] = useState<boolean>(
+    initialAlreadyDisputed
+  );
+
+  const alreadyDisputed = useMemo(
+    () => localDisputed || initialAlreadyDisputed,
+    [localDisputed, initialAlreadyDisputed]
+  );
 
   const canShowDisputeButton =
     (canBuyerDispute || canSellerDispute) && !alreadyDisputed;
@@ -82,6 +95,12 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setApiResult("✅ Disputa creada con éxito.");
+      // Optimistic local switch to disputed state to prevent repeated creation
+      setLocalDisputed(true);
+      // Notify parent to refresh order state if provided
+      if (onDisputeCreated) {
+        onDisputeCreated();
+      }
     } catch (err) {
       setApiError("❌ No se pudo iniciar la disputa. Intentalo más tarde.");
     } finally {
@@ -113,16 +132,22 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="font-secondary">
-            <DialogHeader>
-              <DialogTitle className="font-secondary">
+            <DialogHeader className="px-4 py-3">
+              <DialogTitle className="font-secondary text-dark font-semibold">
                 {t("dispute_already_title")}
               </DialogTitle>
             </DialogHeader>
-            <div className="text-red-600 text-center py-4 font-secondary">
-              {t("dispute_already_message")}
+            <div className="font-secondary">
+              <div className="p-3 rounded-md mt-2 text-sm bg-secondary/10 border border-secondary/30 text-dark text-center">
+                {t("dispute_already_message")}
+              </div>
             </div>
             <DialogFooter className="flex justify-end gap-2 mt-4">
-              <Button variant="secondary" onClick={handleClose}>
+              <Button
+                variant="secondary"
+                onClick={handleClose}
+                className="bg-primary text-white hover:bg-primary/90"
+              >
                 {t("dispute_button_close")}
               </Button>
             </DialogFooter>
@@ -151,8 +176,8 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="font-secondary">
-          <DialogHeader>
-            <DialogTitle>
+          <DialogHeader className="px-4 py-3">
+            <DialogTitle className="text-dark font-semibold">
               {apiResult
                 ? t("dispute_success_title")
                 : apiError
@@ -179,19 +204,25 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
 
           {!loading && !apiResult && !apiError && (
             <>
-              <div className="bg-muted p-3 rounded-md mt-2 text-sm">
+              <div className="p-3 rounded-md mt-2 text-sm bg-secondary/10 border border-secondary/30">
                 <p>
                   <strong>ID:</strong> {order.id}
                 </p>
                 <p>
-                  <strong>{t("status")} </strong> {order.status}
+                  <strong>{t("status")} </strong>{" "}
+                  {t(`statuses.${order.status ?? ""}`, {
+                    defaultValue: order.status,
+                  })}
                 </p>
                 <p>
                   <strong>{t("amount")} </strong> {order.amount}{" "}
                   {order.tokenCode}
                 </p>
                 <p>
-                  <strong>{t("dispute_reason")}:</strong> {disputeReason}
+                  <strong>{t("dispute_reason")}:</strong>{" "}
+                  {t(`dispute_reasons.${disputeReason}`, {
+                    defaultValue: disputeReason,
+                  })}
                 </p>
               </div>
               <p className="mt-4">{t("dispute_confirm_message")}</p>
@@ -200,24 +231,28 @@ export default function DisputeOrderButton({ order }: DisputeOrderButtonProps) {
 
           <DialogFooter className="flex justify-end gap-2 mt-4">
             {!loading && (apiResult || apiError) ? (
-              <Button variant="default" onClick={handleClose}>
+              <Button
+                variant="default"
+                onClick={handleClose}
+                className="bg-primary text-white hover:bg-primary/90"
+              >
                 {t("dispute_button_close")}
               </Button>
             ) : (
               <>
                 <Button
-                  variant="outline"
+                  variant="default"
                   onClick={handleClose}
                   disabled={loading}
-                  className="font-secondary border-primary/50 bg-white text-primary hover:bg-secondary/20"
+                  className="font-secondary bg-primary text-white hover:bg-primary/90"
                 >
                   {t("dispute_button_no")}
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="default"
                   onClick={onConfirmDispute}
                   disabled={loading}
-                  className="font-secondary border-primary/50 bg-white text-primary hover:bg-secondary/20"
+                  className="font-secondary bg-primary text-white hover:bg-primary/90"
                 >
                   {loading ? t("sending") : t("dispute_button_yes")}
                 </Button>
