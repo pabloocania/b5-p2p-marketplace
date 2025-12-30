@@ -41,11 +41,12 @@ export default function DisputeOrderButton({
   const isBuyer = user?.id === order.buyerId;
   const isSeller = user?.id === order.sellerId;
 
-  const canBuyerDispute = !!(isBuyer && !!order.buyerCanDispute);
-  const canSellerDispute = !!(isSeller && !!order.sellerCanDispute);
+  const canBuyerDispute: boolean = isBuyer && (order?.buyerCanDispute ?? false);
+  const canSellerDispute: boolean =
+    isSeller && (order?.sellerCanDispute ?? false);
 
-  const buyerDisputed = !!(isBuyer && !!order.buyerDisputed);
-  const sellerDisputed = !!(isSeller && !!order.sellerDisputed);
+  const buyerDisputed: boolean = isBuyer && (order?.buyerDisputed ?? false);
+  const sellerDisputed: boolean = isSeller && (order?.sellerDisputed ?? false);
   const initialAlreadyDisputed: boolean = buyerDisputed || sellerDisputed;
   const [localDisputed, setLocalDisputed] = useState<boolean>(
     initialAlreadyDisputed
