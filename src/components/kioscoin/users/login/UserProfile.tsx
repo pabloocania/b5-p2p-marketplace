@@ -81,19 +81,16 @@ export const UserProfile = ({
   // Handlers para UserBalance
   const handleTokenChange = (token: string) => {
     setSelectedToken(token);
-    console.log("Token changed to:", token);
   };
 
   const handleBlockchainChange = async (blockchain: string) => {
     setSelectedBlockchain(blockchain);
-    console.log("Blockchain changed to:", blockchain);
 
     // Get the chainId for the selected blockchain
     const configStore = ConfigStore.getInstance();
     const chainId = configStore.getChainIdFromBlockchain(blockchain);
 
     if (chainId && chainId !== 0) {
-      console.log("Switching to chainId:", chainId);
       await switchToChain(chainId);
     } else {
       console.warn(`No chainId found for blockchain: ${blockchain}`);
@@ -140,10 +137,6 @@ export const UserProfile = ({
       const configStore = ConfigStore.getInstance();
       const blockchainName = configStore.getBlockchainName(currentChainId);
       if (blockchainName && blockchainName !== selectedBlockchain) {
-        console.log(
-          "Syncing blockchain selector with current chain:",
-          blockchainName
-        );
         setSelectedBlockchain(blockchainName);
       }
     }
@@ -165,16 +158,8 @@ export const UserProfile = ({
       const currentIsMainnet = isMainnet(selectedBlockchain);
       const currentHasBalance = hasPositiveBalance(balances);
 
-      console.log(
-        `Blockchain selection check: ${selectedBlockchain} (mainnet: ${currentIsMainnet}, hasBalance: ${currentHasBalance})`
-      );
-
       // If we're on a mainnet without balance, fallback to ARBITRUM_TESTNET
       if (currentIsMainnet && !currentHasBalance) {
-        console.log(
-          "No balance on mainnet, falling back to:",
-          DEFAULT_BLOCKCHAIN
-        );
         handleBlockchainChange(DEFAULT_BLOCKCHAIN);
       }
     }
@@ -204,9 +189,6 @@ export const UserProfile = ({
       if (!currentHasBalance) {
         const tokenWithBalance = findTokenWithPositiveBalance(balances);
         if (tokenWithBalance && tokenWithBalance !== selectedToken) {
-          console.log(
-            `Auto-selecting token with balance: ${tokenWithBalance} (current: ${selectedToken})`
-          );
           setSelectedToken(tokenWithBalance);
         }
       }
@@ -229,7 +211,6 @@ export const UserProfile = ({
 
       // Show onboarding if user hasn't seen it before
       if (!hasSeenOnboarding) {
-        console.log("Opening onboarding on initial connection");
         setShowOnboarding(true);
       }
     }

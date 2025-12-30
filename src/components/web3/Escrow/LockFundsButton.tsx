@@ -20,11 +20,13 @@ interface LockFundsButtonProps {
   order: Order;
   canLock: boolean;
   onSuccess: () => void;
+  onRefresh?: () => void;
 }
 
 const LockFundsButton: React.FC<LockFundsButtonProps> = ({
   order,
   onSuccess,
+  onRefresh,
 }) => {
   const { t } = useTranslation();
   const { batchApproveAndEscrow, getUserOperationReceipt } = useEtherspotFlow();
@@ -104,6 +106,8 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
               progress: 100,
               order: order,
             });
+            // Refresh order data after successful lock
+            onRefresh?.();
           } else {
             setTransaction({
               status: "error",

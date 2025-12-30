@@ -213,9 +213,5 @@ function HomeContent() {
 }
 
 export default function Home() {
-  return (
-    <NavigationProvider initialView="OrderFeed">
-      <HomeContent />
-    </NavigationProvider>
-  );
+  return <HomeContent />;
 }

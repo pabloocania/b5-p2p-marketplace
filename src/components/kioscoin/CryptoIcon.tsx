@@ -20,6 +20,10 @@ export const CryptoAmountIcon: React.FC<CryptoAmountIconProps> = ({
   amountTextClassName,
   iconSize = "md",
 }) => {
+  if (!tokenCode) {
+    return null;
+  }
+
   const tokenCodeLower = tokenCode.toLowerCase();
   const isGenericIcon = tokenCodeLower === "pdoc" || tokenCodeLower === "usdk";
 

@@ -7,20 +7,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { useKioscoinUserContext } from "../../users/KioscoinUserContext";
-import PaymentMethodSelector from "../create-orders/PaymentMethodSelector";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import LockFundsButton from "@/components/web3/Escrow/LockFundsButton";
 import OperationBalanceSection from "./OperationBalanceSection";
-import { Wallet } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import AddressInput from "../AddressInput";
-import FiatReceiveMethodSelector from "../FiatReceiveMethodSelector";
+import FiatSendReceiveMethodSelector from "../FiatReceiveMethodSelector";
 import FiatSendMethodSelector from "../FiatSendMethodSelector";
 import { CryptoAmountIcon } from "../../CryptoIcon";
 import { formatFiatAmount } from "@/lib/utils";
 import { getBlockchainDisplayName, BlockchainName } from "@/lib/ConfigStore";
-import { Separator } from "@/components/ui/separator";
 
 interface OperationFormProps {
   offer: OrderOffer;
@@ -170,7 +167,6 @@ export default function OperationForm({
       <Card className="w-full bg-primary/10 border-primary/40 border shadow-md rounded-md">
         <CardContent className="px-4 py-3 space-y-2 font-secondary">
           <div className="space-y-1.5">
-            {/* Main transaction line */}
             <div className="flex items-center gap-1">
               <span className="text-sm text-primary font-secondary">
                 {isSell ? t("you_will_receive") : t("you_must_pay")}
@@ -179,7 +175,6 @@ export default function OperationForm({
                 {formatFiatAmount(offer.fiatAmount, offer.fiatCode)}
               </span>
             </div>
-            {/* Token amount */}
             <div className="flex items-center gap-1">
               <span className="text-sm text-primary font-secondary">
                 {t("for")}
@@ -204,14 +199,9 @@ export default function OperationForm({
           </div>
         </CardContent>
       </Card>
-
-      {/* BUY offer (!isSell): Destination Address - API requires buyerAddress */}
-
-      {/* Payment Method Selection */}
       {isSell ? (
-        // SELL offer (isSell): Use FiatReceiveMethodSelector - how user will receive fiat
         <>
-          <FiatReceiveMethodSelector
+          <FiatSendReceiveMethodSelector
             availableMethods={availableMethods}
             userMethods={user?.settings?.paymentMethods ?? []}
             selectedMethod={selectedMethods[0] ?? null}
@@ -220,14 +210,6 @@ export default function OperationForm({
           />
         </>
       ) : (
-        // <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
-        //   <CardContent className="px-4 py-3 space-y-2 font-secondary">
-
-        //   </CardContent>
-        // </Card>
-        // BUY offer (!isSell): Use FiatSendMethodSelector - how user will send fiat
-        // <Card className="w-full border-l-4 border-primary/80 border border-primary/20 shadow-lg rounded-xl bg-white/90">
-        // <CardContent className="px-4 py-3 space-y-2 font-secondary">
         <>
           <AddressInput
             walletAddress={buyerAddress}
@@ -243,8 +225,6 @@ export default function OperationForm({
             requireAlias={false}
           />
         </>
-        // </CardContent>
-        // </Card>
       )}
 
       {/* Action Buttons */}

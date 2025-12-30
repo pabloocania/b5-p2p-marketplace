@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import OrdersFeed, { Filter } from "./orders/OrdersFeed";
 import { useTranslation } from "react-i18next";
 import { KioscoinUser } from "b5-api-client";
+import { useNavigation } from "./NavigationContext";
 
 interface TopLevelSubMenuProps {
   activeSubFilter: Filter;
@@ -20,6 +21,13 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
   orderId,
 }) => {
   const { t } = useTranslation();
+  const { clearParams } = useNavigation();
+
+  // When user selects a filter, clear any deeplink params to exit the shared order view
+  const handleFilterChange = (filter: Filter) => {
+    clearParams();
+    setActiveSubFilter(filter);
+  };
 
   // Centralized styling for sub-filter buttons
   const commonButtonClasses = "flex-1";
@@ -39,26 +47,29 @@ const UserOrdersMenu: React.FC<TopLevelSubMenuProps> = ({
         : `${inactiveBaseClasses} ${inactiveVariantClasses[filter]}`
     }`;
 
+  // Hide filter menu when viewing a specific order (via deeplink or notification)
+  const showFilters = user && !orderId;
+
   return (
     <div className="flex flex-col w-full space-y-2">
-      {user && (
+      {showFilters && (
         <div className="sticky w-full top-0 z-50 flex bg-white rounded-lg p-3 w-full gap-4 shadow-md border border-secondary/20">
           <div className="flex justify-center font-secondary space-x-2 py-2 pb-2 w-full">
             <Button
               className={getButtonClasses(Filter.PENDING)}
-              onClick={() => setActiveSubFilter(Filter.PENDING)}
+              onClick={() => handleFilterChange(Filter.PENDING)}
             >
               {t("pending")}
             </Button>
             <Button
               className={getButtonClasses(Filter.WAITING_PAYMENT)}
-              onClick={() => setActiveSubFilter(Filter.WAITING_PAYMENT)}
+              onClick={() => handleFilterChange(Filter.WAITING_PAYMENT)}
             >
               {t("ongoing")}
             </Button>
             <Button
               className={getButtonClasses(Filter.CLOSED)}
-              onClick={() => setActiveSubFilter(Filter.CLOSED)}
+              onClick={() => handleFilterChange(Filter.CLOSED)}
             >
               {t("closed")}
             </Button>

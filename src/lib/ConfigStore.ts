@@ -154,11 +154,8 @@ export class ConfigStore {
 
     public getTokenDecimalsByTokenCode(tokenCode: string | undefined): number {
         const stablecoin = this.backendStablecoins?.supportedStablecoins.find(stablecoin => {
-            console.log("stablecoin.name", stablecoin.name);
-            console.log("tokenCode", tokenCode);
             return stablecoin.name.toUpperCase() === tokenCode?.toUpperCase()
         });
-        console.log("stablecoin", stablecoin);
         return stablecoin?.decimals ?? 6;
     }
 

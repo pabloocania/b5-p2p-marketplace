@@ -273,14 +273,10 @@ export const useEtherspotFlow = () => {
       maxFeePerGas = baseFee + maxPriorityFeePerGas * BigInt(2);
     }
 
-    console.log("maxFeePerGas", maxFeePerGas);
-    console.log("maxPriorityFeePerGas", maxPriorityFeePerGas);
-
     const gasDetails: TransactionGasInfoForUserOp = {
       maxFeePerGas: maxFeePerGas,
       maxPriorityFeePerGas: maxPriorityFeePerGas,
     };
-    console.log("gasDetails", gasDetails);
     const op = await primeSdk.estimate({
       paymasterDetails: {
         url:
@@ -292,7 +288,7 @@ export const useEtherspotFlow = () => {
       },
       gasDetails: gasDetails,
     });
-    console.log("Estimate UserOp: ", await printOp(op));
+    await printOp(op)
     try {
       return await primeSdk.send(op);
     } catch (error) {

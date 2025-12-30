@@ -8,6 +8,7 @@ export interface NavigationParams {
   orderId?: string;
   filter?: Filter;
   showDetails?: boolean;
+  isDeeplink?: boolean; // True only when order opened via URL deeplink (not from notifications)
 }
 
 interface NavigationState {
@@ -20,6 +21,11 @@ interface PendingNavigation {
   params?: NavigationParams;
 }
 
+interface OrderRefresh {
+  trigger: number;
+  refresh: () => void;
+}
+
 interface NavigationContextValue {
   currentView: ActiveView;
   params: NavigationParams | undefined;
@@ -28,6 +34,7 @@ interface NavigationContextValue {
   pendingNavigation: PendingNavigation | undefined;
   setPendingNavigation: (pending: PendingNavigation | undefined) => void;
   executePendingNavigation: () => void;
+  orderRefresh: OrderRefresh;
 }
 
 const NavigationContext = createContext<NavigationContextValue | undefined>(
@@ -52,6 +59,7 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
   const [pendingNavigation, setPendingNavigation] = useState<
     PendingNavigation | undefined
   >(undefined);
+  const [orderRefreshTrigger, setOrderRefreshTrigger] = useState(0);
 
   const navigate = useCallback(
     (view: ActiveView, params?: NavigationParams) => {
@@ -76,6 +84,10 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
     }
   }, [pendingNavigation, navigate]);
 
+  const refreshOrder = useCallback(() => {
+    setOrderRefreshTrigger((prev) => prev + 1);
+  }, []);
+
   const value: NavigationContextValue = {
     currentView: state.view,
     params: state.params,
@@ -84,6 +96,10 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
     pendingNavigation,
     setPendingNavigation,
     executePendingNavigation,
+    orderRefresh: {
+      trigger: orderRefreshTrigger,
+      refresh: refreshOrder,
+    },
   };
 
   return (

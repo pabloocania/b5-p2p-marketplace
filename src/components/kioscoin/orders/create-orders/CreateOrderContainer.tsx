@@ -37,7 +37,9 @@ export function CreateOrderContainer({
         {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
         <SheetContent
           side="bottom"
-          className={`h-[90vh] overflow-y-auto ${className || ""}`}
+          className={`h-[90vh] overflow-y-auto overscroll bg-backgroundSecondary ${
+            className || ""
+          }`}
           closeText={hideCloseButton ? "" : t("close")}
           closeButtonPosition={
             hideCloseButton ? undefined : closeButtonPosition

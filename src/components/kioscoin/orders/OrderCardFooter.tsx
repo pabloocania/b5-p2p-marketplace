@@ -85,11 +85,15 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         status: "FIAT_SENT",
         orderId: order.id ?? "",
       };
-      await client.updateOrder(updateRequest, {
+      const updatedOrder = await client.updateOrder(updateRequest, {
         Authorization: `Bearer ${loginId}`,
       });
+      // Update local state with the response to show the new status immediately
+      if (updatedOrder) {
+        setOrder(updatedOrder);
+      }
       if (onRefresh) {
-        onRefresh(); // Call the refresh callback
+        onRefresh(); // Call the refresh callback for feed updates
       }
     } catch (error) {
       console.error("Error notifying FIAT sent:", error);
@@ -210,6 +214,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
           order={order}
           canLock={isSeller}
           onSuccess={() => {}}
+          onRefresh={onRefresh}
         />
       ) : (
         <div className="w-full py-2 text-center text-sm text-red-600 font-secondary">
@@ -298,7 +303,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         {order.type === "SELL" ? t("buy") : t("sell")} {order.tokenCode}
       </Button>
     </CardFooter>
-  ) : showDetails && canTakeOrder ? (
+  ) : showDetails && canTakeOrder && shouldShowSelectButton ? (
     <CardFooter className="pb-0">
       <>
         <Button

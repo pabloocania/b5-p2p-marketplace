@@ -95,6 +95,7 @@ export function NotificationsPanel({
                 <NotificationCard
                   key={notification.id}
                   notification={notification}
+                  onNavigate={onClose}
                   onClick={() =>
                     handleMarkAsRead(notification.id, notification.readAt)
                   }
