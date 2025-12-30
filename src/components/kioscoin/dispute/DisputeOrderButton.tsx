@@ -41,12 +41,11 @@ export default function DisputeOrderButton({
   const isBuyer = user?.id === order.buyerId;
   const isSeller = user?.id === order.sellerId;
 
-  const canBuyerDispute: boolean = isBuyer && (order?.buyerCanDispute ?? false);
-  const canSellerDispute: boolean =
-    isSeller && (order?.sellerCanDispute ?? false);
+  const canBuyerDispute: boolean = order?.buyerCanDispute ?? false;
+  const canSellerDispute: boolean = order?.sellerCanDispute ?? false;
 
-  const buyerDisputed: boolean = isBuyer && (order?.buyerDisputed ?? false);
-  const sellerDisputed: boolean = isSeller && (order?.sellerDisputed ?? false);
+  const buyerDisputed: boolean = order?.buyerDisputed ?? false;
+  const sellerDisputed: boolean = order?.sellerDisputed ?? false;
   const initialAlreadyDisputed: boolean = buyerDisputed || sellerDisputed;
   const [localDisputed, setLocalDisputed] = useState<boolean>(
     initialAlreadyDisputed
@@ -58,7 +57,8 @@ export default function DisputeOrderButton({
   );
 
   const canShowDisputeButton =
-    (canBuyerDispute || canSellerDispute) && !alreadyDisputed;
+    !alreadyDisputed &&
+    ((isBuyer && canBuyerDispute) || (isSeller && canSellerDispute));
 
   function getDisputeReason(
     order: Order
@@ -72,7 +72,7 @@ export default function DisputeOrderButton({
     ) {
       return "BUYER_FIAT_NOT_SENT";
     }
-    return "SELLER_NOT_LOCKING";
+    return "BUYER_FIAT_NOT_SENT";
   }
 
   const onConfirmDispute = async () => {
@@ -125,10 +125,9 @@ export default function DisputeOrderButton({
         <div className="flex flex-col items-center w-full">
           <IconButton
             icon={AlertCircle}
-            iconClassName="font-secondary border-primary/50 bg-white text-primary hover:bg-secondary/20"
+            className="font-secondary border-primary/50 bg-white text-primary hover:bg-secondary/20 w-full justify-center"
             label={t("order_disputed")}
             variant="outline"
-            className="w-full justify-center"
             size="sm"
             onClick={() => setOpen(true)}
           />
@@ -179,7 +178,7 @@ export default function DisputeOrderButton({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="font-secondary">
-          <DialogHeader className="px-4 py-3">
+          <DialogHeader className="px-2">
             <DialogTitle className="text-dark font-semibold">
               {apiResult
                 ? t("dispute_success_title")
@@ -207,16 +206,7 @@ export default function DisputeOrderButton({
 
           {!loading && !apiResult && !apiError && (
             <>
-              <div className="p-3 rounded-md mt-2 text-sm bg-secondary/10 border border-secondary/30">
-                <p>
-                  <strong>ID:</strong> {order.id}
-                </p>
-                <p>
-                  <strong>{t("status")} </strong>{" "}
-                  {t(`statuses.${order.status ?? ""}`, {
-                    defaultValue: order.status,
-                  })}
-                </p>
+              <div className="p-3 rounded-md mt-2 text-sm bg-secondary/10 border border-secondary/30 font-dark">
                 <p>
                   <strong>{t("amount")} </strong> {order.amount}{" "}
                   {order.tokenCode}

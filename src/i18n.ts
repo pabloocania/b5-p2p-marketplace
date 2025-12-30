@@ -377,7 +377,8 @@ i18n.use(initReactI18next).init({
         notification_event_locked: "Funds have been deposited",
         notification_event_released: "Funds have been transferred to the buyer",
         notification_event_fiat_sent: "The buyer has sent the money",
-        notification_event_refunded: "Funds have been returned"
+        notification_event_refunded: "Funds have been returned",
+        refunded: "Refunded",
       },
     },
     es: {
@@ -763,7 +764,8 @@ i18n.use(initReactI18next).init({
         notification_event_locked: "Los fondos han sido depositados",
         notification_event_released: "Los fondos han sido transferidos al comprador",
         notification_event_fiat_sent: "El comprador ha enviado el dinero",
-        notification_event_refunded: "Los fondos han sido devueltos"
+        notification_event_refunded: "Los fondos han sido devueltos",
+        refunded: "Reembolsada",
       },
     },
   },
