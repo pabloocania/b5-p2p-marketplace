@@ -17,8 +17,7 @@ export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
   const commonButtonClasses =
     "flex flex-col items-center justify-center min-w-[80px] px-1 py-1 rounded-lg transition-colors h-14";
   const activeButtonClasses = "bg-primary/30";
-  const inactiveButtonClasses =
-    "hover:bg-white/10 border border-transparent";
+  const inactiveButtonClasses = "hover:bg-white/10 border border-transparent";
   const getButtonClasses = (isActive: boolean) =>
     cn(
       commonButtonClasses,
@@ -52,8 +51,8 @@ export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
   ];
 
   return (
-    <div className="border-t border-t-primary/50 py-2 px-1 fixed bottom-0 bg-dark z-50 w-full shadow-top shadow-md">
-      <div className="flex h-18 items-center justify-between px-6 max-w-md mx-auto">
+    <div className="border-t border-t-primary/50 py-2 px-1 fixed bottom-0 bg-dark z-50 w-full shadow-top shadow-md pb-[env(safe-area-inset-bottom)] transform-gpu">
+      <div className="flex h-18 items-center justify-between px-6 max-w-md mx-auto touch-manipulation">
         {navItems.map((item) => (
           <button
             key={item.id}

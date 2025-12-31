@@ -142,7 +142,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
   }
 
   return (
-    <div className="relative w-full border border-secondary/20 px-4 py-2 rounded-xl bg-white shadow-lg mb-4 mt-6">
+    <div className="relative w-full border border-secondary/20 px-4 py-2 rounded-xl bg-white shadow-lg mb-4 mt-2">
       <Carousel
         opts={{
           align: "start",
