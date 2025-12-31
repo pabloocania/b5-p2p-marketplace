@@ -3,6 +3,8 @@ import { firebaseService } from "../../../../lib/APIClients";
 import { FormInput } from "./FormInput";
 import { LoadingButton } from "./LoadingButton";
 import { ErrorAlert } from "./ErrorAlert";
+import { GoogleLoginButton } from "./GoogleLoginButton";
+import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import { KioscoinUser, UserData } from "b5-api-client";
 import {
@@ -108,6 +110,19 @@ export const EmailLoginForm = ({
         loadingText={t("signing_in")}
         buttonText={t("sign_in_with_email")}
         onClick={() => {}}
+      />
+
+      <div className="relative py-2">
+        <Separator />
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
+          {t("or")}
+        </span>
+      </div>
+
+      <GoogleLoginButton
+        onLogin={onLogin}
+        onError={setError}
+        disabled={isLoading}
       />
 
       <div className="flex justify-between items-center p-2 gap-4">
