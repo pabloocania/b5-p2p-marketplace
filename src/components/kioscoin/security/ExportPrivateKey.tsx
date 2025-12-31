@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 import { usePrivateKeyExport } from "./usePrivateKeyExport";
+import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import type {
   ExportPrivateKeyProps,
   ExportKeyState,
@@ -87,6 +88,7 @@ export default function ExportPrivateKey({ className }: ExportPrivateKeyProps) {
   const { toast } = useToast();
   const { exportKey, clearKey, copyToClipboard, isConnected } =
     usePrivateKeyExport();
+  const { swAddress, eoaAddress } = useEtherspotSdk();
 
   // Dialog state
   const [isOpen, setIsOpen] = useState(false);
@@ -260,8 +262,12 @@ export default function ExportPrivateKey({ className }: ExportPrivateKeyProps) {
             showKey={showKey}
             onToggleShow={() => setShowKey((s) => !s)}
             onCopy={handleCopy}
+            onCopyAddress={copyToClipboard}
             copied={copied}
+            eoaAddress={eoaAddress}
+            swAddress={swAddress}
             t={t}
+            toast={toast}
           />
         )}
 
@@ -341,8 +347,12 @@ interface RevealedKeyStepProps {
   readonly showKey: boolean;
   readonly onToggleShow: () => void;
   readonly onCopy: () => void;
+  readonly onCopyAddress: (text: string) => Promise<boolean>;
   readonly copied: boolean;
+  readonly eoaAddress: string;
+  readonly swAddress: string;
   readonly t: (key: string) => string;
+  readonly toast: (props: { title: string; description?: string; className?: string }) => void;
 }
 
 function RevealedKeyStep({
@@ -350,49 +360,120 @@ function RevealedKeyStep({
   showKey,
   onToggleShow,
   onCopy,
+  onCopyAddress,
   copied,
+  eoaAddress,
+  swAddress,
   t,
+  toast,
 }: RevealedKeyStepProps) {
   const maskedKey = "•".repeat(64);
 
+  const handleCopyAddress = async (address: string) => {
+    const success = await onCopyAddress(address);
+    if (success) {
+      toast({
+        title: t("copied"),
+        className: "font-secondary",
+      });
+    }
+  };
+
+  const truncateAddress = (addr: string) => 
+    addr ? `${addr.slice(0, 8)}...${addr.slice(-6)}` : "";
+
   return (
     <div className="space-y-4">
-      <div className="relative">
-        <Input
-          type="text"
-          value={showKey ? privateKey : maskedKey}
-          readOnly
-          className="pr-20 font-mono text-xs text-dark"
-        />
-        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+      {/* Private Key */}
+      <div className="space-y-1">
+        <p className="text-xs font-secondary text-primary font-bold">
+          {t("security.private_key_label")}
+        </p>
+        <div className="relative">
+          <Input
+            type="text"
+            value={showKey ? privateKey : maskedKey}
+            readOnly
+            className="pr-20 font-mono text-xs text-dark"
+          />
+          <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-dark hover:bg-terciary"
+              onClick={onToggleShow}
+              title={showKey ? t("security.hide_key") : t("security.show_key")}
+            >
+              {showKey ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-dark hover:bg-terciary"
+              onClick={onCopy}
+              title={t("copy")}
+            >
+              {copied ? (
+                <Check className="h-4 w-4 text-secondary" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Addresses */}
+      <div className="space-y-2 p-3 bg-secondary/5 rounded-lg">
+        {/* EOA Address */}
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <p className="text-xs font-secondary text-primary font-bold">
+              {t("security.eoa_address")}
+            </p>
+            <p className="text-xs font-mono text-dark">{truncateAddress(eoaAddress)}</p>
+          </div>
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 text-dark hover:bg-terciary"
-            onClick={onToggleShow}
-            title={showKey ? t("security.hide_key") : t("security.show_key")}
-          >
-            {showKey ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 text-dark hover:bg-terciary"
-            onClick={onCopy}
+            className="h-6 w-6 text-dark hover:bg-terciary"
+            onClick={() => handleCopyAddress(eoaAddress)}
             title={t("copy")}
           >
-            {copied ? (
-              <Check className="h-4 w-4 text-secondary" />
-            ) : (
-              <Copy className="h-4 w-4" />
-            )}
+            <Copy className="h-3 w-3" />
+          </Button>
+        </div>
+
+        {/* Smart Wallet Address */}
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <p className="text-xs font-secondary text-primary font-bold">
+              {t("security.smart_wallet_address")}
+            </p>
+            <p className="text-xs font-mono text-dark">{truncateAddress(swAddress)}</p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-dark hover:bg-terciary"
+            onClick={() => handleCopyAddress(swAddress)}
+            title={t("copy")}
+          >
+            <Copy className="h-3 w-3" />
           </Button>
         </div>
       </div>
+
+      {/* Explanation */}
+      <Alert className="bg-primary/10 border-primary/20">
+        <AlertDescription className="text-xs font-secondary text-dark">
+          {t("security.addresses_explanation")}
+        </AlertDescription>
+      </Alert>
 
       <Alert className="bg-primary/10 border-primary/20">
         <AlertDescription className="text-xs font-secondary text-dark">
