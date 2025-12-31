@@ -169,6 +169,9 @@ i18n.use(initReactI18next).init({
         login: "Login",
         register: "Register",
         forgot_password: "Forgot password?",
+        password_reset_sent: "Password reset email sent",
+        password_reset_sent_description: "Check your inbox and follow the instructions to reset your password.",
+        password_reset_failed: "Failed to send password reset email",
         login_failed: "Login failed. Please check your credentials.",
         unexpected_error_occurred:
           "An unexpected error occurred. Please try again.",
@@ -572,6 +575,9 @@ i18n.use(initReactI18next).init({
         login: "Ingresar",
         register: "Registrarme",
         forgot_password: "¿Olvidaste tu contraseña?",
+        password_reset_sent: "Email de recuperación enviado",
+        password_reset_sent_description: "Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.",
+        password_reset_failed: "Error al enviar el email de recuperación",
         login_failed:
           "Inicio de sesión fallido. Por favor, verifica tus credenciales.",
         unexpected_error_occurred:

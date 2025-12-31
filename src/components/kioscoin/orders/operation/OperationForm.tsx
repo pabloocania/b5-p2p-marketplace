@@ -119,6 +119,7 @@ export default function OperationForm({
         title: t("request_failed"),
         description: e?.message ?? t("unexpected_error"),
         variant: "destructive",
+        className: "font-secondary",
       });
     } finally {
       setIsSubmitting(false);

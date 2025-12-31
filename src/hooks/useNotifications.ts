@@ -132,7 +132,7 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
                     compact: true,
                     onNavigate: () => toastApi?.dismiss(),
                 }),
-                className: "w-[420px] max-w-[90vw] !bg-backgroundMain border-primary/20",
+                className: "w-[420px] max-w-[90vw] !bg-backgroundMain border-primary/20 font-secondary",
             });
         } else {
             console.log('[useNotifications] Message is not a NOTIFICATION type:', message.content?.type);
