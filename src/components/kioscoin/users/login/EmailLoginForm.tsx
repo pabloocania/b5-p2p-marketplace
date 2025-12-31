@@ -9,6 +9,7 @@ import {
   useWeb3AuthConnect,
   useWeb3AuthDisconnect,
 } from "@web3auth/modal/react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface EmailLoginFormProps {
   readonly onLogin: (user: KioscoinUser, userData: UserData) => void;
@@ -24,6 +25,7 @@ export const EmailLoginForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
+  const { toast } = useToast();
   const { loading: connectLoading } = useWeb3AuthConnect();
   const {
     disconnect,
@@ -62,10 +64,18 @@ export const EmailLoginForm = ({
     setIsLoading(true);
 
     try {
-      await firebaseService.sendPasswordResetEmail(email);
-      setError("Password reset email sent. Please check your inbox.");
+      const success = await firebaseService.sendPasswordResetEmail(email);
+      if (success) {
+        toast({
+          title: t("password_reset_sent"),
+          description: t("password_reset_sent_description"),
+          className: "font-secondary",
+        });
+      } else {
+        setError(t("password_reset_failed"));
+      }
     } catch (err: any) {
-      setError(err.message || "Failed to send password reset email");
+      setError(t("password_reset_failed"));
     } finally {
       setIsLoading(false);
     }
