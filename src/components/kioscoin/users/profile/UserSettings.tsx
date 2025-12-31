@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import PushNotificationsToggle from "@/components/kioscoin/notifications/PushNotificationsToggle";
 import PaymentMethodsComponent from "../../orders/create-orders/PaymentMethodsComponent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ExportPrivateKey } from "@/components/kioscoin/security";
 
 interface UserSettingsProps {
   readonly className?: string;
@@ -27,6 +28,7 @@ export default function UserSettings({ className }: UserSettingsProps) {
   const { toast } = useToast();
   const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState("payments");
   const { t } = useTranslation();
 
   const availableMethods = useMemo(
@@ -102,8 +104,8 @@ export default function UserSettings({ className }: UserSettingsProps) {
           </p>
         </div>
 
-        <Tabs defaultValue="payments" className="w-full">
-          <TabsList className="grid grid-cols-2 mb-3 bg-secondary/10">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid grid-cols-3 mb-3 bg-secondary/10">
             <TabsTrigger
               value="payments"
               className="text-dark text-xs font-secondary"
@@ -112,9 +114,15 @@ export default function UserSettings({ className }: UserSettingsProps) {
             </TabsTrigger>
             <TabsTrigger
               value="notifications"
-              className="text-dark font-secondary"
+              className="text-dark text-xs font-secondary"
             >
               {t("notifications")}
+            </TabsTrigger>
+            <TabsTrigger
+              value="security"
+              className="text-dark text-xs font-secondary"
+            >
+              {t("security.tab_title")}
             </TabsTrigger>
           </TabsList>
 
@@ -134,20 +142,32 @@ export default function UserSettings({ className }: UserSettingsProps) {
               ></PushNotificationsToggle>
             </div>
           </TabsContent>
+
+          <TabsContent value="security" className="space-y-4">
+            <p className="text-xs text-center font-secondary text-dark">
+              {t("security.backup_description")}
+            </p>
+            <p className="text-xs text-center font-secondary text-dark font-bold">
+              {t("security.key_never_ask")}
+            </p>
+            <ExportPrivateKey />
+          </TabsContent>
         </Tabs>
 
-        <div className="flex w-full">
-          <Button
-            className="flex items-center w-full font-secondary font-bold border-secondary text-secondary text-sm sm:text-base py-2 px-2 hover:text-white hover:bg-secondary"
-            onClick={() => {
-              handleSave().catch(() => {});
-            }}
-            disabled={!isValid || isSaving}
-            variant="outline"
-          >
-            {isSaving ? t("saving") : t("save")}
-          </Button>
-        </div>
+        {activeTab === "payments" && (
+          <div className="flex w-full">
+            <Button
+              className="font-secondary w-full items-center gap-2 text-xs border-primary text-dark hover:bg-terciary"
+              onClick={() => {
+                handleSave().catch(() => {});
+              }}
+              disabled={!isValid || isSaving}
+              variant="outline"
+            >
+              {isSaving ? t("saving") : t("save")}
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
