@@ -81,6 +81,8 @@ export const UserProfile = ({
   // Handlers para UserBalance
   const handleTokenChange = (token: string) => {
     setSelectedToken(token);
+    // Mark as initialized so auto-selection doesn't override user's manual choice
+    hasInitializedToken.current = true;
   };
 
   const handleBlockchainChange = async (blockchain: string) => {
@@ -173,10 +175,10 @@ export const UserProfile = ({
     }
   }, [web3AuthConnected]);
 
-  // Auto-select token with positive balance when balances change
-  // This ensures we show the token with funds, not an empty one
+  // Auto-select token with positive balance only on initial load
+  // Once user manually selects a token, respect their choice even if balance is zero
   useEffect(() => {
-    if (isReady && balances && balances.length > 0) {
+    if (isReady && balances && balances.length > 0 && !hasInitializedToken.current) {
       // Check if current selected token has balance
       const currentTokenBalance = balances.find(
         (b) => b.name === selectedToken
@@ -185,15 +187,17 @@ export const UserProfile = ({
         currentTokenBalance &&
         parseFloat(currentTokenBalance.smartWalletBalance || "0") > 0;
 
-      // If current token has no balance, find one that does
+      // If current token has no balance, find one that does (only on initial load)
       if (!currentHasBalance) {
         const tokenWithBalance = findTokenWithPositiveBalance(balances);
-        if (tokenWithBalance && tokenWithBalance !== selectedToken) {
+        if (tokenWithBalance) {
           setSelectedToken(tokenWithBalance);
         }
       }
+      hasInitializedToken.current = true;
     }
-  }, [isReady, balances, selectedToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady, balances]); // selectedToken intentionally omitted - we only want to run when balances change
 
   // Reset token initialization when blockchain changes
   useEffect(() => {
