@@ -134,6 +134,11 @@ i18n.use(initReactI18next).init({
         select_blockchain: "Select a blockchain",
         write_message: "Write message",
         amount_to_deposit: "Total amount",
+        available_balance: "Available balance",
+        insufficient_balance_with_fee:
+          "Insufficient balance. You need {{required}} {{token}} (amount + fee).",
+        available_balance_error: "Available: {{available}} {{token}}",
+        token_balance_not_found: "Token balance not found",
         sending: "Sending transaction to the blockchain...",
         sending_tx_blockchain:
           "Your transaction is being sent to the blockchain. Wait for its confirmation",
@@ -545,6 +550,11 @@ i18n.use(initReactI18next).init({
         select_blockchain: "Selecciona la blockchain",
         write_message: "Escribe un mensaje",
         amount_to_deposit: "Total a depositar",
+        available_balance: "Balance disponible",
+        insufficient_balance_with_fee:
+          "Balance insuficiente. Necesitas {{required}} {{token}} (monto + fee).",
+        available_balance_error: "Disponible: {{available}} {{token}}",
+        token_balance_not_found: "Balance del token no encontrado",
         sending: "Enviando transacción",
         sending_tx_blockchain:
           "Tu transacción está siendo enviada a la blockchain. Espera su confirmación",

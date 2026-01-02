@@ -1,25 +1,14 @@
 import React, { useState, useEffect } from "react";
 
 import { ConfigStore } from "@/lib/ConfigStore";
-import { useTranslation } from "react-i18next";
 import { StablecoinConfig } from "@/components/web3/types";
 import { CryptoAmountIcon } from "@/components/kioscoin/CryptoIcon";
-import { GetOrdersParams as OriginalGetOrdersParams } from "b5-api-client";
-
-interface Blockchain {
-  name: string;
-  supportedCoins: string[];
-}
 
 interface TokenSelectorProps {
   onTokenChange: (token: string) => void;
   onBlockchainChange: (blockchain: string) => void;
   preSelectedToken?: string;
   preSelectedBlockchain?: string;
-}
-
-interface GetOrdersParams extends OriginalGetOrdersParams {
-  orderType?: string[];
 }
 
 export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
@@ -32,12 +21,6 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
     const [stablecoinConfig, setStablecoinConfig] = useState<
       StablecoinConfig | undefined
     >(undefined);
-    const [selectedToken, setSelectedToken] = useState<string>(
-      preSelectedToken || ""
-    );
-    const [selectedBlockchain, setSelectedBlockchain] = useState<string>(
-      preSelectedBlockchain || ""
-    );
 
     useEffect(() => {
       const backendStablecoinsConfig =
@@ -46,17 +29,6 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
         setStablecoinConfig(backendStablecoinsConfig);
       }
     }, []);
-
-    useEffect(() => {
-      if (preSelectedToken) {
-        setSelectedToken(preSelectedToken);
-        onTokenChange(preSelectedToken);
-      }
-      if (preSelectedBlockchain) {
-        setSelectedBlockchain(preSelectedBlockchain);
-        onBlockchainChange(preSelectedBlockchain);
-      }
-    }, [preSelectedToken, preSelectedBlockchain]);
 
     const getUniqueTokenNames = (
       stablecoinConfig: StablecoinConfig
@@ -81,9 +53,8 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
     const handleTokenChange = (e: React.MouseEvent, value: string) => {
       e.stopPropagation();
       e.preventDefault();
-      setSelectedToken(value);
-      setSelectedBlockchain("");
       onTokenChange(value);
+      onBlockchainChange("");
     };
 
     return (
@@ -96,7 +67,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = React.memo(
               onClick={(e) => handleTokenChange(e, token)}
               className={`rounded-md gap-2 p-2 border min-w-12 h-10 flex items-center transition
                   ${
-                    selectedToken === token
+                    preSelectedToken === token
                       ? "bg-primary/10 border-primary"
                       : "border-primary/50"
                   }`}
