@@ -11,6 +11,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { p2pMarketAPIClient as client } from "../../../../lib/APIClients";
 import { useKioscoinUserContext } from "../../users/KioscoinUserContext";
 import { useTranslation } from "react-i18next";
@@ -21,7 +23,11 @@ import { ExchangeRatesService } from "@/components/web3/ExchangeRatesService";
 import { ScrollableContainer } from "../../ScrollabelContainer";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import UserMenuNew from "../../users/UserMenuNew";
-import { ConfigStore } from "@/lib/ConfigStore";
+import {
+  ConfigStore,
+  BlockchainName,
+  getBlockchainDisplayName,
+} from "@/lib/ConfigStore";
 import PaymentMethodsComponent from "./PaymentMethodsComponent";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import FiatSendReceiveMethodSelector from "../FiatReceiveMethodSelector";
@@ -52,7 +58,13 @@ export default function CreateOrder({
     preFilledData?.amount ? parseFloat(preFilledData.amount) : 0
   );
   const [tokenCode, setTokenCode] = useState(preFilledData?.tokenCode || "");
-  const { swAddress, balances } = useEtherspotSdk();
+  const {
+    swAddress,
+    balances,
+    switchToChain,
+    currentChainId,
+    isLoading: isEtherspotLoading,
+  } = useEtherspotSdk();
   const [walletAddress, setWalletAddress] = useState(swAddress || "");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const [blockchain, setBlockchain] = useState(preFilledData?.blockchain || "");
@@ -93,6 +105,21 @@ export default function CreateOrder({
       setBlockchain("");
     }
   }, [availableBlockchains, preFilledData?.blockchain]);
+
+  // Check if user is on wrong chain for the selected blockchain
+  const selectedChainId = useMemo(() => {
+    if (!blockchain) return 0;
+    return ConfigStore.getInstance().getChainIdFromBlockchain(blockchain);
+  }, [blockchain]);
+
+  const isWrongChain = useMemo(() => {
+    return (
+      blockchain &&
+      selectedChainId !== 0 &&
+      currentChainId !== 0 &&
+      currentChainId !== selectedChainId
+    );
+  }, [blockchain, selectedChainId, currentChainId]);
 
   useEffect(() => {
     const fetchRate = async () => {
@@ -141,10 +168,7 @@ export default function CreateOrder({
   };
 
   // Calculate total required including 1% fee for SELL orders
-  const calculateTotalRequired = (
-    amount: number,
-    decimals: number
-  ): bigint => {
+  const calculateTotalRequired = (amount: number, decimals: number): bigint => {
     if (amount <= 0) return BigInt(0);
     const amountStr = amount.toFixed(decimals);
     const amountBigInt = parseAmountToBigInt(amountStr, decimals);
@@ -159,6 +183,11 @@ export default function CreateOrder({
       return { isValid: true, error: null, availableBalanceText: null };
     }
 
+    // If on wrong chain, don't show balance error - user will see switch network button
+    if (isWrongChain) {
+      return { isValid: false, error: null, availableBalanceText: null };
+    }
+
     const tokenBalance = balances.find(
       (b) => b.name.toUpperCase() === tokenCode.toUpperCase()
     );
@@ -171,9 +200,8 @@ export default function CreateOrder({
       };
     }
 
-    const decimals = ConfigStore.getInstance().getTokenDecimalsByTokenCode(
-      tokenCode
-    );
+    const decimals =
+      ConfigStore.getInstance().getTokenDecimalsByTokenCode(tokenCode);
     const totalRequired = calculateTotalRequired(tokenAmount, decimals);
     const availableBalance = BigInt(tokenBalance.smartWalletBalance || "0");
 
@@ -205,7 +233,15 @@ export default function CreateOrder({
       error: null,
       availableBalanceText: null,
     };
-  }, [orderType, tokenCode, blockchain, tokenAmount, balances, t]);
+  }, [
+    orderType,
+    tokenCode,
+    blockchain,
+    tokenAmount,
+    balances,
+    isWrongChain,
+    t,
+  ]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -332,6 +368,28 @@ export default function CreateOrder({
                       availableBlockchains={availableBlockchains}
                       onBlockchainChange={setBlockchain}
                     />
+                    {isWrongChain && (
+                      <>
+                        <h3 className="text-dark text-xs">
+                          {t("please_switch_to_network", {
+                            network: getBlockchainDisplayName(
+                              blockchain as BlockchainName
+                            ),
+                          })}
+                        </h3>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="font-secondary w-full items-center gap-2 text-xs border-primary text-dark hover:bg-terciary hover:text-primary"
+                          onClick={() => switchToChain(selectedChainId)}
+                          disabled={isEtherspotLoading}
+                        >
+                          {isEtherspotLoading
+                            ? t("loading_status")
+                            : t("switch_network")}
+                        </Button>
+                      </>
+                    )}
                   </>
                 )}
               </CardContent>

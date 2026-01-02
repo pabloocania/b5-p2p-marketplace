@@ -81,7 +81,7 @@ i18n.use(initReactI18next).init({
         connect_wallet: "Connect your wallet",
         wrong_network: "Wrong network",
         please_switch_to_network:
-          "Please switch to {{network}} network to release funds",
+          "Please switch to {{network}} network to continue",
         switch_network: "Switch Network",
         transfer: "Transfer",
         transfer_amount: "Transfer Amount",
@@ -502,7 +502,7 @@ i18n.use(initReactI18next).init({
         connect_wallet: "Conecta tu wallet",
         wrong_network: "Red incorrecta",
         please_switch_to_network:
-          "Por favor, cambia a la red {{network}} para liberar los fondos",
+          "Por favor, cambia a la red {{network}} para continuar",
         switch_network: "Cambiar de red",
         transfer: "Transferir",
         transfer_amount: "Cantidad a transferir",
