@@ -19,6 +19,8 @@ const EVENT_TYPE_TO_SUBTITLE_KEY = {
   RELEASED: "notification_event_released",
   FIAT_SENT: "notification_event_fiat_sent",
   REFUNDED: "notification_event_refunded",
+  CANCELED: "notification_event_canceled",
+  DISPUTED: "notification_event_disputed",
 } as const;
 
 export interface NotificationCardProps {
@@ -98,7 +100,11 @@ export function NotificationCard({
   }, [eventType, isEvent, t]);
 
   const targetFilter = useMemo(() => {
-    if (eventType === "RELEASED" || eventType === "REFUNDED") {
+    if (
+      eventType === "RELEASED" ||
+      eventType === "REFUNDED" ||
+      eventType === "CANCELED"
+    ) {
       return Filter.CLOSED;
     }
     return Filter.WAITING_PAYMENT;

@@ -66,43 +66,6 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
           return;
         }
 
-        // // Fetch rates for each offer
-        // const offersWithRates = await Promise.all(
-        //   response.offers.map(async (offer) => {
-        //     try {
-        //       const rate = await ExchangeRatesService.fetchRateWithRetry(
-        //         offer.tokenCode,
-        //         offer.fiatCode
-        //       );
-
-        //       if (!rate) {
-        //         return null;
-        //       }
-
-        //       const updatedOffer: OrderOffer = {
-        //         ...offer,
-        //         fiatAmount: rate.toString(),
-        //       };
-
-        //       return updatedOffer;
-        //     } catch (error) {
-        //       console.error(
-        //         `Failed to fetch rate for ${offer.tokenCode}:`,
-        //         error
-        //       );
-        //       return {
-        //         ...offer,
-        //         fiatAmount: "1",
-        //       };
-        //     }
-        //   })
-        // );
-
-        // Filter out offers with no valid rates
-        // const validOffers = response?.offers.filter(
-        //   (offer): offer is OrderOffer => offer !== null
-        // );
-
         if (response?.offers.length === 0) {
           console.log("No valid offers after rate fetching");
           setShouldRender(false);
@@ -142,7 +105,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
   }
 
   return (
-    <div className="relative w-full border border-secondary/20 px-4 py-2 rounded-xl bg-white shadow-lg mb-4 mt-2">
+    <div className="relative w-full px-3 py-2 rounded-xl bg-white shadow-lg mb-4 mt-2">
       <Carousel
         opts={{
           align: "start",
@@ -155,21 +118,21 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
           {validOffers.map((offer, idx) => (
             <CarouselItem key={offer.id} className="flex-shrink-0 flex-grow-0">
               <Card
-                className="h-full bg-secondary/10 shadow rounded-lg border-0 cursor-pointer text-white transition-transform hover:scale-[1.01] flex flex-col justify-between min-h-[80px] sm:min-h-[90px] md:min-h-[100px] border border-secondary/10"
+                className="h-full cursor-pointer border border-transparent bg-secondary/10"
                 onClick={() => handleCardClick(offer)}
               >
                 <div className="flex-1 p-2 flex flex-col">
                   {/* Header with crypto icon and amount */}
-                  <div className="flex flex space-x-1 items-baseline font-bold">
-                    <span className="text-base text-primary text-lg">
-                      {offer.type === "BUY" ? t("buy") : t("sell")}
+                  <div className="flex flex space-x-1 items-baseline font-bold mb-2">
+                    <span className="text-base text-dark text-md">
+                      {offer.type === "BUY" ? t("quick_buy") : t("quick_sell")}
                     </span>
                     <span className="flex">
                       <CryptoAmountIcon
                         tokenCode={offer.tokenCode}
                         formattedAmount={offer.tokenAmount}
                         showAmount={true}
-                        textSizeClass="text-dark font-bold text-lg"
+                        textSizeClass="text-primary font-bold text-lg"
                       />
                     </span>
                   </div>
@@ -189,7 +152,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                       </div>
                       <div className="text-sm text-primary mt-1 mb-1">
                         {t("on")}{" "}
-                        <span className="font-bold text-sm text-dark">
+                        <span className="font-secondary text-sm text-dark">
                           {getBlockchainDisplayName(offer.blockchain)}
                         </span>
                       </div>
@@ -204,7 +167,7 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
                   </div>
                 </div>
                 <CardFooter className="p-0">
-                  <Button className="w-full bg-secondary text-white font-secondary rounded-b-lg rounded-t-none py-0.5">
+                  <Button className="w-full bg-secondary text-white font-secondary rounded-b-md rounded-t-none">
                     {offer.type === "BUY" ? t("buy") : t("sell")}{" "}
                     {offer.tokenCode} {t("instantly")}
                   </Button>
@@ -214,10 +177,10 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
           ))}
         </CarouselContent>
         {currentIndex > 0 && (
-          <CarouselPrevious className="pointer-events-auto absolute left-0 -ml-4 top-1/2 -translate-y-1/2 z-20 text-primary bg-secondary/80 text-white" />
+          <CarouselPrevious className="pointer-events-auto absolute left-0 -ml-6 top-1/2 -translate-y-1/2 z-20 text-primary bg-secondary/80 text-white" />
         )}
         {currentIndex < validOffers.length - 1 && (
-          <CarouselNext className="pointer-events-auto absolute right-0 -mr-4 top-1/2 -translate-y-1/2 z-20 text-primary bg-secondary/80 text-white" />
+          <CarouselNext className="pointer-events-auto absolute right-0 -mr-6 top-1/2 -translate-y-1/2 z-20 text-primary bg-secondary/80 text-white" />
         )}
       </Carousel>
     </div>

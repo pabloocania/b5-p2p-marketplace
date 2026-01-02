@@ -180,12 +180,19 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
       </div>
       {order.status &&
         finishedStatusesList.includes(order.status) &&
-        (buyerHasNotRated || sellerHasNotRated) && (
+        (buyerHasNotRated || sellerHasNotRated) &&
+        (isBuyer ? order.sellerId : order.buyerId) && (
           <Rating
             orderId={order.id!!}
             ratedId={isBuyer ? order.sellerId! : order.buyerId!}
             ratedUsername={
-              isBuyer ? "@" + order.sellerUsername! : "@" + order.buyerUsername!
+              isBuyer
+                ? order.sellerUsername
+                  ? "@" + order.sellerUsername
+                  : ""
+                : order.buyerUsername
+                ? "@" + order.buyerUsername
+                : ""
             }
           />
         )}

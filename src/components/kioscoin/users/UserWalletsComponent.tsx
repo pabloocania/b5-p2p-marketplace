@@ -221,7 +221,7 @@ export default function UserWalletsComponent({
 
   return (
     <>
-      <div className="flex flex-col items-center w-full rounded-lg bg-white space-y-2 shadow-md border border-secondary/20 p-4">
+      <div className="flex flex-col items-center w-full rounded-lg bg-white space-y-2 shadow-md border border-secondary/20 p-3">
         <div className="w-full">
           {swAddress && (
             <div>

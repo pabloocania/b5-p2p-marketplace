@@ -204,6 +204,17 @@ export default function OrdersFeed({
     initializeFilterConstants();
   }, []);
 
+  // Check if any filters are active
+  const hasActiveFilters =
+    filterState.orderType.length > 0 ||
+    filterState.blockchain.length > 0 ||
+    filterState.tokenCode.length > 0 ||
+    filterState.paymentMethods.length > 0 ||
+    filterState.fiatCode.length > 0 ||
+    filterState.fiatAmountRange.min !== undefined ||
+    filterState.fiatAmountRange.max !== undefined ||
+    filterState.search.length > 0;
+
   // Define default filter groups if none are provided
   const defaultFilterGroups: FilterGroupConfig[] = [
     // { type: FilterGroupType.SEARCH },
@@ -405,14 +416,16 @@ export default function OrdersFeed({
               </>
             ) : (
               <>
-                {/* FilterBar always visible when no order is selected */}
-                <div className="mb-2">
-                  <FilterBar
-                    filters={filterState}
-                    setFilters={setFilterState}
-                    filterGroups={filterGroups || defaultFilterGroups}
-                  />
-                </div>
+                {/* FilterBar visible when orders exist OR filters are active */}
+                {((orders && orders.length > 0) || hasActiveFilters) && (
+                  <div className="mb-2">
+                    <FilterBar
+                      filters={filterState}
+                      setFilters={setFilterState}
+                      filterGroups={filterGroups || defaultFilterGroups}
+                    />
+                  </div>
+                )}
 
                 {orders && orders.length > 0 ? (
                   <div className="space-y-4 p-4 bg-white rounded-lg border border-none shadow-primary/20">
@@ -439,8 +452,8 @@ export default function OrdersFeed({
                           if (!open) handleCreateOrderClose();
                         }}
                         trigger={
-                          <Button className="bg-primary text-white font-secondary hover:bg-primary/90 shadow-lg">
-                            <Plus className="h-4 w-4 mr-2" />
+                          <Button className="font-secondary bg-secondary/50 w-full items-center gap-2 text-xs border-secondary shadow-xs text-dark hover:bg-terciary">
+                            <Plus className="h-4 w-4 pr-0.5" />
                             {t("create_order")}
                           </Button>
                         }

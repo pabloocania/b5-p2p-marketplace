@@ -60,6 +60,8 @@ export default function OrderHistory({ orderId }: OrderHistoryProps) {
                 {event.eventType === "LOCKED" && "🔒"}
                 {event.eventType === "FIAT_SENT" && "💸"}
                 {event.eventType === "RELEASED" && "✅"}
+                {event.eventType === "CANCELED" && "❌"}
+                {event.eventType === "DISPUTED" && "⚠️"}
               </div>
               <span className="font-secondary text-dark/80">
                 {event.eventType === "TAKEN" && (
@@ -88,6 +90,20 @@ export default function OrderHistory({ orderId }: OrderHistoryProps) {
                     {t("order_released").split(" ")[0]}
                     <br />
                     {t("order_released").split(" ")[1]}
+                  </>
+                )}
+                {event.eventType === "CANCELED" && (
+                  <>
+                    {t("order_canceled").split(" ")[0]}
+                    <br />
+                    {t("order_canceled").split(" ")[1]}
+                  </>
+                )}
+                {event.eventType === "DISPUTED" && (
+                  <>
+                    {t("order_disputed").split(" ")[0]}
+                    <br />
+                    {t("order_disputed").split(" ")[1]}
                   </>
                 )}
               </span>

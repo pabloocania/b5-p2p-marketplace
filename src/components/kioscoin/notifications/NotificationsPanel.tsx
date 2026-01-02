@@ -62,7 +62,7 @@ export function NotificationsPanel({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 p-4">
           <h2 className="text-lg font-semibold text-primary">
-            {t("notifications") || "Notifications"}
+            {t("activity") || "Activity"}
           </h2>
           <Button
             variant="ghost"

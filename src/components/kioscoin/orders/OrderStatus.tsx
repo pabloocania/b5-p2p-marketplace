@@ -19,7 +19,7 @@ const STYLES = {
   completed: "bg-primary/80 text-white",
   current: "bg-lightYellow text-dark",
   pending: "bg-secondary/20 text-gray-500",
-  cancelled: "bg-error text-white",
+  cancelled: "bg-secondary/20 text-gray-500 ",
 } as const;
 
 interface StageProps {
@@ -63,7 +63,7 @@ const Stage: React.FC<StageProps> = ({
 
 const OrderStatusBar: React.FC<OrderStatusProps> = ({ status }) => {
   const currentStage = STATUS_TO_STAGE[status] ?? 0;
-  const isCancelled = status === "CANCELLED";
+  const isCancelled = status === "CANCELED";
 
   return (
     <div className="flex w-full h-4 overflow-hidden rounded-t-lg shadow-sm font-secondary text-xs text-dark">
