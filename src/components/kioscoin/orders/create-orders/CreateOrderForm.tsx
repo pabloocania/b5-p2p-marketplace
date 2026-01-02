@@ -25,6 +25,7 @@ import { ConfigStore } from "@/lib/ConfigStore";
 import PaymentMethodsComponent from "./PaymentMethodsComponent";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import FiatSendReceiveMethodSelector from "../FiatReceiveMethodSelector";
+import { cn, formatTokenAmount, parseAmountToBigInt } from "@/lib/utils";
 
 export default function CreateOrder({
   onClose,
@@ -51,7 +52,7 @@ export default function CreateOrder({
     preFilledData?.amount ? parseFloat(preFilledData.amount) : 0
   );
   const [tokenCode, setTokenCode] = useState(preFilledData?.tokenCode || "");
-  const { swAddress } = useEtherspotSdk();
+  const { swAddress, balances } = useEtherspotSdk();
   const [walletAddress, setWalletAddress] = useState(swAddress || "");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const [blockchain, setBlockchain] = useState(preFilledData?.blockchain || "");
@@ -139,6 +140,73 @@ export default function CreateOrder({
     return Math.round(tokenAmount * customRate * 100) / 100;
   };
 
+  // Calculate total required including 1% fee for SELL orders
+  const calculateTotalRequired = (
+    amount: number,
+    decimals: number
+  ): bigint => {
+    if (amount <= 0) return BigInt(0);
+    const amountStr = amount.toFixed(decimals);
+    const amountBigInt = parseAmountToBigInt(amountStr, decimals);
+    const feeBigInt = amountBigInt / BigInt(100); // 1% fee
+    return amountBigInt + feeBigInt;
+  };
+
+  // Validate balance for SELL orders (must have amount + 1% fee)
+  const balanceValidation = useMemo(() => {
+    // Only validate for SELL orders
+    if (orderType !== "SELL" || !tokenCode || !blockchain || tokenAmount <= 0) {
+      return { isValid: true, error: null, availableBalanceText: null };
+    }
+
+    const tokenBalance = balances.find(
+      (b) => b.name.toUpperCase() === tokenCode.toUpperCase()
+    );
+
+    if (!tokenBalance) {
+      return {
+        isValid: false,
+        error: t("token_balance_not_found") || "Token balance not found",
+        availableBalanceText: null,
+      };
+    }
+
+    const decimals = ConfigStore.getInstance().getTokenDecimalsByTokenCode(
+      tokenCode
+    );
+    const totalRequired = calculateTotalRequired(tokenAmount, decimals);
+    const availableBalance = BigInt(tokenBalance.smartWalletBalance || "0");
+
+    if (availableBalance < totalRequired) {
+      const requiredFormatted = formatTokenAmount(
+        totalRequired.toString(),
+        decimals
+      );
+      const availableFormatted = formatTokenAmount(
+        availableBalance.toString(),
+        decimals
+      );
+
+      return {
+        isValid: false,
+        error: t("insufficient_balance_with_fee", {
+          required: requiredFormatted,
+          token: tokenCode,
+        }),
+        availableBalanceText: t("available_balance_error", {
+          available: availableFormatted,
+          token: tokenCode,
+        }),
+      };
+    }
+
+    return {
+      isValid: true,
+      error: null,
+      availableBalanceText: null,
+    };
+  }, [orderType, tokenCode, blockchain, tokenAmount, balances, t]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { secret: secretSeller } = generateSecretAndHash();
@@ -183,6 +251,7 @@ export default function CreateOrder({
     blockchain &&
     tokenCode &&
     customRate !== null &&
+    balanceValidation.isValid &&
     (orderType === "SELL" || walletAddress);
 
   return (
@@ -217,8 +286,26 @@ export default function CreateOrder({
                     onChange={(e) =>
                       setTokenAmount(parseFloat(e.target.value) || 0)
                     }
-                    className="focus:ring-primary focus:border-primary font-secondary border border-primary/50 [&::placeholder]:font-secondary [&::placeholder]:text-xs"
+                    className={cn(
+                      "focus:ring-primary focus:border-primary font-secondary border [&::placeholder]:font-secondary [&::placeholder]:text-xs",
+                      orderType === "SELL" && balanceValidation.error
+                        ? "border-red-500"
+                        : "border-primary/50"
+                    )}
                   />
+                  {/* Balance error message for SELL orders */}
+                  {orderType === "SELL" && balanceValidation.error && (
+                    <div className="space-y-1 mt-1">
+                      <span className="text-xs text-primary font-secondary block">
+                        {balanceValidation.error}
+                      </span>
+                      {balanceValidation.availableBalanceText && (
+                        <span className="text-xs text-primary font-secondary block">
+                          {balanceValidation.availableBalanceText}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
