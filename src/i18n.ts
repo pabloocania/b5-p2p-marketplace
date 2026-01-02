@@ -438,7 +438,7 @@ i18n.use(initReactI18next).init({
         chat: "Chat",
         chat_unavailable: "Chat no disponible",
         order_details: "Detalles de Orden",
-        login_to_view: "Loguéate para continuar",
+        login_to_view: "Loguéate para ver tus órdenes",
         buys: "Compra",
         sells: "Vende",
         buy: "Comprar",
@@ -452,7 +452,7 @@ i18n.use(initReactI18next).init({
         waiting_release: "Esperando vendedor",
         completed: "Operación completa",
         canceled: "Cancelada",
-        no_orders_available: "No hay órdenes en el mercado",
+        no_orders_available: "No hay órdenes disponibles",
         buyer: "Comprador",
         seller: "Vendedor",
         take_order_information:

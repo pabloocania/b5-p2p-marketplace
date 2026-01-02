@@ -440,7 +440,7 @@ export default function OrdersFeed({
                     ))}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full space-y-4 py-4">
+                  <div className="flex flex-col items-center justify-center h-full space-y-4 pt-2">
                     <div className="text-dark font-bold font-secondary text-center">
                       {t("no_orders_available")}
                     </div>
@@ -472,7 +472,7 @@ export default function OrdersFeed({
                       <>
                         <Button
                           onClick={() => setIsLoginSheetOpen(true)}
-                          className="bg-primary text-white font-secondary hover:bg-primary/90 shadow-lg w-full"
+                          className="font-secondary bg-secondary/50 w-full items-center gap-2 text-xs border-secondary shadow-xs text-dark hover:bg-terciary"
                         >
                           {t("login_to_start")}
                         </Button>
@@ -493,7 +493,7 @@ export default function OrdersFeed({
           <div className="flex flex-col items-center h-full">
             <Button
               onClick={() => setIsLoginSheetOpen(true)}
-              className="w-full bg-primary text-white font-secondary"
+              className="font-secondary bg-secondary/50 w-full items-center gap-2 text-xs border-secondary shadow-xs text-dark hover:bg-terciary"
             >
               {t("login_to_view")}
             </Button>

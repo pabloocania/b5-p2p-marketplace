@@ -175,7 +175,9 @@ export function OrderCard({
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>{t("no_orders_available")}</CardTitle>
+          <CardTitle className="text-dark font-secondary text-center">
+            {t("no_orders_available")}
+          </CardTitle>
         </CardHeader>
       </Card>
     );

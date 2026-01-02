@@ -51,7 +51,7 @@ export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
   ];
 
   return (
-    <div className="border-t border-t-primary/50 py-2 px-1 fixed bottom-0 bg-dark z-50 w-full shadow-top shadow-md pb-[env(safe-area-inset-bottom)] transform-gpu">
+    <div className="border-t border-t-primary/50 py-4 px-1 fixed bottom-0 bg-dark z-50 w-full shadow-top shadow-md transform-gpu">
       <div className="flex h-18 items-center justify-between px-6 max-w-md mx-auto touch-manipulation">
         {navItems.map((item) => (
           <button
@@ -59,8 +59,8 @@ export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
             onClick={() => setActiveComponent(item.id)}
             className={getButtonClasses(item.active)}
           >
-            <item.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-            <span className="text-xs mt-0.5 font-medium text-secondary font-secondary">
+            <item.icon className="h-5 w-5 sm:h-5 sm:w-5 text-white" />
+            <span className="text-xs mt-1 font-medium text-secondary font-secondary">
               {item.label}
             </span>
           </button>
