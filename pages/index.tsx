@@ -118,20 +118,7 @@ function HomeContent() {
       <TopBar activeComponent={currentView} />
 
       {/* Main scrollable content */}
-      <main
-        className="absolute left-0 right-0 overflow-y-auto z-0"
-        style={{
-          top: "calc(4rem + env(safe-area-inset-top, 0px))",
-          bottom: "calc(4.5rem + env(safe-area-inset-bottom, 0px))",
-        }}
-      >
-        <TransactionStatus
-          status={transaction.status}
-          message={transaction.message}
-          progress={transaction.progress}
-          order={transaction.order}
-          onClose={resetTransaction}
-        />
+      <main className="absolute left-0 right-0 overflow-y-auto z-0 top-[var(--content-top)] bottom-[var(--content-bottom)]">
         <div className="w-full max-w-md mx-auto px-2 flex flex-col pb-4">
           <MainViewRenderer
             refreshKey={refreshKey}
@@ -150,10 +137,7 @@ function HomeContent() {
       />
 
       {/* Floating action buttons - left side */}
-      <div
-        className="fixed left-2 sm:left-4 z-40 flex flex-col gap-2 transform-gpu touch-manipulation"
-        style={{ bottom: "calc(5rem + env(safe-area-inset-bottom, 0px))" }}
-      >
+      <div className="fixed left-2 sm:left-4 z-[55] flex flex-col gap-2 transform-gpu touch-manipulation bottom-[calc(var(--content-bottom)+1rem)]">
         <Button
           size="icon"
           className="rounded-md w-11 h-11 shadow-lg text-white bg-secondary/80 hover:bg-primary/80 hover:text-white touch-manipulation"
@@ -177,10 +161,7 @@ function HomeContent() {
 
       {/* Floating create order button - right side */}
       {user && (
-        <div
-          className="fixed right-2 sm:right-4 z-40"
-          style={{ bottom: "calc(5rem + env(safe-area-inset-bottom, 0px))" }}
-        >
+        <div className="fixed right-2 sm:right-4 z-[55] bottom-[calc(var(--content-bottom)+1rem)]">
           <CreateOrderContainer
             open={isCreateOrderOpen}
             onOpenChange={(open) => {
@@ -211,6 +192,15 @@ function HomeContent() {
           </CreateOrderContainer>
         </div>
       )}
+
+      {/* Transaction status overlay - must be outside main for proper z-index stacking */}
+      <TransactionStatus
+        status={transaction.status}
+        message={transaction.message}
+        progress={transaction.progress}
+        order={transaction.order}
+        onClose={resetTransaction}
+      />
 
       <HelpDialog open={isHelpOpen} onOpenChange={setIsHelpOpen} />
       {showSmartWalletOnboarding && (

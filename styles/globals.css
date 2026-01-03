@@ -55,6 +55,14 @@ a {
 /* Tokens de diseño y variables CSS */
 @layer base {
   :root {
+    /* Layout spacing with safe area support */
+    --header-height: 5rem;
+    --navbar-height: 5rem;
+    --content-top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+    --content-bottom: calc(
+      var(--navbar-height) + env(safe-area-inset-bottom, 0px)
+    );
+
     --background: 0 0% 100%;
     --foreground: 20 14.3% 4.1%;
     --card: 0 0% 100%;

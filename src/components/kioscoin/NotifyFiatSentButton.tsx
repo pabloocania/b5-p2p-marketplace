@@ -52,19 +52,19 @@ const PaymentDestination: React.FC<PaymentDestinationProps> = ({ method }) => {
   };
 
   return (
-    <div className="rounded-md p-2 bg-secondary/10 border border-primary/10">
-      <div className="flex items-center gap-3 mb-1">
-        <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
-          <IconComponent className="w-5 h-5 text-primary" />
+    <div className="rounded-md p-1 bg-secondary/20">
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 rounded-lg flex items-center justify-center">
+          <IconComponent className="w-4 h-4 text-primary" />
         </div>
-        <span className="text-base font-semibold text-primary">
+        <span className="text-primary text-xs">
           {method.entity ?? method.type}
         </span>
       </div>
       {method.alias && (
         <button
           onClick={handleCopy}
-          className="w-full flex items-center justify-between gap-2 bg-white rounded-lg px-3 py-2.5 hover:bg-secondary/80 transition-colors"
+          className="w-full mt-1 flex items-center justify-between gap-2 bg-white rounded-lg px-2 py-1 hover:bg-secondary/80 transition-colors"
         >
           <span className="text-sm font-mono font-medium text-dark truncate">
             {method.alias}
