@@ -60,15 +60,15 @@ export function NotificationsPanel({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 p-4">
-          <h2 className="text-lg font-semibold text-primary">
+        <div className="flex items-center justify-between border-b border-gray-200 p-2">
+          <h2 className="text-md font-semibold text-primary">
             {t("activity") || "Activity"}
           </h2>
           <Button
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="p-0 h-8 w-8"
+            className="p-0 h-8 w-8 hover:text-secondary"
           >
             <X className="h-5 w-5" />
           </Button>

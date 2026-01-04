@@ -126,8 +126,8 @@ export function NotificationCard({
         isRead
           ? "bg-white border border-gray-200"
           : "bg-white border border-secondary"
-      } rounded-xl shadow-sm ${compact ? "p-3" : "p-4"} ${
-        onClick ? "cursor-pointer hover:bg-gray-50" : ""
+      } rounded-xl shadow-sm ${compact ? "p-2" : "p-3"} ${
+        onClick ? "cursor-pointer hover:bg-secondary/10" : ""
       } ${className || ""}`}
       onClick={onClick ? handleCardClick : undefined}
       role={onClick ? "button" : undefined}
@@ -159,11 +159,20 @@ export function NotificationCard({
                 variant="outline"
                 className={
                   compact
-                    ? "h-7 px-2 text-xs w-full border-primary/50 "
-                    : "border-primary/50 w-full bg-secondary/50 text-primary hover:bg-secondary/80"
+                    ? `h-7 px-2 text-xs w-full ${
+                        isRead
+                          ? "border-gray-300 bg-gray-100 text-gray-500 hover:bg-gray-200"
+                          : "border-primary/50"
+                      }`
+                    : `w-full text-xs ${
+                        isRead
+                          ? "border-gray-300 bg-gray-100 text-gray-500 hover:bg-gray-200"
+                          : "bg-secondary/50 border text-dark hover:bg-secondary/80"
+                      }`
                 }
                 onClick={(e) => {
                   e.stopPropagation();
+                  void onClick?.();
                   navigateToOrder();
                 }}
               >
