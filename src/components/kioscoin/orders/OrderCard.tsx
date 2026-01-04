@@ -9,11 +9,11 @@ import OrderCardHeader from "./OrderCardHeader";
 import OrderCardContent from "./OrderCardContent";
 import OrderCardFooter from "./OrderCardFooter";
 import ViewHistoryButton from "./ViewHistoryButton";
-import CopyIdButton from "./CopyIdButton";
 import { ShareOrderButton } from "./ShareOrderButton";
 import DisputeOrderButton from "../dispute/DisputeOrderButton";
 import ChatButton from "./ChatButton";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { CancelOrderButton } from "./CancelOrderButton";
 
 const FINAL_STATUSES = [
   "COMPLETED",
@@ -48,6 +48,7 @@ export function OrderCard({
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
     PaymentMethod[]
   >([]);
+  const [showCopied, setShowCopied] = useState(false);
   const { user } = useKioscoinUserContext();
 
   useEffect(() => {
@@ -95,7 +96,7 @@ export function OrderCard({
     (canBuyerDispute || canSellerDispute) && !alreadyDisputed;
 
   const renderHistoryButton = () =>
-    user ? (
+    user && order?.status !== "PENDING" ? (
       <div className="flex font-secondary w-full shadow-xs">
         <ViewHistoryButton orderId={order?.id} />
       </div>
@@ -103,18 +104,22 @@ export function OrderCard({
 
   const isPending = order?.status === "PENDING";
 
-  const renderShareOrCopyButton = () => {
-    if (!user) return null;
+  const renderShareButton = () => {
+    if (!user || !isPending || !order?.id) return null;
 
     return (
       <div className="flex font-secondary w-full shadow-xs">
-        {isPending && order?.id ? (
-          <ShareOrderButton orderId={order.id} />
-        ) : (
-          <CopyIdButton orderId={order?.id} />
-        )}
+        <ShareOrderButton orderId={order.id} />
       </div>
     );
+  };
+
+  const handleCopyOrderId = async () => {
+    if (order?.id) {
+      await navigator.clipboard.writeText(order.id);
+      setShowCopied(true);
+      setTimeout(() => setShowCopied(false), 2000);
+    }
   };
 
   const handleDisputeCreated = () => {
@@ -133,6 +138,14 @@ export function OrderCard({
     if (onRefresh) onRefresh();
   };
 
+  const handleOrderCancelled = () => {
+    setOrder((prev) => {
+      if (!prev) return prev as any;
+      return { ...prev, status: "CANCELED" };
+    });
+    if (onRefresh) onRefresh();
+  };
+
   const renderDisputeButton = () => (
     <div className="flex font-secondary w-full shadow-xs">
       <DisputeOrderButton
@@ -141,6 +154,15 @@ export function OrderCard({
       />
     </div>
   );
+
+  const renderCancelButton = () => {
+    if (!user || !order) return null;
+
+    // CancelOrderButton internally checks if user can cancel
+    return (
+      <CancelOrderButton order={order} onCancelled={handleOrderCancelled} />
+    );
+  };
 
   const renderChatButton = () =>
     order?.chatId && !isFinalStatus(order.status ?? "") ? (
@@ -153,7 +175,9 @@ export function OrderCard({
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>{t("no_orders_available")}</CardTitle>
+          <CardTitle className="text-dark font-secondary text-center">
+            {t("no_orders_available")}
+          </CardTitle>
         </CardHeader>
       </Card>
     );
@@ -189,26 +213,32 @@ export function OrderCard({
       />
       {/* <Separator className="mb-1" /> */}
       <div className="px-3 py-2 space-y-2">
-        {/* First row: History, Copy ID, Chat */}
-        <div
-          className={`grid ${
-            order?.chatId && !isFinalStatus(order.status ?? "")
-              ? "grid-cols-3"
-              : "grid-cols-2"
-          } gap-2`}
-        >
+        {/* First row: History, Share (if pending) OR Cancel, Chat */}
+        <div className="flex gap-2">
           {renderHistoryButton()}
-          {renderShareOrCopyButton()}
+          {renderShareButton()}
           {renderChatButton()}
+          {renderCancelButton()}
         </div>
         {/* Second row: Dispute button or status */}
         {(canShowDisputeButton || alreadyDisputed) && (
           <div className="grid grid-cols-1 gap-2">{renderDisputeButton()}</div>
         )}
       </div>
-      <p className="text-[10px] font-secondary text-dark pb-1 text-right pr-4">
-        ID: {order.id}
-      </p>
+      <div className="relative pb-1 pr-3">
+        <p
+          className="text-[10px] font-secondary text-dark text-right cursor-pointer hover:text-primary transition-colors"
+          onClick={handleCopyOrderId}
+          title={t("copy_id")}
+        >
+          {order.id}
+        </p>
+        {showCopied && (
+          <div className="absolute right-4 -top-5 bg-secondary text-dark font-secondary text-xs px-1 py-0.5 rounded shadow-lg z-10">
+            {t("copied")}
+          </div>
+        )}
+      </div>
     </Card>
   );
 }

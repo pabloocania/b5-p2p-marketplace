@@ -83,7 +83,7 @@ export default function TokenBalanceCardList({
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="grid grid-cols-1 gap-3">
         {sortedBalances.map((token, index) => {
           const balance = token.smartWalletBalance;
@@ -107,7 +107,7 @@ export default function TokenBalanceCardList({
                   className="cursor-pointer"
                   onClick={() => handleSelectToken(token)}
                 >
-                  <CardContent className="p-2">
+                  <CardContent className="p-1">
                     {/* Wallet badge and transfer button */}
                     <div className="flex justify-between items-center">
                       {/* <Badge

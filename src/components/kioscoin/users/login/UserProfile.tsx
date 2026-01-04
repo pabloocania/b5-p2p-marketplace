@@ -313,7 +313,7 @@ export const UserProfile = ({
             address={swAddress}
           />
         )}
-        <div className="shadow-md border border-secondary/20 rounded-lg">
+        <div className="shadow-md border border-secondary/20 rounded-lg p-1">
           <UserSettings />
         </div>
         {/* 

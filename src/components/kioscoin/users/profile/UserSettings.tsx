@@ -250,7 +250,7 @@ export default function UserSettings({ className }: UserSettingsProps) {
         {activeTab === "payments" && (
           <div className="flex w-full">
             <Button
-              className="font-secondary w-full items-center gap-2 text-xs border-primary text-dark hover:bg-terciary"
+              className="font-secondary w-full items-center gap-2 text-xs border-primary text-dark hover:bg-terciary hover:text-primary"
               onClick={() => {
                 handleSave().catch(() => {});
               }}

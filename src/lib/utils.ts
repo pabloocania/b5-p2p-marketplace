@@ -134,6 +134,10 @@ export const getEventTypeTranslationKey = (eventType: string): string => {
       return "order_taken_event";
     case "REFUNDED":
       return "order_refunded";
+    case "CANCELED":
+      return "order_canceled";
+    case "DISPUTED":
+      return "order_disputed";
     default:
       return eventType; // Return as-is if no translation key exists
   }

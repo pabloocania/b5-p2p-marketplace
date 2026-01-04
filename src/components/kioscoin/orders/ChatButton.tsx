@@ -27,7 +27,7 @@ function isOrderCompleted(status: string): boolean {
     "COMPLETED",
     "COMPLETED_BY_ADMIN",
     "RELEASED",
-    "CANCELLED",
+    "CANCELED",
   ];
   return completedStatuses.includes(status);
 }

@@ -15,6 +15,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
 
   function mapOrderVariant(order: Order): string {
     const baseClass = "text-primary font-secondary bg-primary/10";
+    const errorClass = "text-primary font-secondary bg-error/10";
     switch (order.status) {
       case "PENDING":
         return baseClass;
@@ -30,27 +31,28 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
         return baseClass;
       case "CANCELED":
       case "CANCELED_BY_ADMIN":
-        return baseClass;
+        return errorClass;
       case "DISPUTE":
-        return baseClass;
+        return errorClass;
       default:
         return baseClass;
     }
   }
 
+  const statusMap: { [key: string]: string } = {
+    WAITING_PAYMENT: t("waiting_lock"),
+    ACTIVE: t("awaiting_buyer"),
+    PENDING: t("open"),
+    FIAT_SENT: t("waiting_release"),
+    // Add other status mappings as needed
+    COMPLETED: t("completed"),
+    COMPLETED_BY_ADMIN: t("completed"),
+    RELEASED: t("completed"),
+    CANCELED: t("canceled"),
+    // Add more mappings here
+  };
+
   function mapOrderStatus(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      WAITING_PAYMENT: t("waiting_lock"),
-      ACTIVE: t("awaiting_buyer"),
-      PENDING: t("open"),
-      FIAT_SENT: t("waiting_release"),
-      // Add other status mappings as needed
-      COMPLETED: t("completed"),
-      COMPLETED_BY_ADMIN: t("completed"),
-      RELEASED: t("completed"),
-      CANCELLED: t("canceled"),
-      // Add more mappings here
-    };
     return statusMap[status] ?? "Unknown";
   }
 

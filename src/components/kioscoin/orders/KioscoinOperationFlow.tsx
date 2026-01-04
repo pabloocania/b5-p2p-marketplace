@@ -62,7 +62,7 @@ export default function KioscoinOperationFlow({
         hideCloseButton
         className="px-2"
       >
-        <div className="p-2 mx-auto max-w-md bg-secondary/10 rounded-lg border border-secondary/20 shadow-lg">
+        <div className="p-2 mx-auto max-w-md rounded-lg shadow-lg bg-secondary/10 border border-secondary/20">
           {selectedOffer && (
             <OperationForm
               offer={selectedOffer}

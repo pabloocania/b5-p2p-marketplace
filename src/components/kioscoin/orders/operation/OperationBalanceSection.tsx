@@ -27,7 +27,7 @@ export default function OperationBalanceSection({
   if (!visible) return null;
 
   return (
-    <div className="space-y-1">
+    <div className="">
       <div className="text-xs text-dark font-secondary">
         {t("your_balance")}
       </div>
