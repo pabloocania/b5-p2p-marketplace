@@ -11,7 +11,7 @@ export const LoadingButton = ({
 }: LoadingButtonProps) => (
   <Button
     type="submit"
-    className="w-full text-white bg-primary h-8 text-xs font-medium"
+    className="w-full text-white bg-primary text-xs font-medium"
     disabled={isLoading || disabled}
     onClick={onClick}
   >

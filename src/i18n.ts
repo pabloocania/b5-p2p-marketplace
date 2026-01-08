@@ -415,12 +415,14 @@ i18n.use(initReactI18next).init({
           eoa_address: "EOA Address (MetaMask)",
           smart_wallet_address: "Smart Wallet (Kioscoin)",
           addresses_explanation: "Your EOA is the address you'll see when importing the private key into MetaMask. Your Smart Wallet is the Kioscoin address where your funds are stored. The EOA controls the Smart Wallet, so with your private key you can always recover access to your funds.",
+          sign_in_with_google: "Sign in with Google",
         },
         activity: "Activity",
         quick_buy: "Quick buy",
         quick_sell: "Quick sell",
         order_canceled: "Order canceled",
-        notification_event_disputed: "Your order has been disputed"
+        notification_event_disputed: "Your order has been disputed",
+        or: "or"
       },
     },
     es: {
@@ -610,7 +612,7 @@ i18n.use(initReactI18next).init({
         enter_your_email_address:
           "Por favor, ingresa tu dirección de correo electrónico primero",
         signing_in: "Iniciando sesión...",
-        sign_in_with_email: "Ingresar con correo electrónico",
+        sign_in_with_email: "Ingresar con tu correo electrónico",
         email_verification: {
           title: "Verificación de correo",
           verifying: "Verificando tu dirección de correo...",
@@ -844,13 +846,15 @@ i18n.use(initReactI18next).init({
           eoa_address: "Dirección EOA (MetaMask)",
           smart_wallet_address: "Smart Wallet (Kioscoin)",
           addresses_explanation: "Tu EOA es la dirección que verás al importar la clave privada en MetaMask. Tu Smart Wallet es la dirección de Kioscoin donde están tus fondos. La EOA controla la Smart Wallet, así que con tu clave privada siempre podrás recuperar el acceso a tus fondos.",
+          sign_in_with_google: "Iniciar sesión con Google",
         },
         activity: "Actividad",
         quick_buy: "Compra rápida de",
         quick_sell: "Venta rápida de",
         order_canceled: "Orden cancelada",
         notification_event_canceled: "Tu orden ha sido cancelada",
-        notification_event_disputed: "Tu orden ha sido disputada"
+        notification_event_disputed: "Tu orden ha sido disputada",
+        or: "O"
       },
     },
   },

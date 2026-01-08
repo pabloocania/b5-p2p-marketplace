@@ -6,4 +6,5 @@ export * from './ErrorAlert';
 export * from './EmailLoginForm';
 export * from './EmailLinkLoginForm';
 export * from './RegisterForm';
-export * from './UserProfile'; 
+export * from './UserProfile';
+export * from './GoogleLoginButton'; 
