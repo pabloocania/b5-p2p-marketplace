@@ -1,16 +1,8 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Order } from "b5-api-client/dist/types";
 import { OPSReceipt } from "@/components/web3/types";
-import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import { ArrowRight } from "lucide-react";
 import { CryptoAmountIcon } from "@/components/kioscoin/CryptoIcon";
@@ -39,83 +31,72 @@ export default function LockFundsConfirmation({
 
   const totalAmount = orderAmount + fees.transaction + fees.gas;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
   const handleConfirm = async () => {
     handleLockFunds();
     onClose();
   };
 
-  const renderOrderDetails = () => {
-    const tokenCode = order.tokenCode?.toLowerCase() ?? "";
-
-    return (
-      <div className="space-y-3 text-sm bg-secondary/10 p-3 rounded-md">
-        <div className="flex items-center justify-between">
-          <span className="text-base text-primary font-secondary font-bold">
-            {t("amount_to_deposit")}:
-          </span>
-          <CryptoAmountIcon
-            formattedAmount={totalAmount.toString()}
-            tokenCode={tokenCode}
-            textSizeClass="text-lg text-dark"
-            iconSize="md"
-          />
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-primary font-secondary">{t("amount")}:</span>
-          <CryptoAmountIcon
-            formattedAmount={orderAmount.toString()}
-            tokenCode={tokenCode}
-            textSizeClass="text-sm text-dark"
-            iconSize="sm"
-          />
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-primary font-secondary">
-            {t("transaction_fee")}:
-          </span>
-          <CryptoAmountIcon
-            formattedAmount={fees.transaction.toString()}
-            tokenCode={tokenCode}
-            textSizeClass="text-sm text-dark"
-            iconSize="sm"
-          />
-        </div>
-      </div>
-    );
-  };
+  const tokenCode = order.tokenCode?.toLowerCase() ?? "";
 
   return (
-    <div className="flex justify-center items-center pt-6 font-secondary">
-      <Card className="w-full max-w-md">
-        <CardHeader className="flex justify-center items-center pt-4">
-          <CardTitle className="text-center text-dark font-secondary">
+    <div className="w-full max-w-md mx-auto px-2 font-secondary">
+      <div className="rounded-lg border border-gray-300/70 bg-white/80 shadow-sm p-3">
+        <div className="space-y-2 mt-2 mb-4">
+          <h2 className="text-dark text-base sm:text-lg text-center leading-tight font-semibold">
             {t("lock_funds")}
-          </CardTitle>
-        </CardHeader>
-        <Separator className="my-2"></Separator>
-        <CardContent className="py-2 px-4">
-          <p className="text-sm text-dark font-secondary w-full text-center mb-2">
+          </h2>
+          <p className="text-center font-secondary text-dark text-xs">
             {t("deposit_funds")}
           </p>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {renderOrderDetails()}
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-between pb-3">
+        </div>
+
+        <div className="mb-4 flex justify-center">
+          <div className="w-full text-sm space-y-2 p-3 rounded-md border border-secondary/20 bg-white/60 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                {t("amount_to_deposit")}:
+              </span>
+              <CryptoAmountIcon
+                formattedAmount={totalAmount.toString()}
+                tokenCode={tokenCode}
+                textSizeClass="text-sm text-dark font-bold"
+                iconSize="sm"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">{t("amount")}:</span>
+              <CryptoAmountIcon
+                formattedAmount={orderAmount.toString()}
+                tokenCode={tokenCode}
+                textSizeClass="text-sm text-dark"
+                iconSize="sm"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                {t("transaction_fee")}:
+              </span>
+              <CryptoAmountIcon
+                formattedAmount={fees.transaction.toString()}
+                tokenCode={tokenCode}
+                textSizeClass="text-sm text-dark"
+                iconSize="sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4">
           <Button
-            className="w-full text-white bg-secondary"
+            className="w-full bg-secondary text-white hover:bg-secondary/90 rounded-md shadow-sm h-11 min-h-[44px]"
             onClick={handleConfirm}
             disabled={canLock}
           >
             {t("lock_funds")}
             <ArrowRight className="ml-2" />
           </Button>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

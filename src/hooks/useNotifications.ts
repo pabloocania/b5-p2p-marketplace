@@ -54,7 +54,6 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
             const response = await client.listNotifications(50, 0, {
                 Authorization: `Bearer ${loginId}`,
             });
-            console.log("response", response);
             const notificationsList: NotificationDto[] = Array.isArray(response)
                 ? (response as NotificationDto[])
                 : (response?.notifications ?? []);
@@ -101,17 +100,13 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
 
     // Handle incoming WebSocket message - uses refs to avoid stale closures
     const handleNewMessage = useCallback((message: Message) => {
-        console.log('[useNotifications] Received WebSocket message:', message);
 
         // If it's a notification message, add it to the list
         if (message.content?.type === "NOTIFICATION") {
             const notificationContent = message.content as { type: 'NOTIFICATION'; notification: NotificationDto };
             const notification = notificationContent.notification;
 
-            console.log('[useNotifications] Processing notification:', notification);
-
             setNotifications(prev => {
-                console.log('[useNotifications] Adding notification to list, prev count:', prev.length);
                 return [notification, ...prev];
             });
 
@@ -150,14 +145,12 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
 
         // Prevent multiple simultaneous setups
         if (isSettingUpRef.current) {
-            console.log('[useNotifications] Setup already in progress, skipping');
             return;
         }
 
         // Check if we already have a connected or connecting service
         const existingService = getNotificationsService();
         if (existingService?.isConnected()) {
-            console.log('[useNotifications] WebSocket already connected, updating callback');
             // Always update the callback to ensure latest state references
             existingService.connect(handleNewMessage);
             setIsConnected(true);
@@ -165,7 +158,6 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
             return;
         }
         if (existingService?.isConnecting()) {
-            console.log('[useNotifications] WebSocket already connecting, skipping setup');
             fetchNotifications();
             return;
         }
@@ -178,7 +170,6 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
         // Initialize WebSocket connection
         const setupWebSocket = async () => {
             try {
-                console.log('[useNotifications] Setting up WebSocket connection...');
 
                 // Try to establish/refresh session with the backend
                 const sessionData = await client.createSession({ idToken: loginId });
@@ -190,7 +181,6 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
                     return;
                 }
 
-                console.log('[useNotifications] Session established successfully');
 
                 // Now connect to WebSocket (session cookie will be sent automatically)
                 let service = getNotificationsService();
@@ -223,7 +213,6 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
                 if (!service.isConnected() && !service.isConnecting()) {
                     service.connect(handleNewMessage);
                 } else {
-                    console.log('[useNotifications] Service already connected or connecting');
                     setIsConnected(service.isConnected());
                     setConnectionStatus(service.getStatus());
                 }

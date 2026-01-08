@@ -422,7 +422,18 @@ i18n.use(initReactI18next).init({
         quick_sell: "Quick sell",
         order_canceled: "Order canceled",
         notification_event_disputed: "Your order has been disputed",
-        or: "or"
+        or: "or",
+        api_errors: {
+          USER_HAS_ACTIVE_ORDERS_AS_CREATOR: "You already have an active order in progress. Complete or cancel it before creating a new one.",
+          USER_HAS_TOO_MANY_PENDING_ORDERS: "You have reached the maximum number of pending orders.",
+          ORDER_AMOUNT_TOO_LOW: "The order amount is below the minimum allowed.",
+          ORDER_AMOUNT_TOO_HIGH: "The order amount exceeds the maximum allowed.",
+          USER_HAS_ACTIVE_ORDERS: "You have active orders in progress. Complete them before taking a new order.",
+          ORDER_NOT_FOUND: "Order not found.",
+          ORDER_CANCELLATION_NOT_ALLOWED: "You are not allowed to cancel this order.",
+          INVALID_REQUEST: "Invalid request. Please try again.",
+          UNKNOWN: "An unexpected error occurred. Please try again.",
+        },
       },
     },
     es: {
@@ -854,7 +865,18 @@ i18n.use(initReactI18next).init({
         order_canceled: "Orden cancelada",
         notification_event_canceled: "Tu orden ha sido cancelada",
         notification_event_disputed: "Tu orden ha sido disputada",
-        or: "O"
+        or: "O",
+        api_errors: {
+          USER_HAS_ACTIVE_ORDERS_AS_CREATOR: "Ya tienes una orden activa en proceso. Complétala o cancélala antes de crear una nueva.",
+          USER_HAS_TOO_MANY_PENDING_ORDERS: "Has alcanzado el número máximo de órdenes pendientes.",
+          ORDER_AMOUNT_TOO_LOW: "El monto de la orden está por debajo del mínimo permitido.",
+          ORDER_AMOUNT_TOO_HIGH: "El monto de la orden supera el máximo permitido.",
+          USER_HAS_ACTIVE_ORDERS: "Tienes órdenes activas en proceso. Complétalas antes de tomar una nueva orden.",
+          ORDER_NOT_FOUND: "Orden no encontrada.",
+          ORDER_CANCELLATION_NOT_ALLOWED: "No tienes permiso para cancelar esta orden.",
+          INVALID_REQUEST: "Solicitud inválida. Por favor, intenta de nuevo.",
+          UNKNOWN: "Ocurrió un error inesperado. Por favor, intenta de nuevo.",
+        }
       },
     },
   },

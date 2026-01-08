@@ -42,13 +42,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         setIsConfigLoaded(true);
       }
     };
-    // console.log(i18n.language, t("login_to_view"));
     loadConfigs();
   }, []);
-
-  useEffect(() => {
-    console.log(i18n.language, t("login_to_view"));
-  }, [i18n.language, t]);
 
   if (!isConfigLoaded) {
     return <AppLoadingScreen />;

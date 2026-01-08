@@ -67,7 +67,6 @@ export class ChatWebSocketClient {
     private setStatus(status: ChatConnectionStatus): void {
         if (this.connectionStatus !== status) {
             this.connectionStatus = status;
-            console.log(`[ChatWebSocket] Status changed: ${status}`);
             this.statusListeners.forEach(listener => listener(status));
         }
     }
@@ -76,7 +75,6 @@ export class ChatWebSocketClient {
         if (typeof window === 'undefined') return;
 
         window.addEventListener('online', () => {
-            console.log('[ChatWebSocket] Network online detected');
             if (!this.isConnected() && !this.isManuallyClosing) {
                 this.reconnectAttempts = 0;
                 this.attemptReconnect();
@@ -84,7 +82,6 @@ export class ChatWebSocketClient {
         });
 
         window.addEventListener('offline', () => {
-            console.log('[ChatWebSocket] Network offline detected');
             this.cancelPendingReconnect();
         });
 
@@ -101,7 +98,6 @@ export class ChatWebSocketClient {
     connect() {
         // Prevent duplicate connections
         if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
-            console.log("[ChatWebSocket] Already connected or connecting, skipping");
             return;
         }
 
@@ -130,7 +126,6 @@ export class ChatWebSocketClient {
             };
 
             this.socket.onclose = (event) => {
-                console.log("[ChatWebSocket] Connection closed", event.code, event.reason);
                 this.setStatus('disconnected');
 
                 // Don't retry on specific failures
@@ -146,7 +141,6 @@ export class ChatWebSocketClient {
                     noRetryReasons.some(reason => event.reason?.includes(reason));
 
                 if (shouldNotRetry) {
-                    console.log("[ChatWebSocket] Not retrying - permanent error:", event.reason);
                     // Mark as unavailable if the session doesn't exist
                     if (event.reason?.includes('Chat session not found') || event.code === 1003) {
                         this.setStatus('unavailable');
@@ -179,7 +173,6 @@ export class ChatWebSocketClient {
 
         if (this.isManuallyClosing) return;
         if (typeof navigator !== 'undefined' && !navigator.onLine) {
-            console.log('[ChatWebSocket] Offline - waiting for network');
             return;
         }
 
@@ -193,7 +186,6 @@ export class ChatWebSocketClient {
         const jitter = exponentialDelay * 0.25 * (Math.random() * 2 - 1);
         const delay = Math.round(exponentialDelay + jitter);
 
-        console.log(`[ChatWebSocket] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
         this.setStatus('reconnecting');
 
         this.reconnectTimeoutId = setTimeout(() => {

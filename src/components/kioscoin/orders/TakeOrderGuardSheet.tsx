@@ -7,11 +7,15 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Order } from "b5-api-client";
+import { Order, parseApiError } from "b5-api-client";
 import { useTranslation } from "react-i18next";
-import React from "react";
+import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { CryptoAmountIcon } from "../CryptoIcon";
+import {
+  ValidationErrorAlert,
+  ApiError,
+} from "@/components/kioscoin/ValidationErrorAlert";
 
 interface TakeOrderGuardSheetProps {
   open: boolean;
@@ -31,8 +35,29 @@ export function TakeOrderGuardSheet({
   loading = false,
 }: TakeOrderGuardSheetProps) {
   const { t } = useTranslation();
+  const [submitError, setSubmitError] = useState<ApiError | null>(null);
   const token = order.tokenCode ?? "USDT";
   const isActionBuy = action === "BUY";
+
+  const handleConfirm = async () => {
+    setSubmitError(null);
+    try {
+      await onConfirm();
+    } catch (err) {
+      const apiError = parseApiError(err);
+      setSubmitError({
+        message: apiError.message,
+        error: apiError.error,
+      });
+    }
+  };
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setSubmitError(null);
+    }
+    onOpenChange(isOpen);
+  };
 
   const title = isActionBuy
     ? t("take_guard_title_buy", { token })
@@ -43,7 +68,7 @@ export function TakeOrderGuardSheet({
     : t("take_guard_body_sell");
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
         side="bottom"
         className="h-[50vh] font-secondary border border-primary/20 rounded-t-xl overscroll bg-backgroundSecondary pt-10 px-2"
@@ -52,16 +77,16 @@ export function TakeOrderGuardSheet({
       >
         <div className="w-full max-w-md mx-auto px-2">
           <div className="rounded-lg border border-gray-300/70 bg-white/80 shadow-sm p-3">
-            <SheetHeader className="space-y-2 mt-2 mb-6">
+            <SheetHeader className="space-y-2 mt-2 mb-4">
               <SheetTitle className="text-dark text-base sm:text-lg text-center leading-tight">
                 {title}
               </SheetTitle>
-              <SheetDescription className="text-center">
+              <SheetDescription className="text-center font-secondary text-dark text-xs">
                 {body}
               </SheetDescription>
             </SheetHeader>
-            <div className="mb-6 flex justify-center">
-              <div className="w-full max-w-sm text-sm space-y-2 p-2 sm:p-3 rounded-md border border-gray-300/70 bg-white/60 shadow-sm">
+            <div className="mb-4 flex justify-center">
+              <div className="w-full text-sm space-y-2 p-3 rounded-md border border-secondary/20 bg-white/60 shadow-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">{t("amount")}:</span>
                   <CryptoAmountIcon
@@ -79,11 +104,16 @@ export function TakeOrderGuardSheet({
                 </div>
               </div>
             </div>
-            <SheetFooter className="mt-6">
+            {submitError && (
+              <div className="mb-2">
+                <ValidationErrorAlert error={submitError} />
+              </div>
+            )}
+            <SheetFooter className="mt-4">
               <div className="w-full flex flex-col gap-3">
                 <Button
                   className="w-full bg-secondary text-white hover:bg-secondary/90 rounded-md shadow-sm h-11 min-h-[44px]"
-                  onClick={onConfirm}
+                  onClick={handleConfirm}
                   disabled={loading}
                 >
                   {loading
