@@ -63,13 +63,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
         />
         <title>Kioscoin - P2P Stablecoin Market</title>
-        
-        {/* Meta tags duplicados aquí también para asegurar que estén disponibles durante loading */}
-        {/* Estos se combinan con los de _document.tsx pero no causan conflicto */}
-        <meta property="og:title" content="Kioscoin - P2P Stablecoin Market" />
-        <meta property="og:description" content="The future of P2P crypto trading. Buy and sell stablecoins with real people, using secure and decentralized escrow." />
-        <meta property="og:image" content="https://www.kioscoin.com/og-image.png" />
-        <meta property="og:url" content="https://www.kioscoin.com" />
+        {/* Los meta tags de Open Graph están en _document.tsx con getInitialProps para SSR */}
         
         {/* Preconnect para fuentes y recursos externos */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

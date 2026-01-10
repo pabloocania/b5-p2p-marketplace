@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const withPWA = require("next-pwa")({
-  dest: "public"
+  dest: "public",
+  disable: process.env.NODE_ENV === 'development',
+  // Excluir og-image.png del precache del service worker
+  // para evitar problemas con cache en WhatsApp/Facebook
+  publicExcludes: ['!og-image.png'],
+  buildExcludes: [/middleware-manifest\.json$/],
 });
 
 const nextConfig = {
@@ -17,7 +22,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: 'public, max-age=86400, s-maxage=86400', // 24 horas, no immutable para poder actualizar
           },
           {
             key: 'Content-Type',
