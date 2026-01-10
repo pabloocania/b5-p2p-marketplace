@@ -140,11 +140,12 @@ function HomeContent() {
       <div className="fixed left-2 sm:left-4 z-[55] flex flex-col gap-2 transform-gpu touch-manipulation bottom-[calc(var(--content-bottom)+1rem)]">
         <Button
           size="icon"
-          className="rounded-md w-11 h-11 shadow-lg text-white bg-secondary/80 hover:bg-primary/80 hover:text-white touch-manipulation"
+          className="rounded-full w-12 h-12 shadow-xl text-white bg-secondary hover:bg-primary transition-all duration-300 hover:scale-110 active:scale-95 touch-manipulation border-2 border-white/20 hover:border-white/40"
           onClick={() => setIsHelpOpen(true)}
+          aria-label={t("help_and_tutorials")}
         >
-          <HelpCircle className="h-4 w-4" />
-          <span className="sr-only">Help & Tutorials</span>
+          <HelpCircle className="h-5 w-5" />
+          <span className="sr-only">{t("help_and_tutorials")}</span>
         </Button>
         <Button
           size="icon"
@@ -202,7 +203,10 @@ function HomeContent() {
         onClose={resetTransaction}
       />
 
-      <HelpDialog open={isHelpOpen} onOpenChange={setIsHelpOpen} />
+      <HelpDialog 
+        open={isHelpOpen} 
+        onOpenChange={setIsHelpOpen}
+      />
       {showSmartWalletOnboarding && (
         <SmartWalletOnboarding
           onComplete={() => setShowSmartWalletOnboarding(false)}

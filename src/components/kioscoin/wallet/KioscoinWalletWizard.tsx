@@ -131,9 +131,48 @@ export default function KioscoinWalletWizard({
             <h3 className="text-base font-semibold text-primary text-center">
               {current.title}
             </h3>
-            <p className="text-sm text-muted-foreground text-center">
-              {current.description}
-            </p>
+            <div className="text-sm text-muted-foreground text-center space-y-2">
+              {current.description.split("\n").map((line, i) => {
+                const trimmedLine = line.trim();
+                const isSpecialNote = trimmedLine.startsWith("**");
+                
+                // Función helper para renderizar texto con formato markdown (negrita **texto**)
+                const renderFormattedText = (text: string) => {
+                  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+                  return parts.map((part, index) => {
+                    if (part.startsWith("**") && part.endsWith("**")) {
+                      const boldText = part.slice(2, -2);
+                      return (
+                        <strong key={index} className="font-semibold text-primary">
+                          {boldText}
+                        </strong>
+                      );
+                    }
+                    return <span key={index}>{part}</span>;
+                  });
+                };
+                
+                if (isSpecialNote && trimmedLine.length > 0) {
+                  return (
+                    <div key={i} className="bg-primary/10 p-3 rounded-lg border-l-4 border-primary shadow-sm mt-2 text-left">
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {renderFormattedText(trimmedLine)}
+                      </p>
+                    </div>
+                  );
+                }
+                
+                if (trimmedLine.length > 0) {
+                  return (
+                    <p key={i} className="leading-relaxed">
+                      {renderFormattedText(trimmedLine)}
+                    </p>
+                  );
+                }
+                
+                return null;
+              })}
+            </div>
             {current.extra}
           </div>
 
