@@ -33,7 +33,7 @@ import type {
 } from "./types";
 
 /** Confirmation phrase the user must type */
-const CONFIRMATION_PHRASE = "I UNDERSTAND";
+const CONFIRMATION_PHRASE = "ENTIENDO";
 
 /** Time in ms before auto-hiding the key (security measure) */
 const AUTO_HIDE_TIMEOUT_MS = 60_000; // 1 minute
@@ -352,7 +352,11 @@ interface RevealedKeyStepProps {
   readonly eoaAddress: string;
   readonly swAddress: string;
   readonly t: (key: string) => string;
-  readonly toast: (props: { title: string; description?: string; className?: string }) => void;
+  readonly toast: (props: {
+    title: string;
+    description?: string;
+    className?: string;
+  }) => void;
 }
 
 function RevealedKeyStep({
@@ -379,7 +383,7 @@ function RevealedKeyStep({
     }
   };
 
-  const truncateAddress = (addr: string) => 
+  const truncateAddress = (addr: string) =>
     addr ? `${addr.slice(0, 8)}...${addr.slice(-6)}` : "";
 
   return (
@@ -435,7 +439,9 @@ function RevealedKeyStep({
             <p className="text-xs font-secondary text-primary font-bold">
               {t("security.eoa_address")}
             </p>
-            <p className="text-xs font-mono text-dark">{truncateAddress(eoaAddress)}</p>
+            <p className="text-xs font-mono text-dark">
+              {truncateAddress(eoaAddress)}
+            </p>
           </div>
           <Button
             variant="ghost"
@@ -454,7 +460,9 @@ function RevealedKeyStep({
             <p className="text-xs font-secondary text-primary font-bold">
               {t("security.smart_wallet_address")}
             </p>
-            <p className="text-xs font-mono text-dark">{truncateAddress(swAddress)}</p>
+            <p className="text-xs font-mono text-dark">
+              {truncateAddress(swAddress)}
+            </p>
           </div>
           <Button
             variant="ghost"

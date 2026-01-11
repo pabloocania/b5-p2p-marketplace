@@ -56,7 +56,6 @@ export class NotificationsServiceImpl {
     private setStatus(status: ConnectionStatus): void {
         if (this.connectionStatus !== status) {
             this.connectionStatus = status;
-            console.log(`[NotificationsService] Status changed: ${status}`);
             this.statusListeners.forEach(listener => listener(status));
         }
     }
@@ -66,7 +65,6 @@ export class NotificationsServiceImpl {
 
         // When browser comes back online, attempt to reconnect
         window.addEventListener('online', () => {
-            console.log('[NotificationsService] Network online detected');
             if (!this.isConnected() && !this.isManuallyClosing) {
                 // Reset attempts on network recovery for fresh start
                 this.reconnectAttempts = 0;
@@ -75,7 +73,6 @@ export class NotificationsServiceImpl {
         });
 
         window.addEventListener('offline', () => {
-            console.log('[NotificationsService] Network offline detected');
             // Cancel any pending reconnect attempts
             this.cancelPendingReconnect();
         });
@@ -83,7 +80,6 @@ export class NotificationsServiceImpl {
         // Handle visibility change - reconnect when tab becomes visible
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                console.log('[NotificationsService] Tab became visible');
                 if (!this.isConnected() && !this.isManuallyClosing) {
                     this.reconnectAttempts = 0;
                     this.attemptReconnect();
@@ -98,7 +94,6 @@ export class NotificationsServiceImpl {
 
         // Prevent connecting if already connected or connecting
         if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
-            console.log('[NotificationsService] Already connected or connecting, callback updated');
             return;
         }
 
@@ -107,12 +102,10 @@ export class NotificationsServiceImpl {
 
         try {
             const wsUrl = this.buildWebSocketUrl();
-            console.log('[NotificationsService] Connecting to WebSocket...');
 
             this.socket = new WebSocket(wsUrl);
 
             this.socket.onopen = () => {
-                console.log('[NotificationsService] WebSocket connected successfully');
                 this.reconnectAttempts = 0;
                 this.lastConnectedAt = Date.now();
                 this.setStatus('connected');
@@ -132,7 +125,6 @@ export class NotificationsServiceImpl {
             };
 
             this.socket.onclose = (event: CloseEvent) => {
-                console.log('[NotificationsService] Connection closed', event.code, event.reason);
                 this.setStatus('disconnected');
 
                 // Check close code - don't retry on authentication failures
@@ -169,7 +161,6 @@ export class NotificationsServiceImpl {
         // Don't reconnect if manually closing or offline
         if (this.isManuallyClosing) return;
         if (typeof navigator !== 'undefined' && !navigator.onLine) {
-            console.log('[NotificationsService] Offline - waiting for network');
             return;
         }
 
@@ -184,7 +175,6 @@ export class NotificationsServiceImpl {
         const jitter = exponentialDelay * 0.25 * (Math.random() * 2 - 1);
         const delay = Math.round(exponentialDelay + jitter);
 
-        console.log(`[NotificationsService] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
         this.setStatus('reconnecting');
 
         this.reconnectTimeoutId = setTimeout(async () => {
@@ -194,7 +184,6 @@ export class NotificationsServiceImpl {
                 : Infinity;
 
             if (disconnectedDuration > 5 * 60 * 1000 && this.sessionRefreshCallback) {
-                console.log('[NotificationsService] Long disconnection - refreshing session first');
                 try {
                     const success = await this.sessionRefreshCallback();
                     if (!success) {
@@ -260,6 +249,5 @@ export function destroyNotificationsService(): void {
     if (instance) {
         instance.disconnect();
         instance = null;
-        console.log('[NotificationsService] Service destroyed');
     }
 }

@@ -6,13 +6,11 @@ import {
   generateSecretAndHash,
   PaymentMethod,
   OrderStatus,
+  parseApiError,
 } from "b5-api-client";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 import { p2pMarketAPIClient as client } from "../../../../lib/APIClients";
 import { useKioscoinUserContext } from "../../users/KioscoinUserContext";
 import { useTranslation } from "react-i18next";
@@ -32,6 +30,10 @@ import PaymentMethodsComponent from "./PaymentMethodsComponent";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
 import FiatSendReceiveMethodSelector from "../FiatReceiveMethodSelector";
 import { cn, formatTokenAmount, parseAmountToBigInt } from "@/lib/utils";
+import {
+  ValidationErrorAlert,
+  ApiError,
+} from "@/components/kioscoin/ValidationErrorAlert";
 
 export default function CreateOrder({
   onClose,
@@ -85,6 +87,7 @@ export default function CreateOrder({
   const [selectedMethods, setSelectedMethods] = useState(
     user?.settings?.paymentMethods || availableMethods || []
   );
+  const [submitError, setSubmitError] = useState<ApiError | null>(null);
 
   const stablecoinConfig = ConfigStore.getInstance().getBackendStablecoins();
 
@@ -245,6 +248,8 @@ export default function CreateOrder({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitError(null);
+
     const { secret: secretSeller } = generateSecretAndHash();
     const { secret: secretBuyer } = generateSecretAndHash();
 
@@ -276,8 +281,11 @@ export default function CreateOrder({
         onClose();
       }
     } catch (err) {
-      console.error("Failed to create order:", err);
-      alert("Failed to create order: " + err);
+      const apiError = parseApiError(err);
+      setSubmitError({
+        message: apiError.message,
+        error: apiError.error,
+      });
     }
   };
 
@@ -489,6 +497,11 @@ export default function CreateOrder({
                     </div>
                   )}
                 </CardContent>
+                {submitError && (
+                  <div className="px-4 pb-2">
+                    <ValidationErrorAlert error={submitError} />
+                  </div>
+                )}
                 {!createdOrder && (
                   <CardFooter className="px-3 py-2">
                     <Button

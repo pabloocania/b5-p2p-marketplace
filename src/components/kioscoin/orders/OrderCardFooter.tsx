@@ -101,9 +101,10 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
   };
 
   const takeOrder = async (order: Order) => {
+    if (orderTaken) return;
+    setTaking(true);
+
     try {
-      if (orderTaken) return;
-      setTaking(true);
       let takeOrderRequest: TakeSellOrderRequest | TakeBuyOrderRequest;
       if (order.type === "SELL") {
         takeOrderRequest = {
@@ -127,8 +128,6 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         } as TakeBuyOrderRequest;
       }
 
-      console.log("takeOrderRequest", takeOrderRequest);
-
       const response = await client.takeOrder(takeOrderRequest, {
         Authorization: `Bearer ${loginId}`,
       });
@@ -147,11 +146,13 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         orderId: takenOrderId,
         showDetails: true,
       });
+      // Only close sheet on success
+      setIsTakeGuardOpen(false);
     } catch (error) {
-      console.error("Failed to take order:", error);
+      // Re-throw to let TakeOrderGuardSheet handle the error display
+      throw error;
     } finally {
       setTaking(false);
-      setIsTakeGuardOpen(false);
     }
   };
 

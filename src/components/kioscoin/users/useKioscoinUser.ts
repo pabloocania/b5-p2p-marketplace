@@ -33,7 +33,6 @@ export function useKioscoinUser() {
             // If Web3Auth is connected but we don't have a user in our app state,
             // disconnect to ensure clean state
             if (isConnected && !user && !isInitialized) {
-                console.log('[useKioscoinUser] Cleaning up stale Web3Auth session on mount');
                 try {
                     await wagmiDisconnect(config);
                     await disconnect();
@@ -56,7 +55,6 @@ export function useKioscoinUser() {
         // Always disconnect first to ensure clean state
         // This prevents stale Web3Auth sessions from interfering
         if (isConnected) {
-            console.log('[useKioscoinUser] Disconnecting existing session before reconnecting');
             await disconnect();
             await wagmiDisconnect(config);
         }
@@ -78,11 +76,10 @@ export function useKioscoinUser() {
     const logout = async () => {
         // Disconnect and destroy WebSocket service
         destroyNotificationsService();
-        
+
         // Clear session cookie on backend
         try {
             await client.clearSession();
-            console.log('[useKioscoinUser] Session cleared on backend');
         } catch (error) {
             console.error('[useKioscoinUser] Error clearing session:', error);
         }
