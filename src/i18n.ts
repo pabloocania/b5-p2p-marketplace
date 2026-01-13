@@ -717,8 +717,8 @@ i18n.use(initReactI18next).init({
         buy_rioplatense: "Comprá",
         sell_rioplatense: "Vendé",
         slogan_template:
-          "{{verb}} dolar cripto usando tu moneda local!",
-        slogan_suffix: " dolar cripto usando tu moneda local!",
+          "{{verb}} dolar cripto con tu moneda local!",
+        slogan_suffix: " dolar cripto con tu moneda local!",
         secure_escrow: "Intercambio seguro",
         instant_trading: "Trading Instantáneo",
         no_gas_fees: "Sin Gas Fees",
@@ -797,8 +797,8 @@ i18n.use(initReactI18next).init({
         notifications_enabled_description: "Ahora recibirás notificaciones.",
         failed_to_enable_push_notifications_description: "Se produjo un error al activar las notificaciones. Por favor, intente nuevamente.",
         in: "en",
-        loading_kioscoin: "Cargando Kioscoin",
-        setting_up_experience: "Preparando tu experiencia...",
+        loading_kioscoin: "Bienvenido a Kioscoin",
+        setting_up_experience: "Cargando sitio",
         statuses: {
           PENDING: "Abierta",
           WAITING_PAYMENT: "Esperando pago",

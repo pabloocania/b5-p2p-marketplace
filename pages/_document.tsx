@@ -1,4 +1,10 @@
-import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
+import Document, {
+  Html,
+  Head,
+  Main,
+  NextScript,
+  DocumentContext,
+} from "next/document";
 
 class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -7,10 +13,11 @@ class MyDocument extends Document {
   }
 
   render() {
-    const ogImageUrl = 'https://www.kioscoin.com/og-image.png';
-    const siteUrl = 'https://www.kioscoin.com';
-    const siteTitle = 'Kioscoin - P2P Stablecoin Market';
-    const siteDescription = 'The future of P2P crypto trading. Buy and sell stablecoins with real people, using secure and decentralized escrow.';
+    const ogImageUrl = "https://www.kioscoin.com/og-image.png";
+    const siteUrl = "https://www.kioscoin.com";
+    const siteTitle = "Kioscoin - Mercado P2P";
+    const siteDescription =
+      "Mercado P2P de stablecoins. Compra y vende stablecoins con tu moneda local usando un escrow seguro y descentralizado.";
 
     return (
       <Html lang="es">
@@ -19,7 +26,10 @@ class MyDocument extends Document {
           <meta charSet="utf-8" />
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
           <meta name="description" content={siteDescription} />
-          <meta name="keywords" content="kioscoin, stablecoin, p2p trading, crypto, USDC, USDT, escrow, beefive" />
+          <meta
+            name="keywords"
+            content="kioscoin, stablecoin, p2p trading, crypto, USDC, USDT, escrow, beefive"
+          />
           <link rel="canonical" href={siteUrl} />
 
           {/* Open Graph Meta Tags - DEBEN estar en el HTML inicial para WhatsApp */}
@@ -60,7 +70,7 @@ class MyDocument extends Document {
             sizes="32x32"
           />
           <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-          
+
           {/* Theme color */}
           <meta name="theme-color" content="#3e2262" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -79,4 +89,3 @@ class MyDocument extends Document {
 }
 
 export default MyDocument;
-
