@@ -423,6 +423,10 @@ i18n.use(initReactI18next).init({
         order_canceled: "Order canceled",
         notification_event_disputed: "Your order has been disputed",
         or: "or",
+        support: {
+          need_help: "Need help? Contact our support team",
+          contact_telegram: "Contact Support via Telegram",
+        },
         api_errors: {
           USER_HAS_ACTIVE_ORDERS_AS_CREATOR: "You already have an active order in progress. Complete or cancel it before creating a new one.",
           USER_HAS_TOO_MANY_PENDING_ORDERS: "You have reached the maximum number of pending orders.",
@@ -876,7 +880,11 @@ i18n.use(initReactI18next).init({
           ORDER_CANCELLATION_NOT_ALLOWED: "No tienes permiso para cancelar esta orden.",
           INVALID_REQUEST: "Solicitud inválida. Por favor, intenta de nuevo.",
           UNKNOWN: "Ocurrió un error inesperado. Por favor, intenta de nuevo.",
-        }
+        },
+        support: {
+          need_help: "¿Necesitás ayuda? Contactá a nuestro equipo de soporte",
+          contact_telegram: "Contactar Soporte por Telegram",
+        },
       },
     },
   },

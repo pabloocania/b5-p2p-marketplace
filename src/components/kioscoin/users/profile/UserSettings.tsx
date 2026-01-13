@@ -10,6 +10,7 @@ import { ConfigStore } from "@/lib/ConfigStore";
 import { useKioscoinUserContext } from "../KioscoinUserContext";
 import { useTranslation } from "react-i18next";
 import PushNotificationsToggle from "@/components/kioscoin/notifications/PushNotificationsToggle";
+import TelegramSupportButton from "@/components/kioscoin/support/TelegramSupportButton";
 import PaymentMethodsComponent from "../../orders/create-orders/PaymentMethodsComponent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExportPrivateKey } from "@/components/kioscoin/security";
@@ -153,11 +154,16 @@ export default function UserSettings({ className }: UserSettingsProps) {
             />
           </TabsContent>
 
-          <TabsContent value="notifications" className="space-y-3">
+          <TabsContent value="notifications" className="space-y-4">
             <div className="flex w-full">
-              <PushNotificationsToggle
-                userId={user!.id!}
-              ></PushNotificationsToggle>
+              <PushNotificationsToggle userId={user!.id!} />
+            </div>
+
+            <div className="border-t pt-4">
+              <p className="text-xs font-secondary text-dark mb-2">
+                {t("support.need_help")}
+              </p>
+              <TelegramSupportButton userId={user!.id!} />
             </div>
           </TabsContent>
 

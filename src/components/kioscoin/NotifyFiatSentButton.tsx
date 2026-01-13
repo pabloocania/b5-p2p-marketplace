@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Order, PaymentMethod } from "b5-api-client";
 import { useTranslation } from "react-i18next";
-import { formatFiatAmount } from "@/lib/utils";
+import { formatFiatAmount, formatFiatAmountForCopy } from "@/lib/utils";
 import { Landmark, WalletMinimal, Copy, Check } from "lucide-react";
 import { FiatSentGuardSheet } from "./orders/FiatSentGuardSheet";
 
@@ -54,17 +54,17 @@ const PaymentDestination: React.FC<PaymentDestinationProps> = ({ method }) => {
   return (
     <div className="rounded-md p-1 bg-secondary/20">
       <div className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded-lg flex items-center justify-center">
+        <div className="w-6 h-6 rounded-lg flex items-center justify-center font-bold">
           <IconComponent className="w-4 h-4 text-primary" />
         </div>
-        <span className="text-primary text-xs">
+        <span className="text-primary text-xs font-bold">
           {method.entity ?? method.type}
         </span>
       </div>
       {method.alias && (
         <button
           onClick={handleCopy}
-          className="w-full mt-1 flex items-center justify-between gap-2 bg-white rounded-lg px-2 py-1 hover:bg-secondary/80 transition-colors"
+          className="w-full mt-1 flex items-center justify-between gap-2 bg-white rounded-lg px-2 py-1 hover:bg-primary/10 transition-colors"
         >
           <span className="text-sm font-mono font-medium text-dark truncate">
             {method.alias}
@@ -89,9 +89,17 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
   const { t } = useTranslation();
   const [guardOpen, setGuardOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [amountCopied, setAmountCopied] = useState(false);
 
   const handleClick = () => {
     setGuardOpen(true);
+  };
+
+  const handleCopyAmount = async () => {
+    const copyValue = formatFiatAmountForCopy(order.fiatAmount);
+    await navigator.clipboard.writeText(copyValue);
+    setAmountCopied(true);
+    setTimeout(() => setAmountCopied(false), 2000);
   };
 
   const handleConfirm = async () => {
@@ -109,28 +117,35 @@ const NotifyFiatSentButton: React.FC<NotifyFiatSentButtonProps> = ({
 
   return (
     <div className="bg-secondary/10 rounded-xl p-3 font-secondary">
-      <p className="text-sm text-dark mb-3">{t("seller_has_locked")}</p>
+      <p className="text-xs text-dark mb-3">{t("seller_has_locked")}</p>
 
       <p className="text-base font-semibold text-dark mb-4">
         {t("send")}{" "}
-        <span className="text-xl font-bold text-primary">
+        <button
+          onClick={handleCopyAmount}
+          className="inline-flex items-center gap-1 text-xl font-bold text-primary hover:opacity-80 transition-opacity"
+        >
           {formatFiatAmount(order.fiatAmount, order.fiatCode)}
-        </span>{" "}
+          {amountCopied ? (
+            <Check className="w-4 h-4 text-green-500" />
+          ) : (
+            <Copy className="w-4 h-4 text-muted-foreground" />
+          )}
+        </button>{" "}
         {t("to_receive")}
       </p>
 
-      <div className="space-y-2 mb-4">
+      <div className="space-y-2 mb-2">
         {order.paymentMethods?.map((method, index) => (
           <PaymentDestination
             key={`${method.type}-${method.entity}-${index}`}
             method={method}
           />
         ))}
+        <p className="text-xs text-dark text-center py-2 px-3 rounded-lg mb-3">
+          {t("please_verify_payment_details")}
+        </p>
       </div>
-
-      <p className="text-xs text-primary text-center bg-secondary/20 py-2 px-3 rounded-lg mb-3">
-        {t("please_verify_payment_details")}
-      </p>
 
       <Button
         className="w-full text-white bg-secondary hover:bg-primary"
