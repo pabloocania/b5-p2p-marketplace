@@ -204,7 +204,7 @@ export default function CreateOrder({
     }
 
     const decimals =
-      ConfigStore.getInstance().getTokenDecimalsByTokenCode(tokenCode);
+      ConfigStore.getInstance().getTokenDecimalsByTokenCodeAndBlockchain(tokenCode, blockchain);
     const totalRequired = calculateTotalRequired(tokenAmount, decimals);
     const availableBalance = BigInt(tokenBalance.smartWalletBalance || "0");
 

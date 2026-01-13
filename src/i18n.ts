@@ -423,6 +423,10 @@ i18n.use(initReactI18next).init({
         order_canceled: "Order canceled",
         notification_event_disputed: "Your order has been disputed",
         or: "or",
+        support: {
+          need_help: "Need help? Contact our support team",
+          contact_telegram: "Contact Support via Telegram",
+        },
         api_errors: {
           USER_HAS_ACTIVE_ORDERS_AS_CREATOR: "You already have an active order in progress. Complete or cancel it before creating a new one.",
           USER_HAS_TOO_MANY_PENDING_ORDERS: "You have reached the maximum number of pending orders.",
@@ -713,8 +717,8 @@ i18n.use(initReactI18next).init({
         buy_rioplatense: "Comprá",
         sell_rioplatense: "Vendé",
         slogan_template:
-          "{{verb}} dolar cripto usando tu moneda local!",
-        slogan_suffix: " dolar cripto usando tu moneda local!",
+          "{{verb}} dolar cripto con tu moneda local!",
+        slogan_suffix: " dolar cripto con tu moneda local!",
         secure_escrow: "Intercambio seguro",
         instant_trading: "Trading Instantáneo",
         no_gas_fees: "Sin Gas Fees",
@@ -793,8 +797,8 @@ i18n.use(initReactI18next).init({
         notifications_enabled_description: "Ahora recibirás notificaciones.",
         failed_to_enable_push_notifications_description: "Se produjo un error al activar las notificaciones. Por favor, intente nuevamente.",
         in: "en",
-        loading_kioscoin: "Cargando Kioscoin",
-        setting_up_experience: "Preparando tu experiencia...",
+        loading_kioscoin: "Bienvenido a Kioscoin",
+        setting_up_experience: "Cargando sitio",
         statuses: {
           PENDING: "Abierta",
           WAITING_PAYMENT: "Esperando pago",
@@ -876,7 +880,11 @@ i18n.use(initReactI18next).init({
           ORDER_CANCELLATION_NOT_ALLOWED: "No tienes permiso para cancelar esta orden.",
           INVALID_REQUEST: "Solicitud inválida. Por favor, intenta de nuevo.",
           UNKNOWN: "Ocurrió un error inesperado. Por favor, intenta de nuevo.",
-        }
+        },
+        support: {
+          need_help: "¿Necesitás ayuda? Contactá a nuestro equipo de soporte",
+          contact_telegram: "Contactar Soporte por Telegram",
+        },
       },
     },
   },

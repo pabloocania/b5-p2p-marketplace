@@ -24,6 +24,16 @@ export const formatFiatAmount = (
   return `${currencySymbol}${currencyCode} ${formattedNumber}`;
 };
 
+/**
+ * Formats fiat amount for clipboard copy (e.g., "1000,00")
+ * Uses comma as decimal separator, no thousands separator, no currency symbol
+ */
+export const formatFiatAmountForCopy = (amount: string | undefined): string => {
+  if (!amount) return "0,00";
+  const numAmount = parseFloat(amount);
+  return numAmount.toFixed(2).replace(".", ",");
+};
+
 // Format balances for display with smart number formatting
 const formatBalance = (balance: string): string => {
   const value = parseFloat(balance);

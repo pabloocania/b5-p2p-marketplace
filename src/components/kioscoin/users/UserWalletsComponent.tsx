@@ -8,6 +8,7 @@ import { useTransaction } from "@/components/web3/Transactions/TransactionContex
 import { useTransactionStatusChecker } from "@/components/web3/Transactions/useTransactionStatusChecker";
 import { useTransactionHandler } from "@/components/web3/Transfers/useTransactionsHandler";
 import Address from "@/components/web3/Transfers/Address";
+import { ConfigStore } from "@/lib/ConfigStore";
 
 /**
  * Immutable class representing the state of the transfers component
@@ -86,8 +87,13 @@ export default function UserWalletsComponent({
 }: UserWalletsComponentProps) {
   const { t } = useTranslation();
   const { setTransaction } = useTransaction();
-  const { balances, swAddress, primeSdk, eoaAddress, refreshBalances } =
+  const { balances, swAddress, refreshBalances, isReady, currentChainId } =
     useEtherspotSdk();
+
+  // Derive blockchain name from currentChainId - this ensures we use the actual connected chain
+  const actualBlockchain =
+    ConfigStore.getInstance().getBlockchainName(currentChainId) ??
+    selectedBlockchain;
   const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>(
     balances ?? []
   );
@@ -229,8 +235,9 @@ export default function UserWalletsComponent({
               <Address
                 address={swAddress}
                 balances={tokenBalances}
-                currentBlockchain={selectedBlockchain}
+                currentBlockchain={actualBlockchain}
                 onRefreshBalances={refreshBalances}
+                isBalancesReady={isReady}
               />
             </div>
           )}

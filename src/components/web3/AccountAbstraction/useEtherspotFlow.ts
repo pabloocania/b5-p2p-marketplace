@@ -70,10 +70,6 @@ export const useEtherspotFlow = () => {
           functionName: "transfer",
           args: [eoaAddress, amount],
         });
-        console.log("Transfer data:", {
-          tokenAddress,
-          amount
-        });
 
         // Prepare the operation data
         const operation = {
@@ -104,13 +100,6 @@ export const useEtherspotFlow = () => {
         abi: ERC20abi,
         functionName: "transfer",
         args: [getAddress(destinationAddress), amount],
-      });
-
-      console.log("Transfer tokens:", {
-        tokenAddress,
-        destinationAddress,
-        amount,
-        chainId
       });
 
       const operation = {
@@ -155,7 +144,7 @@ export const useEtherspotFlow = () => {
     if (primeSdk && isConnectedWeb3Auth) {
       const orderBlockchain = order.blockchain!!
       const contractAddress = ConfigStore.getInstance().getKioscoinEscrowAddressByBlockchain(orderBlockchain)
-      const tokenDecimals = ConfigStore.getInstance().getTokenDecimalsByTokenCode(order.tokenCode)
+      const tokenDecimals = ConfigStore.getInstance().getTokenDecimalsByTokenCodeAndBlockchain(order.tokenCode, orderBlockchain)
       const amountInt = parseUnits(order.amount ?? "0", tokenDecimals); // Ensure order.amount is not undefined
       const feeInt = amountInt / BigInt(100); // Calculate the fee as a BigInt
       const totalAmount = amountInt + feeInt; // Sum is also a BigInt
@@ -213,7 +202,6 @@ export const useEtherspotFlow = () => {
       const userOpReceipt = await processBatchOperations(operations, chainId);
       return userOpReceipt;
     } catch (error) {
-      console.log("error while executing transaction", error);
       return Promise.reject(new Error("Transaction failed"));
     }
   };
@@ -267,7 +255,6 @@ export const useEtherspotFlow = () => {
     if (requiresEqualGas) {
       // For chains that require equal gas values
       maxFeePerGas = maxPriorityFeePerGas;
-      console.log(`Chain ${chainId} requires equal gas values`);
     } else {
       // For EIP-1559 compatible chains (Ethereum, Arbitrum, etc.)
       maxFeePerGas = baseFee + maxPriorityFeePerGas * BigInt(2);

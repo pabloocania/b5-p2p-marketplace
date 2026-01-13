@@ -13,6 +13,7 @@ interface AddressProps {
   balances?: TokenBalance[];
   currentBlockchain?: string;
   onRefreshBalances?: () => void;
+  isBalancesReady?: boolean;
 }
 
 const useAddressSliceLength = () => {
@@ -37,6 +38,7 @@ const Address: React.FC<AddressProps> = ({
   balances = [],
   currentBlockchain = "BSC_MAINNET",
   onRefreshBalances,
+  isBalancesReady = false,
 }) => {
   const { t } = useTranslation();
   const [isCopied, setIsCopied] = useState(false);
@@ -109,6 +111,7 @@ const Address: React.FC<AddressProps> = ({
         balances={balances}
         currentBlockchain={currentBlockchain}
         onRefreshBalances={onRefreshBalances}
+        isBalancesReady={isBalancesReady}
       />
     </>
   );
