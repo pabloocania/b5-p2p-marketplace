@@ -159,6 +159,17 @@ export class ConfigStore {
         return stablecoin?.decimals ?? 6;
     }
 
+    public getTokenDecimalsByTokenCodeAndBlockchain(
+        tokenCode: string | undefined,
+        blockchain: string
+    ): number {
+        const stablecoin = this.backendStablecoins?.supportedStablecoins.find(stablecoin =>
+            stablecoin.name.toUpperCase() === tokenCode?.toUpperCase() &&
+            stablecoin.addresses.some(addr => addr.blockchain === blockchain)
+        );
+        return stablecoin?.decimals ?? 6;
+    }
+
     public getChainIdFromBlockchain(blockchain: string | undefined): number {
         if (!blockchain) return 0;
         const chainConfig = this.config?.config.blockchains.find(

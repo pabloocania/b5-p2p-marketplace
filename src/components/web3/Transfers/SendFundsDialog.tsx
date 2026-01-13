@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { isAddress, parseUnits } from "viem";
 import {
@@ -31,6 +31,7 @@ interface SendFundsDialogProps {
   balances: TokenBalance[];
   currentBlockchain: string;
   onRefreshBalances?: () => void;
+  isBalancesReady?: boolean;
 }
 
 type TransactionStatus = "idle" | "confirming" | "success" | "failed";
@@ -50,10 +51,14 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
   balances,
   currentBlockchain,
   onRefreshBalances,
+  isBalancesReady = false,
 }) => {
   const { t } = useTranslation();
   const { transferTokens, getUserOperationReceipt } = useEtherspotFlow();
   const { setTransaction } = useTransaction();
+
+  // Ref for the dialog content - used to render Select portal inside the dialog
+  const dialogContentRef = useRef<HTMLDivElement>(null);
 
   const [formState, setFormState] = useState<FormState>({
     destinationAddress: "",
@@ -68,6 +73,11 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
   const availableTokens = balances.filter(
     (token) => parseFloat(token.smartWalletBalance) > 0
   );
+
+  // Determine if we should show loading state
+  const isLoading = !isBalancesReady && balances.length === 0;
+  const hasNoTokensWithBalance =
+    isBalancesReady && availableTokens.length === 0;
 
   // Get selected token details
   const selectedTokenBalance = balances.find(
@@ -275,7 +285,7 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent ref={dialogContentRef} className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-primary text-primary">
             {t("send_funds") || "Send Funds"}
@@ -312,35 +322,50 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
             <Label htmlFor="token" className="font-secondary text-dark">
               {t("select_token") || "Select Token"}
             </Label>
-            <Select
-              value={formState.selectedToken}
-              onValueChange={(value) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  selectedToken: value,
-                  amount: "",
-                }))
-              }
-              disabled={false}
-            >
-              <SelectTrigger className="font-secondary border border-secondary">
-                <SelectValue
-                  placeholder={t("select_token") || "Select a token"}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {availableTokens.map((token) => (
-                  <SelectItem
-                    key={token.name}
-                    value={token.name}
-                    className="font-secondary"
-                  >
-                    {token.name} (
-                    {formatBalance(token.smartWalletBalance, token.decimals)})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {isLoading ? (
+              <div className="flex items-center justify-center p-3 border border-secondary rounded-md">
+                <span className="font-secondary text-sm text-muted-foreground">
+                  {t("loading_balances") || "Loading balances..."}
+                </span>
+              </div>
+            ) : hasNoTokensWithBalance ? (
+              <div className="flex items-center justify-center p-3 border border-secondary rounded-md bg-muted/30">
+                <span className="font-secondary text-sm text-muted-foreground">
+                  {t("no_tokens_with_balance") ||
+                    "No tokens with balance available"}
+                </span>
+              </div>
+            ) : (
+              <Select
+                value={formState.selectedToken}
+                onValueChange={(value) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    selectedToken: value,
+                    amount: "",
+                  }))
+                }
+                disabled={availableTokens.length === 0}
+              >
+                <SelectTrigger className="font-secondary border border-secondary">
+                  <SelectValue
+                    placeholder={t("select_token") || "Select a token"}
+                  />
+                </SelectTrigger>
+                <SelectContent container={dialogContentRef.current}>
+                  {availableTokens.map((token) => (
+                    <SelectItem
+                      key={token.name}
+                      value={token.name}
+                      className="font-secondary"
+                    >
+                      {token.name} (
+                      {formatBalance(token.smartWalletBalance, token.decimals)})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           {/* Amount */}
@@ -401,6 +426,8 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
           <Button
             onClick={handleSend}
             disabled={
+              isLoading ||
+              hasNoTokensWithBalance ||
               !formState.destinationAddress ||
               !formState.selectedToken ||
               !formState.amount
