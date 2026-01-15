@@ -1,20 +1,19 @@
 import { createConfig } from "wagmi";
 import { ConfigStore, initConfig } from "../../lib/ConfigStore";
-import { arbitrumSepolia, rootstock } from "wagmi/chains";
 import { Chain } from "wagmi/chains";
 import { bsc } from '@wagmi/core/chains'
 import { http } from '@wagmi/core'
 
 const configStore = ConfigStore.getInstance();
 
-// Initialize with default chain
-const defaultChains = [arbitrumSepolia] as const;
+// Initialize with default chain (BSC Mainnet)
+const defaultChains = [bsc] as const;
 
 // Create initial config with default chain
 const initialConfig = createConfig({
     chains: defaultChains,
     transports: {
-        [arbitrumSepolia.id]: http(),
+        [bsc.id]: http('https://rpc.ankr.com/bsc/43e5f2a7dbfddf572c74f1b3b07cc450e42d68d64fa30ea90efb41bdc5cf2e10'),
     },
     ssr: true,
 });

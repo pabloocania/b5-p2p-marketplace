@@ -17,15 +17,15 @@ const MAINNET_BLOCKCHAINS = [
   "RSK_MAIN",
 ] as const;
 
-// Testnet blockchains in priority order (ARBITRUM_TESTNET as fallback)
+// Testnet blockchains in priority order
 const TESTNET_BLOCKCHAINS = [
   "BASE_SEPOLIA",
   "ARBITRUM_TESTNET",
   "RSK_TESTNET",
 ] as const;
 
-// Default fallback blockchain
-export const DEFAULT_BLOCKCHAIN = "ARBITRUM_TESTNET";
+// Default fallback blockchain (BSC Mainnet)
+export const DEFAULT_BLOCKCHAIN = "BSC_MAINNET";
 
 export const isMainnet = (blockchain: string): boolean =>
   MAINNET_BLOCKCHAINS.includes(
@@ -36,7 +36,7 @@ export const isMainnet = (blockchain: string): boolean =>
  * Determines the best blockchain to select based on precedence:
  * 1. First priority: Mainnets with balance > 0
  * 2. Second priority: Testnets with balance > 0
- * 3. Fallback: ARBITRUM_TESTNET
+ * 3. Fallback: BSC_MAINNET
  */
 export interface BlockchainWithBalance {
   blockchain: string;
@@ -73,7 +73,7 @@ export const selectBestBlockchain = (
     return testnetsWithBalance[0].blockchain;
   }
 
-  // Fallback: ARBITRUM_TESTNET
+  // Fallback: BSC_MAINNET
   return DEFAULT_BLOCKCHAIN;
 };
 

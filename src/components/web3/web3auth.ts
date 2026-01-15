@@ -1,4 +1,4 @@
-import { CustomChainConfig, WEB3AUTH_NETWORK, Web3AuthOptions } from "@web3auth/modal";
+import { CustomChainConfig, WEB3AUTH_NETWORK, Web3AuthOptions, CONFIRMATION_STRATEGY } from "@web3auth/modal";
 import { Web3AuthContextConfig } from "@web3auth/modal/react";
 
 export const arbitrumSepolia: CustomChainConfig = {
@@ -50,6 +50,9 @@ const web3AuthOptions: Web3AuthOptions = {
     web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
     defaultChainId: "0x38",
     chains: [bnb, base, arbitrumOne, arbitrumSepolia],
+    walletServicesConfig: {
+        confirmationStrategy: CONFIRMATION_STRATEGY.AUTO_APPROVE,
+    },
 };
 
 const web3AuthContextConfig: Web3AuthContextConfig = {
