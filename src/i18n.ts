@@ -155,6 +155,7 @@ i18n.use(initReactI18next).init({
         suggested_rate: "Suggested rate",
         your_rate: "Your rate",
         send: "You must send",
+        to_send: "Send",
         please_verify_payment_details:
           "Please verify payment details. Once you send the funds, click on the button below to notify the seller.",
         fiat_guard_title: "Did you send the transfer to the other user?",
@@ -438,6 +439,7 @@ i18n.use(initReactI18next).init({
           INVALID_REQUEST: "Invalid request. Please try again.",
           UNKNOWN: "An unexpected error occurred. Please try again.",
         },
+        use_this_address: "Use this address to deposit funds into your account.",
       },
     },
     es: {
@@ -596,6 +598,7 @@ i18n.use(initReactI18next).init({
         suggested_rate: "Tipo de cambio sugerido",
         your_rate: "Tu tipo de cambio",
         send: "Debes enviar",
+        to_send: "Enviar",
         to_receive: "a traves de:",
         please_verify_payment_details:
           "Por favor, verifica los detalles de pago. Una vez que envíes los fondos, haz click en el botón de abajo para notificar al vendedor.",
@@ -885,6 +888,7 @@ i18n.use(initReactI18next).init({
           need_help: "¿Necesitás ayuda? Contactá a nuestro equipo de soporte",
           contact_telegram: "Contactar Soporte por Telegram",
         },
+        use_this_address: "Usa esta dirección para depositar fondos en tu cuenta",
       },
     },
   },

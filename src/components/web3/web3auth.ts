@@ -45,9 +45,11 @@ export const bnb: CustomChainConfig = {
     displayName: "BNB Smart Chain",
 };
 
+const mainnetClientId = "BIFlNWqQWzZNKUavYFSpSA_tvT55ie5PhQnlK-OwR1SS0x159a3yBQJAv70NhqUFSU19jluhivO_Mh25FAqYvDY";
+
 const web3AuthOptions: Web3AuthOptions = {
     clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID ?? "BIFlNWqQWzZNKUavYFSpSA_tvT55ie5PhQnlK-OwR1SS0x159a3yBQJAv70NhqUFSU19jluhivO_Mh25FAqYvDY",
-    web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+    web3AuthNetwork: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID === mainnetClientId ? WEB3AUTH_NETWORK.SAPPHIRE_MAINNET : WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
     defaultChainId: "0x38",
     chains: [bnb, base, arbitrumOne, arbitrumSepolia],
     walletServicesConfig: {

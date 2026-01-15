@@ -68,7 +68,7 @@ const Address: React.FC<AddressProps> = ({
           ) : null}
           {!isOperation ? (
             <IconButton
-              className="p-2 font-secondary border-primary/50 bg-white h-6 text-primary hover:bg-secondary/20"
+              className="p-2 font-secondary border-primary/50 bg-white h-6 text-primary hover:bg-secondary/20 align-center"
               variant="outline"
               size="sm"
               onClick={handleSend}
@@ -81,12 +81,12 @@ const Address: React.FC<AddressProps> = ({
 
         {/* Segunda línea: Address + Botón Copy */}
         <div className="flex items-center justify-between">
-          <p className="font-secondary text-dark text-xs flex-grow">
+          <p className="font-secondary text-dark text-xs flex-grow self-end">
             {address.slice(0, leftSliceLength)}...{address.slice(-4)}
           </p>
           <div className="relative h-full">
             <IconButton
-              className="p-2 font-secondary border-primary/50 bg-white h-6 text-primary hover:bg-secondary/20"
+              className="p-2 font-secondary border-primary/50 bg-white h-6 text-primary hover:bg-secondary/20 align-center"
               variant="outline"
               size="sm"
               onClick={handleCopy}
@@ -101,6 +101,11 @@ const Address: React.FC<AddressProps> = ({
               </div>
             )}
           </div>
+        </div>
+        <div className="flex items-left justify-between">
+          <p className="font-secondary text-dark text-[10px] w-full text-left">
+            {t("use_this_address")}
+          </p>
         </div>
       </div>
 

@@ -158,13 +158,6 @@ export default function UserSettings({ className }: UserSettingsProps) {
             <div className="flex w-full">
               <PushNotificationsToggle userId={user!.id!} />
             </div>
-
-            <div className="border-t pt-4">
-              <p className="text-xs font-secondary text-dark mb-2">
-                {t("support.need_help")}
-              </p>
-              <TelegramSupportButton userId={user!.id!} />
-            </div>
           </TabsContent>
 
           <TabsContent value="security" className="space-y-4">
@@ -267,6 +260,12 @@ export default function UserSettings({ className }: UserSettingsProps) {
             </Button>
           </div>
         )}
+        <div className="border-t pt-4">
+          <p className="text-xs font-secondary text-dark mb-2">
+            {t("support.need_help")}
+          </p>
+          <TelegramSupportButton userId={user!.id!} />
+        </div>
       </CardContent>
     </Card>
   );

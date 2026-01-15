@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { TokenBalance } from "@/components/web3/types";
 import { ConfigStore } from "@/lib/ConfigStore";
 import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { formatTokenBalance } from "@/lib/utils";
 
 // Mainnet blockchains in priority order
 const MAINNET_BLOCKCHAINS = [
@@ -246,18 +247,7 @@ export default function UserBalance({
   const currentBalance = selectedTokenBalance?.smartWalletBalance || "0";
   const decimals = selectedTokenBalance?.decimals || 18;
 
-  // Format balance using decimals
-  const formatBalance = (balance: string, decimals: number): string => {
-    try {
-      const balanceNumber = parseFloat(balance);
-      const formattedBalance = balanceNumber / Math.pow(10, decimals);
-      return formattedBalance.toFixed(2);
-    } catch (error) {
-      return "0.00";
-    }
-  };
-
-  const formattedBalance = formatBalance(currentBalance, decimals);
+  const formattedBalance = formatTokenBalance(currentBalance, decimals);
 
   const currentToken = availableTokens.find((t) => t.code === selectedToken) ||
     availableTokens[0] || { code: "USDK", name: "USDK", icon: "🪙" };
