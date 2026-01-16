@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { disconnect as wagmiDisconnect } from '@wagmi/core'
 import { config } from '@/components/web3/wagmi'
-import { KioscoinUser } from "b5-api-client";
+import { KioscoinUser, UserSettings } from "b5-api-client";
 import { AUTH_CONNECTION, WALLET_CONNECTORS } from "@web3auth/modal";
 import {
     useWeb3AuthConnect,
@@ -19,13 +19,11 @@ export function useKioscoinUser() {
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const {
         connectTo,
-        isConnected,
-        connectorName,
+        isConnected
     } = useWeb3AuthConnect();
     const {
         disconnect,
     } = useWeb3AuthDisconnect();
-    const { provider } = useWeb3Auth();
 
     // Clean up stale Web3Auth sessions on mount
     useEffect(() => {
@@ -73,6 +71,25 @@ export function useKioscoinUser() {
         }
     };
 
+    const updateUser = (nextUser: KioscoinUser) => {
+        setUser(nextUser);
+    };
+
+    const mergeUserSettings = (
+        user: KioscoinUser,
+        settings: UserSettings
+    ): KioscoinUser => ({
+        ...user,
+        settings: {
+            ...(user.settings ?? {}),
+            ...settings,
+        },
+    });
+
+    const updateUserSettings = (settings: UserSettings) => {
+        setUser((prev) => (prev ? mergeUserSettings(prev, settings) : prev));
+    };
+
     const logout = async () => {
         // Disconnect and destroy WebSocket service
         destroyNotificationsService();
@@ -96,7 +113,9 @@ export function useKioscoinUser() {
         login,
         logout,
         loginId,
-        emailVerified
+        emailVerified,
+        updateUser,
+        updateUserSettings
     };
 }
 

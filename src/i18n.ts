@@ -650,7 +650,7 @@ i18n.use(initReactI18next).init({
         smart_wallet_benefits:
           "Envía fondos a tu Smart Wallet y podrás comprar y vender cripto sin pagar tarifas de gas.",
         learn_about_smart_wallet: "Aprende sobre tus wallets",
-        read_about_kioscoin: "Aprende a usar Kioscoin",
+        read_about_kioscoin: "Aprende a usar",
         wallet_wizard_title: "Kioscoin wallet",
         wallet_wizard_subtitle: "Aprende a usar tu Kioscoin wallet",
         wallet_step_address_title: "Tu dirección Kioscoin",

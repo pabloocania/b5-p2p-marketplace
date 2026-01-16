@@ -103,7 +103,7 @@ const Address: React.FC<AddressProps> = ({
           </div>
         </div>
         <div className="flex items-left justify-between">
-          <p className="font-secondary text-dark text-[10px] w-full text-left">
+          <p className="font-secondary font-bold text-secondary text-[10px] w-full text-center pt-2">
             {t("use_this_address")}
           </p>
         </div>

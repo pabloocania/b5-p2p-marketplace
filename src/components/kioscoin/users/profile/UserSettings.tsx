@@ -27,7 +27,8 @@ interface UserSettingsProps {
 }
 
 export default function UserSettings({ className }: UserSettingsProps) {
-  const { user, loginId } = useKioscoinUserContext();
+  const { user, loginId, updateUser, updateUserSettings } =
+    useKioscoinUserContext();
   const { toast } = useToast();
   const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -75,27 +76,32 @@ export default function UserSettings({ className }: UserSettingsProps) {
     if (!user?.id || !loginId || !isValid) return;
     setIsSaving(true);
     try {
-      const request: UpdateUserSettingsRequest = {
-        userId: user.id,
-        settings: (() => {
-          const settingsPayload: UpdateUserSettingsRequest["settings"] = {
-            paymentMethods: selectedMethods.map((m) => ({ ...m })),
-            hasVerified: user.settings?.hasVerified ?? false,
-          };
-
-          const preferredToken = user.settings?.preferredTokenCode;
-          if (preferredToken !== undefined) {
-            settingsPayload.preferredTokenCode = preferredToken;
-          }
-
-          return settingsPayload;
-        })(),
+      const settingsPayload: UpdateUserSettingsRequest["settings"] = {
+        paymentMethods: selectedMethods.map((m) => ({ ...m })),
+        hasVerified: user.settings?.hasVerified ?? false,
       };
 
-      await p2pMarketAPIClient.updateUserSettings(request, {
+      const preferredToken = user.settings?.preferredTokenCode;
+      if (preferredToken !== undefined) {
+        settingsPayload.preferredTokenCode = preferredToken;
+      }
+
+      const request: UpdateUserSettingsRequest = {
+        userId: user.id,
+        settings: settingsPayload,
+      };
+
+      const response = await p2pMarketAPIClient.updateUserSettings(request, {
         "Content-Type": "application/json",
         Authorization: `Bearer ${loginId}`,
       });
+
+      const updatedUser = response.users?.[0];
+      if (updatedUser) {
+        updateUser(updatedUser);
+      } else {
+        updateUserSettings(settingsPayload);
+      }
 
       toast({
         title: t("settings_saved"),
