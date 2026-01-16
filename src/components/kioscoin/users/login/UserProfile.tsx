@@ -178,7 +178,12 @@ export const UserProfile = ({
   // Auto-select token with positive balance only on initial load
   // Once user manually selects a token, respect their choice even if balance is zero
   useEffect(() => {
-    if (isReady && balances && balances.length > 0 && !hasInitializedToken.current) {
+    if (
+      isReady &&
+      balances &&
+      balances.length > 0 &&
+      !hasInitializedToken.current
+    ) {
       // Check if current selected token has balance
       const currentTokenBalance = balances.find(
         (b) => b.name === selectedToken
@@ -340,7 +345,7 @@ export const UserProfile = ({
         <Button
           onClick={onLogout}
           variant="default"
-          className="w-full text-white font-secondary bg-primary text-sm sm:text-base py-2 sm:py-3"
+          className="w-full text-white font-secondary bg-primary text-xs sm:text-sm py-2 sm:py-3"
         >
           <LogOut className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
           Log Out
