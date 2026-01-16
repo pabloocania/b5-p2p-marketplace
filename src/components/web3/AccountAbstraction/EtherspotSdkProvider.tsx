@@ -51,12 +51,9 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const refreshBalances = async () => {
-    if (primeSdk && eoaAddress) {
+    if (primeSdk) {
       const updatedBalances =
-        await EtherspotSdksManager.getInstance().getTokensBalances(
-          primeSdk,
-          eoaAddress
-        );
+        await EtherspotSdksManager.getInstance().getTokensBalances(primeSdk);
       setBalances(updatedBalances ?? []);
     }
   };
@@ -104,8 +101,7 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
         // Fetch balances for this chain
         const balances =
           await EtherspotSdksManager.getInstance().getTokensBalances(
-            targetPrimeSdk,
-            eoaAddress
+            targetPrimeSdk
           );
         setBalances(balances ?? []);
       }
@@ -165,8 +161,7 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
           setArkaInstance(arkaInstance);
           const balances =
             await EtherspotSdksManager.getInstance().getTokensBalances(
-              primeSdkInstance,
-              walletProvider.address
+              primeSdkInstance
             );
           setBalances(balances ?? []);
           setIsLoading(false);
