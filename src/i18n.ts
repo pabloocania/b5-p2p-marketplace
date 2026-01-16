@@ -354,6 +354,7 @@ i18n.use(initReactI18next).init({
         failed_to_enable_push_notifications_description: "Failed to enable push notifications. Please try again.",
         in: "in",
         loading_kioscoin: "Loading Kioscoin",
+        site_under_construction: "We are preparing the Kioscoin",
         setting_up_experience: "Setting up your experience...",
         statuses: {
           PENDING: "Pending",
@@ -801,6 +802,7 @@ i18n.use(initReactI18next).init({
         failed_to_enable_push_notifications_description: "Se produjo un error al activar las notificaciones. Por favor, intente nuevamente.",
         in: "en",
         loading_kioscoin: "Bienvenido a Kioscoin",
+        site_under_construction: "Estamos preparando el Kioscoin",
         setting_up_experience: "Cargando sitio",
         statuses: {
           PENDING: "Abierta",

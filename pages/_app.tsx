@@ -27,6 +27,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     createWagmiConfig([bsc])
   );
   const { t, i18n } = useTranslation();
+  const isUnderConstruction = true;
 
   useEffect(() => {
     const loadConfigs = async () => {
@@ -45,8 +46,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     loadConfigs();
   }, []);
 
-  if (!isConfigLoaded) {
-    return <AppLoadingScreen />;
+  if (isUnderConstruction || !isConfigLoaded) {
+    return <AppLoadingScreen isUnderConstruction={isUnderConstruction} />;
   }
 
   return (

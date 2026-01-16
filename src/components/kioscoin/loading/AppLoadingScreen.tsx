@@ -1,7 +1,13 @@
 import { useTranslation } from "react-i18next";
 import KioscoinBrand from "@/components/kioscoin/branding/KioscoinBrand";
 
-export function AppLoadingScreen() {
+interface AppLoadingScreenProps {
+  isUnderConstruction?: boolean;
+}
+
+export function AppLoadingScreen({
+  isUnderConstruction = false,
+}: AppLoadingScreenProps) {
   const { t } = useTranslation();
 
   return (
@@ -16,7 +22,11 @@ export function AppLoadingScreen() {
             {t("loading_kioscoin")}
           </p> */}
           <p className="font-secondary text-xs text-muted-foreground">
-            {t("setting_up_experience")}
+            {t(
+              isUnderConstruction
+                ? "site_under_construction"
+                : "setting_up_experience"
+            )}
           </p>
         </div>
 
