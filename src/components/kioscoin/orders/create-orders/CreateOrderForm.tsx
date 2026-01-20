@@ -27,7 +27,7 @@ import {
   getBlockchainDisplayName,
 } from "@/lib/ConfigStore";
 import PaymentMethodsComponent from "./PaymentMethodsComponent";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import FiatSendReceiveMethodSelector from "../FiatReceiveMethodSelector";
 import { cn, formatTokenAmount, parseAmountToBigInt } from "@/lib/utils";
 import {
@@ -66,7 +66,7 @@ export default function CreateOrder({
     switchToChain,
     currentChainId,
     isLoading: isEtherspotLoading,
-  } = useEtherspotSdk();
+  } = useKioscoinWallet();
   const [walletAddress, setWalletAddress] = useState(swAddress || "");
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const [blockchain, setBlockchain] = useState(preFilledData?.blockchain || "");
@@ -195,6 +195,8 @@ export default function CreateOrder({
       (b) => b.name.toUpperCase() === tokenCode.toUpperCase()
     );
 
+    console.log("tokenBalance", tokenBalance);
+    console.log("bala", balances);
     if (!tokenBalance) {
       return {
         isValid: false,
@@ -204,7 +206,10 @@ export default function CreateOrder({
     }
 
     const decimals =
-      ConfigStore.getInstance().getTokenDecimalsByTokenCodeAndBlockchain(tokenCode, blockchain);
+      ConfigStore.getInstance().getTokenDecimalsByTokenCodeAndBlockchain(
+        tokenCode,
+        blockchain
+      );
     const totalRequired = calculateTotalRequired(tokenAmount, decimals);
     const availableBalance = BigInt(tokenBalance.smartWalletBalance || "0");
 

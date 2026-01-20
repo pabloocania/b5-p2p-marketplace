@@ -5,7 +5,7 @@ import { KioscoinUserProvider } from "../src/components/kioscoin/users/KioscoinU
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { createWagmiConfig } from "@/components/web3/wagmi";
-import { EtherspotSdkProvider } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { KioscoinWalletProvider } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import { TransactionProvider } from "@/components/web3/Transactions/TransactionContext";
 import { bsc } from "wagmi/chains";
 import "../src/i18n"; // Adjust the path as necessary
@@ -27,7 +27,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     createWagmiConfig([bsc])
   );
   const { t, i18n } = useTranslation();
-  const isUnderConstruction = true;
+  const isUnderConstruction = false;
 
   useEffect(() => {
     const loadConfigs = async () => {
@@ -85,14 +85,14 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <KioscoinUserProvider>
           <WagmiProvider config={wagmiConfig}>
             <QueryClientProvider client={queryClient}>
-              <EtherspotSdkProvider>
+              <KioscoinWalletProvider>
                 <TransactionProvider>
                   <NavigationProvider initialView="OrderFeed">
                     <Component {...pageProps} />
                     <Toaster />
                   </NavigationProvider>
                 </TransactionProvider>
-              </EtherspotSdkProvider>
+              </KioscoinWalletProvider>
             </QueryClientProvider>
           </WagmiProvider>
         </KioscoinUserProvider>

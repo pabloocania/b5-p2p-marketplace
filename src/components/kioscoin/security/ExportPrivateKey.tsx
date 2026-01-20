@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 import { usePrivateKeyExport } from "./usePrivateKeyExport";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import type {
   ExportPrivateKeyProps,
   ExportKeyState,
@@ -88,7 +88,7 @@ export default function ExportPrivateKey({ className }: ExportPrivateKeyProps) {
   const { toast } = useToast();
   const { exportKey, clearKey, copyToClipboard, isConnected } =
     usePrivateKeyExport();
-  const { swAddress, eoaAddress } = useEtherspotSdk();
+  const { swAddress, eoaAddress } = useKioscoinWallet();
 
   // Dialog state
   const [isOpen, setIsOpen] = useState(false);

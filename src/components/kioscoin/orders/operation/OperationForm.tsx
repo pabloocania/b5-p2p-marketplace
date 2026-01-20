@@ -8,7 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
 import { useKioscoinUserContext } from "../../users/KioscoinUserContext";
 import { ConfigStore } from "@/lib/ConfigStore";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import LockFundsButton from "@/components/web3/Escrow/LockFundsButton";
 import OperationBalanceSection from "./OperationBalanceSection";
 import { useTranslation } from "react-i18next";
@@ -37,7 +37,7 @@ export default function OperationForm({
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>([]);
-  const { balances, swAddress } = useEtherspotSdk();
+  const { balances, swAddress } = useKioscoinWallet();
   const [buyerAddress, setBuyerAddress] = useState(swAddress || "");
   const [copied, setCopied] = useState(false);
   const availableMethods = ConfigStore.getInstance().getPaymentMethods();

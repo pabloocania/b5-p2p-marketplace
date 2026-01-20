@@ -22,7 +22,7 @@ import UserBalance, {
 import SmartWalletOnboarding from "../profile/SmartWalletOnboarding";
 import { KioscoinUser } from "b5-api-client";
 import { useState, useEffect, useRef } from "react";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import KioscoinWalletWizard from "@/components/kioscoin/wallet/KioscoinWalletWizard";
 import { useWeb3Auth } from "@web3auth/modal/react";
 import UserSettings from "../profile/UserSettings";
@@ -58,7 +58,7 @@ export const UserProfile = ({
     switchToChain,
     currentChainId,
     swAddress,
-  } = useEtherspotSdk();
+  } = useKioscoinWallet();
   const { isConnected: web3AuthConnected, status: web3authStatus } =
     useWeb3Auth();
 

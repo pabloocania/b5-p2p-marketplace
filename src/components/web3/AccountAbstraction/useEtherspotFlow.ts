@@ -9,8 +9,8 @@ import {
 import { toUtf8Bytes } from "ethers/lib/utils";
 import { ERC20abi } from "@/components/web3/abis/StablecoinConfig";
 import { Order } from "b5-api-client";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
-import { OPSReceipt, TokenBalance } from "@/components/web3/types";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
+import { OPSReceipt } from "@/components/web3/types";
 import { KioscoinEscrowContractConfig } from "@/components/web3/abis/KioscoinEscrowConfig";
 import { PublicClientManager } from "@/components/web3/PublicClientManager";
 import { ConfigStore } from "@/lib/ConfigStore";
@@ -19,14 +19,12 @@ import { TransactionGasInfoForUserOp } from "@etherspot/prime-sdk/dist/sdk/base/
 import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
 import { arka_api_key, whitelistPaymaster } from "./ArkaPaymasterService";
 import { EtherspotSdksManager } from "./EtherspotSdksManager";
-import { getBalance } from "@wagmi/core";
-import { config } from "@/components/web3/wagmi";
 
 export const useEtherspotFlow = () => {
   // const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { isConnected: isConnectedWeb3Auth } = useWeb3Auth();
-  const { primeSdk, eoaAddress, swAddress } = useEtherspotSdk();
+  const { primeSdk, eoaAddress, swAddress } = useKioscoinWallet();
 
 
   const transferFromEOAToSW = async (

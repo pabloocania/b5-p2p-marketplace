@@ -6,7 +6,7 @@ import { CompactSelector } from "./CompactSelector";
 import { useTranslation } from "react-i18next";
 import { TokenBalance } from "@/components/web3/types";
 import { ConfigStore } from "@/lib/ConfigStore";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import { formatTokenBalance } from "@/lib/utils";
 
 // Mainnet blockchains in priority order
@@ -110,7 +110,7 @@ const getBlockchainIcon = (blockchain: string): string => {
   } else if (blockchain === "POLYGON_MAINNET") {
     return "/blockchains/polygon.svg";
   } else if (blockchain === "BASE_SEPOLIA" || blockchain === "BASE_MAINNET") {
-    return "/blockchains/base.svg";
+    return "/blockchains/base.png";
   }
   return "🔗";
 };
@@ -131,7 +131,7 @@ export default function UserBalance({
   onBlockchainChange,
 }: UserBalanceProps) {
   const { t } = useTranslation();
-  const { refreshBalances, isLoading: isSdkLoading } = useEtherspotSdk();
+  const { refreshBalances, isLoading: isSdkLoading } = useKioscoinWallet();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [availableTokens, setAvailableTokens] = useState<
     Array<{ code: string; name: string; icon: string }>

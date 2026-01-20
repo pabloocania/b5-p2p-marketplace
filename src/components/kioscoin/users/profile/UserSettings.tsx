@@ -14,7 +14,7 @@ import TelegramSupportButton from "@/components/kioscoin/support/TelegramSupport
 import PaymentMethodsComponent from "../../orders/create-orders/PaymentMethodsComponent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExportPrivateKey } from "@/components/kioscoin/security";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import { Copy, Info } from "lucide-react";
 import {
   Popover,
@@ -34,7 +34,7 @@ export default function UserSettings({ className }: UserSettingsProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("payments");
   const { t } = useTranslation();
-  const { eoaAddress, swAddress } = useEtherspotSdk();
+  const { eoaAddress, swAddress } = useKioscoinWallet();
 
   const truncateAddress = (addr: string) =>
     addr ? `${addr.slice(0, 10)}...${addr.slice(-8)}` : "";
