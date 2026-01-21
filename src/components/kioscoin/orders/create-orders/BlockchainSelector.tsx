@@ -33,7 +33,7 @@ const blockchainIconMap: Record<string, string> = {
   "arbitrum one": "arbitrum.svg",
   "arbitrum sepolia": "arbitrum.svg",
 
-  base: "base.webp",
+  base: "base.png",
 };
 
 export default function BlockchainSelector({

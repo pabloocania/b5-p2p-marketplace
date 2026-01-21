@@ -251,7 +251,13 @@ i18n.use(initReactI18next).init({
         video_intro_description:
           "Learn how to sell USDC easily and safely in just 1 minute.",
         // HelpDialog step 2/3
-        help_step2_title: "Kioscoin wallet",
+        help_step2_title: "Buy and sell crypto dolar",
+        help_buy_crypto_dolar_title: "I want to buy crypto dolar",
+        help_buy_crypto_dolar_steps:
+          "Create your account in 1 click.\nChoose an order from the market or quick buy from the top banner.\nFollow the steps and send the commited amount of local currency to the seller.\nReceive your crypto dolars in your account!",
+        help_sell_crypto_dolar_title: "I want to sell crypto dolar",
+        help_sell_crypto_dolar_steps:
+          "Create your account in 1 click.\nChoose an order from the market or quick sell from the top banner.\nSelect where you want to receive the commited amount of local currency.\nFollow the steps to deposit the funds to the escrow smart contract.\nReceive the commited from the buyer.\nConfirm you have received it and release the funds to the buyer!",
         help_step2_lines:
           "Welcome, remember you have a Kioscoin wallet to deposit USDT or USDC.\nIn your profile, access your wallet to send and receive funds.\nYou can send any stablecoin via Binance Smart Chain and Arbitrum to trade!",
         help_step3_title: "Accept Terms and Conditions",
@@ -441,6 +447,11 @@ i18n.use(initReactI18next).init({
           UNKNOWN: "An unexpected error occurred. Please try again.",
         },
         use_this_address: "Use this address to deposit funds into your account.",
+        previous: "Previous",
+        skip: "Skip",
+        next: "Next",
+        welcome_to_kioscoin: "Welcome to Kioscoin",
+        what_is_kioscoin_description: "Kioscoin is an app to buy and sell crypto dollars between people, without intermediaries.",
       },
     },
     es: {
@@ -651,7 +662,7 @@ i18n.use(initReactI18next).init({
         smart_wallet_benefits:
           "Envía fondos a tu Smart Wallet y podrás comprar y vender cripto sin pagar tarifas de gas.",
         learn_about_smart_wallet: "Aprende sobre tus wallets",
-        read_about_kioscoin: "Aprende a usar",
+        read_about_kioscoin: "Aprende a usar tu cuenta",
         wallet_wizard_title: "Kioscoin wallet",
         wallet_wizard_subtitle: "Aprende a usar tu Kioscoin wallet",
         wallet_step_address_title: "Tu dirección Kioscoin",
@@ -687,7 +698,7 @@ i18n.use(initReactI18next).init({
         pay: "Debes pagar",
         help_and_tutorials: "Cómo funciona",
         help_description:
-          "Aprendé cómo usar Kioscoin para comprar y vender dolar digital con personas reales de forma segura.",
+          "Comprá y vendé USDC o USDT en tu blockchain favorita, fácil, seguro y sin intermediarios, usando tu moneda local, a traves de un contrato de custodia descentralizado.",
         getting_started: "Primeros pasos",
         getting_started_description:
           "1. Creá tu cuenta y verificala.\n2. Enviá fondos a tu wallet o compra dolar digital desde el mercado, creando una orden, o a traves del banner superior.\n3. Seguí las instrucciones para realizar una operación segura y en pocos minutos",
@@ -701,12 +712,18 @@ i18n.use(initReactI18next).init({
         video_intro_description:
           "Aprendé cómo vender USDC fácil y seguro en solo 1 minuto.",
         // HelpDialog paso 2/3
-        help_step2_title: "Kioscoin wallet",
+        help_step2_title: "Quieres comprar o vender?",
+        help_buy_crypto_dolar_title: "Quiero comprar dólar cripto",
+        help_buy_crypto_dolar_steps:
+          "Creá tu cuenta con 1 click en \"Mi Cuenta\".\nElegí una orden del mercado o comprá rápido desde el banner superior.\nSeguí los pasos y enviá el monto comprometido en moneda local al vendedor.\n¡Recibí tus dólares cripto en tu cuenta!",
+        help_sell_crypto_dolar_title: "Quiero vender dólar cripto",
+        help_sell_crypto_dolar_steps:
+          "Creá tu cuenta con 1 click en Mi Cuenta.\nElegí una orden del mercado o vendé rápido desde el banner superior.\nSeleccioná dónde querés recibir el monto comprometido en moneda local.\nSeguí los pasos para depositar los fondos en el smart contract de escrow.\nRecibí el monto comprometido del comprador.\nConfirmá que lo recibiste y liberá los fondos al comprador!",
         help_step2_lines:
           "Bienvenido, recuerda que tienes una Kioscoin wallet para depositar USDT o USDC.\nEn tu perfil puedes acceder a tu wallet para enviar y recibir fondos.\nPuedes enviarte cualquier stablecoin por Binance Smart Chain y Arbitrum para intercambiar!",
         help_step3_title: "Acepto Términos y condiciones",
         help_step3_lines:
-          "Kioscoin está en una fase beta cerrada donde usuarios invitados solamente realizan transacciones.\nKioscoin coming soon! Para más info visita nuestras redes sociales.",
+          "Al utilizar esta app, aceptas que se trata de un mercado P2P descentralizado donde los usuarios realizan intercambios directamente entre sí mediante un smart contract. La app no garantiza el cumplimiento de las partes ni se responsabiliza por actos de mala fe. No obstante, ofrecemos soporte y asistencia en caso de disputas para facilitar la resolución entre las partes. Al continuar, reconoces y aceptas estos términos.",
         help_accept_tyc: "Acepto TyC",
         kioskoin_onboarding_title: "Bienvenido a Kioscoin",
         kioskoin_onboarding_subtitle: "Aprende cómo empezar en 3 pasos simples",
@@ -891,6 +908,12 @@ i18n.use(initReactI18next).init({
           contact_telegram: "Contactar Soporte por Telegram",
         },
         use_this_address: "Usa esta dirección para depositar fondos en tu cuenta",
+        previous: "Anterior",
+        skip: "Saltar",
+        next: "Siguiente",
+        welcome_to_kioscoin: "Bienvenido a Kioscoin",
+        what_is_kioscoin: "¿Qué es Kioscoin?",
+        what_is_kioscoin_description: "Kioscoin es el mejor mercado para comprar y vender dolar cripto entre personas, sin intermediarios.",
       },
     },
   },
