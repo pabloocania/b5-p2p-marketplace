@@ -214,6 +214,12 @@ i18n.use(initReactI18next).init({
         wallet_step_receive_desc: "Deposit stablecoins into your Kioscoin wallet using your address.",
         wallet_step_send_title: "Send",
         wallet_step_send_desc: "Transfer stablecoins from your Kioscoin wallet to an external address.",
+        wallet_step_balances_title: "Balances",
+        wallet_step_balances_extra:
+          "See your current balance by selecting the blockchain (left) and the crypto dolar (right)",
+        wallet_step_preferences_title: "Preferences",
+        wallet_step_preferences_extra:
+          "Here you can add your preferred payment methods, manage push notifications and see your security details",
         wallet_step_seed_title: "Seed phrase",
         wallet_step_seed_desc: "Keep your seed phrase safe and never share it with anyone.",
         wallet_done: "Done",
@@ -262,7 +268,7 @@ i18n.use(initReactI18next).init({
           "Welcome, remember you have a Kioscoin wallet to deposit USDT or USDC.\nIn your profile, access your wallet to send and receive funds.\nYou can send any stablecoin via Binance Smart Chain and Arbitrum to trade!",
         help_step3_title: "Accept Terms and Conditions",
         help_step3_lines:
-          "Kioscoin is in a closed beta where invited users only perform transactions.\nKioscoin coming soon! For more info visit our social media.",
+          "When using this app, you agree that it is a P2P decentralized marketplace where users exchange directly between each other using a smart contract. The app does not guarantee the fulfillment of the parties nor is responsible for acts of bad faith. However, we offer support and assistance in case of disputes to facilitate the resolution between the parties. By continuing, you acknowledge and accept these terms.",
         help_accept_tyc: "I accept T&C",
         kioskoin_onboarding_title: "Welcome to Kioscoin",
         kioskoin_onboarding_subtitle:
@@ -663,14 +669,20 @@ i18n.use(initReactI18next).init({
           "Envía fondos a tu Smart Wallet y podrás comprar y vender cripto sin pagar tarifas de gas.",
         learn_about_smart_wallet: "Aprende sobre tus wallets",
         read_about_kioscoin: "Aprende a usar tu cuenta",
-        wallet_wizard_title: "Kioscoin wallet",
+        wallet_wizard_title: "Mi Cuenta en Kioscoin",
         wallet_wizard_subtitle: "Aprende a usar tu Kioscoin wallet",
-        wallet_step_address_title: "Tu dirección Kioscoin",
-        wallet_step_address_desc: "Esta es tu dirección de Kioscoin wallet. Compártela para recibir fondos.",
+        wallet_step_address_title: "Dirección de tu wallet",
+        wallet_step_address_desc: "Envía o recibe dólares cripto a esta dirección. Esta es tu dirección en la blockchain.",
         wallet_step_receive_title: "Recibir",
-        wallet_step_receive_desc: "Deposita stablecoins en tu Kioscoin wallet usando tu dirección.",
+        wallet_step_receive_desc: "Deposita dólar cripto en tu Kioscoin wallet usando tu dirección.",
         wallet_step_send_title: "Enviar",
-        wallet_step_send_desc: "Transfiere stablecoins desde tu Kioscoin wallet a una dirección externa.",
+        wallet_step_send_desc: "Transfiere dólar cripto desde tu wallet a otra dirección en la blockchain",
+        wallet_step_balances_title: "Balances",
+        wallet_step_balances_extra:
+          "Consulta tu saldo actual seleccionando la blockchain (izquierda) y el dólar cripto (derecha)",
+        wallet_step_preferences_title: "Preferencias",
+        wallet_step_preferences_extra:
+          "Aquí puedes agregar tus métodos de pago preferidos, gestionar notificaciones push y ver tus datos de seguridad",
         wallet_step_seed_title: "Frase semilla",
         wallet_step_seed_desc: "Guarda tu frase semilla en un lugar seguro y nunca la compartas.",
         wallet_done: "Listo",

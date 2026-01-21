@@ -137,7 +137,7 @@ export function NotificationCard({
         {/* 1) Event type / Title */}
         <div className="flex items-start justify-between gap-2">
           <p
-            className={`text-sm text-gray-900 ${
+            className={`text-sm text-dark ${
               isEvent ? "font-semibold" : "font-medium"
             } ${compact ? "line-clamp-2" : "line-clamp-3"}`}
           >
@@ -148,7 +148,7 @@ export function NotificationCard({
 
         {/* 2) Text + button to navigate to order */}
         <div className="mt-2">
-          <p className="text-xs text-gray-600 line-clamp-2">
+          <p className="text-xs text-dark line-clamp-2">
             {isEvent ? eventSubtitle : ""}
           </p>
 
@@ -183,11 +183,11 @@ export function NotificationCard({
         </div>
 
         {/* 3) Order id (small) */}
-        {orderId && (
+        {/* {orderId && (
           <p className="text-[10px] font-secondary text-dark pb-1 mt-2 break-all">
             {t("order_id") || "Order ID"}: {orderId}
           </p>
-        )}
+        )} */}
       </div>
 
       {/* Right ticket */}
