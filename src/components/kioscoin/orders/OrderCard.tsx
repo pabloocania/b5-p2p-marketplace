@@ -15,6 +15,8 @@ import ChatButton from "./ChatButton";
 import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import { CancelOrderButton } from "./CancelOrderButton";
 import OrderDisputeCountdown from "./OrderDisputeCountdown";
+import { ConfigStore, OrderToleranceConfig } from "@/lib/ConfigStore";
+import { differenceInMinutes, parseISO } from "date-fns";
 
 const FINAL_STATUSES = [
   "COMPLETED",
@@ -51,10 +53,40 @@ export function OrderCard({
   >([]);
   const [showCopied, setShowCopied] = useState(false);
   const { user } = useKioscoinUserContext();
+  const [toleranceConfig, setToleranceConfig] =
+    useState<OrderToleranceConfig | null>(null);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     setOrder(orderDTO);
   }, [orderDTO]);
+
+  useEffect(() => {
+    let isActive = true;
+    ConfigStore.getInstance()
+      .getOrderTolerance()
+      .then((config) => {
+        if (!isActive) return;
+        setToleranceConfig(config);
+      })
+      .catch(() => {
+        // Keep null tolerance on error
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setNow(Date.now());
+    }, 30000);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     // For PENDING BUY orders, don't pre-populate from order.paymentMethods
@@ -156,6 +188,15 @@ export function OrderCard({
 
   const renderCancelButton = () => {
     if (!user || !order) return null;
+    if (!toleranceConfig || !order.createdAt) return null;
+
+    const createdAt = parseISO(order.createdAt);
+    if (Number.isNaN(createdAt.getTime())) return null;
+
+    const elapsedMinutes = Math.max(0, differenceInMinutes(now, createdAt));
+    const canShowCancel =
+      elapsedMinutes >= toleranceConfig.waiting_payment_minutes;
+    if (!canShowCancel) return null;
 
     // CancelOrderButton internally checks if user can cancel
     return (

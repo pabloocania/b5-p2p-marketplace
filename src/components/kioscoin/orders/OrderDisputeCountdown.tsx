@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Order, OrderStatus } from "b5-api-client";
 import { ConfigStore, OrderToleranceConfig } from "@/lib/ConfigStore";
+import { differenceInMinutes, parseISO } from "date-fns";
 
 const getToleranceByStatus = (
   status: OrderStatus | undefined,
@@ -63,12 +64,12 @@ const OrderDisputeCountdown: React.FC<{ order: Order }> = ({ order }) => {
     return null;
   }
 
-  const createdAtMs = new Date(order.createdAt).getTime();
-  if (Number.isNaN(createdAtMs)) {
+  const createdAt = parseISO(order.createdAt);
+  if (Number.isNaN(createdAt.getTime())) {
     return null;
   }
 
-  const elapsedMinutes = Math.max(0, (now - createdAtMs) / 60000);
+  const elapsedMinutes = Math.max(0, differenceInMinutes(now, createdAt));
   const remainingMinutes = Math.max(
     0,
     Math.ceil(toleranceMinutes - elapsedMinutes)
