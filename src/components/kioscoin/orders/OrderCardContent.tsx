@@ -17,6 +17,7 @@ import { BuyerText } from "./BuyerText";
 import AddressInput from "./AddressInput";
 import { CryptoAmountIcon } from "../CryptoIcon";
 import OrderCreatedDate from "./OrderCreatedDate";
+import OrderDisputeCountdown from "./OrderDisputeCountdown";
 import {
   BlockchainName,
   ConfigStore,
@@ -172,10 +173,12 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
         </div>
         {/* Order created date */}
         {order.createdAt && (
-          <OrderCreatedDate
-            createdAt={order.createdAt}
-            status={order.status!!}
-          />
+          <>
+            <OrderCreatedDate
+              createdAt={order.createdAt}
+              status={order.status!!}
+            />
+          </>
         )}
       </div>
       {order.status &&

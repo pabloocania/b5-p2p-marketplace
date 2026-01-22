@@ -18,6 +18,18 @@ export interface BackendBlockchainConfig {
     readonly maxPriorityFeePerGasGwei: number;
 }
 
+export interface OrderToleranceConfig {
+    readonly active_minutes: number;
+    readonly fiat_sent_minutes: number;
+    readonly waiting_payment_minutes: number;
+}
+
+const DEFAULT_TOLERANCE: OrderToleranceConfig = {
+    active_minutes: 60,
+    fiat_sent_minutes: 60,
+    waiting_payment_minutes: 60,
+};
+
 // Type for blockchain names from backend
 export type BlockchainName = string;
 
@@ -280,6 +292,24 @@ export class ConfigStore {
             type: String(pm.type || '').toUpperCase() || 'FINTECH',
             entity: pm.entity || '',
         }));
+    }
+
+    public async getOrderTolerance(): Promise<OrderToleranceConfig> {
+        try {
+            const config = await this.getConfig();
+            const backendTolerance = config.config?.tolerance ?? DEFAULT_TOLERANCE;
+            if (!backendTolerance) {
+                return DEFAULT_TOLERANCE;
+            }
+
+            return {
+                active_minutes: Number(backendTolerance.active_minutes) || DEFAULT_TOLERANCE.active_minutes,
+                fiat_sent_minutes: Number(backendTolerance.fiat_sent_minutes) || DEFAULT_TOLERANCE.fiat_sent_minutes,
+                waiting_payment_minutes: Number(backendTolerance.waiting_payment_minutes) || DEFAULT_TOLERANCE.waiting_payment_minutes,
+            };
+        } catch {
+            return DEFAULT_TOLERANCE;
+        }
     }
 }
 

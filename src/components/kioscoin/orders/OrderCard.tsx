@@ -14,6 +14,7 @@ import DisputeOrderButton from "../dispute/DisputeOrderButton";
 import ChatButton from "./ChatButton";
 import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import { CancelOrderButton } from "./CancelOrderButton";
+import OrderDisputeCountdown from "./OrderDisputeCountdown";
 
 const FINAL_STATUSES = [
   "COMPLETED",
@@ -209,6 +210,7 @@ export function OrderCard({
         setOrder={setOrder}
         paymentMethods={selectedPaymentMethods}
       />
+      <OrderDisputeCountdown order={order} />
       {/* <Separator className="mb-1" /> */}
       <div className="px-3 py-2 space-y-2">
         {/* First row: History, Share (if pending) OR Cancel, Chat */}
