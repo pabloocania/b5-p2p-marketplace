@@ -15,8 +15,6 @@ import ChatButton from "./ChatButton";
 import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import { CancelOrderButton } from "./CancelOrderButton";
 import OrderDisputeCountdown from "./OrderDisputeCountdown";
-import { ConfigStore, OrderToleranceConfig } from "@/lib/ConfigStore";
-import { differenceInMinutes, parseISO } from "date-fns";
 
 const FINAL_STATUSES = [
   "COMPLETED",
@@ -53,40 +51,16 @@ export function OrderCard({
   >([]);
   const [showCopied, setShowCopied] = useState(false);
   const { user } = useKioscoinUserContext();
-  const [toleranceConfig, setToleranceConfig] =
-    useState<OrderToleranceConfig | null>(null);
-  const [now, setNow] = useState(() => Date.now());
+  const [countdownRemainingMinutes, setCountdownRemainingMinutes] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     setOrder(orderDTO);
   }, [orderDTO]);
 
-  useEffect(() => {
-    let isActive = true;
-    ConfigStore.getInstance()
-      .getOrderTolerance()
-      .then((config) => {
-        if (!isActive) return;
-        setToleranceConfig(config);
-      })
-      .catch(() => {
-        // Keep null tolerance on error
-      });
-
-    return () => {
-      isActive = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setNow(Date.now());
-    }, 30000);
-
-    return () => {
-      window.clearInterval(interval);
-    };
-  }, []);
+  const canDisputeFromCountdown =
+    countdownRemainingMinutes !== null && countdownRemainingMinutes <= 0;
 
   useEffect(() => {
     // For PENDING BUY orders, don't pre-populate from order.paymentMethods
@@ -182,20 +156,17 @@ export function OrderCard({
       <DisputeOrderButton
         order={order ?? ({} as Order)}
         onDisputeCreated={handleDisputeCreated}
+        isEnabled={canDisputeFromCountdown}
       />
     </div>
   );
 
   const renderCancelButton = () => {
     if (!user || !order) return null;
-    if (!toleranceConfig || !order.createdAt) return null;
+    if (order.status !== "WAITING_PAYMENT") return null;
 
-    const createdAt = parseISO(order.createdAt);
-    if (Number.isNaN(createdAt.getTime())) return null;
-
-    const elapsedMinutes = Math.max(0, differenceInMinutes(now, createdAt));
     const canShowCancel =
-      elapsedMinutes >= toleranceConfig.waitingPaymentMinutes;
+      countdownRemainingMinutes !== null && countdownRemainingMinutes <= 0;
     if (!canShowCancel) return null;
 
     // CancelOrderButton internally checks if user can cancel
@@ -251,7 +222,10 @@ export function OrderCard({
         setOrder={setOrder}
         paymentMethods={selectedPaymentMethods}
       />
-      <OrderDisputeCountdown order={order} />
+      <OrderDisputeCountdown
+        order={order}
+        onRemainingMinutesChange={setCountdownRemainingMinutes}
+      />
       {/* <Separator className="mb-1" /> */}
       <div className="px-3 py-2 space-y-2">
         {/* First row: History, Share (if pending) OR Cancel, Chat */}

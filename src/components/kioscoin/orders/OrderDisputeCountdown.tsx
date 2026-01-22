@@ -22,7 +22,15 @@ const getToleranceByStatus = (
   }
 };
 
-const OrderDisputeCountdown: React.FC<{ order: Order }> = ({ order }) => {
+interface OrderDisputeCountdownProps {
+  readonly order: Order;
+  readonly onRemainingMinutesChange?: (minutes: number | null) => void;
+}
+
+const OrderDisputeCountdown: React.FC<OrderDisputeCountdownProps> = ({
+  order,
+  onRemainingMinutesChange,
+}) => {
   const { t } = useTranslation();
   const [toleranceConfig, setToleranceConfig] =
     useState<OrderToleranceConfig | null>(null);
@@ -60,21 +68,28 @@ const OrderDisputeCountdown: React.FC<{ order: Order }> = ({ order }) => {
     return getToleranceByStatus(order.status, toleranceConfig);
   }, [order.status, toleranceConfig]);
 
-  if (!toleranceMinutes || !order.createdAt) {
+  const remainingMinutes = useMemo(() => {
+    if (!toleranceMinutes || !order.createdAt) return null;
+
+    const createdAt = parseISO(order.createdAt);
+    if (Number.isNaN(createdAt.getTime())) return null;
+
+    const elapsedMinutes = Math.max(0, differenceInMinutes(now, createdAt));
+    return Math.max(0, Math.ceil(toleranceMinutes - elapsedMinutes));
+  }, [toleranceMinutes, order.createdAt, now]);
+
+  useEffect(() => {
+    onRemainingMinutesChange?.(remainingMinutes);
+  }, [onRemainingMinutesChange, remainingMinutes]);
+
+  if (remainingMinutes === null || !toleranceMinutes) {
     return null;
   }
 
-  const createdAt = parseISO(order.createdAt);
-  if (Number.isNaN(createdAt.getTime())) {
-    return null;
-  }
-
-  const elapsedMinutes = Math.max(0, differenceInMinutes(now, createdAt));
-  const remainingMinutes = Math.max(
-    0,
-    Math.ceil(toleranceMinutes - elapsedMinutes)
+  const progress = Math.min(
+    1,
+    (toleranceMinutes - remainingMinutes) / Math.max(1, toleranceMinutes)
   );
-  const progress = Math.min(1, elapsedMinutes / Math.max(1, toleranceMinutes));
   const isReady = remainingMinutes <= 0;
 
   return (

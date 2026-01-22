@@ -26,11 +26,13 @@ import TelegramSupportButton from "../support/TelegramSupportButton";
 interface DisputeOrderButtonProps {
   order: Order;
   onDisputeCreated?: () => void;
+  isEnabled?: boolean;
 }
 
 export default function DisputeOrderButton({
   order,
   onDisputeCreated,
+  isEnabled = true,
 }: DisputeOrderButtonProps) {
   const { user, loginId } = useKioscoinUserContext();
   const [open, setOpen] = useState(false);
@@ -181,7 +183,11 @@ export default function DisputeOrderButton({
           label={t("dispute_order")}
           variant="outline"
           size="sm"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            if (!isEnabled) return;
+            setOpen(true);
+          }}
+          disabled={!isEnabled}
         />
       </div>
 

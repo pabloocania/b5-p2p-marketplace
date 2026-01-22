@@ -305,10 +305,16 @@ export class ConfigStore {
             const waitingPaymentMinutes =
                 backendTolerance.waiting_payment_minutes ?? backendTolerance.waitingPaymentMinutes;
 
+            const withBuffer = (value: unknown, fallback: number) =>
+                (Number(value) || fallback) + 1;
+
             return {
-                activeMinutes: Number(activeMinutes) || DEFAULT_TOLERANCE.activeMinutes,
-                fiatSentMinutes: Number(fiatSentMinutes) || DEFAULT_TOLERANCE.fiatSentMinutes,
-                waitingPaymentMinutes: Number(waitingPaymentMinutes) || DEFAULT_TOLERANCE.waitingPaymentMinutes,
+                activeMinutes: withBuffer(activeMinutes, DEFAULT_TOLERANCE.activeMinutes),
+                fiatSentMinutes: withBuffer(fiatSentMinutes, DEFAULT_TOLERANCE.fiatSentMinutes),
+                waitingPaymentMinutes: withBuffer(
+                    waitingPaymentMinutes,
+                    DEFAULT_TOLERANCE.waitingPaymentMinutes
+                ),
             };
         } catch {
             return DEFAULT_TOLERANCE;
