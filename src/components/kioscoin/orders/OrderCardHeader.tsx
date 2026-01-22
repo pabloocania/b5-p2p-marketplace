@@ -49,6 +49,7 @@ const OrderCardHeader: React.FC<OrderCardHeaderProps> = ({ order }) => {
     COMPLETED_BY_ADMIN: t("completed"),
     RELEASED: t("completed"),
     CANCELED: t("canceled"),
+    CANCELED_BY_ADMIN: t("canceled_by_admin"),
     // Add more mappings here
   };
 

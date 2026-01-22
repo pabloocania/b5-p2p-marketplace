@@ -463,6 +463,7 @@ i18n.use(initReactI18next).init({
         next: "Next",
         welcome_to_kioscoin: "Welcome to Kioscoin",
         what_is_kioscoin_description: "Kioscoin is an app to buy and sell crypto dollars between people, without intermediaries.",
+        canceled_by_admin: "Canceled by support",
       },
     },
     es: {
@@ -936,6 +937,7 @@ i18n.use(initReactI18next).init({
         welcome_to_kioscoin: "Bienvenido a Kioscoin",
         what_is_kioscoin: "¿Qué es Kioscoin?",
         what_is_kioscoin_description: "Kioscoin es el mejor mercado para comprar y vender dolar cripto entre personas, sin intermediarios.",
+        canceled_by_admin: "Cancelada por soporte",
       },
     },
   },

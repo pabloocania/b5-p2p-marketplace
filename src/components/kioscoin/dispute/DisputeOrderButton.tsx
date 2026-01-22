@@ -56,6 +56,9 @@ export default function DisputeOrderButton({
     () => localDisputed || initialAlreadyDisputed,
     [localDisputed, initialAlreadyDisputed]
   );
+  const isAdminClosed =
+    order.status === "CANCELED_BY_ADMIN" ||
+    order.status === "COMPLETED_BY_ADMIN";
 
   const canShowDisputeButton =
     !alreadyDisputed &&
@@ -121,7 +124,7 @@ export default function DisputeOrderButton({
 
   const disputeReason = getDisputeReason(order);
 
-  if (alreadyDisputed) {
+  if (alreadyDisputed && !isAdminClosed) {
     return (
       <>
         <div className="flex flex-col items-center w-full">
@@ -160,6 +163,9 @@ export default function DisputeOrderButton({
         </Dialog>
       </>
     );
+  }
+  if (alreadyDisputed) {
+    return null;
   }
 
   if (!canShowDisputeButton) {
