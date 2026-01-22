@@ -79,7 +79,7 @@ const OrderDisputeCountdown: React.FC<{ order: Order }> = ({ order }) => {
 
   return (
     <div className="mt-2 rounded-md px-4 py-2 w-full font-secondary">
-      <div className="tems-center gap-2 text-xs text-primary">
+      <div className="text-center items-center gap-2 text-xs text-primary">
         {/* <span className="inline-flex h-2 w-2 rounded-full bg-primary animate-pulse" /> */}
         <span>
           {isReady
