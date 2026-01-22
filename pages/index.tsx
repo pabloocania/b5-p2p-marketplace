@@ -12,6 +12,7 @@ import { TopBar } from "@/components/kioscoin/TopBar";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/create-orders/CreateOrderContainer";
 import { HelpDialog } from "@/components/kioscoin/HelpDialog";
 import SmartWalletOnboarding from "@/components/kioscoin/users/profile/SmartWalletOnboarding";
+import TermsCondPrivacyPolicy from "@/components/kioscoin/T&C and PP/TermsCond&PrivacyPolicy";
 import { MainViewRenderer } from "@/components/kioscoin/MainViewRenderer";
 import {
   NavigationProvider,
@@ -72,11 +73,16 @@ function HomeContent() {
   }, [user, disconnect, navigate, pendingNavigation]);
 
   useEffect(() => {
-    if (user && !localStorage.getItem("hasSeenSmartWalletOnboarding")) {
+    if (user) {
+      // Reset state to ensure modal shows every time user logs in
+      setShowSmartWalletOnboarding(false);
       setTimeout(() => {
         setShowSmartWalletOnboarding(true);
-        localStorage.setItem("hasSeenSmartWalletOnboarding", "true");
+        // Modal will show every time user logs in
       }, 600);
+    } else {
+      // Reset state when user logs out
+      setShowSmartWalletOnboarding(false);
     }
   }, [user]);
 
@@ -204,8 +210,9 @@ function HomeContent() {
 
       <HelpDialog open={isHelpOpen} onOpenChange={setIsHelpOpen} />
       {showSmartWalletOnboarding && (
-        <SmartWalletOnboarding
+        <TermsCondPrivacyPolicy
           onComplete={() => setShowSmartWalletOnboarding(false)}
+          onClose={logout}
         />
       )}
 

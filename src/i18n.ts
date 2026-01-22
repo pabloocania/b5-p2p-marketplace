@@ -270,6 +270,11 @@ i18n.use(initReactI18next).init({
         help_step3_lines:
           "When using this app, you agree that it is a P2P decentralized marketplace where users exchange directly between each other using a smart contract. The app does not guarantee the fulfillment of the parties nor is responsible for acts of bad faith. However, we offer support and assistance in case of disputes to facilitate the resolution between the parties. By continuing, you acknowledge and accept these terms.",
         help_accept_tyc: "I accept T&C",
+        terms_and_conditions: "Terms and Conditions",
+        privacy_policy: "Privacy Policy",
+        i_have_read_terms_and_privacy: "I have read the Terms and Conditions and Privacy Policy",
+        scroll_to_bottom_to_continue: "Scroll to the bottom to continue",
+        accept: "Accept",
         kioskoin_onboarding_title: "Welcome to Kioscoin",
         kioskoin_onboarding_subtitle:
           "Learn how to get started in 3 simple steps",
@@ -737,6 +742,11 @@ i18n.use(initReactI18next).init({
         help_step3_lines:
           "Al utilizar esta app, aceptas que se trata de un mercado P2P descentralizado donde los usuarios realizan intercambios directamente entre sí mediante un smart contract. La app no garantiza el cumplimiento de las partes ni se responsabiliza por actos de mala fe. No obstante, ofrecemos soporte y asistencia en caso de disputas para facilitar la resolución entre las partes. Al continuar, reconoces y aceptas estos términos.",
         help_accept_tyc: "Acepto TyC",
+        terms_and_conditions: "Términos y Condiciones",
+        privacy_policy: "Política de Privacidad",
+        i_have_read_terms_and_privacy: "He leído los Términos y Condiciones y la Política de Privacidad",
+        scroll_to_bottom_to_continue: "Desplázate hasta el final para continuar",
+        accept: "Aceptar",
         kioskoin_onboarding_title: "Bienvenido a Kioscoin",
         kioskoin_onboarding_subtitle: "Aprende cómo empezar en 3 pasos simples",
 

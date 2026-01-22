@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { LogOut, AlertCircle } from "lucide-react";
+import TermsCondPrivacyPolicy from "../../T&C and PP/TermsCond&PrivacyPolicy";
 
 import {
   Card,
@@ -21,7 +22,6 @@ import UserBalance, {
 } from "../profile/UserBalance";
 import SmartWalletOnboarding from "../profile/SmartWalletOnboarding";
 import { KioscoinUser } from "b5-api-client";
-import { useState, useEffect, useRef } from "react";
 import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import KioscoinWalletWizard from "@/components/kioscoin/wallet/KioscoinWalletWizard";
 import { useWeb3Auth } from "@web3auth/modal/react";
@@ -77,6 +77,9 @@ export const UserProfile = ({
   const [previousConnectionState, setPreviousConnectionState] = useState(false);
   // Estado para KioscoinWalletWizard
   const [showWalletWizard, setShowWalletWizard] = useState(false);
+  // Estado para Términos y Condiciones
+  const [showTermsAndConditions, setShowTermsAndConditions] = useState(false);
+  const [termsModalKey, setTermsModalKey] = useState(0);
 
   // Handlers para UserBalance
   const handleTokenChange = (token: string) => {
@@ -341,7 +344,19 @@ export const UserProfile = ({
         </div>
         */}
       </CardContent>
-      <CardFooter className="py-2">
+      <CardFooter className="py-2 flex flex-col gap-2">
+        {/* Terms and Conditions Link */}
+        <button
+          onClick={() => {
+            setTermsModalKey((prev) => prev + 1);
+            setShowTermsAndConditions(true);
+          }}
+          className="text-xs text-primary font-secondary underline decoration-primary/30 hover:decoration-primary transition-colors self-center sm:self-start"
+        >
+          {t("terms_and_conditions")} - {t("privacy_policy")}
+        </button>
+
+        {/* Log Out Button */}
         <Button
           onClick={onLogout}
           variant="default"
@@ -351,6 +366,16 @@ export const UserProfile = ({
           Log Out
         </Button>
       </CardFooter>
+
+      {/* Terms and Conditions Modal */}
+      {showTermsAndConditions && (
+        <TermsCondPrivacyPolicy
+          key={`terms-modal-${termsModalKey}`}
+          readOnly={true}
+          onComplete={() => setShowTermsAndConditions(false)}
+          onClose={() => setShowTermsAndConditions(false)}
+        />
+      )}
     </Card>
   );
 };
