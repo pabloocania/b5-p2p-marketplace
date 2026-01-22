@@ -88,9 +88,7 @@ export function OrderCard({
 
   const canBuyerDispute = isBuyer && order?.buyerCanDispute;
   const canSellerDispute = isSeller && order?.sellerCanDispute;
-  const buyerDisputed = isBuyer && order?.buyerDisputed;
-  const sellerDisputed = isSeller && order?.sellerDisputed;
-  const alreadyDisputed = buyerDisputed || sellerDisputed;
+  const alreadyDisputed = order?.buyerDisputed || order?.sellerDisputed;
 
   const canShowDisputeButton =
     (canBuyerDispute || canSellerDispute) && !alreadyDisputed;
