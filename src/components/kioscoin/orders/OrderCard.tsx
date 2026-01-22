@@ -195,7 +195,7 @@ export function OrderCard({
 
     const elapsedMinutes = Math.max(0, differenceInMinutes(now, createdAt));
     const canShowCancel =
-      elapsedMinutes >= toleranceConfig.waiting_payment_minutes;
+      elapsedMinutes >= toleranceConfig.waitingPaymentMinutes;
     if (!canShowCancel) return null;
 
     // CancelOrderButton internally checks if user can cancel

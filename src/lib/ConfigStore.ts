@@ -19,15 +19,15 @@ export interface BackendBlockchainConfig {
 }
 
 export interface OrderToleranceConfig {
-    readonly active_minutes: number;
-    readonly fiat_sent_minutes: number;
-    readonly waiting_payment_minutes: number;
+    readonly activeMinutes: number;
+    readonly fiatSentMinutes: number;
+    readonly waitingPaymentMinutes: number;
 }
 
 const DEFAULT_TOLERANCE: OrderToleranceConfig = {
-    active_minutes: 60,
-    fiat_sent_minutes: 60,
-    waiting_payment_minutes: 60,
+    activeMinutes: 60,
+    fiatSentMinutes: 60,
+    waitingPaymentMinutes: 60,
 };
 
 // Type for blockchain names from backend
@@ -297,15 +297,18 @@ export class ConfigStore {
     public async getOrderTolerance(): Promise<OrderToleranceConfig> {
         try {
             const config = await this.getConfig();
-            const backendTolerance = config.config?.tolerance ?? DEFAULT_TOLERANCE;
-            if (!backendTolerance) {
-                return DEFAULT_TOLERANCE;
-            }
+            const backendTolerance = config.config?.tolerance;
+            if (!backendTolerance) return DEFAULT_TOLERANCE;
+
+            const activeMinutes = backendTolerance.active_minutes ?? backendTolerance.activeMinutes;
+            const fiatSentMinutes = backendTolerance.fiat_sent_minutes ?? backendTolerance.fiatSentMinutes;
+            const waitingPaymentMinutes =
+                backendTolerance.waiting_payment_minutes ?? backendTolerance.waitingPaymentMinutes;
 
             return {
-                active_minutes: Number(backendTolerance.active_minutes) || DEFAULT_TOLERANCE.active_minutes,
-                fiat_sent_minutes: Number(backendTolerance.fiat_sent_minutes) || DEFAULT_TOLERANCE.fiat_sent_minutes,
-                waiting_payment_minutes: Number(backendTolerance.waiting_payment_minutes) || DEFAULT_TOLERANCE.waiting_payment_minutes,
+                activeMinutes: Number(activeMinutes) || DEFAULT_TOLERANCE.activeMinutes,
+                fiatSentMinutes: Number(fiatSentMinutes) || DEFAULT_TOLERANCE.fiatSentMinutes,
+                waitingPaymentMinutes: Number(waitingPaymentMinutes) || DEFAULT_TOLERANCE.waitingPaymentMinutes,
             };
         } catch {
             return DEFAULT_TOLERANCE;

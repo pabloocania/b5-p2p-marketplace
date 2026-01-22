@@ -12,11 +12,11 @@ const getToleranceByStatus = (
 
   switch (status) {
     case "WAITING_PAYMENT":
-      return tolerance.waiting_payment_minutes;
+      return tolerance.waitingPaymentMinutes;
     case "ACTIVE":
-      return tolerance.active_minutes;
+      return tolerance.activeMinutes;
     case "FIAT_SENT":
-      return tolerance.fiat_sent_minutes;
+      return tolerance.fiatSentMinutes;
     default:
       return null;
   }
