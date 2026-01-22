@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from "react";
 import { useKioscoinUser } from "./useKioscoinUser";
-import { KioscoinUser, UserData } from "b5-api-client";
+import { KioscoinUser, UserData, UserSettings } from "b5-api-client";
 
 interface KioscoinUserContextProps {
   user: KioscoinUser | undefined;
@@ -9,6 +9,8 @@ interface KioscoinUserContextProps {
   logout: () => void;
   loginId: string | undefined;
   emailVerified: boolean;
+  updateUser: (user: KioscoinUser) => void;
+  updateUserSettings: (settings: UserSettings) => void;
 }
 
 const KioscoinUserContext = createContext<KioscoinUserContextProps | undefined>(

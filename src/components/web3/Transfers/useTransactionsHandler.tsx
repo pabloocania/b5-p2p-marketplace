@@ -1,7 +1,7 @@
 import { useEtherspotFlow } from "@/components/web3/AccountAbstraction/useEtherspotFlow";
 import { TransactionStatusResponse } from "b5-api-client";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 
 export const useTransactionHandler = (
   setTransaction: (transaction: any) => void,
@@ -16,7 +16,7 @@ export const useTransactionHandler = (
     transferFromEOAToSW,
     getUserOperationReceipt,
   } = useEtherspotFlow();
-  const { currentChainId } = useEtherspotSdk();
+  const { currentChainId } = useKioscoinWallet();
   const chainId = currentChainId;
 
   const handleTransaction = async (

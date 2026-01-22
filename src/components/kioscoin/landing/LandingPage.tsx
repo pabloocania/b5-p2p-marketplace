@@ -1,19 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { EmailLoginForm } from "@/components/kioscoin/users/login/EmailLoginForm";
-import { RegisterForm } from "@/components/kioscoin/users/login/RegisterForm";
-import { cn } from "@/lib/utils";
 import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUserContext";
-import { KioscoinUser, UserData } from "b5-api-client";
-import {
-  Users,
-  TrendingUp,
-  CheckCircle2,
-  Shield,
-  Zap,
-  DollarSign,
-} from "lucide-react";
+import { Users, CheckCircle2, Shield } from "lucide-react";
 import KioscoinBrand from "../branding/KioscoinBrand";
 import KioscoinUserLoginFlow from "../users/KioscoinUserLoginFlow";
 

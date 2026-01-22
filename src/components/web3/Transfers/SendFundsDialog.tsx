@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { isAddress, parseUnits } from "viem";
 import {
@@ -24,6 +24,7 @@ import { useEtherspotFlow } from "@/components/web3/AccountAbstraction/useEthers
 import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
 import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
 import { p2pMarketAPIClient } from "@/lib/APIClients";
+import { formatTokenBalance } from "@/lib/utils";
 
 interface SendFundsDialogProps {
   open: boolean;
@@ -57,9 +58,6 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
   const { transferTokens, getUserOperationReceipt } = useEtherspotFlow();
   const { setTransaction } = useTransaction();
 
-  // Ref for the dialog content - used to render Select portal inside the dialog
-  const dialogContentRef = useRef<HTMLDivElement>(null);
-
   const [formState, setFormState] = useState<FormState>({
     destinationAddress: "",
     selectedToken: "",
@@ -84,20 +82,9 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
     (b) => b.name === formState.selectedToken
   );
 
-  // Format balance for display
-  const formatBalance = (balance: string, decimals: number): string => {
-    try {
-      const balanceNumber = parseFloat(balance);
-      const formattedBalance = balanceNumber / Math.pow(10, decimals);
-      return formattedBalance.toFixed(6);
-    } catch (error) {
-      return "0.00";
-    }
-  };
-
   const getMaxBalance = (): string => {
     if (!selectedTokenBalance) return "0";
-    return formatBalance(
+    return formatTokenBalance(
       selectedTokenBalance.smartWalletBalance,
       selectedTokenBalance.decimals
     );
@@ -285,7 +272,7 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent ref={dialogContentRef} className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-primary text-primary">
             {t("send_funds") || "Send Funds"}
@@ -352,7 +339,7 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
                     placeholder={t("select_token") || "Select a token"}
                   />
                 </SelectTrigger>
-                <SelectContent container={dialogContentRef.current}>
+                <SelectContent className="z-[80]">
                   {availableTokens.map((token) => (
                     <SelectItem
                       key={token.name}
@@ -360,7 +347,11 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
                       className="font-secondary"
                     >
                       {token.name} (
-                      {formatBalance(token.smartWalletBalance, token.decimals)})
+                      {formatTokenBalance(
+                        token.smartWalletBalance,
+                        token.decimals
+                      )}
+                      )
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -434,7 +425,7 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
             }
             className="w-full bg-secondary text-white font-secondary hover:bg-dark"
           >
-            {t("send") || "Send"}
+            {t("to_send") || "Send"}
           </Button>
         </div>
       </DialogContent>

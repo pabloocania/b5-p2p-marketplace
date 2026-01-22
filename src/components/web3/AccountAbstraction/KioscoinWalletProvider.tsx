@@ -1,16 +1,17 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useAccount, useChainId, useWalletClient } from "wagmi";
+import { useChainId } from "wagmi";
 import {
   PrimeSdk,
   ArkaPaymaster,
   Web3WalletProvider,
 } from "@etherspot/prime-sdk";
 import { TokenBalance } from "@/components/web3/types";
-import { useWeb3Auth, useWeb3AuthDisconnect } from "@web3auth/modal/react";
+import { useWeb3Auth } from "@web3auth/modal/react";
 import { getArkaPaymasterService } from "./ArkaPaymasterService";
 import { EtherspotSdksManager } from "./EtherspotSdksManager";
+import { p2pMarketAPIClient } from "@/lib/APIClients";
 
-interface EtherspotSdkContextType {
+interface KioscoinWalletContextType {
   primeSdk: PrimeSdk | null;
   swAddress: string;
   eoaAddress: string;
@@ -24,13 +25,13 @@ interface EtherspotSdkContextType {
   isReady: boolean;
 }
 
-const EtherspotSdkContext = createContext<EtherspotSdkContextType | undefined>(
-  undefined
-);
+const KioscoinWalletContext = createContext<
+  KioscoinWalletContextType | undefined
+>(undefined);
 
-export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const KioscoinWalletProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   const [primeSdk, setPrimeSdk] = useState<PrimeSdk | null>(null);
   const [primeSdkMap, setPrimeSdkMap] = useState<Map<number, PrimeSdk>>(
     new Map()
@@ -50,14 +51,48 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
     return await Web3WalletProvider.connect(web3authProvider);
   };
 
+  const logBalanceSnapshots = async (params: {
+    balances: TokenBalance[];
+    blockchain: string | null;
+    smartWalletAddress: string;
+  }) => {
+    const { balances, blockchain, smartWalletAddress } = params;
+    if (!blockchain || !smartWalletAddress || balances.length === 0) {
+      return;
+    }
+
+    const nonZeroBalances = balances.filter((balance) => {
+      const amount = Number(balance.smartWalletBalance);
+      return Number.isFinite(amount) && amount > 0;
+    });
+
+    if (nonZeroBalances.length === 0) {
+      return;
+    }
+
+    await p2pMarketAPIClient.post("/api/ops/balance-snapshot", {
+      blockchain,
+      smartWalletAddress,
+      balances: nonZeroBalances.map((balance) => ({
+        tokenCode: balance.name,
+        tokenBalance: balance.smartWalletBalance,
+      })),
+    });
+  };
+
   const refreshBalances = async () => {
-    if (primeSdk && eoaAddress) {
+    if (primeSdk) {
       const updatedBalances =
-        await EtherspotSdksManager.getInstance().getTokensBalances(
-          primeSdk,
-          eoaAddress
-        );
+        await EtherspotSdksManager.getInstance().getTokensBalances(primeSdk);
       setBalances(updatedBalances ?? []);
+      void logBalanceSnapshots({
+        balances: updatedBalances ?? [],
+        blockchain:
+          EtherspotSdksManager.getInstance().mapNetworkNameToFormattedName(
+            primeSdk?.state.network.name
+          ),
+        smartWalletAddress,
+      });
     }
   };
 
@@ -104,10 +139,17 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
         // Fetch balances for this chain
         const balances =
           await EtherspotSdksManager.getInstance().getTokensBalances(
-            targetPrimeSdk,
-            eoaAddress
+            targetPrimeSdk
           );
         setBalances(balances ?? []);
+        void logBalanceSnapshots({
+          balances: balances ?? [],
+          blockchain:
+            EtherspotSdksManager.getInstance().mapNetworkNameToFormattedName(
+              targetPrimeSdk?.state.network.name
+            ),
+          smartWalletAddress,
+        });
       }
     } catch (error) {
       console.error(`Error switching to chain ${targetChainId}:`, error);
@@ -165,10 +207,17 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
           setArkaInstance(arkaInstance);
           const balances =
             await EtherspotSdksManager.getInstance().getTokensBalances(
-              primeSdkInstance,
-              walletProvider.address
+              primeSdkInstance
             );
           setBalances(balances ?? []);
+          void logBalanceSnapshots({
+            balances: balances ?? [],
+            blockchain:
+              EtherspotSdksManager.getInstance().mapNetworkNameToFormattedName(
+                primeSdkInstance?.state.network.name
+              ),
+            smartWalletAddress,
+          });
           setIsLoading(false);
           setIsReady(true);
         } else {
@@ -182,7 +231,7 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [isConnectedWeb3Auth, chainId, provider]);
 
   return (
-    <EtherspotSdkContext.Provider
+    <KioscoinWalletContext.Provider
       value={{
         primeSdk,
         swAddress: smartWalletAddress,
@@ -196,12 +245,12 @@ export const EtherspotSdkProvider: React.FC<{ children: React.ReactNode }> = ({
       }}
     >
       {children}
-    </EtherspotSdkContext.Provider>
+    </KioscoinWalletContext.Provider>
   );
 };
 
-export const useEtherspotSdk = () => {
-  const context = useContext(EtherspotSdkContext);
+export const useKioscoinWallet = () => {
+  const context = useContext(KioscoinWalletContext);
   if (context === undefined) {
     throw new Error(
       "useEtherspotSdk must be used within an EtherspotSdkProvider"

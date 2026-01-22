@@ -12,6 +12,7 @@ import { TopBar } from "@/components/kioscoin/TopBar";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/create-orders/CreateOrderContainer";
 import { HelpDialog } from "@/components/kioscoin/HelpDialog";
 import SmartWalletOnboarding from "@/components/kioscoin/users/profile/SmartWalletOnboarding";
+import TermsCondPrivacyPolicy from "@/components/kioscoin/T&C and PP/TermsCond&PrivacyPolicy";
 import { MainViewRenderer } from "@/components/kioscoin/MainViewRenderer";
 import {
   NavigationProvider,
@@ -72,11 +73,24 @@ function HomeContent() {
   }, [user, disconnect, navigate, pendingNavigation]);
 
   useEffect(() => {
-    if (user && !localStorage.getItem("hasSeenSmartWalletOnboarding")) {
-      setTimeout(() => {
-        setShowSmartWalletOnboarding(true);
-        localStorage.setItem("hasSeenSmartWalletOnboarding", "true");
-      }, 600);
+    if (user) {
+      // Check if user has already accepted terms
+      const hasAcceptedTerms = localStorage.getItem("hasAcceptedTermsAndConditions");
+      
+      if (!hasAcceptedTerms) {
+        // Reset state to ensure modal shows only on first login
+        setShowSmartWalletOnboarding(false);
+        setTimeout(() => {
+          setShowSmartWalletOnboarding(true);
+          // Modal will show only on first login/registration
+        }, 600);
+      } else {
+        // User has already accepted, don't show modal
+        setShowSmartWalletOnboarding(false);
+      }
+    } else {
+      // Reset state when user logs out
+      setShowSmartWalletOnboarding(false);
     }
   }, [user]);
 
@@ -204,8 +218,13 @@ function HomeContent() {
 
       <HelpDialog open={isHelpOpen} onOpenChange={setIsHelpOpen} />
       {showSmartWalletOnboarding && (
-        <SmartWalletOnboarding
-          onComplete={() => setShowSmartWalletOnboarding(false)}
+        <TermsCondPrivacyPolicy
+          onComplete={() => {
+            // Mark that user has accepted terms
+            localStorage.setItem("hasAcceptedTermsAndConditions", "true");
+            setShowSmartWalletOnboarding(false);
+          }}
+          onClose={logout}
         />
       )}
 

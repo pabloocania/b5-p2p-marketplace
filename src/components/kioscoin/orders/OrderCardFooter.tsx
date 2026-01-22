@@ -17,7 +17,7 @@ import { p2pMarketAPIClient as client } from "../../../lib/APIClients";
 import { useTranslation } from "react-i18next";
 import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 import { useAccount } from "wagmi";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import NotifyFiatSentButton from "../NotifyFiatSentButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -62,7 +62,7 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
     isLoading: isEtherspotLoading,
     isReady,
     switchToChain,
-  } = useEtherspotSdk();
+  } = useKioscoinWallet();
   const { t } = useTranslation();
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [orderTaken, setOrderTaken] = useState(false);

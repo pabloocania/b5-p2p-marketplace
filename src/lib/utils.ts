@@ -34,34 +34,25 @@ export const formatFiatAmountForCopy = (amount: string | undefined): string => {
   return numAmount.toFixed(2).replace(".", ",");
 };
 
-// Format balances for display with smart number formatting
-const formatBalance = (balance: string): string => {
-  const value = parseFloat(balance);
-
-  if (value === 0) return "0";
-  if (value < 0.001 && value > 0) return "<0.001";
-
-  // For very large numbers, use compact notation
-  if (value >= 1000000) {
-    return new Intl.NumberFormat("en-US", {
-      notation: "compact",
-      maximumFractionDigits: 2,
-    }).format(value);
+/**
+ * Formats a token balance for display
+ * @param balance - The raw balance string (in smallest unit, e.g., wei)
+ * @param decimals - Number of decimals for the token
+ * @param displayDecimals - Number of decimal places to show (default: 2)
+ * @returns Formatted balance string
+ */
+export const formatTokenBalance = (
+  balance: string,
+  decimals: number,
+  displayDecimals: number = 2
+): string => {
+  try {
+    const balanceNumber = parseFloat(balance);
+    const formattedBalance = balanceNumber / Math.pow(10, decimals);
+    return formattedBalance.toFixed(displayDecimals);
+  } catch {
+    return "0.00";
   }
-
-  // For medium-large numbers, use fewer decimal places
-  if (value >= 1000) {
-    return value.toLocaleString(undefined, {
-      maximumFractionDigits: 2,
-      minimumFractionDigits: 2,
-    });
-  }
-
-  // For smaller numbers, show more precision
-  return value.toLocaleString(undefined, {
-    maximumFractionDigits: 4,
-    minimumFractionDigits: 2,
-  });
 };
 
 /**

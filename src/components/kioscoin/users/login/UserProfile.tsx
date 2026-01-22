@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { LogOut, AlertCircle } from "lucide-react";
+import TermsCondPrivacyPolicy from "../../T&C and PP/TermsCond&PrivacyPolicy";
 
 import {
   Card,
@@ -21,8 +22,7 @@ import UserBalance, {
 } from "../profile/UserBalance";
 import SmartWalletOnboarding from "../profile/SmartWalletOnboarding";
 import { KioscoinUser } from "b5-api-client";
-import { useState, useEffect, useRef } from "react";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import KioscoinWalletWizard from "@/components/kioscoin/wallet/KioscoinWalletWizard";
 import { useWeb3Auth } from "@web3auth/modal/react";
 import UserSettings from "../profile/UserSettings";
@@ -58,7 +58,7 @@ export const UserProfile = ({
     switchToChain,
     currentChainId,
     swAddress,
-  } = useEtherspotSdk();
+  } = useKioscoinWallet();
   const { isConnected: web3AuthConnected, status: web3authStatus } =
     useWeb3Auth();
 
@@ -77,6 +77,9 @@ export const UserProfile = ({
   const [previousConnectionState, setPreviousConnectionState] = useState(false);
   // Estado para KioscoinWalletWizard
   const [showWalletWizard, setShowWalletWizard] = useState(false);
+  // Estado para Términos y Condiciones
+  const [showTermsAndConditions, setShowTermsAndConditions] = useState(false);
+  const [termsModalKey, setTermsModalKey] = useState(0);
 
   // Handlers para UserBalance
   const handleTokenChange = (token: string) => {
@@ -178,7 +181,12 @@ export const UserProfile = ({
   // Auto-select token with positive balance only on initial load
   // Once user manually selects a token, respect their choice even if balance is zero
   useEffect(() => {
-    if (isReady && balances && balances.length > 0 && !hasInitializedToken.current) {
+    if (
+      isReady &&
+      balances &&
+      balances.length > 0 &&
+      !hasInitializedToken.current
+    ) {
       // Check if current selected token has balance
       const currentTokenBalance = balances.find(
         (b) => b.name === selectedToken
@@ -336,16 +344,38 @@ export const UserProfile = ({
         </div>
         */}
       </CardContent>
-      <CardFooter className="py-2">
+      <CardFooter className="py-2 flex flex-col gap-2">
+        {/* Terms and Conditions Link */}
+        <button
+          onClick={() => {
+            setTermsModalKey((prev) => prev + 1);
+            setShowTermsAndConditions(true);
+          }}
+          className="text-xs text-primary font-secondary underline decoration-primary/30 hover:decoration-primary transition-colors self-center"
+        >
+          {t("terms_and_conditions")} - {t("privacy_policy")}
+        </button>
+
+        {/* Log Out Button */}
         <Button
           onClick={onLogout}
           variant="default"
-          className="w-full text-white font-secondary bg-primary text-sm sm:text-base py-2 sm:py-3"
+          className="w-full text-white font-secondary bg-primary text-xs sm:text-sm py-2 sm:py-3"
         >
           <LogOut className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
           Log Out
         </Button>
       </CardFooter>
+
+      {/* Terms and Conditions Modal */}
+      {showTermsAndConditions && (
+        <TermsCondPrivacyPolicy
+          key={`terms-modal-${termsModalKey}`}
+          readOnly={true}
+          onComplete={() => setShowTermsAndConditions(false)}
+          onClose={() => setShowTermsAndConditions(false)}
+        />
+      )}
     </Card>
   );
 };

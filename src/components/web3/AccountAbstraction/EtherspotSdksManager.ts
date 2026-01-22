@@ -1,7 +1,5 @@
 import { EtherspotBundler, SdkOptions, PrimeSdk } from "@etherspot/prime-sdk";
 import { ConfigStore, ChainId, BlockchainName, BackendBlockchainConfig } from "../../../lib/ConfigStore";
-import { getBalance } from "@wagmi/core";
-import { config } from "@/components/web3/wagmi";
 import { getAddress } from "viem";
 import { TokenBalance } from "../types";
 import { PublicClientManager } from "../PublicClientManager";
@@ -27,37 +25,17 @@ export class EtherspotSdksManager {
         return null;
     }
 
-    public async getTokensBalances(primeSdk: PrimeSdk, eoaAddress: string) {
-        if (primeSdk && eoaAddress) {
+    public async getTokensBalances(primeSdk: PrimeSdk) {
+        if (primeSdk) {
             const smartWalletAddress = await primeSdk?.getCounterFactualAddress();
-
-            const eoaNativeBalance = await getBalance(config, {
-                address:
-                    getAddress(eoaAddress) ??
-                    "0x0000000000000000000000000000000000000000",
-            });
-
-            const swNativeBalance = await primeSdk?.getNativeBalance();
-
             const currentBlockchain = this.mapNetworkNameToFormattedName(
                 primeSdk?.state.network.name
             )!!;
 
-            const nativeBalance: TokenBalance = {
-                name: eoaNativeBalance.symbol,
-                smartWalletBalance: swNativeBalance ?? "0.0",
-                eoaBalance: eoaNativeBalance?.value.toString() ?? "0.0 ",
-                address: "0x0000000000000000000000000000000000000000",
-                decimals: 18,
-            };
-
             const balances = await this.fetchStablecoinBalances(
-                smartWalletAddress ?? (await primeSdk?.getCounterFactualAddress()!!),
-                eoaAddress,
+                smartWalletAddress,
                 currentBlockchain
             );
-
-            balances.push(nativeBalance);
 
             return balances;
         }
@@ -66,7 +44,6 @@ export class EtherspotSdksManager {
     // Function to fetch balances for stablecoins on a given blockchain
     private async fetchStablecoinBalances(
         smartWalletAddress: string,
-        eoaAddress: string,
         currentBlockchain: string
     ): Promise<TokenBalance[]> {
         const tokenBalances: TokenBalance[] = [];
@@ -84,15 +61,12 @@ export class EtherspotSdksManager {
                     );
                     for (const { address: tokenAddress } of relevantAddresses) {
                         try {
-                            const [swTokenBalance, eoaTokenBalance] = await Promise.all([
-                                this.getStablecoinBalance(tokenAddress, smartWalletAddress, chainId),
-                                this.getStablecoinBalance(tokenAddress, eoaAddress, chainId),
-                            ]);
+                            const swTokenBalance = await this.getStablecoinBalance(tokenAddress, smartWalletAddress, chainId)
 
                             // Map the balances to the TokenBalance type
                             tokenBalances.push({
                                 name: stablecoin.name ?? "Unknown",
-                                eoaBalance: eoaTokenBalance?.toString() ?? "0",
+                                eoaBalance: "0",
                                 smartWalletBalance: swTokenBalance?.toString() ?? "0",
                                 address:
                                     tokenAddress ?? "0x0000000000000000000000000000000000000000",

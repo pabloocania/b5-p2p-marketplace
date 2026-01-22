@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useEtherspotFlow } from "@/components/web3/AccountAbstraction/useEtherspotFlow";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import { Order } from "b5-api-client";
 import { useTranslation } from "react-i18next";
 import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
@@ -32,7 +32,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
   const { batchApproveAndEscrow, getUserOperationReceipt } = useEtherspotFlow();
   const [isLoading, setIsLoading] = useState(false);
   const [hasSufficientBalance, setHasSufficientBalance] = useState(true);
-  const { balances, currentChainId } = useEtherspotSdk();
+  const { balances, currentChainId } = useKioscoinWallet();
   const [isTransacting, setIsTransacting] = useState(false);
   const { setTransaction } = useTransaction();
   const [isOpen, setIsOpen] = useState(false);

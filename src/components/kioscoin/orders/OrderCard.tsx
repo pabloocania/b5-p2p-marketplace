@@ -12,7 +12,7 @@ import ViewHistoryButton from "./ViewHistoryButton";
 import { ShareOrderButton } from "./ShareOrderButton";
 import DisputeOrderButton from "../dispute/DisputeOrderButton";
 import ChatButton from "./ChatButton";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import { CancelOrderButton } from "./CancelOrderButton";
 
 const FINAL_STATUSES = [
@@ -42,7 +42,7 @@ export function OrderCard({
   onRefresh,
 }: OrderCardProps) {
   const { t } = useTranslation();
-  const { swAddress } = useEtherspotSdk();
+  const { swAddress } = useKioscoinWallet();
   const [walletAddress, setWalletAddress] = useState(swAddress || "");
   const [order, setOrder] = useState(orderDTO);
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
@@ -88,9 +88,7 @@ export function OrderCard({
 
   const canBuyerDispute = isBuyer && order?.buyerCanDispute;
   const canSellerDispute = isSeller && order?.sellerCanDispute;
-  const buyerDisputed = isBuyer && order?.buyerDisputed;
-  const sellerDisputed = isSeller && order?.sellerDisputed;
-  const alreadyDisputed = buyerDisputed || sellerDisputed;
+  const alreadyDisputed = order?.buyerDisputed || order?.sellerDisputed;
 
   const canShowDisputeButton =
     (canBuyerDispute || canSellerDispute) && !alreadyDisputed;

@@ -14,7 +14,7 @@ import TelegramSupportButton from "@/components/kioscoin/support/TelegramSupport
 import PaymentMethodsComponent from "../../orders/create-orders/PaymentMethodsComponent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExportPrivateKey } from "@/components/kioscoin/security";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import { Copy, Info } from "lucide-react";
 import {
   Popover,
@@ -27,13 +27,14 @@ interface UserSettingsProps {
 }
 
 export default function UserSettings({ className }: UserSettingsProps) {
-  const { user, loginId } = useKioscoinUserContext();
+  const { user, loginId, updateUser, updateUserSettings } =
+    useKioscoinUserContext();
   const { toast } = useToast();
   const [selectedMethods, setSelectedMethods] = useState<PaymentMethod[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("payments");
   const { t } = useTranslation();
-  const { eoaAddress, swAddress } = useEtherspotSdk();
+  const { eoaAddress, swAddress } = useKioscoinWallet();
 
   const truncateAddress = (addr: string) =>
     addr ? `${addr.slice(0, 10)}...${addr.slice(-8)}` : "";
@@ -75,27 +76,32 @@ export default function UserSettings({ className }: UserSettingsProps) {
     if (!user?.id || !loginId || !isValid) return;
     setIsSaving(true);
     try {
-      const request: UpdateUserSettingsRequest = {
-        userId: user.id,
-        settings: (() => {
-          const settingsPayload: UpdateUserSettingsRequest["settings"] = {
-            paymentMethods: selectedMethods.map((m) => ({ ...m })),
-            hasVerified: user.settings?.hasVerified ?? false,
-          };
-
-          const preferredToken = user.settings?.preferredTokenCode;
-          if (preferredToken !== undefined) {
-            settingsPayload.preferredTokenCode = preferredToken;
-          }
-
-          return settingsPayload;
-        })(),
+      const settingsPayload: UpdateUserSettingsRequest["settings"] = {
+        paymentMethods: selectedMethods.map((m) => ({ ...m })),
+        hasVerified: user.settings?.hasVerified ?? false,
       };
 
-      await p2pMarketAPIClient.updateUserSettings(request, {
+      const preferredToken = user.settings?.preferredTokenCode;
+      if (preferredToken !== undefined) {
+        settingsPayload.preferredTokenCode = preferredToken;
+      }
+
+      const request: UpdateUserSettingsRequest = {
+        userId: user.id,
+        settings: settingsPayload,
+      };
+
+      const response = await p2pMarketAPIClient.updateUserSettings(request, {
         "Content-Type": "application/json",
         Authorization: `Bearer ${loginId}`,
       });
+
+      const updatedUser = response.users?.[0];
+      if (updatedUser) {
+        updateUser(updatedUser);
+      } else {
+        updateUserSettings(settingsPayload);
+      }
 
       toast({
         title: t("settings_saved"),
@@ -157,13 +163,6 @@ export default function UserSettings({ className }: UserSettingsProps) {
           <TabsContent value="notifications" className="space-y-4">
             <div className="flex w-full">
               <PushNotificationsToggle userId={user!.id!} />
-            </div>
-
-            <div className="border-t pt-4">
-              <p className="text-xs font-secondary text-dark mb-2">
-                {t("support.need_help")}
-              </p>
-              <TelegramSupportButton userId={user!.id!} />
             </div>
           </TabsContent>
 
@@ -267,6 +266,12 @@ export default function UserSettings({ className }: UserSettingsProps) {
             </Button>
           </div>
         )}
+        <div className="border-t pt-4">
+          <p className="text-xs font-secondary text-dark mb-2">
+            {t("support.need_help")}
+          </p>
+          <TelegramSupportButton userId={user!.id!} />
+        </div>
       </CardContent>
     </Card>
   );

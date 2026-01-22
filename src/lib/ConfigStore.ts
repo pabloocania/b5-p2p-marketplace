@@ -38,11 +38,13 @@ const DEFAULT_CONFIG: ConfigResponse<any> = {
         },
         blockchains: [
             {
-                name: "ARBITRUM_TESTNET",
-                escrowAddress: "0xA3C6696665F62928c908ed5b729Ef7CF7566B57a",
+                name: "BSC_MAINNET",
+                chainId: 56,
+                escrowAddress: "",
                 supportedCoins: [{
                     tokenCode: "USDK",
-                    address: "0x3cfA72437c8992D417e154f92308b5A2EA07EDbc"
+                    address: "",
+                    decimals: 6
                 }]
             }
         ]
@@ -224,7 +226,7 @@ export class ConfigStore {
         }
 
         if (!this.backendStablecoins) {
-            return [rootstock] as const;
+            return [bsc] as const;
         }
 
         const enabledChains = this.backendStablecoins.supportedStablecoins
@@ -256,7 +258,7 @@ export class ConfigStore {
 
         // Ensure we always return a non-empty array with at least one chain
         if (enabledChains.length === 0) {
-            return [rootstock] as const;
+            return [bsc] as const;
         }
 
         // Create a new array with the first chain and the rest

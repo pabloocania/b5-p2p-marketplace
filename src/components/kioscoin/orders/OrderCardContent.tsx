@@ -26,7 +26,7 @@ import { Rating } from "../Rating";
 import { formatFiatAmount } from "@/lib/utils";
 import PaymentMethodSelector from "./create-orders/PaymentMethodSelector";
 import FiatSendReceiveMethodSelector from "./FiatReceiveMethodSelector";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 
 interface OrderCardContentProps {
   order: Order;
@@ -60,7 +60,7 @@ const OrderCardContent: React.FC<OrderCardContentProps> = ({
     PaymentMethod[]
   >([]);
   const availableMethods = ConfigStore.getInstance().getPaymentMethods();
-  const { balances, swAddress } = useEtherspotSdk();
+  const { balances, swAddress } = useKioscoinWallet();
 
   const hasValidFiatData = (
     order: Order

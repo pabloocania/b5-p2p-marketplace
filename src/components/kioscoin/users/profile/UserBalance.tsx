@@ -6,7 +6,8 @@ import { CompactSelector } from "./CompactSelector";
 import { useTranslation } from "react-i18next";
 import { TokenBalance } from "@/components/web3/types";
 import { ConfigStore } from "@/lib/ConfigStore";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
+import { formatTokenBalance } from "@/lib/utils";
 
 // Mainnet blockchains in priority order
 const MAINNET_BLOCKCHAINS = [
@@ -17,15 +18,15 @@ const MAINNET_BLOCKCHAINS = [
   "RSK_MAIN",
 ] as const;
 
-// Testnet blockchains in priority order (ARBITRUM_TESTNET as fallback)
+// Testnet blockchains in priority order
 const TESTNET_BLOCKCHAINS = [
   "BASE_SEPOLIA",
   "ARBITRUM_TESTNET",
   "RSK_TESTNET",
 ] as const;
 
-// Default fallback blockchain
-export const DEFAULT_BLOCKCHAIN = "ARBITRUM_TESTNET";
+// Default fallback blockchain (BSC Mainnet)
+export const DEFAULT_BLOCKCHAIN = "BSC_MAINNET";
 
 export const isMainnet = (blockchain: string): boolean =>
   MAINNET_BLOCKCHAINS.includes(
@@ -36,7 +37,7 @@ export const isMainnet = (blockchain: string): boolean =>
  * Determines the best blockchain to select based on precedence:
  * 1. First priority: Mainnets with balance > 0
  * 2. Second priority: Testnets with balance > 0
- * 3. Fallback: ARBITRUM_TESTNET
+ * 3. Fallback: BSC_MAINNET
  */
 export interface BlockchainWithBalance {
   blockchain: string;
@@ -73,7 +74,7 @@ export const selectBestBlockchain = (
     return testnetsWithBalance[0].blockchain;
   }
 
-  // Fallback: ARBITRUM_TESTNET
+  // Fallback: BSC_MAINNET
   return DEFAULT_BLOCKCHAIN;
 };
 
@@ -109,7 +110,7 @@ const getBlockchainIcon = (blockchain: string): string => {
   } else if (blockchain === "POLYGON_MAINNET") {
     return "/blockchains/polygon.svg";
   } else if (blockchain === "BASE_SEPOLIA" || blockchain === "BASE_MAINNET") {
-    return "/blockchains/base.svg";
+    return "/blockchains/base.png";
   }
   return "🔗";
 };
@@ -130,7 +131,7 @@ export default function UserBalance({
   onBlockchainChange,
 }: UserBalanceProps) {
   const { t } = useTranslation();
-  const { refreshBalances, isLoading: isSdkLoading } = useEtherspotSdk();
+  const { refreshBalances, isLoading: isSdkLoading } = useKioscoinWallet();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [availableTokens, setAvailableTokens] = useState<
     Array<{ code: string; name: string; icon: string }>
@@ -246,18 +247,7 @@ export default function UserBalance({
   const currentBalance = selectedTokenBalance?.smartWalletBalance || "0";
   const decimals = selectedTokenBalance?.decimals || 18;
 
-  // Format balance using decimals
-  const formatBalance = (balance: string, decimals: number): string => {
-    try {
-      const balanceNumber = parseFloat(balance);
-      const formattedBalance = balanceNumber / Math.pow(10, decimals);
-      return formattedBalance.toFixed(2);
-    } catch (error) {
-      return "0.00";
-    }
-  };
-
-  const formattedBalance = formatBalance(currentBalance, decimals);
+  const formattedBalance = formatTokenBalance(currentBalance, decimals);
 
   const currentToken = availableTokens.find((t) => t.code === selectedToken) ||
     availableTokens[0] || { code: "USDK", name: "USDK", icon: "🪙" };

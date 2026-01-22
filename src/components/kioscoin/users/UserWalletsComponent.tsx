@@ -3,7 +3,7 @@
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { TokenBalance, TokenTransfer } from "@/components/web3/types";
-import { useEtherspotSdk } from "@/components/web3/AccountAbstraction/EtherspotSdkProvider";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
 import { useTransactionStatusChecker } from "@/components/web3/Transactions/useTransactionStatusChecker";
 import { useTransactionHandler } from "@/components/web3/Transfers/useTransactionsHandler";
@@ -88,7 +88,7 @@ export default function UserWalletsComponent({
   const { t } = useTranslation();
   const { setTransaction } = useTransaction();
   const { balances, swAddress, refreshBalances, isReady, currentChainId } =
-    useEtherspotSdk();
+    useKioscoinWallet();
 
   // Derive blockchain name from currentChainId - this ensures we use the actual connected chain
   const actualBlockchain =
