@@ -85,10 +85,11 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
         status: "FIAT_SENT",
         orderId: order.id ?? "",
       };
-      const updatedOrder = await client.updateOrder(updateRequest, {
+      const updatedOrderResponse = await client.updateOrder(updateRequest, {
         Authorization: `Bearer ${loginId}`,
       });
       // Update local state with the response to show the new status immediately
+      const updatedOrder = updatedOrderResponse.orders?.[0];
       if (updatedOrder) {
         setOrder(updatedOrder);
       }

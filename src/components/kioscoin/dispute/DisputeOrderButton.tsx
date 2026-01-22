@@ -16,6 +16,7 @@ import { Order } from "b5-api-client";
 import { p2pMarketAPIClient as client } from "@/lib/APIClients";
 import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUserContext";
 import { CreateDisputeRequest } from "b5-api-client";
+import TelegramSupportButton from "../support/TelegramSupportButton";
 
 // interface DisputeOrderRequest {
 //   orderId: string;
@@ -144,6 +145,7 @@ export default function DisputeOrderButton({
               <div className="p-3 rounded-md mt-2 text-sm bg-secondary/10 border border-secondary/30 text-dark text-center">
                 {t("dispute_already_message")}
               </div>
+              <TelegramSupportButton userId={user!.id!} />
             </div>
             <DialogFooter className="flex justify-end gap-2 mt-4">
               <Button

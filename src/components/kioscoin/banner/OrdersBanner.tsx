@@ -61,7 +61,6 @@ export default function OrdersBanner({ onOfferClick }: OrdersBannerProps) {
 
         // Check if response or offers is empty
         if (!response?.offers || response.offers.length === 0) {
-          console.log("No order offers available");
           setShouldRender(false);
           return;
         }
