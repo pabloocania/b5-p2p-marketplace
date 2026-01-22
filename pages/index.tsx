@@ -74,12 +74,20 @@ function HomeContent() {
 
   useEffect(() => {
     if (user) {
-      // Reset state to ensure modal shows every time user logs in
-      setShowSmartWalletOnboarding(false);
-      setTimeout(() => {
-        setShowSmartWalletOnboarding(true);
-        // Modal will show every time user logs in
-      }, 600);
+      // Check if user has already accepted terms
+      const hasAcceptedTerms = localStorage.getItem("hasAcceptedTermsAndConditions");
+      
+      if (!hasAcceptedTerms) {
+        // Reset state to ensure modal shows only on first login
+        setShowSmartWalletOnboarding(false);
+        setTimeout(() => {
+          setShowSmartWalletOnboarding(true);
+          // Modal will show only on first login/registration
+        }, 600);
+      } else {
+        // User has already accepted, don't show modal
+        setShowSmartWalletOnboarding(false);
+      }
     } else {
       // Reset state when user logs out
       setShowSmartWalletOnboarding(false);
@@ -211,7 +219,11 @@ function HomeContent() {
       <HelpDialog open={isHelpOpen} onOpenChange={setIsHelpOpen} />
       {showSmartWalletOnboarding && (
         <TermsCondPrivacyPolicy
-          onComplete={() => setShowSmartWalletOnboarding(false)}
+          onComplete={() => {
+            // Mark that user has accepted terms
+            localStorage.setItem("hasAcceptedTermsAndConditions", "true");
+            setShowSmartWalletOnboarding(false);
+          }}
           onClose={logout}
         />
       )}
