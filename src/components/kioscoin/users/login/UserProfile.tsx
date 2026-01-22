@@ -351,7 +351,7 @@ export const UserProfile = ({
             setTermsModalKey((prev) => prev + 1);
             setShowTermsAndConditions(true);
           }}
-          className="text-xs text-primary font-secondary underline decoration-primary/30 hover:decoration-primary transition-colors self-center sm:self-start"
+          className="text-xs text-primary font-secondary underline decoration-primary/30 hover:decoration-primary transition-colors self-center"
         >
           {t("terms_and_conditions")} - {t("privacy_policy")}
         </button>
