@@ -33,9 +33,11 @@ const StepSection = ({ title, steps }: StepSectionProps) => (
 );
 
 export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [step, setStep] = useState(0); // 0:intro, 1:wallet info, 2:terms
   const [selectedFlow, setSelectedFlow] = useState<Step1FlowId | null>(null);
+  const isSpanish = i18n.language?.startsWith("es");
+  const faqDocUrl = "/FAQs";
   const parseSteps = (value: string) =>
     value
       .split("\n")
@@ -90,11 +92,8 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
           {step === 2 && (
             <>
               <DialogTitle className="text-xl font-bold text-primary text-center">
-                {t("help_step3_title", "Acepto Términos y condiciones")}
+                {isSpanish ? "Preguntas frecuentes" : "Frequent questions"}
               </DialogTitle>
-              {/* <DialogDescription className="text-sm text-muted-foreground">
-                {t("kioskoin_onboarding_subtitle")}
-              </DialogDescription> */}
             </>
           )}
         </DialogHeader>
@@ -195,17 +194,18 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
         )}
 
         {step === 2 && (
-          <div className="space-y-3 text-sm leading-relaxed text-dark">
-            {/* <h3 className="font-semibold text-base text-primary">
-              {t("help_step3_title", "Acepto Términos y condiciones")}
-            </h3> */}
-            <div className="space-y-1 text-center">
-              {t("help_step3_lines")
-                .split("\n")
-                .map((line, i) => (
-                  <p key={i}>{line}</p>
-                ))}
-            </div>
+          <div className="space-y-3 text-sm leading-relaxed text-dark text-center">
+            <p>
+              {isSpanish
+                ? "Para más información dirígete a la sección de preguntas frecuentes."
+                : "For more information, go to the frequently asked questions section."}
+            </p>
+            <a
+              href={faqDocUrl}
+              className="text-primary underline decoration-primary/40 hover:decoration-primary"
+            >
+              {faqDocUrl.replace("/", "")}
+            </a>
           </div>
         )}
 
@@ -254,7 +254,9 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
               className="bg-secondary text-white text-xs font-secondary shadow-md hover:bg-secondary/90"
             >
               {step === 2
-                ? t("help_accept_tyc", "Acepto TyC")
+                ? isSpanish
+                  ? "Cerrar"
+                  : "Close"
                 : t("next", "Next")}
             </Button>
           </div>
