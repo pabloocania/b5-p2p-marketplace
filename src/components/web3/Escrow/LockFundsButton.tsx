@@ -1,0 +1,190 @@
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useEtherspotFlow } from "@/components/web3/AccountAbstraction/useEtherspotFlow";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
+import { Order } from "b5-api-client";
+import { useTranslation } from "react-i18next";
+import { useTransaction } from "@/components/web3/Transactions/TransactionContext";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import LockFundsConfirmation from "@/components/web3/Escrow/LockFundsConfirmation";
+import { sleep } from "@etherspot/prime-sdk/dist/sdk/common";
+import { p2pMarketAPIClient } from "@/lib/APIClients";
+import { PublicClientManager } from "../PublicClientManager";
+
+interface LockFundsButtonProps {
+  order: Order;
+  canLock: boolean;
+  onSuccess: () => void;
+  onRefresh?: () => void;
+}
+
+const LockFundsButton: React.FC<LockFundsButtonProps> = ({
+  order,
+  onSuccess,
+  onRefresh,
+}) => {
+  const { t } = useTranslation();
+  const { batchApproveAndEscrow, getUserOperationReceipt } = useEtherspotFlow();
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSufficientBalance, setHasSufficientBalance] = useState(true);
+  const { balances, refreshBalances } = useKioscoinWallet();
+  const [isTransacting, setIsTransacting] = useState(false);
+  const { setTransaction } = useTransaction();
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    // Check balance when component mounts
+    const tokenBalance = balances.find(
+      (balance) => balance.name === order.tokenCode
+    );
+
+    if (tokenBalance) {
+      const smartWalletBalance = parseFloat(tokenBalance.smartWalletBalance);
+      const orderAmount = parseFloat(order?.amount ?? "0");
+      setHasSufficientBalance(smartWalletBalance >= orderAmount);
+    } else {
+      setHasSufficientBalance(false);
+    }
+  }, [balances, order.amount]);
+
+  const handleLockFunds = async () => {
+    if (!isTransacting) {
+      setIsLoading(true);
+      setIsOpen(false); // Close the sheet immediately
+      onSuccess();
+      try {
+        if (!hasSufficientBalance) {
+          return;
+        }
+        setIsTransacting(true);
+        const txHashPromise = batchApproveAndEscrow(order);
+
+        setTransaction({
+          status: "waiting",
+          message: t("approve_and_lock"),
+          progress: 45,
+        });
+
+        try {
+          const uoOpsHash = await txHashPromise;
+          setTransaction({
+            status: "sending",
+            message: t("sending_tx_blockchain"),
+            progress: 70,
+          });
+          let opsReceipt = null;
+          if (uoOpsHash) {
+            const timeout = Date.now() + 300000; // 5 minute timeout
+            while (opsReceipt == null && Date.now() < timeout) {
+              await sleep(2);
+              opsReceipt = await getUserOperationReceipt(uoOpsHash);
+            }
+          }
+          if (opsReceipt != undefined && opsReceipt.success) {
+            // Fire-and-forget: log the operation receipt to the backend
+            p2pMarketAPIClient
+              .saveOpsLog({
+                chainId: PublicClientManager.getChainIdForBlockchain(
+                  order.blockchain ?? "RSK_TESTNET"
+                ),
+                userOp: opsReceipt as unknown as Record<string, unknown>,
+                orderId: order.id,
+                opsType: "LOCK",
+              })
+              .catch((error: any) => {
+                console.error("Error saving ops log:", error);
+              });
+
+            setTransaction({
+              status: "success",
+              message: t("funds_locked"),
+              progress: 100,
+              order: order,
+            });
+            // Refresh order data after successful lock
+            onRefresh?.();
+            await refreshBalances();
+          } else {
+            setTransaction({
+              status: "error",
+              message: t("transaction_failed"),
+              progress: 0,
+            });
+          }
+          return opsReceipt;
+        } catch (error) {
+          setTransaction({
+            status: "error",
+            message: t("transaction_failed"),
+            progress: 0,
+          });
+        } finally {
+          setIsTransacting(true);
+        }
+      } catch (error) {
+        console.error("Error locking funds:", error);
+        setTransaction({
+          status: "error",
+          message: t("transaction_failed"),
+          progress: 0,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  return (
+    <div>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>
+          <Button
+            className={`w-full font-secondary ${
+              hasSufficientBalance
+                ? "text-white bg-secondary font-secondary shadow-sm hover:text-white hover:bg-primary"
+                : "text-white bg-red-500 border-red-500"
+            }`}
+            onClick={() =>
+              hasSufficientBalance &&
+              !isLoading &&
+              !isTransacting &&
+              setIsOpen(true)
+            }
+            disabled={isLoading || isTransacting || !hasSufficientBalance}
+          >
+            {!hasSufficientBalance
+              ? t("not_enough_balance")
+              : isLoading
+              ? t("locking_funds")
+              : t("lock_funds")}
+          </Button>
+        </SheetTrigger>
+        {!hasSufficientBalance && (
+          <p className="text-dark text-xs mt-2 font-secondary text-center">
+            {t("info_text_fund_wallet")}
+          </p>
+        )}
+        <SheetContent
+          side="bottom"
+          className="h-[75vh] bg-backgroundMain"
+          closeText={t("close")}
+        >
+          <SheetTitle className="text-lg font-semibold mb-4"></SheetTitle>
+          <LockFundsConfirmation
+            handleLockFunds={handleLockFunds}
+            canLock={isLoading || !hasSufficientBalance}
+            order={order}
+            onClose={() => setIsOpen(false)}
+          />
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+};
+
+export default LockFundsButton;
