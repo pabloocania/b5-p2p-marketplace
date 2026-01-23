@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Order, OrderStatus } from "b5-api-client";
 import { ConfigStore, OrderToleranceConfig } from "@/lib/ConfigStore";
 import { differenceInMinutes, parseISO } from "date-fns";
+import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 
 const getToleranceByStatus = (
   status: OrderStatus | undefined,
@@ -31,6 +32,14 @@ const OrderDisputeCountdown: React.FC<OrderDisputeCountdownProps> = ({
   order,
   onReadyChange,
 }) => {
+  const { user } = useKioscoinUserContext();
+  const isSeller = user?.id === order.sellerId;
+
+  if (order.status === "ACTIVE" && !isSeller) {
+    onReadyChange?.(null);
+    return null;
+  }
+
   if (order.buyerDisputed || order.sellerDisputed) {
     onReadyChange?.(null);
     return null;
