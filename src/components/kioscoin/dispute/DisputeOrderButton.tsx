@@ -18,11 +18,6 @@ import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUser
 import { CreateDisputeRequest } from "b5-api-client";
 import TelegramSupportButton from "../support/TelegramSupportButton";
 
-// interface DisputeOrderRequest {
-//   orderId: string;
-//   reason: string;
-// }
-
 interface DisputeOrderButtonProps {
   order: Order;
   onDisputeCreated?: () => void;

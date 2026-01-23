@@ -51,16 +51,19 @@ export function OrderCard({
   >([]);
   const [showCopied, setShowCopied] = useState(false);
   const { user } = useKioscoinUserContext();
-  const [countdownRemainingMinutes, setCountdownRemainingMinutes] = useState<
-    number | null
-  >(null);
+  const [isCountdownReady, setIsCountdownReady] = useState<boolean | null>(
+    null
+  );
 
   useEffect(() => {
     setOrder(orderDTO);
   }, [orderDTO]);
 
-  const canDisputeFromCountdown =
-    countdownRemainingMinutes !== null && countdownRemainingMinutes <= 0;
+  useEffect(() => {
+    setIsCountdownReady(null);
+  }, [order?.id, order?.createdAt, order?.status]);
+
+  const canDisputeFromCountdown = isCountdownReady === true;
 
   useEffect(() => {
     // For PENDING BUY orders, don't pre-populate from order.paymentMethods
@@ -163,10 +166,23 @@ export function OrderCard({
 
   const renderCancelButton = () => {
     if (!user || !order) return null;
+    const isCreator = user.id === order.creatorId;
+    const isNotTaken =
+      order.type === "BUY"
+        ? !order.sellerId
+        : order.type === "SELL"
+        ? !order.buyerId
+        : false;
+
+    if (isCreator && isNotTaken) {
+      return (
+        <CancelOrderButton order={order} onCancelled={handleOrderCancelled} />
+      );
+    }
+
     if (order.status !== "WAITING_PAYMENT") return null;
 
-    const canShowCancel =
-      countdownRemainingMinutes !== null && countdownRemainingMinutes <= 0;
+    const canShowCancel = isCountdownReady === true;
     if (!canShowCancel) return null;
 
     // CancelOrderButton internally checks if user can cancel
@@ -224,7 +240,7 @@ export function OrderCard({
       />
       <OrderDisputeCountdown
         order={order}
-        onRemainingMinutesChange={setCountdownRemainingMinutes}
+        onReadyChange={setIsCountdownReady}
       />
       {/* <Separator className="mb-1" /> */}
       <div className="px-3 py-2 space-y-2">

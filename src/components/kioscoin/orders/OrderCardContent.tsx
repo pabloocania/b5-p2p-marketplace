@@ -17,7 +17,6 @@ import { BuyerText } from "./BuyerText";
 import AddressInput from "./AddressInput";
 import { CryptoAmountIcon } from "../CryptoIcon";
 import OrderCreatedDate from "./OrderCreatedDate";
-import OrderDisputeCountdown from "./OrderDisputeCountdown";
 import {
   BlockchainName,
   ConfigStore,

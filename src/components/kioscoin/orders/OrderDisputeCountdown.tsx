@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Order, OrderStatus } from "b5-api-client";
 import { ConfigStore, OrderToleranceConfig } from "@/lib/ConfigStore";
@@ -24,17 +24,26 @@ const getToleranceByStatus = (
 
 interface OrderDisputeCountdownProps {
   readonly order: Order;
-  readonly onRemainingMinutesChange?: (minutes: number | null) => void;
+  readonly onReadyChange?: (isReady: boolean | null) => void;
 }
 
 const OrderDisputeCountdown: React.FC<OrderDisputeCountdownProps> = ({
   order,
-  onRemainingMinutesChange,
+  onReadyChange,
 }) => {
+  if (order.buyerDisputed || order.sellerDisputed) {
+    onReadyChange?.(null);
+    return null;
+  }
+
   const { t } = useTranslation();
   const [toleranceConfig, setToleranceConfig] =
     useState<OrderToleranceConfig | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [startAt, setStartAt] = useState<string | null>(
+    order.createdAt ?? null
+  );
+  const lastStatusRef = useRef(order.status);
 
   useEffect(() => {
     let isActive = true;
@@ -63,24 +72,42 @@ const OrderDisputeCountdown: React.FC<OrderDisputeCountdownProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    setStartAt(order.createdAt ?? null);
+    lastStatusRef.current = order.status;
+  }, [order.id, order.createdAt]);
+
+  useEffect(() => {
+    if (!order.status) return;
+    if (order.status !== lastStatusRef.current) {
+      setStartAt(new Date().toISOString());
+      lastStatusRef.current = order.status;
+    }
+  }, [order.status]);
+
   const toleranceMinutes = useMemo(() => {
     if (!toleranceConfig) return null;
     return getToleranceByStatus(order.status, toleranceConfig);
   }, [order.status, toleranceConfig]);
 
   const remainingMinutes = useMemo(() => {
-    if (!toleranceMinutes || !order.createdAt) return null;
+    if (!toleranceMinutes) return null;
 
-    const createdAt = parseISO(order.createdAt);
-    if (Number.isNaN(createdAt.getTime())) return null;
+    const rawStartAt = startAt ?? order.createdAt ?? null;
+    if (!rawStartAt) return null;
 
-    const elapsedMinutes = Math.max(0, differenceInMinutes(now, createdAt));
+    const startDate = parseISO(rawStartAt);
+    if (Number.isNaN(startDate.getTime())) return null;
+
+    const elapsedMinutes = Math.max(0, differenceInMinutes(now, startDate));
     return Math.max(0, Math.ceil(toleranceMinutes - elapsedMinutes));
-  }, [toleranceMinutes, order.createdAt, now]);
+  }, [toleranceMinutes, startAt, order.createdAt, now]);
+
+  const isReady = remainingMinutes === null ? null : remainingMinutes <= 0;
 
   useEffect(() => {
-    onRemainingMinutesChange?.(remainingMinutes);
-  }, [onRemainingMinutesChange, remainingMinutes]);
+    onReadyChange?.(isReady);
+  }, [onReadyChange, remainingMinutes, isReady]);
 
   if (remainingMinutes === null || !toleranceMinutes) {
     return null;
@@ -90,7 +117,6 @@ const OrderDisputeCountdown: React.FC<OrderDisputeCountdownProps> = ({
     1,
     (toleranceMinutes - remainingMinutes) / Math.max(1, toleranceMinutes)
   );
-  const isReady = remainingMinutes <= 0;
 
   return (
     <div className="mt-2 rounded-md px-4 py-2 w-full font-secondary">
