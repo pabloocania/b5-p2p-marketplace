@@ -115,6 +115,13 @@ const getBlockchainIcon = (blockchain: string): string => {
   return "🔗";
 };
 
+const mapBlockchainDisplayName = (blockchain: string): string => {
+  if (isMainnet(blockchain)) {
+    return blockchain.replace(/_MAINNET$|_MAIN$/, "");
+  }
+  return blockchain.replace(/_/g, " ");
+};
+
 interface UserBalanceProps {
   balances: TokenBalance[];
   selectedToken: string;
@@ -188,7 +195,7 @@ export default function UserBalance({
 
     const blockchains = sortedBlockchainNames.map((blockchain) => ({
       code: blockchain,
-      name: blockchain.replace("_", " "),
+      name: mapBlockchainDisplayName(blockchain),
       icon: getBlockchainIcon(blockchain),
     }));
 
