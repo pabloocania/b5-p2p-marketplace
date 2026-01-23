@@ -195,8 +195,6 @@ export default function CreateOrder({
       (b) => b.name.toUpperCase() === tokenCode.toUpperCase()
     );
 
-    console.log("tokenBalance", tokenBalance);
-    console.log("bala", balances);
     if (!tokenBalance) {
       return {
         isValid: false,

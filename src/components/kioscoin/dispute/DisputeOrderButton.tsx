@@ -16,20 +16,18 @@ import { Order } from "b5-api-client";
 import { p2pMarketAPIClient as client } from "@/lib/APIClients";
 import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUserContext";
 import { CreateDisputeRequest } from "b5-api-client";
-
-// interface DisputeOrderRequest {
-//   orderId: string;
-//   reason: string;
-// }
+import TelegramSupportButton from "../support/TelegramSupportButton";
 
 interface DisputeOrderButtonProps {
   order: Order;
   onDisputeCreated?: () => void;
+  isEnabled?: boolean;
 }
 
 export default function DisputeOrderButton({
   order,
   onDisputeCreated,
+  isEnabled = true,
 }: DisputeOrderButtonProps) {
   const { user, loginId } = useKioscoinUserContext();
   const [open, setOpen] = useState(false);
@@ -55,6 +53,9 @@ export default function DisputeOrderButton({
     () => localDisputed || initialAlreadyDisputed,
     [localDisputed, initialAlreadyDisputed]
   );
+  const isAdminClosed =
+    order.status === "CANCELED_BY_ADMIN" ||
+    order.status === "COMPLETED_BY_ADMIN";
 
   const canShowDisputeButton =
     !alreadyDisputed &&
@@ -120,7 +121,7 @@ export default function DisputeOrderButton({
 
   const disputeReason = getDisputeReason(order);
 
-  if (alreadyDisputed) {
+  if (alreadyDisputed && !isAdminClosed) {
     return (
       <>
         <div className="flex flex-col items-center w-full">
@@ -144,6 +145,7 @@ export default function DisputeOrderButton({
               <div className="p-3 rounded-md mt-2 text-sm bg-secondary/10 border border-secondary/30 text-dark text-center">
                 {t("dispute_already_message")}
               </div>
+              <TelegramSupportButton userId={user!.id!} />
             </div>
             <DialogFooter className="flex justify-end gap-2 mt-4">
               <Button
@@ -159,6 +161,9 @@ export default function DisputeOrderButton({
       </>
     );
   }
+  if (alreadyDisputed) {
+    return null;
+  }
 
   if (!canShowDisputeButton) {
     return null;
@@ -173,7 +178,11 @@ export default function DisputeOrderButton({
           label={t("dispute_order")}
           variant="outline"
           size="sm"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            if (!isEnabled) return;
+            setOpen(true);
+          }}
+          disabled={!isEnabled}
         />
       </div>
 

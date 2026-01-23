@@ -135,7 +135,7 @@ export class EtherspotSdksManager {
                 chainId: chainId,
                 bundlerProvider: new EtherspotBundler(
                     chainId,
-                    isTestnet ? "etherspot_public_key" : "etherspot_3ZVooGBfUwejKEQFJzmvMxKK",
+                    isTestnet ? "etherspot_public_key" : process.env.NEXT_PUBLIC_ARKA_KEY ?? '',
                     isTestnet
                         ? `https://testnet-rpc.etherspot.io/v1/${chainId}`
                         : `https://rpc.etherspot.io/v1/${chainId}`

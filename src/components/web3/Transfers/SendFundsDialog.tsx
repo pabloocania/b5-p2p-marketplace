@@ -182,8 +182,6 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
       );
 
       if (userOpHash) {
-        console.log("Transaction sent, userOpHash:", userOpHash);
-
         setTransaction({
           status: "sending",
           message:
@@ -199,7 +197,6 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
         while (opsReceipt == null && Date.now() < timeout) {
           await sleep(2); // Sleep 5 seconds between attempts
           opsReceipt = await getUserOperationReceipt(userOpHash);
-          console.log("opsReceipt", opsReceipt);
         }
 
         if (opsReceipt != undefined && opsReceipt.success) {
@@ -215,8 +212,6 @@ const SendFundsDialog: React.FC<SendFundsDialogProps> = ({
             .catch((error: any) => {
               console.error("Error saving ops log:", error);
             });
-
-          console.log("Transaction confirmed successfully");
 
           setTransaction({
             status: "success",

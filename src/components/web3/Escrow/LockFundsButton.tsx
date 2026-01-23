@@ -32,7 +32,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
   const { batchApproveAndEscrow, getUserOperationReceipt } = useEtherspotFlow();
   const [isLoading, setIsLoading] = useState(false);
   const [hasSufficientBalance, setHasSufficientBalance] = useState(true);
-  const { balances, currentChainId } = useKioscoinWallet();
+  const { balances, refreshBalances } = useKioscoinWallet();
   const [isTransacting, setIsTransacting] = useState(false);
   const { setTransaction } = useTransaction();
   const [isOpen, setIsOpen] = useState(false);
@@ -108,6 +108,7 @@ const LockFundsButton: React.FC<LockFundsButtonProps> = ({
             });
             // Refresh order data after successful lock
             onRefresh?.();
+            await refreshBalances();
           } else {
             setTransaction({
               status: "error",
