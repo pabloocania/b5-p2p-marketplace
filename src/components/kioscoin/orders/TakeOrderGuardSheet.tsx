@@ -16,6 +16,7 @@ import {
   ValidationErrorAlert,
   ApiError,
 } from "@/components/kioscoin/ValidationErrorAlert";
+import { useKioscoinUserContext } from "../users/KioscoinUserContext";
 
 interface TakeOrderGuardSheetProps {
   open: boolean;
@@ -35,9 +36,13 @@ export function TakeOrderGuardSheet({
   loading = false,
 }: TakeOrderGuardSheetProps) {
   const { t } = useTranslation();
+  const { user } = useKioscoinUserContext();
   const [submitError, setSubmitError] = useState<ApiError | null>(null);
   const token = order.tokenCode ?? "USDT";
   const isActionBuy = action === "BUY";
+  const isSeller = !!user?.id && order.sellerId === user.id;
+  const shouldReceiveFiat = order.type === "SELL" && isSeller;
+  const fiatLabel = shouldReceiveFiat ? t("fiat_receive") : t("fiat_pay");
 
   const handleConfirm = async () => {
     setSubmitError(null);
@@ -97,7 +102,7 @@ export function TakeOrderGuardSheet({
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">{t("en_ars")}:</span>
+                  <span className="text-muted-foreground">{fiatLabel}:</span>
                   <span className="text-dark font-bold">
                     {order.fiatAmount} {order.fiatCode ?? "ARS"}
                   </span>
