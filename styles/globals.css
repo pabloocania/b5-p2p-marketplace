@@ -59,9 +59,7 @@ a {
     --header-height: 5rem;
     --navbar-height: 5rem;
     --content-top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
-    --content-bottom: calc(
-      var(--navbar-height) + env(safe-area-inset-bottom, 0px)
-    );
+    --content-bottom: var(--navbar-height);
 
     --background: 0 0% 100%;
     --foreground: 20 14.3% 4.1%;

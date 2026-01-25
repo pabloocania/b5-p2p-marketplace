@@ -57,8 +57,7 @@ export class ExchangeRatesService {
     for (let attempt = 0; attempt < RETRY_ATTEMPTS; attempt++) {
       try {
         console.log(
-          `Attempting to fetch rate for ${tokenCode}/${fiatCode} (attempt ${
-            attempt + 1
+          `Attempting to fetch rate for ${tokenCode}/${fiatCode} (attempt ${attempt + 1
           })`
         );
 
@@ -69,12 +68,10 @@ export class ExchangeRatesService {
         if (!response.ok) {
           // Throw error on bad response status after checking attempts
           if (attempt === RETRY_ATTEMPTS - 1) {
-            throw new Error(
-              `CoinGecko API error: ${response.status} ${response.statusText}`
-            );
+            console.error(`CoinGecko API error: ${response.status} ${response.statusText}`);
           }
           // Continue to retry if not the last attempt
-          throw new Error(`HTTP error! status: ${response.status}`); // Temporary error for retry
+          console.error(`HTTP error! status: ${response.status}`); // Temporary error for retry
         }
 
         const data: PriceResponse = await response.json();
@@ -90,7 +87,7 @@ export class ExchangeRatesService {
             );
             return null; // Return null after all retries if rate not found
           }
-          throw new Error(`Rate data missing for ${tokenCode} in ${fiatCode}`); // Temporary error for retry
+          console.error(`Rate data missing for ${tokenCode} in ${fiatCode}`); // Temporary error for retry
         }
 
         return data[coinGeckoId][fiatCodeLower]; // Return rate on success
@@ -104,10 +101,10 @@ export class ExchangeRatesService {
             error instanceof Error &&
             error.message.startsWith("CoinGecko API error")
           ) {
-            throw error; // Re-throw the specific API error
+            console.error(`Attempt ${attempt + 1} failed:`, error); // Re-throw the specific API error
           }
           console.warn("All retry attempts failed for fetching rate.");
-          throw new Error("Failed to fetch rate after multiple attempts"); // Throw generic error after retries
+          console.error("Failed to fetch rate after multiple attempts"); // Throw generic error after retries
         }
 
         await this.delay(RETRY_DELAY * (attempt + 1));

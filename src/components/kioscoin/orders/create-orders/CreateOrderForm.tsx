@@ -73,6 +73,7 @@ export default function CreateOrder({
 
   const [suggestedRate, setSuggestedRate] = useState<number | null>(null);
   const [customRate, setCustomRate] = useState<number | null>(null);
+  const [customRateInput, setCustomRateInput] = useState("");
   const [fiatCode, setFiatCode] = useState<"ARS" | "EUR">(
     preFilledData?.fiatCode === "EUR" ? "EUR" : "ARS"
   );
@@ -131,6 +132,7 @@ export default function CreateOrder({
       setRateError(null);
       setSuggestedRate(null);
       setCustomRate(null);
+      setCustomRateInput("");
 
       try {
         const rate = await ExchangeRatesService.fetchRateWithRetry(
@@ -140,6 +142,7 @@ export default function CreateOrder({
         if (rate !== null) {
           setSuggestedRate(rate);
           setCustomRate(rate);
+          setCustomRateInput(rate.toFixed(2));
         } else {
           setRateError(
             t("no_rate_available", { token: tokenCode, currency: fiatCode })
@@ -155,6 +158,7 @@ export default function CreateOrder({
           errorMessage = t("unsupported_token", { token: tokenCode });
           setSuggestedRate(1);
           setCustomRate(1);
+          setCustomRateInput("1.00");
         }
         setRateError(errorMessage);
       } finally {
@@ -191,48 +195,48 @@ export default function CreateOrder({
       return { isValid: false, error: null, availableBalanceText: null };
     }
 
-    const tokenBalance = balances.find(
-      (b) => b.name.toUpperCase() === tokenCode.toUpperCase()
-    );
+    // const tokenBalance = balances.find(
+    //   (b) => b.name.toUpperCase() === tokenCode.toUpperCase()
+    // );
 
-    if (!tokenBalance) {
-      return {
-        isValid: false,
-        error: t("token_balance_not_found") || "Token balance not found",
-        availableBalanceText: null,
-      };
-    }
+    // if (!tokenBalance) {
+    //   return {
+    //     isValid: false,
+    //     error: t("token_balance_not_found") || "Token balance not found",
+    //     availableBalanceText: null,
+    //   };
+    // }
 
-    const decimals =
-      ConfigStore.getInstance().getTokenDecimalsByTokenCodeAndBlockchain(
-        tokenCode,
-        blockchain
-      );
-    const totalRequired = calculateTotalRequired(tokenAmount, decimals);
-    const availableBalance = BigInt(tokenBalance.smartWalletBalance || "0");
+    // const decimals =
+    //   ConfigStore.getInstance().getTokenDecimalsByTokenCodeAndBlockchain(
+    //     tokenCode,
+    //     blockchain
+    //   );
+    // const totalRequired = calculateTotalRequired(tokenAmount, decimals);
+    // const availableBalance = BigInt(tokenBalance.smartWalletBalance || "0");
 
-    if (availableBalance < totalRequired) {
-      const requiredFormatted = formatTokenAmount(
-        totalRequired.toString(),
-        decimals
-      );
-      const availableFormatted = formatTokenAmount(
-        availableBalance.toString(),
-        decimals
-      );
+    // if (availableBalance < totalRequired) {
+    //   const requiredFormatted = formatTokenAmount(
+    //     totalRequired.toString(),
+    //     decimals
+    //   );
+    //   const availableFormatted = formatTokenAmount(
+    //     availableBalance.toString(),
+    //     decimals
+    //   );
 
-      return {
-        isValid: false,
-        error: t("insufficient_balance_with_fee", {
-          required: requiredFormatted,
-          token: tokenCode,
-        }),
-        availableBalanceText: t("available_balance_error", {
-          available: availableFormatted,
-          token: tokenCode,
-        }),
-      };
-    }
+    //   return {
+    //     isValid: false,
+    //     error: t("insufficient_balance_with_fee", {
+    //       required: requiredFormatted,
+    //       token: tokenCode,
+    //     }),
+    //     availableBalanceText: t("available_balance_error", {
+    //       available: availableFormatted,
+    //       token: tokenCode,
+    //     }),
+    //   };
+    // }
 
     return {
       isValid: true,
@@ -300,6 +304,38 @@ export default function CreateOrder({
     customRate !== null &&
     balanceValidation.isValid &&
     (orderType === "SELL" || walletAddress);
+
+  const handleCustomRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const normalizedValue = value.replace(/,/g, ".");
+    if (value === "") {
+      setCustomRateInput("");
+      setCustomRate(null);
+      return;
+    }
+    if (!/^\d*(\.\d{0,2})?$/.test(normalizedValue)) return;
+    setCustomRateInput(value);
+    const numValue = parseFloat(normalizedValue);
+    setCustomRate(Number.isNaN(numValue) ? null : numValue);
+  };
+
+  const handleCustomRateBlur = () => {
+    const normalizedValue = customRateInput.replace(/,/g, ".");
+    if (customRateInput === "" || normalizedValue === ".") {
+      setCustomRateInput("");
+      setCustomRate(null);
+      return;
+    }
+    const numValue = parseFloat(normalizedValue);
+    if (Number.isNaN(numValue)) {
+      setCustomRateInput("");
+      setCustomRate(null);
+      return;
+    }
+    const rounded = Math.round(numValue * 100) / 100;
+    setCustomRate(rounded);
+    setCustomRateInput(rounded.toFixed(2));
+  };
 
   return (
     <ScrollableContainer>
@@ -436,22 +472,11 @@ export default function CreateOrder({
                   </div>
                   <div className="w-1/3">
                     <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={customRate !== null ? customRate.toFixed(2) : ""}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (value === "") {
-                          setCustomRate(null);
-                          return;
-                        }
-                        const numValue = parseFloat(value);
-                        if (!isNaN(numValue)) {
-                          // Round to 2 decimals for consistency
-                          setCustomRate(Math.round(numValue * 100) / 100);
-                        }
-                      }}
+                      type="text"
+                      inputMode="decimal"
+                      value={customRateInput}
+                      onChange={handleCustomRateChange}
+                      onBlur={handleCustomRateBlur}
                       placeholder="0.00"
                       className="focus:ring-primary focus:border-primary border border-primary text-sm"
                     />

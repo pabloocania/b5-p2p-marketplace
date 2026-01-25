@@ -53,14 +53,14 @@ export function NotificationsPanel({
       }}
     >
       <div
-        className="absolute right-0 top-0 h-full w-full sm:max-w-sm bg-white shadow-lg flex flex-col transition-transform duration-300 ease-in-out"
+        className="absolute right-0 top-0 h-full w-full sm:max-w-sm bg-white shadow-lg flex flex-col transition-transform duration-300 ease-in-out pt-[env(safe-area-inset-top)]"
         style={{
           transform: isOpen ? "translateX(0)" : "translateX(100%)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 p-2">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white p-2">
           <h2 className="text-md font-semibold text-primary">
             {t("activity") || "Activity"}
           </h2>
@@ -84,8 +84,8 @@ export function NotificationsPanel({
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-2 p-8">
-              <AlertCircle className="h-8 w-8 text-gray-300" />
-              <p className="text-sm text-gray-500 text-center">
+              <AlertCircle className="h-8 w-8 text-primary" />
+              <p className="text-sm text-dark text-center font-secondary">
                 {t("no_notifications") || "No notifications yet"}
               </p>
             </div>
