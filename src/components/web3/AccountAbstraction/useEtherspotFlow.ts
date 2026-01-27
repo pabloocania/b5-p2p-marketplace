@@ -3,10 +3,8 @@ import {
   getAddress,
   encodeFunctionData,
   parseUnits,
-  keccak256,
   parseGwei
 } from "viem";
-import { toUtf8Bytes } from "ethers/lib/utils";
 import { ERC20abi } from "@/components/web3/abis/StablecoinConfig";
 import { Order } from "b5-api-client";
 import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
@@ -19,12 +17,51 @@ import { TransactionGasInfoForUserOp } from "@etherspot/prime-sdk/dist/sdk/base/
 import { printOp } from "@etherspot/prime-sdk/dist/sdk/common/OperationUtils";
 import { arka_api_key, whitelistPaymaster } from "./ArkaPaymasterService";
 import { EtherspotSdksManager } from "./EtherspotSdksManager";
+import { p2pMarketAPIClient } from "@/lib/APIClients";
+import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUserContext";
 
 export const useEtherspotFlow = () => {
   // const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { isConnected: isConnectedWeb3Auth } = useWeb3Auth();
   const { primeSdk, eoaAddress, swAddress } = useKioscoinWallet();
+  const { loginId } = useKioscoinUserContext();
+
+  const fetchOrderSecret = async (
+    orderId: string
+  ): Promise<{ role: string; secret: string }> => {
+    if (!orderId) {
+      throw new Error("Order id is required to fetch secret.");
+    }
+    if (!loginId) {
+      throw new Error("User is not authenticated.");
+    }
+    const response = await p2pMarketAPIClient.getOrderSecret(orderId, {
+      Authorization: `Bearer ${loginId}`,
+    });
+    if (!response?.secret) {
+      throw new Error("Secret not available for this order.");
+    }
+    return response;
+  };
+
+  const fetchEscrowSecretsForSeller = async (
+    orderId: string
+  ): Promise<{ buyerSecret: string; sellerSecret: string }> => {
+    if (!orderId) {
+      throw new Error("Order id is required to fetch escrow secrets.");
+    }
+    if (!loginId) {
+      throw new Error("User is not authenticated.");
+    }
+    const response = await p2pMarketAPIClient.getEscrowSecretsForSeller(orderId, {
+      Authorization: `Bearer ${loginId}`,
+    });
+    if (!response?.buyerSecret || !response?.sellerSecret) {
+      throw new Error("Escrow secrets not available for this order.");
+    }
+    return response;
+  };
 
 
   const transferFromEOAToSW = async (
@@ -116,9 +153,11 @@ export const useEtherspotFlow = () => {
     try {
       const contractAddress = ConfigStore.getInstance().getKioscoinEscrowAddressByBlockchain(order.blockchain!!)
       if (primeSdk) {
+        const orderId = order.id ?? "";
+        const secretResponse = await fetchOrderSecret(orderId);
         const releaseParams = [
-          order.id,
-          order.buyerHash
+          orderId,
+          secretResponse.secret
         ];
         const releaseData = encodeFunctionData({
           abi: KioscoinEscrowContractConfig.abi,
@@ -141,6 +180,11 @@ export const useEtherspotFlow = () => {
   const batchApproveAndEscrow = async (order: Order): Promise<string | undefined> => {
     if (primeSdk && isConnectedWeb3Auth) {
       const orderBlockchain = order.blockchain!!
+      const orderId = order.id ?? "";
+      const { buyerSecret, sellerSecret } = await fetchEscrowSecretsForSeller(orderId);
+      if (!order.buyerAddress) {
+        throw new Error("Buyer address is required to lock the order.");
+      }
       const contractAddress = ConfigStore.getInstance().getKioscoinEscrowAddressByBlockchain(orderBlockchain)
       const tokenDecimals = ConfigStore.getInstance().getTokenDecimalsByTokenCodeAndBlockchain(order.tokenCode, orderBlockchain)
       const amountInt = parseUnits(order.amount ?? "0", tokenDecimals); // Ensure order.amount is not undefined
@@ -154,12 +198,12 @@ export const useEtherspotFlow = () => {
         args: [contractAddress, totalAmount],
       });
 
-      const buyerHashBuffer = order.buyerHash ? keccak256(toUtf8Bytes(order.buyerHash)) : undefined;
-      const sellerHashBuffer = order.sellerHash ? keccak256(toUtf8Bytes(order.sellerHash)) : undefined;
+      const buyerHashBuffer = buyerSecret;
+      const sellerHashBuffer = sellerSecret;
 
       const tokenAddress = ConfigStore.getInstance().getTokenAddressByNameAndBlockchain(order.tokenCode?.toUpperCase()!!, orderBlockchain)
       const escrowParams = [
-        order.id,
+        orderId,
         tokenAddress,
         order.buyerAddress,
         buyerHashBuffer,
@@ -266,7 +310,7 @@ export const useEtherspotFlow = () => {
       paymasterDetails: {
         url:
           "https://arka.etherspot.io?useVp=true&apiKey=" +
-          arka_api_key +
+          process.env.NEXT_PUBLIC_ARKA_KEY +
           "&chainId=" +
           chainId,
         context: { mode: "sponsor" },

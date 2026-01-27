@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   OrderType,
   Order,
-  generateSecretAndHash,
   PaymentMethod,
   OrderStatus,
   parseApiError,
@@ -195,48 +194,48 @@ export default function CreateOrder({
       return { isValid: false, error: null, availableBalanceText: null };
     }
 
-    // const tokenBalance = balances.find(
-    //   (b) => b.name.toUpperCase() === tokenCode.toUpperCase()
-    // );
+    const tokenBalance = balances.find(
+      (b) => b.name.toUpperCase() === tokenCode.toUpperCase()
+    );
 
-    // if (!tokenBalance) {
-    //   return {
-    //     isValid: false,
-    //     error: t("token_balance_not_found") || "Token balance not found",
-    //     availableBalanceText: null,
-    //   };
-    // }
+    if (!tokenBalance) {
+      return {
+        isValid: false,
+        error: t("token_balance_not_found") || "Token balance not found",
+        availableBalanceText: null,
+      };
+    }
 
-    // const decimals =
-    //   ConfigStore.getInstance().getTokenDecimalsByTokenCodeAndBlockchain(
-    //     tokenCode,
-    //     blockchain
-    //   );
-    // const totalRequired = calculateTotalRequired(tokenAmount, decimals);
-    // const availableBalance = BigInt(tokenBalance.smartWalletBalance || "0");
+    const decimals =
+      ConfigStore.getInstance().getTokenDecimalsByTokenCodeAndBlockchain(
+        tokenCode,
+        blockchain
+      );
+    const totalRequired = calculateTotalRequired(tokenAmount, decimals);
+    const availableBalance = BigInt(tokenBalance.smartWalletBalance || "0");
 
-    // if (availableBalance < totalRequired) {
-    //   const requiredFormatted = formatTokenAmount(
-    //     totalRequired.toString(),
-    //     decimals
-    //   );
-    //   const availableFormatted = formatTokenAmount(
-    //     availableBalance.toString(),
-    //     decimals
-    //   );
+    if (availableBalance < totalRequired) {
+      const requiredFormatted = formatTokenAmount(
+        totalRequired.toString(),
+        decimals
+      );
+      const availableFormatted = formatTokenAmount(
+        availableBalance.toString(),
+        decimals
+      );
 
-    //   return {
-    //     isValid: false,
-    //     error: t("insufficient_balance_with_fee", {
-    //       required: requiredFormatted,
-    //       token: tokenCode,
-    //     }),
-    //     availableBalanceText: t("available_balance_error", {
-    //       available: availableFormatted,
-    //       token: tokenCode,
-    //     }),
-    //   };
-    // }
+      return {
+        isValid: false,
+        error: t("insufficient_balance_with_fee", {
+          required: requiredFormatted,
+          token: tokenCode,
+        }),
+        availableBalanceText: t("available_balance_error", {
+          available: availableFormatted,
+          token: tokenCode,
+        }),
+      };
+    }
 
     return {
       isValid: true,
@@ -257,9 +256,6 @@ export default function CreateOrder({
     e.preventDefault();
     setSubmitError(null);
 
-    const { secret: secretSeller } = generateSecretAndHash();
-    const { secret: secretBuyer } = generateSecretAndHash();
-
     const newOrder = {
       type: orderType,
       description,
@@ -272,8 +268,6 @@ export default function CreateOrder({
       creatorId: user?.id,
       status: "PENDING" as OrderStatus,
       creatorUsername: user?.username,
-      sellerHash: secretSeller.toString("hex"),
-      buyerHash: secretBuyer.toString("hex"),
     };
 
     try {

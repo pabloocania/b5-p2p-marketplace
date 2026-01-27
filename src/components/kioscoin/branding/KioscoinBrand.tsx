@@ -58,7 +58,7 @@ export default function KioscoinBrand({
       : { width: 200, height: 200 };
 
   return (
-    <div className={cn("flex flex-col items-center", className)}>
+    <div className={cn("flex flex-col items-center pt-4", className)}>
       <img
         width={dims.width}
         height={dims.height}
