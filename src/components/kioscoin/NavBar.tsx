@@ -51,7 +51,7 @@ export function NavBar({ activeComponent, setActiveComponent }: NavBarProps) {
   ];
 
   return (
-    <div className="border-t border-t-primary/50 py-4 px-1 fixed bottom-0 bg-dark z-50 w-full shadow-top shadow-md transform-gpu">
+    <div className="border-t border-t-primary/50 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] px-1 fixed bottom-0 bg-dark z-50 w-full shadow-top shadow-md transform-gpu">
       <div className="flex h-18 items-center justify-between px-6 max-w-md mx-auto touch-manipulation">
         {navItems.map((item) => (
           <button

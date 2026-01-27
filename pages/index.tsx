@@ -11,11 +11,9 @@ import { NavBar } from "@/components/kioscoin/NavBar";
 import { TopBar } from "@/components/kioscoin/TopBar";
 import { CreateOrderContainer } from "@/components/kioscoin/orders/create-orders/CreateOrderContainer";
 import { HelpDialog } from "@/components/kioscoin/HelpDialog";
-import SmartWalletOnboarding from "@/components/kioscoin/users/profile/SmartWalletOnboarding";
 import TermsCondPrivacyPolicy from "@/components/kioscoin/T&C and PP/TermsCond&PrivacyPolicy";
 import { MainViewRenderer } from "@/components/kioscoin/MainViewRenderer";
 import {
-  NavigationProvider,
   useNavigation,
   ActiveView,
 } from "@/components/kioscoin/NavigationContext";
@@ -75,8 +73,10 @@ function HomeContent() {
   useEffect(() => {
     if (user) {
       // Check if user has already accepted terms
-      const hasAcceptedTerms = localStorage.getItem("hasAcceptedTermsAndConditions");
-      
+      const hasAcceptedTerms = localStorage.getItem(
+        "hasAcceptedTermsAndConditions"
+      );
+
       if (!hasAcceptedTerms) {
         // Reset state to ensure modal shows only on first login
         setShowSmartWalletOnboarding(false);
@@ -126,13 +126,20 @@ function HomeContent() {
     incrementRefreshKey();
   };
 
+  const showTopBar = currentView !== "UserMenu" || !!user;
+
   return (
     <div className="min-h-screen min-h-[100dvh] bg-secondary/10">
       {/* Fixed TopBar */}
-      <TopBar activeComponent={currentView} />
+      {showTopBar && <TopBar activeComponent={currentView} />}
 
       {/* Main scrollable content */}
-      <main className="absolute left-0 right-0 overflow-y-auto z-0 top-[var(--content-top)] bottom-[var(--content-bottom)]">
+      <main
+        className="absolute left-0 right-0 overflow-y-auto z-0 bottom-[var(--content-bottom)]"
+        style={{
+          top: showTopBar ? "var(--content-top)" : "env(safe-area-inset-top, 0px)",
+        }}
+      >
         <div className="w-full max-w-md mx-auto px-2 flex flex-col pb-4">
           <MainViewRenderer
             refreshKey={refreshKey}

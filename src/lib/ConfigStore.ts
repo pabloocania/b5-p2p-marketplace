@@ -306,7 +306,7 @@ export class ConfigStore {
                 backendTolerance.waiting_payment_minutes ?? backendTolerance.waitingPaymentMinutes;
 
             const withBuffer = (value: unknown, fallback: number) =>
-                (Number(value) || fallback) + 1;
+                Number(value) || fallback;
 
             return {
                 activeMinutes: withBuffer(activeMinutes, DEFAULT_TOLERANCE.activeMinutes),

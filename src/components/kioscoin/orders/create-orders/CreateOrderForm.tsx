@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   OrderType,
   Order,
-  generateSecretAndHash,
   PaymentMethod,
   OrderStatus,
   parseApiError,
@@ -73,6 +72,7 @@ export default function CreateOrder({
 
   const [suggestedRate, setSuggestedRate] = useState<number | null>(null);
   const [customRate, setCustomRate] = useState<number | null>(null);
+  const [customRateInput, setCustomRateInput] = useState("");
   const [fiatCode, setFiatCode] = useState<"ARS" | "EUR">(
     preFilledData?.fiatCode === "EUR" ? "EUR" : "ARS"
   );
@@ -131,6 +131,7 @@ export default function CreateOrder({
       setRateError(null);
       setSuggestedRate(null);
       setCustomRate(null);
+      setCustomRateInput("");
 
       try {
         const rate = await ExchangeRatesService.fetchRateWithRetry(
@@ -140,6 +141,7 @@ export default function CreateOrder({
         if (rate !== null) {
           setSuggestedRate(rate);
           setCustomRate(rate);
+          setCustomRateInput(rate.toFixed(2));
         } else {
           setRateError(
             t("no_rate_available", { token: tokenCode, currency: fiatCode })
@@ -155,6 +157,7 @@ export default function CreateOrder({
           errorMessage = t("unsupported_token", { token: tokenCode });
           setSuggestedRate(1);
           setCustomRate(1);
+          setCustomRateInput("1.00");
         }
         setRateError(errorMessage);
       } finally {
@@ -253,9 +256,6 @@ export default function CreateOrder({
     e.preventDefault();
     setSubmitError(null);
 
-    const { secret: secretSeller } = generateSecretAndHash();
-    const { secret: secretBuyer } = generateSecretAndHash();
-
     const newOrder = {
       type: orderType,
       description,
@@ -268,8 +268,6 @@ export default function CreateOrder({
       creatorId: user?.id,
       status: "PENDING" as OrderStatus,
       creatorUsername: user?.username,
-      sellerHash: secretSeller.toString("hex"),
-      buyerHash: secretBuyer.toString("hex"),
     };
 
     try {
@@ -300,6 +298,38 @@ export default function CreateOrder({
     customRate !== null &&
     balanceValidation.isValid &&
     (orderType === "SELL" || walletAddress);
+
+  const handleCustomRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const normalizedValue = value.replace(/,/g, ".");
+    if (value === "") {
+      setCustomRateInput("");
+      setCustomRate(null);
+      return;
+    }
+    if (!/^\d*(\.\d{0,2})?$/.test(normalizedValue)) return;
+    setCustomRateInput(value);
+    const numValue = parseFloat(normalizedValue);
+    setCustomRate(Number.isNaN(numValue) ? null : numValue);
+  };
+
+  const handleCustomRateBlur = () => {
+    const normalizedValue = customRateInput.replace(/,/g, ".");
+    if (customRateInput === "" || normalizedValue === ".") {
+      setCustomRateInput("");
+      setCustomRate(null);
+      return;
+    }
+    const numValue = parseFloat(normalizedValue);
+    if (Number.isNaN(numValue)) {
+      setCustomRateInput("");
+      setCustomRate(null);
+      return;
+    }
+    const rounded = Math.round(numValue * 100) / 100;
+    setCustomRate(rounded);
+    setCustomRateInput(rounded.toFixed(2));
+  };
 
   return (
     <ScrollableContainer>
@@ -436,22 +466,11 @@ export default function CreateOrder({
                   </div>
                   <div className="w-1/3">
                     <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={customRate !== null ? customRate.toFixed(2) : ""}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (value === "") {
-                          setCustomRate(null);
-                          return;
-                        }
-                        const numValue = parseFloat(value);
-                        if (!isNaN(numValue)) {
-                          // Round to 2 decimals for consistency
-                          setCustomRate(Math.round(numValue * 100) / 100);
-                        }
-                      }}
+                      type="text"
+                      inputMode="decimal"
+                      value={customRateInput}
+                      onChange={handleCustomRateChange}
+                      onBlur={handleCustomRateBlur}
                       placeholder="0.00"
                       className="focus:ring-primary focus:border-primary border border-primary text-sm"
                     />
