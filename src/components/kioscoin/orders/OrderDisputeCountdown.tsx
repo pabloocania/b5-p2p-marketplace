@@ -50,7 +50,7 @@ const OrderDisputeCountdown: React.FC<OrderDisputeCountdownProps> = ({
     useState<OrderToleranceConfig | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [startAt, setStartAt] = useState<string | null>(
-    order.createdAt ?? null
+    order.updatedAt ?? null
   );
   const lastStatusRef = useRef(order.status);
 
@@ -82,9 +82,9 @@ const OrderDisputeCountdown: React.FC<OrderDisputeCountdownProps> = ({
   }, []);
 
   useEffect(() => {
-    setStartAt(order.createdAt ?? null);
+    setStartAt(order.updatedAt ?? null);
     lastStatusRef.current = order.status;
-  }, [order.id, order.createdAt]);
+  }, [order.id, order.updatedAt]);
 
   useEffect(() => {
     if (!order.status) return;
@@ -102,7 +102,7 @@ const OrderDisputeCountdown: React.FC<OrderDisputeCountdownProps> = ({
   const remainingMinutes = useMemo(() => {
     if (!toleranceMinutes) return null;
 
-    const rawStartAt = startAt ?? order.createdAt ?? null;
+    const rawStartAt = startAt ?? order.updatedAt ?? null;
     if (!rawStartAt) return null;
 
     const startDate = parseISO(rawStartAt);
@@ -110,7 +110,7 @@ const OrderDisputeCountdown: React.FC<OrderDisputeCountdownProps> = ({
 
     const elapsedMinutes = Math.max(0, differenceInMinutes(now, startDate));
     return Math.max(0, Math.ceil(toleranceMinutes - elapsedMinutes));
-  }, [toleranceMinutes, startAt, order.createdAt, now]);
+  }, [toleranceMinutes, startAt, order.updatedAt, now]);
 
   const isReady = remainingMinutes === null ? null : remainingMinutes <= 0;
 

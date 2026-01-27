@@ -9,6 +9,7 @@ import { useKioscoinUserContext } from "@/components/kioscoin/users/KioscoinUser
 import { toast } from "@/components/ui/use-toast";
 import NotificationCard from "@/components/kioscoin/notifications/NotificationCard";
 import { useNavigation } from "@/components/kioscoin/NavigationContext";
+import { useKioscoinWallet } from "@/components/web3/AccountAbstraction/KioscoinWalletProvider";
 
 
 export interface UseNotificationsResult {
@@ -31,6 +32,7 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
     const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
     const { loginId } = useKioscoinUserContext();
     const { orderRefresh } = useNavigation();
+    const { refreshBalances, isReady } = useKioscoinWallet();
     const notificationsServiceRef = useRef<NotificationsServiceImpl | null>(null);
     const isSettingUpRef = useRef(false); // Prevent multiple simultaneous setups
 
@@ -39,6 +41,31 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
     useEffect(() => {
         orderRefreshRef.current = orderRefresh.refresh;
     }, [orderRefresh.refresh]);
+
+    const refreshBalancesRef = useRef(refreshBalances);
+    const isReadyRef = useRef(isReady);
+    const isRefreshingBalancesRef = useRef(false);
+    useEffect(() => {
+        refreshBalancesRef.current = refreshBalances;
+    }, [refreshBalances]);
+    useEffect(() => {
+        isReadyRef.current = isReady;
+    }, [isReady]);
+
+    const triggerBalancesRefresh = useCallback(() => {
+        if (!isReadyRef.current || isRefreshingBalancesRef.current) {
+            return;
+        }
+        isRefreshingBalancesRef.current = true;
+        void Promise.resolve()
+            .then(() => refreshBalancesRef.current())
+            .catch((err) => {
+                console.error("[useNotifications] Error refreshing balances:", err);
+            })
+            .finally(() => {
+                isRefreshingBalancesRef.current = false;
+            });
+    }, []);
 
     // Ref to hold the latest loginId for session refresh
     const loginIdRef = useRef(loginId);
@@ -116,8 +143,15 @@ export function useNotifications(apiBaseUrl: string): UseNotificationsResult {
 
             // Trigger order refresh when an order-related event arrives (use ref for latest function)
             const eventContent = notification.message?.content;
-            if (eventContent?.type === "EVENT" && (eventContent as any)?.event?.orderId) {
-                orderRefreshRef.current();
+            if (eventContent?.type === "EVENT") {
+                const event = (eventContent as any)?.event;
+                if (event?.orderId || event?.order_id) {
+                    orderRefreshRef.current();
+                }
+                const eventType = event?.eventType ?? event?.event_type;
+                if (eventType === "RELEASED") {
+                    triggerBalancesRefresh();
+                }
             }
 
             let toastApi: { dismiss: () => void } | undefined;

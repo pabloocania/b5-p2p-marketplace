@@ -115,7 +115,6 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
           buyerAddress: walletAddress,
           fiatAmount: order.fiatAmount?.toString() ?? "0",
           username: user?.username,
-          hash: order.buyerHash,
         } as TakeSellOrderRequest;
       } else {
         takeOrderRequest = {
@@ -124,7 +123,6 @@ const OrderCardFooter: React.FC<OrderCardFooterProps> = ({
           userId: user?.id ?? "",
           amount: order.fiatAmount?.toString() ?? "0",
           username: user?.username,
-          hash: order.sellerHash,
           paymentMethods: paymentMethods,
         } as TakeBuyOrderRequest;
       }
