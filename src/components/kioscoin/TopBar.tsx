@@ -49,7 +49,7 @@ export function TopBar({ activeComponent }: TopBarProps) {
             {/* Título centrado respecto a todo el contenedor */}
             <div className="absolute left-1/2 -translate-x-1/2">
               <span className="text-dark text-xl sm:text-2xl text-secondary">
-                Kioscoin
+                {/* Kioscoin */}
               </span>
             </div>
             {user && (

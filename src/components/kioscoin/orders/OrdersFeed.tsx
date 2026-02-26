@@ -47,7 +47,7 @@ export default function OrdersFeed({
   buyerId,
   filter = Filter.ALL,
   refreshKey,
-  refreshInterval = 15000,
+  refreshInterval = 7000,
   resetSelectedOrder,
   onBack,
   filterGroups,

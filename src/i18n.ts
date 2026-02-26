@@ -39,8 +39,8 @@ i18n.use(initReactI18next).init({
           "Your address, where you will receive the funds",
         notify_fiat_sent: "Notify seller",
         order_taken: "Order taken",
-        take_guard_title_buy: "You are about to take a BUY order of {{token}}",
-        take_guard_title_sell: "You are about to take a SELL order of {{token}}",
+        take_guard_title_buy: "You are about to buy {{token}}",
+        take_guard_title_sell: "You are about to sell {{token}}",
         take_guard_body_buy:
           "We will notify the seller. Make sure you have a payment method with alias configured.",
         take_guard_body_sell:
@@ -72,10 +72,10 @@ i18n.use(initReactI18next).init({
         transfering: "Transferring...",
         funds_released: "Funds released",
         releasing_funds:
-          "You have to sign the transaction with your wallet to release the funds to the buyer",
+          "Releasing the funds to the buyer",
         funds_locked: "Funds are locked in the smart contract",
         approve_and_lock:
-          "You have to sign the transaction with your wallet to deposit your funds in the smart contract",
+          "Locking funds in the smart contract",
         you: "you",
         connect_to_continue: "Connect your wallet to continue",
         connect_wallet: "Connect your wallet",
@@ -162,12 +162,12 @@ i18n.use(initReactI18next).init({
         to_send: "Send",
         please_verify_payment_details:
           "Please verify payment details. Once you send the funds, click on the button below to notify the seller.",
-        fiat_guard_title: "Did you send the transfer to the other user?",
+        fiat_guard_title: "Did you send the money to the other seller?",
         fiat_guard_body:
           "Click “Notify deposit” only after you have sent the money via the agreed method.",
         fiat_guard_confirm: "Yes, notify deposit",
         to_receive: "through:",
-        seller_has_locked: "The seller has locked the crypto in the smart contract",
+        seller_has_locked: "The seller has locked the funds in the escrow smart contract",
         ago: "ago",
         already_have_account: "Already have an account? Sign in",
         creating_account: "Creating account...",
