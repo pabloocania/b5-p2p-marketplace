@@ -45,7 +45,7 @@ const UserMenuNew = ({ user, onLogin, onLogout }: UserMenuNewProps) => {
         variant="border"
       >
         <CardHeader>
-          <KioscoinBrand size="sm" className="items-center" />
+          {/* <KioscoinBrand size="sm" className="items-center" /> */}
         </CardHeader>
         <CardContent className="py-2">
           <Tabs
