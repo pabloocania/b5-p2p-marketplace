@@ -32,7 +32,7 @@ export default function KioscoinUserLoginFlow({
     <div className=" border border-secondary/10 rounded-lg shadow-lg bg-white w-full max-w-md mx-auto p-4 font-secondary transform transition-transform duration-200 border border-secondary/10">
       {showBrand && (
         <div className="flex flex-col items-center mb-4">
-          {/* <KioscoinBrand size="sm" showSlogan={false} /> */}
+          <KioscoinBrand size="sm" showSlogan={false} />
         </div>
       )}
       <div className="flex bg-gray-100 rounded-lg p-1 mb-3">

@@ -162,10 +162,10 @@ i18n.use(initReactI18next).init({
         to_send: "Send",
         please_verify_payment_details:
           "Please verify payment details. Once you send the funds, click on the button below to notify the seller.",
-        fiat_guard_title: "Did you send the money to the other seller?",
+        fiat_guard_title: "Did you send the money to the seller?",
         fiat_guard_body:
           "Click “Notify deposit” only after you have sent the money via the agreed method.",
-        fiat_guard_confirm: "Yes, notify deposit",
+        fiat_guard_confirm: "Yes, notify seller",
         to_receive: "through:",
         seller_has_locked: "The seller has locked the funds in the escrow smart contract",
         ago: "ago",
@@ -469,6 +469,7 @@ i18n.use(initReactI18next).init({
         what_is_kioscoin_description: "Kioscoin is an app to buy and sell crypto dollars between people, without intermediaries.",
         canceled_by_admin: "Canceled by support",
         no_notifications: "No activity",
+        sell_now: "Sell",
       },
     },
     es: {

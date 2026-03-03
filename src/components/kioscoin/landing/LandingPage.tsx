@@ -30,7 +30,7 @@ export function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <div className="flex flex-col gap-5 text-center px-1">
-        {/* <KioscoinBrand showSlogan className="justify-center" /> */}
+        <KioscoinBrand showSlogan className="justify-center" />
         <div className="flex justify-center gap-3 font-primary w-full max-w-md mx-auto">
           <div className="border border-purple-200 bg-white/80 rounded-xl p-2 sm:p-3 text-center min-w-[110px] sm:min-w-[130px] shadow-sm hover:shadow-md transition-all">
             <div className="flex justify-center mb-1">

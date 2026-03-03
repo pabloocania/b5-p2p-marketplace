@@ -267,7 +267,7 @@ export const UserProfile = ({
       )}
 
       {/* Botón Learn debajo del header y antes del bloque de saldos */}
-      {/* <div className="px-3 py-2">
+      <div className="px-3 py-2">
         <div className="w-full flex">
           <Button
             variant="outline"
@@ -285,7 +285,7 @@ export const UserProfile = ({
             />
           </Button>
         </div>
-      </div> */}
+      </div>
 
       {/* UserBalance independiente debajo del ProfileHeader */}
       {canShowWallet && balances && (

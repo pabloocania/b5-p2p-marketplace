@@ -49,7 +49,7 @@ export function TopBar({ activeComponent }: TopBarProps) {
             {/* Título centrado respecto a todo el contenedor */}
             <div className="absolute left-1/2 -translate-x-1/2">
               <span className="text-dark text-xl sm:text-2xl text-secondary">
-                {/* Kioscoin */}
+                Kioscoin
               </span>
             </div>
             {user && (
@@ -77,7 +77,7 @@ export function TopBar({ activeComponent }: TopBarProps) {
   return (
     <>
       <div className="fixed top-0 z-50 w-full bg-dark shadow-lg pt-[env(safe-area-inset-top)]">
-        <div className="relative flex items-center justify-between max-w-md mx-auto px-2">
+        <div className="relative flex items-center justify-between max-w-md mx-auto p-2">
           {renderContent()}
         </div>
       </div>
